@@ -269,6 +269,8 @@ def from_facelet_cube(facelet_cube: RubikCube) -> CubieCube:
             facelet_cube.state[f3[0].value, f3[1]]
         ]
 
+        found = False
+
         # Find which corner this is
         for corner_idx, (ref_f1, ref_f2, ref_f3) in enumerate(corner_facelets):
             ref_colors = [ref_f1[0].value, ref_f2[0].value, ref_f3[0].value]
@@ -279,7 +281,16 @@ def from_facelet_cube(facelet_cube: RubikCube) -> CubieCube:
                 if rotated_colors == ref_colors:
                     cubie.corner_perm[pos] = corner_idx
                     cubie.corner_orient[pos] = rot
+                    found = True
                     break
+
+            if found:
+                break
+
+        if not found:
+            raise ValueError(
+                f"Invalid cube state: no matching corner for colors {colors} at position {pos}"
+            )
 
     # Extract edge pieces from facelets
     edge_facelets = [
@@ -316,6 +327,8 @@ def from_facelet_cube(facelet_cube: RubikCube) -> CubieCube:
             facelet_cube.state[f2[0].value, f2[1]]
         ]
 
+        found = False
+
         # Find which edge this is
         for edge_idx, (ref_f1, ref_f2) in enumerate(edge_facelets):
             ref_colors = [ref_f1[0].value, ref_f2[0].value]
@@ -323,11 +336,18 @@ def from_facelet_cube(facelet_cube: RubikCube) -> CubieCube:
             if colors == ref_colors:
                 cubie.edge_perm[pos] = edge_idx
                 cubie.edge_orient[pos] = 0
+                found = True
                 break
-            elif colors == [ref_colors[1], ref_colors[0]]:
+            if colors == [ref_colors[1], ref_colors[0]]:
                 cubie.edge_perm[pos] = edge_idx
                 cubie.edge_orient[pos] = 1
+                found = True
                 break
+
+        if not found:
+            raise ValueError(
+                f"Invalid cube state: no matching edge for colors {colors} at position {pos}"
+            )
 
     return cubie
 
@@ -344,12 +364,59 @@ def to_facelet_cube(cubie: CubieCube) -> RubikCube:
     """
     cube = RubikCube()
 
-    # This is the inverse operation - we need to construct facelets from cubies
-    # For simplicity, we'll apply the moves that got us here to a solved cube
-    # In practice, this could be optimized
+    facelet_state = cube.state.copy()
 
-    # TODO: Implement direct conversion if needed for efficiency
-    # For now, this is a placeholder that returns a solved cube
-    # The main usage will be cubie -> coordinates, not cubie -> facelet
+    corner_facelets = [
+        ((Face.U, 8), (Face.R, 0), (Face.F, 2)),
+        ((Face.U, 6), (Face.F, 0), (Face.L, 2)),
+        ((Face.U, 0), (Face.L, 0), (Face.B, 2)),
+        ((Face.U, 2), (Face.B, 0), (Face.R, 2)),
+        ((Face.D, 2), (Face.F, 8), (Face.R, 6)),
+        ((Face.D, 0), (Face.L, 8), (Face.F, 6)),
+        ((Face.D, 6), (Face.B, 8), (Face.L, 6)),
+        ((Face.D, 8), (Face.R, 8), (Face.B, 6)),
+    ]
 
-    return cube
+    for pos, (target_f1, target_f2, target_f3) in enumerate(corner_facelets):
+        corner_idx = int(cubie.corner_perm[pos])
+        orient = int(cubie.corner_orient[pos]) % 3
+
+        home_faces = corner_facelets[corner_idx]
+        home_colors = [home_faces[0][0].value, home_faces[1][0].value, home_faces[2][0].value]
+
+        colors = [home_colors[(i - orient) % 3] for i in range(3)]
+
+        for rel_idx, (face, index) in enumerate((target_f1, target_f2, target_f3)):
+            facelet_state[face.value, index] = colors[rel_idx]
+
+    edge_facelets = [
+        ((Face.U, 5), (Face.R, 1)),
+        ((Face.U, 7), (Face.F, 1)),
+        ((Face.U, 3), (Face.L, 1)),
+        ((Face.U, 1), (Face.B, 1)),
+        ((Face.D, 5), (Face.R, 7)),
+        ((Face.D, 1), (Face.F, 7)),
+        ((Face.D, 3), (Face.L, 7)),
+        ((Face.D, 7), (Face.B, 7)),
+        ((Face.F, 5), (Face.R, 3)),
+        ((Face.F, 3), (Face.L, 5)),
+        ((Face.B, 5), (Face.L, 3)),
+        ((Face.B, 3), (Face.R, 5)),
+    ]
+
+    for pos, (target_f1, target_f2) in enumerate(edge_facelets):
+        edge_idx = int(cubie.edge_perm[pos])
+        orient = int(cubie.edge_orient[pos]) % 2
+
+        home_faces = edge_facelets[edge_idx]
+        home_colors = [home_faces[0][0].value, home_faces[1][0].value]
+
+        if orient == 0:
+            colors = home_colors
+        else:
+            colors = [home_colors[1], home_colors[0]]
+
+        for rel_idx, (face, index) in enumerate((target_f1, target_f2)):
+            facelet_state[face.value, index] = colors[rel_idx]
+
+    return RubikCube(state=facelet_state)
