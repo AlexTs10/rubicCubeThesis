@@ -53,6 +53,10 @@ from .distance_estimator import (
     DistanceEstimator,
     create_estimator
 )
+from .optimal_solver import (
+    KorfOptimalSolver,
+    solve_optimal
+)
 
 __all__ = [
     # Pattern Database Infrastructure
@@ -82,4 +86,8 @@ __all__ = [
     # Distance Estimator
     'DistanceEstimator',
     'create_estimator',
+
+    # Optimal Solver
+    'KorfOptimalSolver',
+    'solve_optimal',
 ]

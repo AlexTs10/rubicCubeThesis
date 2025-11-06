@@ -64,3 +64,4 @@ docs/thesis_chapters/*.log
 docs/thesis_chapters/*.out
 docs/thesis_chapters/*.pdf
 docs/thesis_chapters/*.synctex.gz
+conj_twist
