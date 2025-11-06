@@ -1,8 +1,7 @@
 # Rubik's Cube Solving Algorithms - Master's Thesis
 
-**Author:** Alexandru Teișanu
-**Institution:** University of Bucharest
-**Program:** Master's in Artificial Intelligence
+**Author:** Alex Toska
+**Institution:** University of Patras
 
 ## Overview
 
@@ -121,4 +120,4 @@ This project is created for academic purposes as part of a master's thesis.
 
 ## Contact
 
-For questions or collaboration: alexandru.teisanu@[university-email]
+Alex Toska - University of Patras
