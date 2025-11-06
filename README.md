@@ -2,7 +2,6 @@
 
 **Author:** Alex Toska
 **Institution:** University of Patras
-**Program:** Master's in Artificial Intelligence
 
 ## Overview
 
