@@ -67,13 +67,20 @@ for depth in SCRAMBLE_DEPTHS:
             test_cube = RubikCube()
             test_cube.apply_moves(scramble)
             start_time = time.time()
-            solution = thistlethwaite.solve(test_cube, max_time=30)
+            solution_result = thistlethwaite.solve(test_cube, verbose=False, max_time=30)
             solve_time = time.time() - start_time
 
-            result["thistlethwaite_moves"] = len(solution) if solution else None
-            result["thistlethwaite_time"] = solve_time
-            result["thistlethwaite_success"] = solution is not None
-            print(f"  Thistlethwaite: {len(solution) if solution else 'FAIL'} moves in {solve_time:.3f}s")
+            if solution_result is not None:
+                all_moves, phase_moves = solution_result
+                result["thistlethwaite_moves"] = len(all_moves)
+                result["thistlethwaite_time"] = solve_time
+                result["thistlethwaite_success"] = True
+                print(f"  Thistlethwaite: {len(all_moves)} moves in {solve_time:.3f}s")
+            else:
+                result["thistlethwaite_moves"] = None
+                result["thistlethwaite_time"] = solve_time
+                result["thistlethwaite_success"] = False
+                print(f"  Thistlethwaite: FAIL (timeout or unsolved) in {solve_time:.3f}s")
         except Exception as e:
             result["thistlethwaite_moves"] = None
             result["thistlethwaite_time"] = None
