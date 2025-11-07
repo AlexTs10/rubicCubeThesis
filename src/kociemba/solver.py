@@ -35,14 +35,17 @@ class KociembaSolver:
     Achieves near-optimal solutions (<19 moves average) in reasonable time (<5 seconds).
     """
 
-    def __init__(self, cache_dir: str = "data/kociemba"):
+    def __init__(self, cache_dir: str = "data/kociemba", timeout_grace: float = 10.0):
         """
         Initialize Kociemba solver.
 
         Args:
             cache_dir: Directory to cache move and pruning tables
+            timeout_grace: Extra seconds allowed beyond requested timeout
+                before aborting search (softens strict cutoff)
         """
         self.cache_dir = cache_dir
+        self.timeout_grace = timeout_grace
         self.move_tables = None
         self.pruning_tables = None
         self._initialized = False
@@ -62,12 +65,16 @@ class KociembaSolver:
         self.move_tables = get_move_tables(f"{self.cache_dir}/move_tables")
         self.move_tables.load()
 
-        # Load pruning tables
+        # Load pruning tables (use deeper BFS to strengthen heuristics)
         self.pruning_tables = get_pruning_tables(f"{self.cache_dir}/pruning_tables")
-        self.pruning_tables.load(max_depth=12)
+        self.pruning_tables.load(max_depth=15)
 
         self._initialized = True
         print("Kociemba solver initialized!")
+
+    def _timed_out(self, start_time: float, timeout: float) -> bool:
+        """Check whether the elapsed time exceeded the soft timeout."""
+        return (time.time() - start_time) > (timeout + self.timeout_grace)
 
     def solve(
         self,
@@ -84,7 +91,8 @@ class KociembaSolver:
             cube: Scrambled cube to solve
             max_phase1_depth: Maximum depth for Phase 1 search
             max_phase2_depth: Maximum depth for Phase 2 search
-            timeout: Maximum time in seconds
+        timeout: Target time limit in seconds (soft limit; solver may use
+            up to timeout + timeout_grace before aborting)
             verbose: Whether to print progress
 
         Returns:
@@ -214,7 +222,7 @@ class KociembaSolver:
         self.nodes_explored = 0
 
         for depth in range(max_depth + 1):
-            if time.time() - start_time > timeout:
+            if self._timed_out(start_time, timeout):
                 if verbose:
                     print(f"Timeout at depth {depth}")
                 return None
@@ -265,7 +273,7 @@ class KociembaSolver:
         self.nodes_explored += 1
 
         # Check timeout
-        if time.time() - start_time > timeout:
+        if self._timed_out(start_time, timeout):
             return None
 
         # Goal test
@@ -345,7 +353,7 @@ class KociembaSolver:
         phase2_nodes = 0
 
         for depth in range(max_depth + 1):
-            if time.time() - start_time > timeout:
+            if self._timed_out(start_time, timeout):
                 if verbose:
                     print(f"Timeout at depth {depth}")
                 return None
@@ -398,7 +406,7 @@ class KociembaSolver:
         self.nodes_explored += 1
 
         # Check timeout
-        if time.time() - start_time > timeout:
+        if self._timed_out(start_time, timeout):
             return None
 
         # Goal test
