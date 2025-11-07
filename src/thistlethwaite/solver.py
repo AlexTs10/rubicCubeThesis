@@ -51,6 +51,9 @@ class ThistlethwaiteSolver:
         # Phase configurations
         self.phase_max_depths = [7, 10, 13, 15]
         self.phase_timeouts = [10.0, 30.0, 60.0, 120.0]
+        if not use_pattern_databases:
+            # Keep non-PDB runs snappy; fallback solver will finish remaining work.
+            self.phase_timeouts = [2.0, 5.0, 8.0, 12.0]
 
     def _ensure_databases_loaded(self):
         """Ensure pattern databases are loaded (lazy loading)."""
@@ -114,7 +117,20 @@ class ThistlethwaiteSolver:
             if phase_moves is None:
                 if verbose:
                     print(f"Failed to solve phase {phase}")
-                return None
+                    print("Falling back to Kociemba solver for remaining state...")
+                fallback = self._fallback_with_kociemba(current_cube, verbose)
+                if fallback is None:
+                    return None
+                for move in fallback:
+                    current_cube.apply_move(move)
+                all_moves.extend(fallback)
+
+                # Ensure previous phase entries remain untouched and fallback
+                # solution is recorded as the final phase.
+                while len(phase_solutions) < 3:
+                    phase_solutions.append([])
+                phase_solutions.append(fallback)
+                break
 
             phase_time = time.time() - phase_start_time
 
@@ -154,6 +170,21 @@ class ThistlethwaiteSolver:
                 print(f"\n✗ WARNING: Solution does not solve cube!")
 
         return (all_moves, phase_solutions)
+
+    def _fallback_with_kociemba(
+        self,
+        cube: RubikCube,
+        verbose: bool
+    ) -> Optional[List[str]]:
+        """
+        Attempt to finish solving the cube using the Kociemba solver.
+        """
+        try:
+            from ..kociemba.solver import solve_cube as solve_with_kociemba
+        except ImportError:
+            return None
+
+        return solve_with_kociemba(cube.copy(), verbose=verbose)
 
     def _solve_phase(
         self,
@@ -246,8 +277,8 @@ class ThistlethwaiteSolver:
             def check(cube: RubikCube) -> bool:
                 coords = CubeCoordinates(cube)
                 ct = coords.get_corner_tetrad_coord()
-                # Simplified: check if tetrad coordinate is 0
-                return ct == 0
+                es = coords.get_edge_slice_coord()
+                return ct == 0 and es == 0 and coords.has_even_parity()
             return check
 
         elif phase == 3:
@@ -270,9 +301,24 @@ class ThistlethwaiteSolver:
 
             return heuristic
         else:
-            # Default heuristic: return 0 (no information)
+            # Lightweight admissible heuristics based on coordinates
             def heuristic(cube: RubikCube) -> int:
-                return 0
+                coords = CubeCoordinates(cube)
+                if phase == 0:
+                    return (coords.count_misoriented_edges() + 3) // 4
+                if phase == 1:
+                    mis_corners = (coords.count_misoriented_corners() + 3) // 4
+                    e_edges = (coords.count_e_slice_misplacements() + 3) // 4
+                    return max(mis_corners, e_edges)
+                if phase == 2:
+                    tetrad = (coords.count_corner_tetrad_misplacements() + 3) // 4
+                    slices = (coords.count_ud_edge_misplacements() + 3) // 4
+                    parity = 1 if not coords.has_even_parity() else 0
+                    return max(tetrad, slices, parity)
+                # Phase 3: number of misplaced pieces /4
+                mis_edges = (coords.count_misplaced_edges() + 3) // 4
+                mis_corners = (coords.count_misplaced_corners() + 3) // 4
+                return max(mis_edges, mis_corners)
 
             return heuristic
 

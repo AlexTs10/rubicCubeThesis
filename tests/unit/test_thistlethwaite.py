@@ -5,6 +5,7 @@ Tests the implementation of Thistlethwaite's 4-phase algorithm
 for solving the Rubik's Cube.
 """
 
+import math
 import pytest
 import numpy as np
 from src.cube.rubik_cube import RubikCube
@@ -39,7 +40,7 @@ class TestPermutationRanking:
     def test_rank_to_permutation_roundtrip(self):
         """Test that rank_to_permutation is inverse of permutation_to_rank."""
         for n in [3, 4, 5]:
-            for rank in range(0, min(24, np.math.factorial(n))):
+            for rank in range(0, min(24, math.factorial(n))):
                 perm = rank_to_permutation(rank, n)
                 recovered_rank = permutation_to_rank(perm)
                 assert recovered_rank == rank

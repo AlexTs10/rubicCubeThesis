@@ -132,11 +132,11 @@ def create_move_U() -> CubieCube:
 def create_move_D() -> CubieCube:
     """Create the D move cubie transformation."""
     move = CubieCube()
-    # Corner permutation: DFR -> DRB -> DBL -> DLF -> DFR
-    move.corner_perm = np.array([0, 1, 2, 3, 7, 4, 5, 6], dtype=np.int8)
+    # Corner permutation matches RubikCube.move_D (clockwise when looking at D face)
+    move.corner_perm = np.array([0, 1, 2, 3, 5, 6, 7, 4], dtype=np.int8)
     move.corner_orient = np.zeros(8, dtype=np.int8)
-    # Edge permutation: DF -> DR -> DB -> DL -> DF
-    move.edge_perm = np.array([0, 1, 2, 3, 7, 4, 5, 6, 8, 9, 10, 11], dtype=np.int8)
+    # Edge permutation: DF -> DL -> DB -> DR -> DF
+    move.edge_perm = np.array([0, 1, 2, 3, 5, 6, 7, 4, 8, 9, 10, 11], dtype=np.int8)
     move.edge_orient = np.zeros(12, dtype=np.int8)
     return move
 
@@ -174,7 +174,7 @@ def create_move_F() -> CubieCube:
     move.corner_orient = np.array([1, 2, 0, 0, 2, 1, 0, 0], dtype=np.int8)
     # Edge permutation: UF -> FL -> DF -> FR -> UF
     # Edges flip when moving through F layer
-    move.edge_perm = np.array([0, 9, 2, 3, 4, 8, 6, 7, 5, 1, 10, 11], dtype=np.int8)
+    move.edge_perm = np.array([0, 9, 2, 3, 4, 8, 6, 7, 1, 5, 10, 11], dtype=np.int8)
     move.edge_orient = np.array([0, 1, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0], dtype=np.int8)
     return move
 
