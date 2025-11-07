@@ -65,3 +65,5 @@ docs/thesis_chapters/*.out
 docs/thesis_chapters/*.pdf
 docs/thesis_chapters/*.synctex.gz
 conj_twist
+thesis_data_*.csv
+thesis_data_*.json
