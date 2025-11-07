@@ -1,0 +1,73 @@
+======================================================================
+KOCIEMBA'S TWO-PHASE ALGORITHM DEMONSTRATION
+======================================================================
+
+1. Testing coordinate systems...
+   Solved cube coordinates:
+     CO=0, EO=0, UDS=0
+     CP=0, EP=0, UDSP=0
+   Is solved? True
+
+2. Applying some moves...
+   After R U R' U':
+     CO=1530, EO=0, UDS=8
+   Is solved? False
+
+3. Testing move and pruning tables...
+Generating move tables...
+  Generating corner orientation table (2187 states)...
+  Generating edge orientation table (2048 states)...
+  Generating UD-slice table (495 states)...
+  Generating corner permutation table (40320 states)...
+  Generating edge permutation table (40320 states)...
+  Generating UD-slice permutation table (24 states)...
+Move tables generated!
+Saving move tables to data/move_tables/move_tables.pkl...
+Move tables saved!
+   ✓ Move tables loaded
+Generating pruning tables (this may take several minutes)...
+  Generating Phase 1 Corner Orient + Edge Orient table...
+  Generating Phase 1 Edge Orient + UD-Slice table...
+  Generating Phase 2 Corner Permutation table...
+  Generating Phase 2 Edge Permutation table...
+  Generating Phase 2 UD-Slice Permutation table...
+Pruning tables generated!
+Saving pruning tables to data/pruning_tables/pruning_tables.pkl...
+Pruning tables saved!
+   ✓ Pruning tables loaded
+   Phase 1 heuristic: 4 moves
+
+4. Algorithm overview:
+   Phase 1: G₀ → G₁ (Orient all pieces, place UD-slice)
+            - Search space: 2.2 billion states
+            - Max depth: 12 moves theoretically
+            - Uses 3 coordinates: corner orient, edge orient, UD-slice
+
+   Phase 2: G₁ → Solved
+            - Search space: 19.5 million states
+            - Max depth: 18 moves theoretically
+            - Uses 3 coordinates: corner perm, edge perm, UD-slice perm
+            - Only moves: U, D, R2, L2, F2, B2
+
+   Total: Typically <19 moves, <5 seconds
+
+======================================================================
+IMPLEMENTATION COMPLETE
+======================================================================
+
+Features implemented:
+  ✓ Cubie-level representation
+  ✓ Six coordinate systems (CO, EO, UDS, CP, EP, UDSP)
+  ✓ Move tables for fast coordinate updates
+  ✓ Pruning tables for IDA* heuristic (~80MB)
+  ✓ Two-phase IDA* solver
+  ✓ Comprehensive test suite
+
+Known limitations:
+  • Facelet-to-cubie conversion needs refinement for complex cases
+  • Symmetry reduction not yet implemented (would reduce memory by 16x)
+  • Can be further optimized for speed
+
+Performance:
+  • Expected: <19 moves average, <5 seconds per cube
+  • Actual performance may vary based on system and table depth

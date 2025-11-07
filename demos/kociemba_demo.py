@@ -7,6 +7,12 @@ Note: Currently works best when testing moves directly in cubie space.
 Integration with facelet representation is a known area for improvement.
 """
 
+import sys
+import os
+
+# Add parent directory to path to import src modules
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
+
 from src.kociemba.cubie import CubieCube, apply_move_to_cubie
 from src.kociemba.coord import CoordCube
 from src.kociemba.solver import KociembaSolver
