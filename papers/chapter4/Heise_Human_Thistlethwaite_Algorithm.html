@@ -1,0 +1,552 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>The Human Thistlethwaite Algorithm | Rubik's Cube solutions</title>
+<link rel="stylesheet" type="text/css" name="style" href="/var3/style.css">
+<link rel="stylesheet" type="text/css" name="style" href="var3/style.css">
+<script type="text/javascript" src="/var3/jquery-1.11.3.min.js"></script><script type="text/javascript">
+					website_version = 3;
+				</script><script type="text/javascript" src="/var3/functions.js"></script><script type="text/javascript" src="var3/functions.js"></script><meta name="googlebot" content="NOODP">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+<div id="wrapper"><div id="layoutdiv">
+<div class="tabs" style="float: right;"><ul>
+<li style="padding-right: 0px;">Search Content</li>
+<li>
+<form action="http://www.ryanheise.com/cube/search.html" id="cse-search-box" style="padding:0px; margin:0px;"><div>
+<input type="hidden" name="cx" value="partner-pub-6633207780143222:7amyu8-1xck"><input type="hidden" name="cof" value="FORID:10"><input type="hidden" name="ie" value="ISO-8859-1"><input type="text" name="q" size="11"><input type="submit" name="sa" value="Search">
+</div></form>
+<script type="text/javascript" src="http://www.google.com/coop/cse/brand?form=cse-search-box&amp;lang=en"></script>
+</li>
+</ul></div>
+<div class="tabs"><nav id="siteMenu"><a class="popupLink" href="#" onClick="$('#siteMenu').toggleClass('open'); return false;">Site Menu</a><ul class="popupMenu">
+<li><a href="/" class="whiteTab">Home</a></li>
+<script type="text/javascript">
+										var section = "Rubik's Cube";
+										tab("Rubik's Cube", "/cube/", section);
+										tab("Tetris", "/tetris/", section);
+										tab("Typing", "/colemak/", section);
+										tab("Hi-Games", "http://hi-games.net/", section);
+									</script>
+</ul></nav></div>
+<style>
+							.title_header { min-height: 50px; }
+							@media (min-width: 980px) {
+								.title_header { min-height: 80px; }
+							}
+						</style>
+<div class="frame title_header" style="clear: both;">
+<div class="leftcol" style="float: left;"><table>
+<tr>
+<td></td>
+<td><div class="cubesticker" style="background: white;"></div></td>
+</tr>
+<tr>
+<td><div class="cubesticker" style="background: orange;"></div></td>
+<td><div class="cubesticker" style="background: green;"></div></td>
+<td><div class="cubesticker" style="background: red;"></div></td>
+<td><div class="cubesticker" style="background: blue;"></div></td>
+</tr>
+<tr>
+<td></td>
+<td><div class="cubesticker" style="background: yellow;"></div></td>
+</tr>
+</table></div>
+<div id="titlecell" class="pushtomaincol">
+<h1>Human Thistlethwaite Algorithm</h1>
+<h2 style="margin-top: 6px; padding-top: 0px;"></h2>
+</div>
+</div>
+<div class="tabs pushtomaincol" style="background: url(/res/cross-contrast.png); clear: both;"><nav id="categoryMenu"><a class="popupLink" href="#" onClick="$('#categoryMenu').toggleClass('open'); return false;">Topics Menu</a><ul class="popupMenu"><script type="text/javascript">
+		setTabColors(['white','orange','green','red','blue','yellow']);
+		var cat = "Solutions";
+		tab("Main", "./", cat);
+		tab("Fundamental Techniques", "fundamental_techniques.html", cat);
+		tab("Theory", "theory.html", cat);
+		tab("Games", "games_fun.html", cat);
+		tab("Solutions", "solutions.html", cat);
+		tab("Miscellaneous", "misc.html", cat);
+	</script></ul></nav></div>
+<div id="pagecell">
+<div style="background: #dfdfe4; padding-right: 0px; padding-top: 0px; padding-bottom: 4px;"><center><div style="background: white;">
+<script async="" src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script><ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-6633207780143222" data-ad-slot="2182725165" data-ad-format="auto"></ins><script>
+		(adsbygoogle = window.adsbygoogle || []).push({});
+		</script>
+</div></center></div>
+<div id="pagediv">
+<div><span class="parentnav">
+			Return to "<a href="solutions.html">Solutions</a>" ↵
+			</span></div>
+<div id="contentdiv">
+
+
+<table align="right" width="200" style="margin-left: 20px;"><tr><td>
+<div style="border: solid 1px green; background: #fff; padding: 5px 20px; font-size: 11px;">
+<b>New:</b> <a href="http://youtube.com/watch?v=xw5luzfkO48">Video tutorial</a> by Grant Slatton
+</div>
+</td></tr></table>
+
+<p>In Christmas 2002, I worked on a Human variant of the Thistlethwaite computer algorithm.</p>
+
+<p>Below are my posts to the Yahoo! speedsolvingrubikscube mailing list which describe the method.</p>
+
+<h3>Post 1:</h3>
+
+<pre>
+From: Ryan Heise &lt;rheise@it....&gt;
+Date: Sun, 22 Jun 2003 11:30:52 +1000
+To: Ron van Bruchem &lt;rvb@chello....&gt;
+Subject: Thistlethwaite, human version
+
+On Sat, Jun 21, 2003 at 06:13:28PM +0200, Ron van Bruchem wrote:
+&gt; Hi Ryan,
+&gt; 
+&gt; I am very interested in the ideas you have.
+&gt; Please tell me something about the systems you came up with, and how many
+&gt; algorithms you need per stage.
+
+Phase 1 -&gt; &lt;U,D,L,R,F2,B2&gt; group
+
+	- simple, no algorithms
+
+Phase 2 -&gt; &lt;U,D,L2,R2,F2,B2&gt; group
+
+	- Direct up/down edges to up/down face (simple, no algs)
+	- Direct corners to up/down face (between 8 and 60 algs)
+
+Phase 3 -&gt; &lt;U2,D2,L2,R2,F2,B2&gt; group
+
+	- Corners (between 1 and 2 algs)
+	- Edges (between 1 and 4 algs)
+
+Phase 4 -&gt; place pieces
+
+	- Corners (intuitive)
+	- Edges (intuitive)
+
+DETAILS OF STEPS
+
+* PHASE 1
+
+This is solved in 4.6 moves on average.
+
+* PHASE 2 EDGES
+
+This is rather simple. You can learn all 20-30 cases if you wish. I
+forget the exact number. This can be solved in an average of 4 moves.
+
+* PHASE 2 CORNERS
+
+I used a method similar to Gaetan - first get 3 corners oriented on one
+side, and then apply one of 8 algorithms. It is possible to directly
+learn all 60 cases if you want (I can't remember the exact number).
+I think they have an average of 8.5 moves.
+
+* PHASE 3 CORNERS
+
+In phase 3, it is important to do the corners first, because it is
+difficult to see whether they have made it into the U2D2L2R2F2B2 group.
+Just getting opposite colours on each side isn't enough. The algorithms
+you learn to fix this are shorter when you don't have to worry about the
+edges.
+
+Here, I'll just describe the simplest technique that requires two
+algorithms, but is very quick for the fingers and brain:
+
+First, separate up/down colours (one colour on each side). Average 3.2
+moves. There should be, for example, all red corners on top, and all
+orange corners on bottom.
+
+Now, pairs of adjacent corners will either match or mismatch. Our goal
+is to make them either all match, or all mismatch. So, in this step, we
+find the odd pairs out (whether they're matching or mismatching), and
+fix them so they match/mismatch like all the rest. There are 4 pairs.
+Either one pair is the odd one out, or two pairs are the odd ones out.
+
+For one pair: hold the pair at UF, and do R'FR'B2RF'R. It's a
+modification of the corner mover that doesn't care about the exact
+positions of corners.
+
+Two pairs: hold two pairs on F (you may need to move them there), and do
+R2UF2U2R2U. (if you needed to move them there first, there's also a
+trick to get it to work...)
+
+I looked for a long time to find other methods here that used fewer
+moves. I found some, but this way was definitely by far the quickest to
+perform.
+
+PHASE 3 EDGES
+
+4 cases - simple (2,4,6 or 8 bad edges). Average 6.1 moves.
+
+Total moves so far: 33.4. Obviously, fewer moves are necessary to
+achieve an average of 40 moves overall. I worked out some shortcuts, but
+I don't think they're worth it, because I could perform the longer way
+faster.
+
+PHASE 4 (the end game)
+
+I think you already have a strategy for this. Corners, then edges. I
+think it's possible to learn all cases for the edges (about 150 I think,
+but easy to memorise). 
+
+A downside is the number of double turns which are more difficult to
+perform. But I tried a few algorithms and they are possible to do
+quickly enough. I think the main benefit of this method is fast reaction
+time and no thinking. Another benefit is that it looks cool when you
+solve it. None of the pieces are placed until the very end.
+
+Above, I listed each individual step with no shortcuts. It is possible
+to combine steps, or do steps in different orders depending on
+opportunities. The basic method above, if you learnt all cases for each
+exact step, should give an average of 45.7 moves.
+
+Ryan
+</pre>
+
+<h3>Post 2:</h3>
+
+<pre>
+To: speedsolvingrubikscube@yahoogroups.com
+From: Ryan Heise &lt;rheise@progsoc....&gt;
+Date: Wed, 9 Jul 2003 15:42:19 +1000
+Subject: [Speed cubing group] Method with the fewest non-obvious algorithms - zero
+
+On Tue, Jul 08, 2003 at 05:09:13PM -0000, tomrokicki wrote:
+
+&gt; So what method requires the fewest algorithms that aren't "obvious" 
+&gt; or logically clear?
+
+Using a simplified Thistlethwaite approach, it is possible to solve the
+cube without any mysterious algorithms.
+
+Step 1 uses no algorithms.
+Step 2 uses a 5 move algorithm.
+Step 3 uses a 7 move algorithm and a 4 move algorithm.
+Step 4 uses two 6 move algorithms.
+
+Because all algorithms are short and simple, someone who tries this
+method can say they solved the cube and understood how they did it!
+
+It's not too easy to follow, but it's an interesting way to solve the
+cube if you can do it.
+
+** step 1 **
+
+Put cube into &lt;L2,R2,F,B,U,D&gt; group, which I will call G1. That is to
+say, put the cube into a position where the cube can be solved by only
+using L2,R2,F,B,U,D moves. It helps in this method to think of opposite
+colours as the same colour up until you get to step 4. Let's call the
+left/right colours "green" (these are unimportant in step 1), the
+up/down colours red, and the front/back colours white.
+
+Once you get into G1, it is impossible to flip edges, and the only thing
+we need to do to get the cube into G1 is to make sure all the edges are
+flipped right. First you need to find bad edges that are flipped the
+wrong way. A bad edge is one that, if moved to its home position using
+only moves from G1, will be flipped the wrong way. (Of course, you don't
+need to move it there to see that)
+
+There are always an even number of bad edges, between 0 and 12, or 6 on
+average. The only way to flip edges to turn the left or right sides 90
+degrees, and that will flip the 4 edges on that side. To flip 4 bad
+edges, you simply move them all into positions on the left side (for
+example), and turn that side 90 degrees. If you have only 2 bad edges,
+you can make that into 4 by moving just one of them onto the left side
+and turning it. That will change one of the bad edges into 3 (plus the
+other one it makes 4).
+
+At end of step 1, you should see no red edges facing to the front or
+back, and you should see no white edges facing to the top or bottom. To
+the untrained eye, it will look like you have accomplished nothing so
+far! Yet, these 12 edges are in a much better position now.
+
+** step 2 **
+
+Put cube into &lt;L2,R2,F2,B2,U,D&gt; group, which I will call G2. In this
+group, pieces in the middle layer will stay in the middle layer without
+flipping, and pieces in the top and bottom layers can only exchange
+between those layers without twisting or flipping. At the end of step 2,
+you should only see red on the top and bottom. In the middle layer, you
+should only see green on the left/right sides, and white on the
+front/back sides.
+
+Remember we are currently in G1, so to get to G2, we can only use moves
+from G1. To start with the edges, we want to get a red cross on the top
+and bottom. There are 8 red edges and because of limited space, at least
+4 of those must already be forming part of the crosses. The general
+strategy is to first get 3 red edges on the top and 3 edges on the
+bottom, and align them so that the missing parts of both crosses are
+facing to the front. The other 2 red edges must be somewhere in the
+middle layer (if not, you must have 4 edges instead of 3 edges on the
+top or bottom). Using double turns around the L2,R2,F2,B2 sides, move
+those two remaining red edges over to the two front positions on the
+middle layer, and turn the front 90 degrees. With the edges done, we
+have created some symmetry so it is possible rotate the cube about the
+U-D axis and change your perception of what is the front and back. Very
+convenient.
+
+Now for the corners, we can twist two corners at a time. Start with one
+corner at LUF (corner A) and the other corner at FDR (corner B). Then
+do:
+
+R'D  - twists the B corner
+L2   - swaps the B and A corners
+D'R  - twists the A corner on the way back
+
+Do this repeatedly until all corners are twisted the right way. You
+should have all red on the top and bottom.
+
+** step 3 **
+
+Put cube into &lt;L2,R2,F2,B2,U2,D2&gt; group, named G3. In the previous step,
+you put only opposite colours on the top and bottom (red). In this step,
+you do the same for the front/back (white) and left/right (green). In
+G3, each corner can only move between one of 4 positions, which I call a
+circuit. There are only two circuits and each corner belongs to one of
+those circuits. Within G3, the only moves you can do (double turns) will
+swap two corners in one circuit, and two corners in the other circuit
+that overlap. This limits the permutations that are possible, and it
+means that simply getting opposite colours on all sides is not enough to
+satisfy G3.
+
+Since the corners are the tricky bit here, we will put the corners into
+G3 first, then the edges. You must now distinguish between opposite
+colours to know if G3 is satisfied. I will use red opposite to orange,
+white to yellow, and green to blue. An easy way to see if G3 is
+satisfied is to move all red corners to the top side, and all orange
+corners to the bottom side. Pairs of corners around the top and bottom
+will either match or mismatch. If they either all match, or they all
+mismatch, the corners are in a G3 position. There is only one way for
+all corners to match, and one way for all corners to mismatch (you swap
+a pair of opposite corners), and so when the exact pattern occurs on the
+top and bottom, the bottom corners should align exactly with the top
+corners.  You can switch between all matched, and none matched, by doing
+<span style="font-style: italic;">R2F2R2</span>
+<strike style="color: grey;">R2U2R2</strike> (that swaps a pair of opposite corners on the bottom, and a pair
+of opposite corners on the top). If you're not in either of those
+positions, here is a sequence that will swap a pair of opposite corners
+on the bottom, and an adjacent pair of corners on the top:
+
+R'FR' - move the 4 target corners to the back side
+B2    - swap!
+RF'R  - move everything back
+
+This is one case where it is more efficient to temporarily break G2. At
+the end of the move, everything is restored. This move sequence will
+do swapping on the bottom side, and at the rear/back. The front/top pair
+of corners will be left alone. When you are looking for corners that
+match or mismatch, you will usually find a pair that are not like the
+rest of the pairs (eg. if all the other pairs match, this pair will
+mismatch). If you find this odd pair and hold it at the top/front, doing
+the above sequence will harmonise all the corners.
+
+Now for the edges, there is nothing special here. The edges also lie on
+circuits, but there are 12 edges and 3 circuits. The edges in the middle
+layer were already done in step 2 and haven't left their circuit. There
+are only 8 edges left do deal with, and we must move the white edges to
+the white sides (front/back), ie. into their circuit, and the green
+edges to the green sides (left/right). There must be an even number of
+edges that are facing in the wrong direction. The easiest move to do
+here is to swap two edges on the green sides for two edges on the white
+sides. The edges on the greens side must be positioned on the bottom,
+and the edges on the white sides must be positioned on the top. Then do:
+
+D'
+M2 (M is the slice between L and R) - swap!
+D
+
+This is self explanatory. Like in step 1, if you only have 2 bad edges,
+you can make it into 4 in a similar way.
+
+At the end of this step, you should only have two (opposite) colours on
+each side of the cube.
+
+Step 4.
+
+The cube can now be solved by only using double turns. However, we will
+break this rule when we see an obvious short cut.
+
+First, using only double turns, solve the corners. First, pick a side,
+then join two corners on that side and the other two corners for that
+side will automatically join (if you did step 3 properly). It is then
+easy to join the two pairs together, and the other 4 corners will be
+automatically joined (if you did step 3 properly).
+
+To solve the edges, there are two simple moves that are easy to
+understand:
+
+F2R2 F2R2 F2R2 - Swap two pairs of edges on different circuits. The
+                 other pieces return to normal.
+
+F2 M2 F2 M2    - Swap two pairs of edges on the same circuit. The second
+                 F2 returns the other pieces back to normal.
+
+Using variations of these, it is possible to solve all the edges.
+Variations of the first include:
+
+R     (F2R2 F2R2 F2R2)      R'
+L2B2R (F2R2 F2R2 F2R2) R'B2L2
+
+Variations of the second include:
+
+F2 M F2 M' (the pairs overlap so as to rotate 3 edges)
+F (F2 M2 F2 M2) F'
+
+CUBE SOLVED
+
+Ryan
+</pre>
+
+<div class="mailto">Copyright © 2003<script type="text/javascript" src="/res/webmaster.js"></script>
+</div>
+
+</div>
+<div><span class="parentnav">
+			Return to "<a href="solutions.html">Solutions</a>" ↵
+			</span></div>
+<div style="padding: 30px 0px; 16px">
+<div class="addthis_toolbox addthis_default_style"><a href="http://www.addthis.com/bookmark.php?v=250" class="addthis_button_compact">Share</a></div>
+<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js?pub=xa-4a3a4aca2253b983"></script>
+</div>
+</div>
+</div>
+<div class="sidebar leftcol" valign="top" style="padding-right: 5px;">
+<div class="box">
+<script type="text/javascript">
+					begincat("Fundamental Techniques","fundamental_techniques.html");
+					
+				mitem("Align then join","align_join.html");
+			
+				mitem("Treat blocks as units","block_units.html");
+			
+				mitem("Move it out of the way","move_it_out_of_the_way.html");
+			
+				mitem("Destroy and restore","destroy_restore.html");
+			
+				mitem("Conjugates","conjugates.html");
+			
+				mitem("Commutators","commutators.html");
+			
+					endcat();
+				</script><script type="text/javascript">
+					begincat("Theory","theory.html");
+					
+				mitem("Basic definitions","basic_definitions.html");
+			
+				mitem("Laws of the cube","cube_laws.html");
+			
+				mitem("Symmetry","symmetry.html");
+			
+				mitem("Group theory","group_theory.html");
+			
+				mitem("Cycles","cycles.html");
+			
+				mitem("Parity","parity.html");
+			
+					endcat();
+				</script>
+</div>
+<div class="box">
+<script type="text/javascript"><!--
+							google_ad_client = "pub-6633207780143222";
+							/* 200x200, created 18/06/09 */
+							google_ad_slot = "3997699182";
+							google_ad_width = 200;
+							google_ad_height = 200;
+							//--></script><script type="text/javascript" src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
+</div>
+<div class="box">
+<script type="text/javascript">
+					begincat("Games","games_fun.html");
+					
+				mitem("Virtual Rubik's Cube","speed.html");
+			
+				mitem("Multi-player racing game","speed/");
+			
+				mitem("Competitions","/competitions/");
+			
+					endcat();
+				</script><script type="text/javascript">
+					begincat("Solutions","solutions.html");
+					
+				mitem("Beginner's solution","beginner.html");
+			
+				mitem("Heise method","heise_method.html");
+			
+				mitem("Human thistlethwaite algorithm","human_thistlethwaite_algorithm.html");
+			
+					endcat();
+				</script><script type="text/javascript">
+					begincat("Miscellaneous","misc.html");
+					
+				mitem("Rubik's Cube Chat","chat.html");
+			
+				mitem("Rubik's Cube Database","database/");
+			
+				mitem("ACube frontend","gacube.html");
+			
+				mitem("History of solutions","solutions_history.html");
+			
+				mitem("Oosan portal","http://oosan.ryanheise.com/");
+			
+					endcat();
+				</script>
+</div>
+<div class="box"><table style="margin-top: 20px; margin-bottom: 20px;">
+<tr>
+<td></td>
+<td><div style="border: solid 1px #850; background: orange; width: 20px; height: 20px;"></div></td>
+</tr>
+<tr>
+<td><div style="border: solid 1px #850; background: yellow; width: 20px; height: 20px;"></div></td>
+<td><div style="border: solid 1px #850; background: green; width: 20px; height: 20px;"></div></td>
+<td><div style="border: solid 1px #850; background: white; width: 20px; height: 20px;"></div></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td><div style="border: solid 1px #850; background: red; width: 20px; height: 20px;"></div></td>
+<td><div style="border: solid 1px #850; background: blue; width: 20px; height: 20px;"></div></td>
+</tr>
+</table></div>
+<div class="box">
+<div class="lmenu_header" id="shoutbox">Shoutbox</div>
+<script type="text/javascript">
+					
+					document.write('<iframe src="http://www.ryan' + 'heise.com/chat/chat.php" width="196" height="600" frameborder="0" scrolling="no"></iframe>');
+					
+				</script>
+</div>
+<div class="box" id="share_cube">
+<style>
+				.cubeCell { width: 10px; height: 10px; cursor: pointer; cursor: hand; }
+				.emptyCell { width: 10px; height: 10px; }
+				.eyeDrop { line-height: 9px; font-size: 17px; text-align: center; vertical-align: center; width: 10px; height: 10px; cursor: pointer; cursor: hand; }
+				#flatCube { border-collapse: collapse; }
+				#flatCube td { padding: 1px; }
+			</style>
+<div class="lmenu_header">Have a question?</div>
+<div style="margin-top: 4px; color: #667; font-family: Arial; font-weight: normal;">1. Enter your cube below.</div>
+<br><script type="text/javascript">
+				flatCube();
+			</script><div style="margin-top: 4px; color: #667; font-family: Arial; font-weight: normal;">2. Copy URL into the Shoutbox.</div>
+<div style="margin-top: 4px; color: #667; font-family: Arial; font-weight: normal;">3. Write a message saying which step of the solution you are up to.</div>
+</div>
+<div class="box"><div style="background: #57d; border: solid 1px #171413; padding: 0px;">
+<a href="speed.html" alt="Virtual Rubik's Cube" style="float: left; cursor: default;"><img border="0" src="res/cube.png"></a><div style="height: 120px; vertical-align: middle; text-align: center;"><a href="http://hi-games.net" style="font-family: Helvetica; font-size: 13px; color: white; text-decoration: none; cursor: default;"><br>Play virtual cubes at <u style="cursor: pointer; cursor: hand; color: #fff;">hi‑games<br>.net</u></a></div>
+</div></div>
+</div>
+<div style="background: #171413; text-align: right; clear: both;">
+<div class="mailto" style="padding-top: 10px; padding-bottom: 10px; float: left;"><a href="/privacy.html">PRIVACY</a></div>
+<div class="mailto" style="padding-left: 16px; padding-top: 10px; padding-bottom: 10px;">Copyright © 2007<script type="text/javascript" src="/res/webmaster.js"></script>
+</div>
+</div>
+</div></div>
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript"></script><script type="text/javascript">
+					_uacct = "UA-1947782-1";
+					urchinTracker();
+					</script>
+</body>
+</html>

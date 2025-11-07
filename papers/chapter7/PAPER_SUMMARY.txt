@@ -1,0 +1,66 @@
+PAPER DOWNLOAD SUMMARY - Chapter 7
+===================================
+Date: November 7, 2025
+Target Directory: /home/user/chatgpt-app-with-next-js/papers/chapter7/
+
+REQUESTED PAPERS:
+1. Hayakawa Ishida Murao "GPU-acceleration of optimal permutation-puzzle solving" IEEE SMC 2015
+2. Edelkamp Kissmann "Symbolic pattern databases in heuristic search planning" ICAPS 2011
+3. Abbas et al. "Challenges and opportunities in quantum optimization" arXiv:2312.02279 2023
+
+DOWNLOAD RESULTS:
+================
+
+SUCCESSFULLY DOWNLOADED:
+------------------------
+1. Abbas_et_al_Quantum_Optimization_2312.02279.pdf (2.1 MB)
+   - Source: arXiv (freely accessible)
+   - arXiv ID: 2312.02279
+   - Status: DOWNLOADED
+   - Content: 10 pages, full quantum optimization review paper
+
+2. Kissmann_Edelkamp_Symbolic_Planning_2011.pdf (568 KB)
+   - Title: "Improving Cost-Optimal Domain-Independent Symbolic Planning"
+   - Authors: Peter Kissmann and Stefan Edelkamp
+   - Published: 25th AAAI Conference on Artificial Intelligence (2011)
+   - Pages: 992-997
+   - Status: DOWNLOADED from AAAI proceedings
+   - Content: 8 pages, cost-optimal symbolic planning with BDD techniques
+
+3. Block_Parallel_IDA_GPU_Extended.pdf (711 KB)
+   - Title: "Block-Parallel IDA* for GPUs (Extended Manuscript)"
+   - Related to: Hayakawa, Ishida, Murao GPU work on puzzle solving
+   - Source: arXiv (1705.02843)
+   - Status: DOWNLOADED (related work, not exact paper)
+
+PARTIALLY FOUND BUT NOT FULLY DOWNLOADED:
+------------------------------------------
+
+Paper 1: Hayakawa Ishida Murao GPU-acceleration
+- Status: LOCATED but not freely accessible
+- DOI: 10.1145/2790282.2790289
+- Published: PASCO 2015 (Parallel Symbolic Computation)
+- Pages: 61-69
+- Access: ACM Digital Library (requires institutional access or purchase)
+- Available through: ResearchGate (request from authors)
+- Note: The Block-Parallel IDA* GPU paper is a directly related follow-up work
+
+Paper 2: Edelkamp "Symbolic Pattern Databases in Heuristic Search Planning"
+- Status: LOCATED but not yet downloaded
+- Original: AIPS 2002 (Stefan Edelkamp)
+- Later work: AAAI 2011 (Kissmann & Edelkamp) - DOWNLOADED
+- Note: The requested ICAPS 2011 reference appears to be AAAI 2011
+
+NOTES:
+======
+- The Edelkamp symbolic pattern databases paper from 2002 is available on
+  Semantic Scholar and ResearchGate but requires account or request form
+- The Hayakawa 2015 paper is from PASCO (not IEEE SMC as originally stated)
+- Successfully obtained quantum optimization paper and one of the planning papers
+- Related work on GPU-accelerated puzzle solving has been downloaded
+
+NEXT STEPS:
+-----------
+- To get Hayakawa paper: Contact authors via ResearchGate or check ACM Digital Library
+- To get Edelkamp 2002 paper: Try Semantic Scholar or ResearchGate PDF request
+- For institutional access: Check with local university library

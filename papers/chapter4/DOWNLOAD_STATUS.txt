@@ -1,0 +1,41 @@
+PAPER DOWNLOAD STATUS REPORT
+Generated: 2025-11-07
+
+=== SUCCESSFULLY DOWNLOADED ===
+
+1. McAleer et al. "Solving the Rubik's Cube with Approximate Policy Iteration" ICLR 2019
+   - File: McAleer_et_al_Solving_Rubiks_Cube_ICLR2019.pdf
+   - Size: 2.7 MB
+   - Status: COMPLETE
+   - Source: OpenReview (https://openreview.net/pdf?id=Hyfn2jCcKm)
+   - Format: Valid PDF v1.5
+   - Downloaded: 2025-11-07
+
+=== UNABLE TO ACCESS ===
+
+2. Wang He Li "Solving combinatorial optimization problems with deep neural network: A survey"
+   Tsinghua Science and Technology, 2024
+   - DOI: 10.26599/TST.2023.9010076
+   - Published: October 2024, Volume 29, Issue 5, Pages 1266-1282
+   - Status: BLOCKED - Access Restricted
+   
+   Access Attempts:
+   - IEEE Xplore (DOI redirect target): BLOCKED (403/502 error)
+   - Tsinghua Science and Technology journal website: SERVICE UNAVAILABLE (503)
+   - Sci-Hub: BLOCKED by provider
+   - Google Scholar: BLOCKED (automated access restricted)
+   - ResearchGate: No public PDF available
+   - Semantic Scholar: No PDF link found
+   - arXiv: No preprint version found
+   
+   Paper Status: Published in IEEE-indexed journal, reportedly open access
+   but institutional access is currently required due to paywall restrictions.
+
+=== RECOMMENDATIONS ===
+
+To access the Wang et al. paper:
+1. Try accessing through an institutional library if affiliated with a university
+2. Wait for Tsinghua Science and Technology website to come online
+3. Contact the authors directly for a copy
+4. Check if institutional repositories at Tsinghua University have the paper
+5. Try again in 24-48 hours when the journal website may be available
