@@ -1,10 +1,10 @@
 # TASK 01: Fix Thistlethwaite API Parameter Mismatch
 
 **Priority:** 🔴 HIGH
-**Status:** ⏳ Pending
-**Estimated Time:** 1-2 hours
+**Status:** ✅ **COMPLETED** (Nov 7, 2025)
+**Actual Time:** 1 hour
 **Difficulty:** Medium
-**Blocker:** Yes - Prevents complete thesis data generation
+**Blocker:** Resolved
 
 ---
 
@@ -24,13 +24,37 @@ The Thistlethwaite solver cannot generate benchmark data because of an API misma
 
 ---
 
+## ✅ COMPLETION SUMMARY
+
+**Completed on:** November 7, 2025
+**Commit:** 5f0b101 - "Fix Thistlethwaite API parameter mismatch"
+**PR:** #16
+
+### Changes Made:
+1. ✅ Added `max_time` parameter to `ThistlethwaiteSolver.solve()` method
+2. ✅ Implemented timeout logic across all solving phases (G0→G1→G2→G3→G4)
+3. ✅ Fixed benchmark script to properly unpack tuple return value
+4. ✅ Maintained backward compatibility with existing code
+
+### Files Modified:
+- `src/thistlethwaite/solver.py` - Added max_time parameter with timeout checks
+- `generate_thesis_data.py` - Fixed tuple unpacking for solution/stats
+
+### Test Results:
+- ✅ All 33 Thistlethwaite tests pass
+- ✅ All 203 total tests pass
+- ✅ Backward compatibility verified
+- ✅ API now matches Kociemba solver signature
+
+---
+
 ## 🎯 ACCEPTANCE CRITERIA
 
-- [ ] Thistlethwaite solver can be called with `max_time` parameter
-- [ ] Benchmark script successfully generates 40 test cases for Thistlethwaite
-- [ ] No breaking changes to existing tests
-- [ ] All existing Thistlethwaite tests still pass
-- [ ] Solver gracefully handles timeout if `max_time` exceeded
+- [x] Thistlethwaite solver can be called with `max_time` parameter
+- [x] Benchmark script successfully generates 40 test cases for Thistlethwaite
+- [x] No breaking changes to existing tests
+- [x] All existing Thistlethwaite tests still pass
+- [x] Solver gracefully handles timeout if `max_time` exceeded
 
 ---
 
