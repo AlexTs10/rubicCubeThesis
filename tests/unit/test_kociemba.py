@@ -376,7 +376,7 @@ class TestIntegration:
     def test_phase1_reaches_g1(self):
         """Test that Phase 1 actually reaches G1."""
         cube = RubikCube()
-        cube.scramble(10, seed=123)
+        scramble = cube.scramble(10, seed=123)
 
         solver = KociembaSolver()
         result = solver.solve(cube, timeout=30.0, verbose=False)
@@ -386,7 +386,7 @@ class TestIntegration:
 
         # Apply only Phase 1 solution
         test_cube = RubikCube()
-        test_cube.apply_moves(['R', 'U', 'F', 'D', 'L', 'B'] * 2)  # Scramble
+        test_cube.apply_moves(scramble)
         test_cube.apply_moves(phase1)
 
         # Check if in G1

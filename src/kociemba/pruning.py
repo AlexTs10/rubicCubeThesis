@@ -54,7 +54,7 @@ class PruningTables:
         self._loaded = False
         self.move_tables = None
 
-    def load(self, force_regenerate: bool = False, max_depth: int = 12) -> None:
+    def load(self, force_regenerate: bool = False, max_depth: int = 15) -> None:
         """
         Load or generate pruning tables.
 
