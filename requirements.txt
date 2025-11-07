@@ -30,3 +30,11 @@ mypy>=1.5.0
 # Code quality
 black>=23.7.0
 pylint>=2.17.0
+
+# Phase 9: UI and Demos
+streamlit>=1.28.0          # Web UI framework
+plotly>=5.17.0             # Interactive charts
+ipywidgets>=8.1.0          # Jupyter interactive widgets
+pillow>=10.0.0             # Image processing for exports
+imageio>=2.31.0            # GIF/video export
+rich>=13.5.0               # Enhanced CLI formatting
