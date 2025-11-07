@@ -80,7 +80,7 @@ if 'comparison_running' in st.session_state and st.session_state.comparison_runn
 
     # Create scramble
     cube = RubikCube()
-    cube.scramble(n_moves=scramble_depth, seed=seed)
+    cube.scramble(moves=scramble_depth, seed=seed)
     scramble_moves = getattr(cube, '_scramble_moves', [])
 
     # Show scrambled cube

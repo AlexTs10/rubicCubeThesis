@@ -198,7 +198,7 @@ def main():
         print("Creating scramble...")
 
     cube = RubikCube()
-    cube.scramble(n_moves=args.depth, seed=args.seed)
+    cube.scramble(moves=args.depth, seed=args.seed)
     scramble_moves = getattr(cube, '_scramble_moves', [])
 
     if console:

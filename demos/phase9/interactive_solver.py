@@ -136,7 +136,7 @@ class InteractiveSolver:
         depth = max(5, min(25, depth))
 
         self.cube = RubikCube()
-        self.cube.scramble(n_moves=depth)
+        self.cube.scramble(moves=depth)
         scramble_moves = getattr(self.cube, '_scramble_moves', [])
 
         self.print(f"\n[green]✓ Scrambled with {depth} random moves[/green]" if self.console
@@ -158,7 +158,7 @@ class InteractiveSolver:
         depth = max(5, min(25, depth))
 
         self.cube = RubikCube()
-        self.cube.scramble(n_moves=depth, seed=seed)
+        self.cube.scramble(moves=depth, seed=seed)
         scramble_moves = getattr(self.cube, '_scramble_moves', [])
 
         self.print(f"\n[green]✓ Scrambled with seed {seed}, depth {depth}[/green]" if self.console

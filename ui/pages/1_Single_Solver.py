@@ -17,7 +17,6 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 from src.cube.rubik_cube import RubikCube
 from src.thistlethwaite import ThistlethwaiteSolver
 from src.kociemba.solver import KociembaSolver
-from src.kociemba.cubie import from_facelet_cube, to_facelet_cube
 from src.korf.a_star import IDAStarSolver
 from src.korf.composite_heuristic import create_heuristic
 
@@ -88,7 +87,7 @@ if st.sidebar.button("🎲 Generate New Scramble", use_container_width=True):
     st.session_state.cube = RubikCube()
 
     if scramble_method == "Random":
-        st.session_state.cube.scramble(n_moves=scramble_depth)
+        st.session_state.cube.scramble(moves=scramble_depth)
         st.session_state.scramble_moves = getattr(st.session_state.cube, '_scramble_moves', [])
     elif scramble_method == "Custom Sequence":
         if custom_moves:
@@ -102,7 +101,7 @@ if st.sidebar.button("🎲 Generate New Scramble", use_container_width=True):
     elif scramble_method == "Seeded Random":
         import random
         random.seed(seed)
-        st.session_state.cube.scramble(n_moves=scramble_depth, seed=seed)
+        st.session_state.cube.scramble(moves=scramble_depth, seed=seed)
         st.session_state.scramble_moves = getattr(st.session_state.cube, '_scramble_moves', [])
 
     st.rerun()
@@ -184,14 +183,21 @@ with col2:
                 try:
                     if algorithm == "Thistlethwaite":
                         solver = ThistlethwaiteSolver(use_pattern_databases=False)
-                        solution = solver.solve(st.session_state.cube.copy())
-                        success = True
+                        result = solver.solve(st.session_state.cube.copy())
+                        if result:
+                            solution = result[0]  # Extract just the moves list
+                            success = True
+                        else:
+                            success = False
 
                     elif algorithm == "Kociemba":
                         solver = KociembaSolver()
-                        cubie = from_facelet_cube(st.session_state.cube)
-                        solution = solver.solve(cubie, timeout=timeout)
-                        success = solution is not None
+                        result = solver.solve(st.session_state.cube, timeout=timeout)
+                        if result:
+                            solution = result[0]  # Extract just the moves list
+                            success = True
+                        else:
+                            success = False
 
                     else:  # Korf IDA*
                         heuristic = create_heuristic('composite')

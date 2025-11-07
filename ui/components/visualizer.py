@@ -15,7 +15,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from src.cube.rubik_cube import RubikCube
 from src.cube.visualization import display_cube_unfolded
-from src.cube.visualize_3d import visualize_cube_3d
+from src.cube.visualize_3d import visualize_3d as visualize_cube_3d
 
 
 def show_3d_cube(cube: RubikCube, title: str = "Cube State", view_angles: tuple = (30, 45)):
@@ -27,7 +27,7 @@ def show_3d_cube(cube: RubikCube, title: str = "Cube State", view_angles: tuple 
         title: Title for the visualization
         view_angles: Tuple of (elevation, azimuth) viewing angles
     """
-    fig = visualize_cube_3d(cube, view_angles=view_angles)
+    fig = visualize_cube_3d(cube, elev=view_angles[0], azim=view_angles[1], show=False)
     fig.suptitle(title, fontsize=14, fontweight='bold')
     st.pyplot(fig)
     plt.close(fig)
@@ -56,7 +56,7 @@ def get_cube_image(cube: RubikCube, view_angles: tuple = (30, 45)) -> BytesIO:
     Returns:
         BytesIO object containing the PNG image
     """
-    fig = visualize_cube_3d(cube, view_angles=view_angles)
+    fig = visualize_cube_3d(cube, elev=view_angles[0], azim=view_angles[1], show=False)
 
     buf = BytesIO()
     fig.savefig(buf, format='png', dpi=150, bbox_inches='tight')
@@ -79,7 +79,7 @@ def show_side_by_side_cubes(cubes: list, titles: list, view_angles: tuple = (30,
 
     for col, cube, title in zip(cols, cubes, titles):
         with col:
-            fig = visualize_cube_3d(cube, view_angles=view_angles)
+            fig = visualize_cube_3d(cube, elev=view_angles[0], azim=view_angles[1], show=False)
             fig.suptitle(title, fontsize=12, fontweight='bold')
             st.pyplot(fig)
             plt.close(fig)
