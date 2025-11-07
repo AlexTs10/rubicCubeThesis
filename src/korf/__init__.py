@@ -80,6 +80,10 @@ from .solver_comparison import (
     run_quick_comparison,
     run_full_comparison
 )
+from .optimal_solver import (
+    KorfOptimalSolver,
+    solve_optimal
+)
 
 __all__ = [
     # Pattern Database Infrastructure
@@ -127,4 +131,8 @@ __all__ = [
     'ComparisonSummary',
     'run_quick_comparison',
     'run_full_comparison',
+
+    # Optimal Solver
+    'KorfOptimalSolver',
+    'solve_optimal',
 ]
