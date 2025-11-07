@@ -67,7 +67,8 @@ class ThistlethwaiteSolver:
     def solve(
         self,
         cube: RubikCube,
-        verbose: bool = True
+        verbose: bool = True,
+        max_time: Optional[float] = None
     ) -> Optional[Tuple[List[str], List[List[str]]]]:
         """
         Solve a Rubik's Cube using Thistlethwaite's algorithm.
@@ -75,12 +76,13 @@ class ThistlethwaiteSolver:
         Args:
             cube: Scrambled cube to solve
             verbose: Whether to print progress
+            max_time: Maximum time in seconds for solving (optional, None = no limit)
 
         Returns:
             Tuple of (all_moves, phase_moves) where:
             - all_moves: Complete solution as a single list
             - phase_moves: Solution broken down by phase [[p0_moves], [p1_moves], ...]
-            Returns None if solving fails
+            Returns None if solving fails or timeout exceeded
         """
         if verbose:
             print("\n" + "="*60)
@@ -104,6 +106,14 @@ class ThistlethwaiteSolver:
         total_start_time = time.time()
 
         for phase in range(4):
+            # Check if we've exceeded max_time before starting this phase
+            if max_time is not None:
+                elapsed_time = time.time() - total_start_time
+                if elapsed_time >= max_time:
+                    if verbose:
+                        print(f"\nTimeout exceeded ({elapsed_time:.2f}s >= {max_time}s)")
+                    return None
+
             if verbose:
                 print(f"\n{'='*60}")
                 print(f"PHASE {phase}: {self._get_phase_name(phase)}")
@@ -111,8 +121,15 @@ class ThistlethwaiteSolver:
 
             phase_start_time = time.time()
 
+            # Calculate remaining time for this phase
+            phase_timeout = self.phase_timeouts[phase]
+            if max_time is not None:
+                elapsed_time = time.time() - total_start_time
+                remaining_time = max_time - elapsed_time
+                phase_timeout = min(phase_timeout, remaining_time)
+
             # Solve this phase
-            phase_moves = self._solve_phase(phase, current_cube, verbose)
+            phase_moves = self._solve_phase(phase, current_cube, verbose, phase_timeout)
 
             if phase_moves is None:
                 if verbose:
@@ -190,7 +207,8 @@ class ThistlethwaiteSolver:
         self,
         phase: int,
         cube: RubikCube,
-        verbose: bool
+        verbose: bool,
+        timeout: float = None
     ) -> Optional[List[str]]:
         """
         Solve a single phase using IDA* search.
@@ -199,6 +217,7 @@ class ThistlethwaiteSolver:
             phase: Phase number (0-3)
             cube: Current cube state
             verbose: Whether to print progress
+            timeout: Timeout for this phase in seconds (optional)
 
         Returns:
             List of moves to reach next group, or None if failed
@@ -223,12 +242,14 @@ class ThistlethwaiteSolver:
                 print(f"Heuristic estimate: {h_value} moves")
 
         # Create IDA* search
+        # Use provided timeout or fall back to default phase timeout
+        phase_timeout = timeout if timeout is not None else self.phase_timeouts[phase]
         search = IDAStarSearch(
             goal_check=goal_check,
             heuristic=heuristic,
             allowed_moves=moves,
             max_depth=self.phase_max_depths[phase],
-            timeout=self.phase_timeouts[phase]
+            timeout=phase_timeout
         )
 
         # Perform search
