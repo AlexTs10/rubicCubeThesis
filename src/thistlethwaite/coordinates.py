@@ -77,6 +77,28 @@ def rank_to_permutation(rank: int, n: int) -> np.ndarray:
     return np.array(result)
 
 
+def permutation_parity(perm: np.ndarray) -> int:
+    """
+    Compute permutation parity (0 = even, 1 = odd).
+    """
+    visited = np.zeros(len(perm), dtype=bool)
+    parity = 0
+
+    for i in range(len(perm)):
+        if visited[i]:
+            continue
+        cycle_len = 0
+        j = i
+        while not visited[j]:
+            visited[j] = True
+            j = perm[j]
+            cycle_len += 1
+        if cycle_len > 0:
+            parity ^= (cycle_len - 1) & 1
+
+    return parity
+
+
 def combination_to_rank(positions: np.ndarray, n: int) -> int:
     """
     Convert a combination to its rank.
@@ -214,6 +236,7 @@ class CubeCoordinates:
             ]
 
             # Find which corner this is by matching colors
+            found = False
             for corner_idx, (ref_f1, ref_f2, ref_f3) in enumerate(corner_facelets):
                 ref_colors = [ref_f1[0].value, ref_f2[0].value, ref_f3[0].value]
 
@@ -223,9 +246,12 @@ class CubeCoordinates:
                     if rotated_colors[0] == ref_colors[0] and \
                        rotated_colors[1] == ref_colors[1] and \
                        rotated_colors[2] == ref_colors[2]:
-                        self.edge_permutation[pos] = corner_idx
+                        self.corner_permutation[pos] = corner_idx
                         self.corner_orientation[pos] = rot
+                        found = True
                         break
+                if found:
+                    break
 
     # Phase 0 → G1: Edge Orientation
     def get_edge_orientation_coord(self) -> int:
@@ -244,6 +270,10 @@ class CubeCoordinates:
             coord = coord * 2 + self.edge_orientation[i]
         return coord
 
+    def count_misoriented_edges(self) -> int:
+        """Number of edges with incorrect orientation."""
+        return int(np.count_nonzero(self.edge_orientation))
+
     # Phase 1 → G2: Corner Orientation + E-slice edges
     def get_corner_orientation_coord(self) -> int:
         """
@@ -259,6 +289,10 @@ class CubeCoordinates:
         for i in range(7):  # 8th corner determined by parity
             coord = coord * 3 + self.corner_orientation[i]
         return coord
+
+    def count_misoriented_corners(self) -> int:
+        """Number of corners with incorrect orientation."""
+        return int(np.count_nonzero(self.corner_orientation))
 
     def get_e_slice_coord(self) -> int:
         """
@@ -282,6 +316,16 @@ class CubeCoordinates:
 
         return combination_to_rank(np.array(e_slice_positions), 12)
 
+    def count_e_slice_misplacements(self) -> int:
+        """Count how many E-slice edges are not in the E-slice positions."""
+        e_edges = {8, 9, 10, 11}
+        e_positions = {8, 9, 10, 11}
+        count = 0
+        for pos, edge in enumerate(self.edge_permutation):
+            if edge in e_edges and pos not in e_positions:
+                count += 1
+        return count
+
     # Phase 2 → G3: Corner tetrads + Edge slices
     def get_corner_tetrad_coord(self) -> int:
         """
@@ -297,8 +341,31 @@ class CubeCoordinates:
         # Tetrad 1: UFL, UFR, DFL, DFR (indices 0, 1, 4, 5)
         # Tetrad 2: UBL, UBR, DBL, DBR (indices 3, 2, 7, 6)
         tetrad1_positions = [0, 1, 4, 5]
-        tetrad1_corners = [i for i, c in enumerate(self.corner_permutation) if c in tetrad1_positions]
-        return combination_to_rank(np.array(tetrad1_corners), 8)
+        tetrad1_corners = sorted(
+            i for i, c in enumerate(self.corner_permutation) if c in tetrad1_positions
+        )
+        if len(tetrad1_corners) != 4:
+            # Should never happen on a valid cube, but keep coordinate non-zero
+            return 1
+
+        base_rank = combination_to_rank(np.array(tetrad1_positions), 8)
+        current_rank = combination_to_rank(np.array(tetrad1_corners), 8)
+
+        # Normalize so solved state (tetrad positions in place) is 0
+        total_combinations = binomial(8, 4)
+        return (current_rank - base_rank) % total_combinations
+
+    def count_corner_tetrad_misplacements(self) -> int:
+        """Number of corners that are outside of their tetrad positions."""
+        tetrad1_positions = {0, 1, 4, 5}
+        tetrad2_positions = {2, 3, 6, 7}
+        count = 0
+        for pos, corner in enumerate(self.corner_permutation):
+            if corner in tetrad1_positions and pos not in tetrad1_positions:
+                count += 1
+            elif corner in tetrad2_positions and pos not in tetrad2_positions:
+                count += 1
+        return count // 2  # Each misplaced corner implies one swap between tetrads
 
     def get_edge_slice_coord(self) -> int:
         """
@@ -312,6 +379,30 @@ class CubeCoordinates:
         # UD-slice edges (UF, UR, UB, UL, DF, DR, DB, DL: 0-7)
         ud_positions = [i for i, e in enumerate(self.edge_permutation) if e < 8]
         return combination_to_rank(np.array(ud_positions), 12)
+
+    def count_ud_edge_misplacements(self) -> int:
+        """Number of UD edges that are not in UD-layer positions."""
+        ud_edges = set(range(8))
+        ud_positions = set(range(8))
+        count = 0
+        for pos, edge in enumerate(self.edge_permutation):
+            if edge in ud_edges and pos not in ud_positions:
+                count += 1
+        return count // 2  # Moves swap edges in pairs
+
+    def has_even_parity(self) -> bool:
+        """Return True if corner and edge permutations have matching (even) parity."""
+        corner_parity = permutation_parity(self.corner_permutation)
+        edge_parity = permutation_parity(self.edge_permutation)
+        return corner_parity == edge_parity
+
+    def count_misplaced_edges(self) -> int:
+        """Number of edges not in their solved positions."""
+        return int(np.count_nonzero(self.edge_permutation != np.arange(12)))
+
+    def count_misplaced_corners(self) -> int:
+        """Number of corners not in their solved positions."""
+        return int(np.count_nonzero(self.corner_permutation != np.arange(8)))
 
     # Phase 3 → G4: Full permutation
     def get_corner_permutation_coord(self) -> int:
