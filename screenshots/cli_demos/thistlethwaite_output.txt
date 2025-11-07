@@ -1,0 +1,223 @@
+======================================================================
+THISTLETHWAITE ALGORITHM DEMO
+======================================================================
+
+1. Creating and scrambling cube...
+   Scramble (15 moves): F L2 B' F' F B' B' D F' U2 U' B2 D2 U' U
+   Cube is solved: False
+
+2. Solving with Thistlethwaite's Algorithm...
+
+============================================================
+THISTLETHWAITE'S ALGORITHM SOLVER
+============================================================
+
+============================================================
+PHASE 0: G0 → G1 (Orient Edges)
+============================================================
+Allowed moves (18): U, U', U2, D, D', D2, F, F', F2, B, B', B2, L, L', L2, R, R', R2
+Searching...
+Nodes explored: 17297
+
+Phase 0 completed:
+  Moves: 5
+  Solution: U B D L2 F
+  Time: 2.80s
+
+============================================================
+PHASE 1: G1 → G2 (Orient Corners + E-slice)
+============================================================
+Already in target group!
+
+Phase 1 completed:
+  Moves: 0
+  Solution: (already in group)
+  Time: 0.00s
+
+============================================================
+PHASE 2: G2 → G3 (Tetrads + Edge Slices)
+============================================================
+Already in target group!
+
+Phase 2 completed:
+  Moves: 0
+  Solution: (already in group)
+  Time: 0.00s
+
+============================================================
+PHASE 3: G3 → G4 (Final Solve)
+============================================================
+Allowed moves (6): U2, D2, F2, B2, L2, R2
+Searching...
+Failed to solve phase 3
+Falling back to Kociemba solver for remaining state...
+
+======================================================================
+KOCIEMBA'S TWO-PHASE ALGORITHM SOLVER
+======================================================================
+Initializing Kociemba solver...
+This may take a few minutes on first run (generating tables)...
+Generating move tables...
+  Generating corner orientation table (2187 states)...
+  Generating edge orientation table (2048 states)...
+  Generating UD-slice table (495 states)...
+  Generating corner permutation table (40320 states)...
+  Generating edge permutation table (40320 states)...
+  Generating UD-slice permutation table (24 states)...
+Move tables generated!
+Saving move tables to data/kociemba/move_tables/move_tables.pkl...
+Move tables saved!
+Generating pruning tables (this may take several minutes)...
+  Generating Phase 1 Corner Orient + Edge Orient table...
+  Generating Phase 1 Edge Orient + UD-Slice table...
+  Generating Phase 2 Corner Permutation table...
+  Generating Phase 2 Edge Permutation table...
+  Generating Phase 2 UD-Slice Permutation table...
+Pruning tables generated!
+Saving pruning tables to data/kociemba/pruning_tables/pruning_tables.pkl...
+Pruning tables saved!
+Kociemba solver initialized!
+
+----------------------------------------------------------------------
+PHASE 1: G0 → G1 (Orient pieces & place UD-slice)
+----------------------------------------------------------------------
+Searching depth 0... (1 nodes)
+Searching depth 1... (2 nodes)
+Searching depth 2... (3 nodes)
+Searching depth 3... (4 nodes)
+Searching depth 4... (5 nodes)
+Searching depth 5... (111 nodes)
+Searching depth 6... (1,051 nodes)
+Searching depth 7... (8,102 nodes)
+Searching depth 8... (82,713 nodes)
+Searching depth 9... Found! (116,485 nodes)
+
+----------------------------------------------------------------------
+PHASE 2: G1 → Solved
+----------------------------------------------------------------------
+Searching depth 0... (116,486 nodes)
+Searching depth 1... (1 nodes)
+Searching depth 2... (116,487 nodes)
+Searching depth 3... (2 nodes)
+Searching depth 4... (116,488 nodes)
+Searching depth 5... (3 nodes)
+Searching depth 6... (116,489 nodes)
+Searching depth 7... (4 nodes)
+Searching depth 8... (116,490 nodes)
+Searching depth 9... (117 nodes)
+Searching depth 10... (117,999 nodes)
+Searching depth 11... (15,963 nodes)
+Searching depth 12... (254,945 nodes)
+Searching depth 13... (1,148,391 nodes)
+Searching depth 14... Found! (477,565 nodes)
+
+======================================================================
+SOLUTION FOUND!
+======================================================================
+Phase 1: 9 moves in 0.21s
+Phase 2: 14 moves in 2.70s
+Total: 23 moves in 2.91s
+Nodes explored: 1,625,956
+
+Solution: U F' U' R2 F' L2 D U2 B U F2 U' F2 D R2 F2 D2 F2 U' F2 D' F2 R2
+
+✓ Solution verified!
+
+============================================================
+SOLUTION FOUND!
+============================================================
+Total moves: 28
+Total time: 95.92s
+
+Complete solution:
+  U B D L2 F U F' U' R2 F' L2 D U2 B U F2 U' F2 D R2 F2 D2 F2 U' F2 D' F2 R2
+
+By phase:
+  Phase 0: U B D L2 F
+  Phase 1: (none)
+  Phase 2: (none)
+  Phase 3: U F' U' R2 F' L2 D U2 B U F2 U' F2 D R2 F2 D2 F2 U' F2 D' F2 R2
+
+✓ Solution verified!
+
+======================================================================
+RESULTS
+======================================================================
+
+Total solution length: 28 moves
+Solution: U B D L2 F U F' U' R2 F' L2 D U2 B U F2 U' F2 D R2 F2 D2 F2 U' F2 D' F2 R2
+
+ Phase breakdown:
+   Phase 0:  5 moves - U B D L2 F
+   Phase 1:  0 moves - (none)
+   Phase 2:  0 moves - (none)
+   Phase 3: 23 moves - U F' U' R2 F' L2 D U2 B U F2 U' F2 D R2 F2 D2 F2 U' F2 D' F2 R2
+
+3. Verifying solution...
+   Before solution: is_solved = False
+   After solution:  is_solved = True
+
+✅ Solution verified successfully!
+
+======================================================================
+SOLVING MULTIPLE SCRAMBLES
+======================================================================
+
+--- Scramble 1 ---
+Scramble: L R U D D F' B D' F L
+Initializing Kociemba solver...
+This may take a few minutes on first run (generating tables)...
+Kociemba solver initialized!
+Solution: 26 moves ✅
+
+--- Scramble 2 ---
+Scramble: D2 B2 L F2 B B2 D2 R U R'
+Initializing Kociemba solver...
+This may take a few minutes on first run (generating tables)...
+Kociemba solver initialized!
+Solution: 10 moves ✅
+
+--- Scramble 3 ---
+Scramble: F2 R L' F2 B2 B2 F2 F' U2 R2
+Initializing Kociemba solver...
+This may take a few minutes on first run (generating tables)...
+Kociemba solver initialized!
+Solution: 15 moves ✅
+
+--- Scramble 4 ---
+Scramble: B' D F2 U B' B2 B B' F U
+Initializing Kociemba solver...
+This may take a few minutes on first run (generating tables)...
+Kociemba solver initialized!
+Solution: 27 moves ✅
+
+--- Scramble 5 ---
+Scramble: L2 D2 U' F2 F2 B F' L' F2 D'
+Initializing Kociemba solver...
+This may take a few minutes on first run (generating tables)...
+Kociemba solver initialized!
+Solution: 13 moves ✅
+
+======================================================================
+SUMMARY
+======================================================================
+
+Successful solves: 5 / 5
+Average solution length: 18.2 moves
+Min solution length: 10 moves
+Max solution length: 27 moves
+
+Average moves per phase:
+  Phase 0: 3.4 moves
+  Phase 1: 0.6 moves
+  Phase 2: 0.8 moves
+  Phase 3: 13.4 moves
+
+======================================================================
+SOLVING WITH VISUALIZATION
+======================================================================
+Visualization not available
+
+======================================================================
+DEMO COMPLETE
+======================================================================

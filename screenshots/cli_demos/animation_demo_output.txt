@@ -1,0 +1,150 @@
+╭───────────────────────────────────╮
+│ 🎬 Rubik's Cube Animation Demo    │
+│ Phase 9: Demos & UI               │
+│ Alex Toska - University of Patras │
+╰───────────────────────────────────╯
+
+Creating scramble (depth 10, seed 42)...
+✓ Scramble: 
+
+Solving with thistlethwaite...
+
+============================================================
+THISTLETHWAITE'S ALGORITHM SOLVER
+============================================================
+
+============================================================
+PHASE 0: G0 → G1 (Orient Edges)
+============================================================
+Allowed moves (18): U, U', U2, D, D', D2, F, F', F2, B, B', B2, L, L', L2, R, R', R2
+Searching...
+Nodes explored: 4728
+
+Phase 0 completed:
+  Moves: 4
+  Solution: F U2 D B
+  Time: 0.78s
+
+============================================================
+PHASE 1: G1 → G2 (Orient Corners + E-slice)
+============================================================
+Allowed moves (14): U, U', U2, D, D', D2, F2, B2, L, L', L2, R, R', R2
+Searching...
+Nodes explored: 2
+
+Phase 1 completed:
+  Moves: 1
+  Solution: U
+  Time: 0.00s
+
+============================================================
+PHASE 2: G2 → G3 (Tetrads + Edge Slices)
+============================================================
+Already in target group!
+
+Phase 2 completed:
+  Moves: 0
+  Solution: (already in group)
+  Time: 0.00s
+
+============================================================
+PHASE 3: G3 → G4 (Final Solve)
+============================================================
+Allowed moves (6): U2, D2, F2, B2, L2, R2
+Searching...
+Failed to solve phase 3
+Falling back to Kociemba solver for remaining state...
+
+======================================================================
+KOCIEMBA'S TWO-PHASE ALGORITHM SOLVER
+======================================================================
+Initializing Kociemba solver...
+This may take a few minutes on first run (generating tables)...
+Loading move tables from data/kociemba/move_tables/move_tables.pkl...
+Move tables loaded successfully!
+Loading pruning tables from data/kociemba/pruning_tables/pruning_tables.pkl...
+Pruning tables loaded successfully!
+Kociemba solver initialized!
+
+----------------------------------------------------------------------
+PHASE 1: G0 → G1 (Orient pieces & place UD-slice)
+----------------------------------------------------------------------
+Searching depth 0... (1 nodes)
+Searching depth 1... (2 nodes)
+Searching depth 2... (3 nodes)
+Searching depth 3... (4 nodes)
+Searching depth 4... (65 nodes)
+Searching depth 5... (798 nodes)
+Searching depth 6... Found! (4,060 nodes)
+
+----------------------------------------------------------------------
+PHASE 2: G1 → Solved
+----------------------------------------------------------------------
+Searching depth 0... (4,061 nodes)
+Searching depth 1... (1 nodes)
+Searching depth 2... (4,062 nodes)
+Searching depth 3... (2 nodes)
+Searching depth 4... (4,063 nodes)
+Searching depth 5... (3 nodes)
+Searching depth 6... (4,064 nodes)
+Searching depth 7... (4 nodes)
+Searching depth 8... (4,065 nodes)
+Searching depth 9... (193 nodes)
+Searching depth 10... (5,770 nodes)
+Searching depth 11... (12,418 nodes)
+Searching depth 12... (107,791 nodes)
+Searching depth 13... (842,254 nodes)
+Searching depth 14... Found! (1,051,888 nodes)
+
+======================================================================
+SOLUTION FOUND!
+======================================================================
+Phase 1: 6 moves in 0.01s
+Phase 2: 14 moves in 3.36s
+Total: 20 moves in 3.37s
+Nodes explored: 1,894,142
+
+Solution: R' F2 D F2 D' R U L2 D' L2 B2 U2 R2 F2 U' B2 U2 R2 B2 D
+
+✓ Solution verified!
+
+============================================================
+SOLUTION FOUND!
+============================================================
+Total moves: 25
+Total time: 22.47s
+
+Complete solution:
+  F U2 D B U R' F2 D F2 D' R U L2 D' L2 B2 U2 R2 F2 U' B2 U2 R2 B2 D
+
+By phase:
+  Phase 0: F U2 D B
+  Phase 1: U
+  Phase 2: (none)
+  Phase 3: R' F2 D F2 D' R U L2 D' L2 B2 U2 R2 F2 U' B2 U2 R2 B2 D
+
+✓ Solution verified!
+✓ Solution found: 2 moves
+Starting animation in 3 seconds...
+
+╭───────────────────────────────────╮
+│ 🎬 Solution Animation             │
+│ Algorithm: Thistlethwaite         │
+│ Total moves: 2 | Speed: 1.0s/move │
+╰───────────────────────────────────╯
+
+Initial State (Scrambled)
+
+         B  W  W 
+         W  W  Y 
+         R  R  R 
+ W  R  Y  B  B  B  W  O  O  G  G  O 
+ W  O  O  G  G  O  W  R  Y  B  B  B 
+ G  G  Y  B  B  R  Y  G  G  W  R  O 
+         O  O  G 
+         Y  Y  R 
+         Y  Y  R 
+TERM environment variable not set.
+╭──────────────────────────────────────────────────────────────────────────────╮
+│ Move 1/2: ['F', 'U2', 'D', 'B', 'U', "R'", 'F2', 'D', 'F2', "D'", 'R', 'U',  │
+│ 'L2', "D'", 'L2', 'B2', 'U2', 'R2', 'F2', "U'", 'B2', 'U2', 'R2', 'B2', 'D'] │

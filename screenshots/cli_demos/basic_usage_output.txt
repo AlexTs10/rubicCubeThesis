@@ -1,0 +1,67 @@
+============================================================
+Rubik's Cube Implementation - Basic Usage Demo
+============================================================
+
+1. Creating a solved cube:
+   Is solved? True
+
+2. Applying move 'R' (Right face clockwise):
+   Is solved? False
+
+3. Applying inverse move 'R\'' (Right face counter-clockwise):
+   Is solved? True
+
+4. Applying sequence 'R U R\' U\'' (Sexy Move):
+   Applied: R U R' U'
+   Is solved? False
+
+5. Scrambling cube with 20 random moves:
+   Scramble: F L2 B' F' F B' B' D F' U2 U' B2 D2 U' U B2 B2 R' B R
+   Is solved? False
+
+6. Move utilities demonstration:
+   Original: R U R' U'
+   Inverse:  U R U' R'
+   Simplify ['R', 'R', 'R'] -> ["R'"]
+
+7. Verifying sequence + inverse = solved:
+   After sequence: solved = False
+   After inverse: solved = True
+
+8. Cube state visualization:
+Rubik's Cube State:
+Solved: False
+
+U face:
+  U U U
+  U U U
+  F F F
+
+D face:
+  D D B
+  D D B
+  D D B
+
+F face:
+  R R R
+  F F D
+  F F D
+
+B face:
+  L L L
+  U B B
+  U B B
+
+L face:
+  F F D
+  L L L
+  L L L
+
+R face:
+  U B B
+  R R R
+  R R R
+
+============================================================
+Demo completed!
+============================================================
