@@ -22,7 +22,10 @@ def run_single_test(algorithm_name: str, solver, cube: RubikCube, max_time: floa
 
     try:
         if algorithm_name == "Thistlethwaite":
-            solution = solver.solve(cube, max_time=max_time, verbose=False)
+            result = solver.solve(cube, max_time=max_time, verbose=False)
+            if result is None:
+                raise Exception("Solver returned None (timeout or failure)")
+            solution, _ = result
         else:
             result = solver.solve(cube, timeout=max_time, verbose=False)
             if result is None:
