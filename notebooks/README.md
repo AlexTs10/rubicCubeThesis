@@ -21,38 +21,44 @@ These Jupyter notebooks provide hands-on, interactive learning experiences for u
 
 ---
 
-### 02_Thistlethwaite_Algorithm.ipynb
-**Status:** Template available
-**Planned Topics:**
+### 02_Thistlethwaite.ipynb ✅
+**Status:** Complete
+**Topics:**
 - 4-phase group-theoretic approach
 - G₀ → G₁ → G₂ → G₃ → G₄ subgroup reduction
-- Phase-by-phase walkthrough
-- Performance characteristics
+- Move restrictions by phase
+- Step-by-step solving example
+- Performance benchmarks and analysis
+- Complexity analysis
+- Strengths and weaknesses
 
 **Recommended for:** Understanding group theory approach
 
 ---
 
-### 03_Kociemba_Algorithm.ipynb
-**Status:** Template available
-**Planned Topics:**
+### 03_Kociemba.ipynb ✅
+**Status:** Complete
+**Topics:**
 - Two-phase IDA* approach
-- Coordinate systems explained
-- Pruning tables
+- Six coordinate systems explained
+- Pruning tables and optimizations
+- Near-optimal solution finding
 - Comparison with Thistlethwaite
+- Implementation details
 
 **Recommended for:** Understanding modern solving techniques
 
 ---
 
-### 04_Korf_IDA_Star.ipynb
-**Status:** Template available
-**Planned Topics:**
-- Pattern databases
+### 04_Korf.ipynb ✅
+**Status:** Complete
+**Topics:**
+- IDA* algorithm fundamentals
+- Pattern databases (corner, edge groups)
 - Admissible heuristics
-- IDA* search algorithm
-- Composite heuristic (novel contribution)
-- Optimality guarantees
+- Optimal solution guarantees
+- Time-memory trade-offs
+- Performance on shallow scrambles
 
 **Recommended for:** AI/search algorithm enthusiasts
 
@@ -71,15 +77,17 @@ These Jupyter notebooks provide hands-on, interactive learning experiences for u
 
 ---
 
-### 06_Custom_Experiments.ipynb
-**Status:** Template available
-**Planned Topics:**
-- Blank experimentation notebook
-- Pre-loaded utilities
-- Example experiments
-- Custom analysis templates
+### 06_Conclusion.ipynb ✅
+**Status:** Complete
+**Topics:**
+- Comprehensive algorithm summary
+- Multi-dimensional comparison
+- Trade-off analysis
+- Lessons learned
+- Future research directions
+- Practical recommendations
 
-**Recommended for:** Advanced users, research
+**Recommended for:** Overall project understanding, thesis conclusions
 
 ---
 
@@ -115,11 +123,11 @@ jupyter notebook notebooks/
 ### Recommended Order
 
 1. **01_Introduction** - Start here!
-2. **05_Algorithm_Comparison** - See algorithms in action
-3. **02_Thistlethwaite** - Deep dive into first algorithm
-4. **03_Kociemba** - Deep dive into second algorithm
-5. **04_Korf_IDA_Star** - Deep dive into third algorithm
-6. **06_Custom_Experiments** - Your own research
+2. **02_Thistlethwaite** - Deep dive into first algorithm
+3. **03_Kociemba** - Deep dive into second algorithm
+4. **04_Korf** - Deep dive into third algorithm
+5. **05_Algorithm_Comparison** - See all algorithms compared
+6. **06_Conclusion** - Summary and final thoughts
 
 ## Features
 
