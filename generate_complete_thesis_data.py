@@ -22,9 +22,12 @@ def run_single_test(algorithm_name: str, solver, cube: RubikCube, max_time: floa
 
     try:
         if algorithm_name == "Thistlethwaite":
-            solution = solver.solve(cube, max_time=max_time)
+            solution = solver.solve(cube, max_time=max_time, verbose=False)
         else:
-            solution = solver.solve(cube)
+            result = solver.solve(cube, timeout=max_time, verbose=False)
+            if result is None:
+                raise Exception("Solver returned None (timeout or failure)")
+            solution, _, _ = result
 
         end_time = time.time()
 
@@ -86,7 +89,7 @@ def generate_benchmarks(depths: List[int], tests_per_depth: int, seeds_start: in
             # Test Kociemba
             print("  - Running Kociemba...", end=" ", flush=True)
             kociemba = KociembaSolver()
-            result_k = run_single_test("Kociemba", kociemba, cube.copy())
+            result_k = run_single_test("Kociemba", kociemba, cube.copy(), max_time=60)
             result_k.update({
                 "scramble_depth": depth,
                 "seed": seed,
