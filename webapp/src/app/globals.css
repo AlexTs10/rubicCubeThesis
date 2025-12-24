@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --foreground-rgb: 0, 0, 0;
+  --background-start-rgb: 214, 219, 220;
+  --background-end-rgb: 255, 255, 255;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --foreground-rgb: 255, 255, 255;
+    --background-start-rgb: 0, 0, 0;
+    --background-end-rgb: 0, 0, 0;
+  }
+}
+
+body {
+  @apply bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen text-white;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-800;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-500;
+}
+
+/* Gradient text */
+.gradient-text {
+  @apply bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent;
+}
+
+/* Card styles */
+.card {
+  @apply bg-slate-800/50 backdrop-blur-sm rounded-xl border border-slate-700/50 p-6;
+}
+
+.card-hover {
+  @apply card transition-all duration-300 hover:border-blue-500/50 hover:shadow-lg hover:shadow-blue-500/10;
+}
+
+/* Button styles */
+.btn-primary {
+  @apply px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg font-medium transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed;
+}
+
+.btn-secondary {
+  @apply px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg font-medium transition-colors duration-200;
+}
+
+.btn-success {
+  @apply px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg font-medium transition-colors duration-200;
+}
+
+/* Move notation styling */
+.move-notation {
+  @apply font-mono text-sm px-2 py-1 bg-slate-700 rounded;
+}
+
+/* Algorithm colors */
+.algo-thistlethwaite {
+  @apply text-yellow-400;
+}
+
+.algo-kociemba {
+  @apply text-blue-400;
+}
+
+.algo-korf {
+  @apply text-purple-400;
+}
+
+/* Cube face colors */
+.face-white { background-color: #FFFFFF; }
+.face-yellow { background-color: #FFD500; }
+.face-red { background-color: #B71234; }
+.face-orange { background-color: #FF5800; }
+.face-blue { background-color: #0046AD; }
+.face-green { background-color: #009B48; }
+
+/* Animation keyframes */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.5s ease-out forwards;
+}
+
+/* Tab styles */
+.tab-active {
+  @apply border-b-2 border-blue-500 text-blue-400;
+}
+
+.tab-inactive {
+  @apply border-b-2 border-transparent text-slate-400 hover:text-slate-200;
+}
