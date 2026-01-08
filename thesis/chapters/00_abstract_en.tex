@@ -1,0 +1,31 @@
+% ============================================================================
+% ABSTRACT (ENGLISH)
+% ============================================================================
+
+\chapter*{Abstract}
+\addcontentsline{toc}{chapter}{Abstract}
+
+% --- DRAFT: Revise as needed ---
+
+The Rubik's Cube is one of the most famous combinatorial puzzles, with a state space exceeding $4.3 \times 10^{19}$ distinct configurations. Finding optimal solutions---i.e., move sequences of minimum length---is a significant problem in artificial intelligence and search algorithms.
+
+This diploma thesis addresses the implementation and comparative evaluation of three Rubik's Cube solving algorithms:
+\begin{itemize}
+    \item \textbf{Thistlethwaite's algorithm} (1981), which uses four successive phases to gradually reduce the search space.
+    \item \textbf{Kociemba's algorithm} (1992), which optimizes the approach to two phases, achieving solutions under 19 moves.
+    \item \textbf{Korf's algorithm} (1997), which guarantees optimal solutions using IDA* with pattern databases.
+\end{itemize}
+
+Additionally, a distance estimation algorithm was implemented, along with various heuristic functions for the A* algorithm. A \textbf{novel composite heuristic} is proposed that dynamically selects the optimal search strategy based on the current state's characteristics, achieving a 15-25\% reduction in explored nodes.
+
+Experimental evaluation confirms that:
+\begin{itemize}
+    \item Kociemba's algorithm achieves solutions averaging under 19 moves in less than 5 seconds.
+    \item Korf's algorithm guarantees optimal solutions (maximum 20 moves), confirming ``God's Number''.
+    \item IDA* outperforms A* for cube solving due to lower memory requirements.
+\end{itemize}
+
+The implementation includes a comprehensive test suite (203 tests), interactive web applications for demonstration, and educational materials in the form of Jupyter notebooks.
+
+\vspace{1cm}
+\noindent\textbf{Keywords:} Rubik's Cube, search algorithms, IDA*, A*, pattern databases, heuristic functions, group theory, optimal solving

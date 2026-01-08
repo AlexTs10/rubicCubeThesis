@@ -1,0 +1,25 @@
+\chapter{Οδηγός Εγκατάστασης και Χρήσης}
+\label{app:usage}
+
+\section{Απαιτήσεις Συστήματος}
+% Python 3.8+, dependencies
+
+\section{Εγκατάσταση}
+\begin{lstlisting}
+pip install -r requirements.txt
+\end{lstlisting}
+
+\section{Εκτέλεση Demos}
+\begin{lstlisting}
+python demos/kociemba_demo.py
+python demos/thistlethwaite_demo.py
+\end{lstlisting}
+
+\section{Web Εφαρμογές}
+\begin{lstlisting}
+# Streamlit
+streamlit run ui/app.py
+
+# Next.js
+cd webapp && npm install && npm run dev
+\end{lstlisting}
