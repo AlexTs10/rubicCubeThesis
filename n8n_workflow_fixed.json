@@ -1,0 +1,404 @@
+{
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1072,
+        -400
+      ],
+      "id": "0bd7705e-c4d3-4ab3-a725-01f0eac0f6f0",
+      "name": "When clicking 'Execute workflow'"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://api.focus.teamleader.eu/contacts.list",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "oAuth2Api",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"page\": {\n    \"size\": 20,\n    \"number\": {{ $json.numbers }}\n    }\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        48,
+        -400
+      ],
+      "id": "7c2b511b-68ba-436d-b206-4cb4534cda05",
+      "name": "tl_contact_list",
+      "credentials": {
+        "oAuth2Api": {
+          "id": "igMnQTK9MXyQGGlQ",
+          "name": "stilefloors_teamleader "
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "numbers",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        -624,
+        -400
+      ],
+      "id": "56c7844f-0d62-46b1-b074-fb8c97fcef89",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -176,
+        -400
+      ],
+      "id": "0a9294b2-69de-4e21-8320-f02b8deb917f",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "data",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1,
+      "position": [
+        272,
+        -400
+      ],
+      "id": "0895328d-a90c-4c39-969c-ed91df1be8b9",
+      "name": "Split Out1"
+    },
+    {
+      "parameters": {
+        "workflowId": {
+          "__rl": true,
+          "value": "ebHFgEHAB79oLBPX",
+          "mode": "list",
+          "cachedResultUrl": "/workflow/ebHFgEHAB79oLBPX",
+          "cachedResultName": "TL Sync - Process single TL contact"
+        },
+        "workflowInputs": {
+          "mappingMode": "defineBelow",
+          "value": {},
+          "matchingColumns": [],
+          "schema": [],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": true
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.executeWorkflow",
+      "typeVersion": 1.3,
+      "position": [
+        1168,
+        -280
+      ],
+      "id": "ca07e76b-8eab-4f40-820f-c5c9e8b22d34",
+      "name": "Call 'TL Sync - Process single TL contact'"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        720,
+        -400
+      ],
+      "id": "04afd631-1c97-45b6-8b0f-e40f0cb57876",
+      "name": "Loop Over Items1"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        48,
+        -592
+      ],
+      "id": "f2a216ca-6a13-4171-b438-01ca9a53a1f2",
+      "name": "No Operation, do nothing"
+    },
+    {
+      "parameters": {
+        "resume": "timeInterval",
+        "interval": 1,
+        "unit": "seconds"
+      },
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        944,
+        -592
+      ],
+      "id": "5e422eb8-a60f-4d98-86f8-2369549d3a1f",
+      "name": "Wait between batches",
+      "webhookId": "4d9fd598-a8d1-4878-8348-7ebf22bf7290"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "29cdae11-bece-431c-a710-d44b895312c5",
+              "leftValue": "={{ $json.emails[0].email }}",
+              "rightValue": "",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [
+        944,
+        -400
+      ],
+      "id": "edd83bc2-f510-443f-8df9-be1eff57e733",
+      "name": "If email exists"
+    },
+    {
+      "parameters": {
+        "jsCode": "const result = [];\n\nfor (let i = 1; i <= 2000; i++) {\n  result.push(i);\n}\n\nreturn [\n  {\n    json: {\n      numbers: result\n    }\n  }\n];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -848,
+        -400
+      ],
+      "id": "c8d1c611-d94e-41fa-b19e-861ee84ad851",
+      "name": "make array loop"
+    },
+    {
+      "parameters": {
+        "maxItems": 3
+      },
+      "type": "n8n-nodes-base.limit",
+      "typeVersion": 1,
+      "position": [
+        -400,
+        -400
+      ],
+      "id": "5aa1d9dd-ebb7-4d27-8554-9fdf7e7ad862",
+      "name": "Limit"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "loose",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "b592da3f-eaca-4aaf-8b56-5734efa8d50b",
+              "leftValue": "={{ $json.added_at }}",
+              "rightValue": "={{ new Date(Date.now() - 6 * 30 * 24 * 60 * 60 * 1000) }}",
+              "operator": {
+                "type": "dateTime",
+                "operation": "after"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "looseTypeValidation": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.filter",
+      "typeVersion": 2.2,
+      "position": [
+        496,
+        -400
+      ],
+      "id": "a8080626-da02-4957-87e9-7823b1a2e07d",
+      "name": "Filter for 6 months"
+    }
+  ],
+  "connections": {
+    "When clicking 'Execute workflow'": {
+      "main": [
+        [
+          {
+            "node": "make array loop",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "tl_contact_list": {
+      "main": [
+        [
+          {
+            "node": "Split Out1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Limit",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "tl_contact_list",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out1": {
+      "main": [
+        [
+          {
+            "node": "Filter for 6 months",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Call 'TL Sync - Process single TL contact'": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Loop Over Items1": {
+      "main": [
+        [
+          {
+            "node": "Wait between batches",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "If email exists",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait between batches": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If email exists": {
+      "main": [
+        [
+          {
+            "node": "Call 'TL Sync - Process single TL contact'",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "make array loop": {
+      "main": [
+        [
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Limit": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter for 6 months": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {},
+  "meta": {
+    "instanceId": "e8cf95d2c9fdd16336a35a1285e4955e1b9798e373398db9bc4b57be823d2af1"
+  }
+}
