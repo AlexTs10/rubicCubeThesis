@@ -9,6 +9,8 @@ from typing import List, Callable, Optional, Dict, Any
 import time
 from ..cube.rubik_cube import RubikCube
 
+_TIMEOUT = object()
+
 
 class IDAStarSearch:
     """
@@ -45,6 +47,7 @@ class IDAStarSearch:
         # Statistics
         self.nodes_explored = 0
         self.start_time = 0.0
+        self.deadline = 0.0
 
     def search(self, cube: RubikCube) -> Optional[List[str]]:
         """
@@ -57,6 +60,7 @@ class IDAStarSearch:
             List of moves to reach goal, or None if no solution found
         """
         self.start_time = time.time()
+        self.deadline = self.start_time + self.timeout
         self.nodes_explored = 0
 
         # Check if already at goal
@@ -69,13 +73,14 @@ class IDAStarSearch:
         path: List[str] = []
 
         while bound <= self.max_depth:
-            # Check timeout
-            if time.time() - self.start_time > self.timeout:
+            if time.time() >= self.deadline:
                 return None
 
             # Search with current bound
             result = self._search_recursive(cube, path, 0, bound)
 
+            if result is _TIMEOUT:
+                return None
             if isinstance(result, list):
                 # Found solution
                 return result
@@ -111,10 +116,8 @@ class IDAStarSearch:
         """
         self.nodes_explored += 1
 
-        # Check timeout periodically
-        if self.nodes_explored % 10000 == 0:
-            if time.time() - self.start_time > self.timeout:
-                return float('inf')
+        if time.time() >= self.deadline:
+            return _TIMEOUT
 
         # Calculate f = g + h
         h = self.heuristic(cube)
@@ -144,6 +147,8 @@ class IDAStarSearch:
             result = self._search_recursive(next_cube, path, g + 1, bound)
             path.pop()
 
+            if result is _TIMEOUT:
+                return _TIMEOUT
             if isinstance(result, list):
                 return result
             elif result < min_bound:
@@ -214,6 +219,7 @@ class IterativeDeepeningSearch:
         self.timeout = timeout
         self.nodes_explored = 0
         self.start_time = 0.0
+        self.deadline = 0.0
 
     def search(self, cube: RubikCube) -> Optional[List[str]]:
         """
@@ -226,6 +232,7 @@ class IterativeDeepeningSearch:
             List of moves to reach goal, or None if no solution found
         """
         self.start_time = time.time()
+        self.deadline = self.start_time + self.timeout
         self.nodes_explored = 0
 
         # Check if already at goal
@@ -235,11 +242,12 @@ class IterativeDeepeningSearch:
         # Try increasing depths
         for depth in range(1, self.max_depth + 1):
             result = self._depth_limited_search(cube, [], depth)
+            if result is _TIMEOUT:
+                return None
             if result is not None:
                 return result
 
-            # Check timeout
-            if time.time() - self.start_time > self.timeout:
+            if time.time() >= self.deadline:
                 return None
 
         return None
@@ -263,10 +271,8 @@ class IterativeDeepeningSearch:
         """
         self.nodes_explored += 1
 
-        # Check timeout periodically
-        if self.nodes_explored % 10000 == 0:
-            if time.time() - self.start_time > self.timeout:
-                return None
+        if time.time() >= self.deadline:
+            return _TIMEOUT
 
         # Goal check
         if self.goal_check(cube):
@@ -291,6 +297,8 @@ class IterativeDeepeningSearch:
             result = self._depth_limited_search(next_cube, path, depth - 1)
             path.pop()
 
+            if result is _TIMEOUT:
+                return _TIMEOUT
             if result is not None:
                 return result
 

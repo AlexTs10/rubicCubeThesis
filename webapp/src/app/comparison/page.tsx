@@ -88,6 +88,8 @@ export default function ComparisonPage() {
 
     if (format === 'json') {
       content = JSON.stringify({
+        source: 'synthetic-demo',
+        demoOnly: true,
         scramble: scrambleMoves,
         results: results.map(r => ({
           algorithm: r.algorithm,
@@ -95,14 +97,18 @@ export default function ComparisonPage() {
           solutionLength: r.solutionLength,
           timeMs: r.timeMs,
           memoryMb: r.memoryMb,
+          demoOnly: r.demoOnly ?? true,
           solution: r.solution,
+          backend: r.backend,
+          optimality: r.optimality,
+          notes: r.notes,
         })),
         timestamp: new Date().toISOString(),
       }, null, 2);
       filename = 'comparison_results.json';
       mimeType = 'application/json';
     } else {
-      const headers = ['Algorithm', 'Solved', 'Moves', 'Time (ms)', 'Memory (MB)', 'Nodes'];
+      const headers = ['Algorithm', 'Solved', 'Moves', 'Time (ms)', 'Memory (MB)', 'Nodes', 'Demo Only'];
       const rows = results.map(r => [
         r.algorithm,
         r.solved ? 'Yes' : 'No',
@@ -110,6 +116,7 @@ export default function ComparisonPage() {
         r.timeMs.toFixed(2),
         r.memoryMb.toFixed(2),
         r.nodesExplored || 'N/A',
+        r.demoOnly ? 'Yes' : 'No',
       ]);
       content = [headers, ...rows].map(row => row.join(',')).join('\n');
       filename = 'comparison_results.csv';
@@ -133,7 +140,16 @@ export default function ComparisonPage() {
         <h1 className="text-3xl font-bold mb-2">
           <span className="gradient-text">Algorithm Comparison</span>
         </h1>
-        <p className="text-slate-400">Compare all three algorithms side-by-side on the same scramble</p>
+        <p className="text-slate-400">Preview all three algorithms side-by-side on the same scramble</p>
+        <p className="text-sm text-slate-500 mt-2">
+          Demo data follows the corrected benchmark profile, but the Next.js output is synthetic preview data rather than authoritative benchmark telemetry.
+        </p>
+        <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-100">
+          This web comparison view uses benchmark-shaped preview data. The returned move
+          sequences are synthetic and derived from the scramble, so the page should not be cited
+          as benchmark evidence. The authoritative thesis benchmark is produced by the Python
+          evaluation pipeline under <code>results/benchmarks/thesis/</code>.
+        </div>
       </div>
 
       <div className="grid lg:grid-cols-4 gap-8">
@@ -254,7 +270,6 @@ export default function ComparisonPage() {
               <div className="grid md:grid-cols-3 gap-4">
                 {results.map((result) => {
                   const algo = ALGORITHMS[result.algorithm];
-                  const color = result.algorithm === 'thistlethwaite' ? 'yellow' : result.algorithm === 'kociemba' ? 'blue' : 'purple';
 
                   return (
                     <Card
@@ -266,11 +281,18 @@ export default function ComparisonPage() {
                           <span className="text-2xl">{algo.emoji}</span>
                           <span className="font-bold">{algo.name}</span>
                         </div>
-                        {result.solved ? (
-                          <Check className="w-5 h-5 text-green-400" />
-                        ) : (
-                          <X className="w-5 h-5 text-red-400" />
-                        )}
+                        <div className="flex items-center gap-2">
+                          {result.demoOnly && (
+                            <span className="px-2 py-0.5 text-xs bg-amber-500/20 text-amber-300 rounded-full">
+                              Demo only
+                            </span>
+                          )}
+                          {result.solved ? (
+                            <Check className="w-5 h-5 text-green-400" />
+                          ) : (
+                            <X className="w-5 h-5 text-red-400" />
+                          )}
+                        </div>
                       </div>
 
                       {result.solved ? (
@@ -293,6 +315,13 @@ export default function ComparisonPage() {
                             </span>
                             <span className="font-mono">{formatMemory(result.memoryMb)}</span>
                           </div>
+                          {(result.backend || result.optimality) && (
+                            <div className="pt-2 border-t border-slate-700/50 text-xs text-slate-400">
+                              <div>Backend: {result.backend || '-'}</div>
+                              <div>Optimality: {result.optimality || '-'}</div>
+                              {result.demoOnly && <div>Source: synthetic demo preview</div>}
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <div className="text-center text-red-400 py-4">
@@ -336,6 +365,8 @@ export default function ComparisonPage() {
                         <th className="text-right py-3 px-4 text-slate-400 font-medium">Time</th>
                         <th className="text-right py-3 px-4 text-slate-400 font-medium">Memory</th>
                         <th className="text-right py-3 px-4 text-slate-400 font-medium">Nodes</th>
+                        <th className="text-left py-3 px-4 text-slate-400 font-medium">Backend</th>
+                        <th className="text-left py-3 px-4 text-slate-400 font-medium">Optimality</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -362,6 +393,12 @@ export default function ComparisonPage() {
                           </td>
                           <td className="text-right py-3 px-4 font-mono text-slate-400">
                             {result.nodesExplored?.toLocaleString() || '-'}
+                          </td>
+                          <td className="py-3 px-4 text-sm text-slate-300">
+                            {result.backend || '-'}
+                          </td>
+                          <td className="py-3 px-4 text-sm text-slate-300">
+                            {result.optimality || '-'}
                           </td>
                         </tr>
                       ))}
@@ -403,6 +440,9 @@ export default function ComparisonPage() {
               {/* Solutions */}
               <Card>
                 <h2 className="text-lg font-bold mb-4">Solution Sequences</h2>
+                <p className="mb-4 text-sm text-slate-400">
+                  The sequences below are synthetic preview outputs derived from the scramble. Use the thesis benchmark artifacts for citation or comparison.
+                </p>
                 <div className="space-y-4">
                   {results.filter(r => r.solved).map((result) => (
                     <details key={result.algorithm} className="group">

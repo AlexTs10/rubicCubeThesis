@@ -1,0 +1,84 @@
+{
+  "total_cases": 2,
+  "failures": [],
+  "results": [
+    {
+      "scramble": [
+        "D",
+        "F2",
+        "D'",
+        "R2",
+        "U2",
+        "L'"
+      ],
+      "expected_depth": 6,
+      "category": "oracle_sample",
+      "native_length": 6,
+      "native_stats": {
+        "time": 1.8338592052459717,
+        "moves": 6,
+        "solution_length": 6,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 8068,
+        "iterations": 3,
+        "initial_bound": 4,
+        "final_bound": 6,
+        "max_depth": 8,
+        "max_depth_limit": 8,
+        "heuristic": "NativeCoordinateHeuristic",
+        "heuristic_name": "NativeCoordinateHeuristic"
+      },
+      "oracle_length": 6,
+      "oracle_stats": {
+        "time": 0.014241933822631836,
+        "moves": 6,
+        "optimal": true,
+        "raw_solution": "L1 U2 R2 D1 F2 D3 (6f*)",
+        "timed_out": false,
+        "nodes_explored": 53
+      }
+    },
+    {
+      "scramble": [
+        "U'",
+        "F",
+        "R'",
+        "U",
+        "R2",
+        "F"
+      ],
+      "expected_depth": 6,
+      "category": "oracle_sample",
+      "native_length": 6,
+      "native_stats": {
+        "time": 0.17958807945251465,
+        "moves": 6,
+        "solution_length": 6,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 631,
+        "iterations": 2,
+        "initial_bound": 5,
+        "final_bound": 6,
+        "max_depth": 8,
+        "max_depth_limit": 8,
+        "heuristic": "NativeCoordinateHeuristic",
+        "heuristic_name": "NativeCoordinateHeuristic"
+      },
+      "oracle_length": 6,
+      "oracle_stats": {
+        "time": 0.0025229454040527344,
+        "moves": 6,
+        "optimal": true,
+        "raw_solution": "F3 R2 U3 R1 F3 U1 (6f*)",
+        "timed_out": false,
+        "nodes_explored": 25
+      }
+    }
+  ]
+}

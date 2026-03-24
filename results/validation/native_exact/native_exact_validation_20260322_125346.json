@@ -1,0 +1,86 @@
+{
+  "total_cases": 2,
+  "failures": [],
+  "results": [
+    {
+      "scramble": [
+        "D",
+        "F2",
+        "D'",
+        "R2",
+        "U2",
+        "L'",
+        "U'"
+      ],
+      "expected_depth": 7,
+      "category": "oracle_sample",
+      "native_length": 7,
+      "native_stats": {
+        "time": 2.698451042175293,
+        "moves": 7,
+        "solution_length": 7,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 12339,
+        "iterations": 4,
+        "initial_bound": 4,
+        "final_bound": 7,
+        "max_depth": 9,
+        "max_depth_limit": 9,
+        "heuristic": "NativeCoordinateHeuristic",
+        "heuristic_name": "NativeCoordinateHeuristic"
+      },
+      "oracle_length": 7,
+      "oracle_stats": {
+        "time": 0.004251956939697266,
+        "moves": 7,
+        "optimal": true,
+        "raw_solution": "U1 L1 U2 R2 D1 F2 D3 (7f*)",
+        "timed_out": false,
+        "nodes_explored": 51
+      }
+    },
+    {
+      "scramble": [
+        "U",
+        "F",
+        "R'",
+        "U",
+        "R2",
+        "F",
+        "R2"
+      ],
+      "expected_depth": 7,
+      "category": "oracle_sample",
+      "native_length": 7,
+      "native_stats": {
+        "time": 2.0199990272521973,
+        "moves": 7,
+        "solution_length": 7,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 13218,
+        "iterations": 3,
+        "initial_bound": 5,
+        "final_bound": 7,
+        "max_depth": 9,
+        "max_depth_limit": 9,
+        "heuristic": "NativeCoordinateHeuristic",
+        "heuristic_name": "NativeCoordinateHeuristic"
+      },
+      "oracle_length": 7,
+      "oracle_stats": {
+        "time": 0.0014879703521728516,
+        "moves": 7,
+        "optimal": true,
+        "raw_solution": "R2 F3 R2 U3 R1 F3 U3 (7f*)",
+        "timed_out": false,
+        "nodes_explored": 29
+      }
+    }
+  ]
+}

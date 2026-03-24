@@ -190,15 +190,18 @@ pip install -r requirements.txt
 - Export to JSON for integration with Phase 8 results
 - Export to Markdown for thesis inclusion
 
-## Scramble Depth Guidelines
+## Observed Thesis Benchmark Profile
 
-| Depth | Difficulty | Thistlethwaite | Kociemba | Korf |
-|-------|-----------|----------------|----------|------|
-| 5-7   | Easy      | <0.1s          | <1s      | <2s  |
-| 8-10  | Medium    | <0.3s          | 1-3s     | 2-10s|
-| 11-15 | Hard      | <0.5s          | 2-8s     | 5-60s|
-| 16-20 | Very Hard | <1s            | 5-20s    | 10s-5min|
-| 20+   | Extreme   | <2s            | 10-60s   | May timeout|
+These are the measured averages from the canonical 100-scramble thesis corpus, not guaranteed runtime bounds.
+
+| Depth | Thistlethwaite | Kociemba | Korf |
+|-------|----------------|----------|------|
+| 5     | 0.054s avg, 25/25 solved | 0.374s avg, 25/25 solved | 0.001s avg, 25/25 solved |
+| 10    | 1.054s avg, 25/25 solved | 0.201s avg, 25/25 solved | 0.002s avg, 25/25 solved |
+| 15    | 2.029s avg, 25/25 solved | 8.163s avg, 25/25 solved | 0.424s avg, 25/25 solved |
+| 20    | 1.821s avg, 25/25 solved | 9.749s avg, 25/25 solved | 11.229s avg on solved cases, 22/25 solved |
+
+For live demos, depth 10 remains the safest default. Korf is still timeout-sensitive at depth 20, so treat it as an exact-search showcase rather than a predictable default.
 
 ## Troubleshooting
 

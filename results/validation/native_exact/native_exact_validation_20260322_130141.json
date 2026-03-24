@@ -1,0 +1,88 @@
+{
+  "total_cases": 2,
+  "failures": [],
+  "results": [
+    {
+      "scramble": [
+        "D",
+        "F2",
+        "D'",
+        "R2",
+        "U2",
+        "L'",
+        "U'",
+        "F"
+      ],
+      "expected_depth": 8,
+      "category": "oracle_sample",
+      "native_length": 8,
+      "native_stats": {
+        "time": 10.383847713470459,
+        "moves": 8,
+        "solution_length": 8,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 133953,
+        "iterations": 5,
+        "initial_bound": 4,
+        "final_bound": 8,
+        "max_depth": 10,
+        "max_depth_limit": 10,
+        "heuristic": "NativeCoordinateHeuristic",
+        "heuristic_name": "NativeCoordinateHeuristic"
+      },
+      "oracle_length": 8,
+      "oracle_stats": {
+        "time": 0.003113985061645508,
+        "moves": 8,
+        "optimal": true,
+        "raw_solution": "F3 U1 L1 U2 R2 D1 F2 D3 (8f*)",
+        "timed_out": false,
+        "nodes_explored": 60
+      }
+    },
+    {
+      "scramble": [
+        "F'",
+        "R'",
+        "U",
+        "R2",
+        "F",
+        "R2",
+        "F'",
+        "L2"
+      ],
+      "expected_depth": 8,
+      "category": "oracle_sample",
+      "native_length": 8,
+      "native_stats": {
+        "time": 3.09525990486145,
+        "moves": 8,
+        "solution_length": 8,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 40870,
+        "iterations": 3,
+        "initial_bound": 6,
+        "final_bound": 8,
+        "max_depth": 10,
+        "max_depth_limit": 10,
+        "heuristic": "NativeCoordinateHeuristic",
+        "heuristic_name": "NativeCoordinateHeuristic"
+      },
+      "oracle_length": 8,
+      "oracle_stats": {
+        "time": 0.0018749237060546875,
+        "moves": 8,
+        "optimal": true,
+        "raw_solution": "L2 F1 R2 F3 R2 U3 R1 F1 (8f*)",
+        "timed_out": false,
+        "nodes_explored": 42
+      }
+    }
+  ]
+}

@@ -20,6 +20,10 @@ Usage:
 """
 
 import json
+from ..utils.runtime_cache import ensure_matplotlib_cache
+
+ensure_matplotlib_cache()
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
@@ -151,8 +155,8 @@ class VisualizationGenerator:
                 str(output_path / 'fig6_nodes_comparison.png')
             )
 
-        # Figure 7: Performance vs Scramble Depth (Line Chart)
-        print("7. Performance vs Scramble Depth...")
+        # Figure 7: Average Solution Length vs Scramble Depth (Line Chart)
+        print("7. Average Solution Length vs Scramble Depth...")
         self.plot_performance_vs_depth(
             str(output_path / 'fig7_performance_vs_depth.png')
         )
@@ -184,7 +188,7 @@ class VisualizationGenerator:
             return
 
         # Create box plot
-        bp = ax.boxplot(data_to_plot, labels=labels, patch_artist=True,
+        bp = ax.boxplot(data_to_plot, tick_labels=labels, patch_artist=True,
                         showmeans=True, meanline=True)
 
         # Color boxes
@@ -365,7 +369,7 @@ class VisualizationGenerator:
             return
 
         # Create box plot
-        bp = ax.boxplot(data_to_plot, labels=labels, patch_artist=True,
+        bp = ax.boxplot(data_to_plot, tick_labels=labels, patch_artist=True,
                         showmeans=True, meanline=True)
 
         # Color boxes
@@ -383,7 +387,7 @@ class VisualizationGenerator:
         print(f"  ✓ Saved: {output_path}")
 
     def plot_performance_vs_depth(self, output_path: str):
-        """Generate line chart showing performance vs scramble depth."""
+        """Generate line chart showing average solution length vs scramble depth."""
         fig, ax = plt.subplots(figsize=(12, 6))
 
         # Calculate average solution length by depth for each algorithm
@@ -405,7 +409,7 @@ class VisualizationGenerator:
 
         ax.set_xlabel('Scramble Depth (moves)')
         ax.set_ylabel('Average Solution Length (moves)')
-        ax.set_title('Algorithm Performance vs Scramble Depth')
+        ax.set_title('Average Solution Length vs Scramble Depth')
         ax.legend()
         ax.grid(True, alpha=0.3)
 

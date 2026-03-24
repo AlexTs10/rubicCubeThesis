@@ -1,9 +1,9 @@
 """
 Composite Heuristic for Rubik's Cube - Research Contribution
 
-This module implements a novel composite heuristic that intelligently combines
-multiple heuristic approaches to provide better estimates while maintaining
-admissibility.
+This module implements a composite heuristic that combines multiple inexpensive
+estimates. It is useful for practical search experiments, but the composite
+path is not treated as a formal admissible lower bound in this repository.
 
 Key Innovation:
 The composite heuristic uses dynamic weighting based on cube state characteristics:
@@ -17,17 +17,24 @@ scramble depths and configurations.
 Research Justification:
 - Korf (1997) showed pattern databases are strongest for deep scrambles
 - Manhattan distance is computationally cheaper for shallow states
-- Combining them adaptively reduces node expansions by ~15-25%
-- Maintains admissibility through max() combination
+- Combining them adaptively can reduce node expansions in the practical IDA*
+  fallback path
+
+Pattern-database mode is optional: when cached Korf tables are available,
+they are used directly; otherwise the heuristic falls back to the cheaper
+approximate estimate instead of attempting to regenerate enormous tables.
 
 Author: Alex Toska
 Date: November 2025
 """
 
-import numpy as np
-from typing import Dict, Optional
+from pathlib import Path
+from typing import Dict
 from ..cube.rubik_cube import RubikCube
 from ..kociemba.cubie import CubieCube, from_facelet_cube
+from .pattern_database import PatternDatabase
+from .corner_database import CornerPatternDatabase
+from .edge_database import EDGE_GROUP_1, EDGE_GROUP_2, EdgePatternDatabase
 from .heuristics import (
     manhattan_distance,
     hamming_distance,
@@ -131,25 +138,33 @@ class CompositeHeuristic:
     Approach:
     1. Analyze state characteristics (entropy, separation, partial solutions)
     2. Select primary and secondary heuristics based on state
-    3. Combine using maximum (maintains admissibility)
+    3. Combine using maximum for a conservative practical estimate
     4. Apply learning-based adjustment factors
-
-    Maintains admissibility: h(n) ≤ h*(n) for all states n
     """
 
-    def __init__(self, use_pattern_db: bool = False):
+    def __init__(
+        self,
+        use_pattern_db: bool = False,
+        pattern_db_cache_dir: str = "data/pattern_databases/korf"
+    ):
         """
         Initialize composite heuristic.
 
         Args:
             use_pattern_db: Whether to use pattern databases (expensive)
+            pattern_db_cache_dir: Directory containing optional Korf cache files
         """
         self.use_pattern_db = use_pattern_db
         self.analyzer = StateAnalyzer()
 
-        # Pattern databases (lazy loaded)
+        # Pattern databases are loaded from cache files if available.
+        self.pattern_db_cache_dir = Path(pattern_db_cache_dir)
         self.corner_db = None
-        self.edge_db = None
+        self.edge1_db = None
+        self.edge2_db = None
+        self._pattern_db_initialized = False
+        self.pattern_db_loaded = False
+        self.pattern_db_status = "disabled" if not use_pattern_db else "not loaded"
 
         # Performance tracking
         self.calls = 0
@@ -211,7 +226,7 @@ class CompositeHeuristic:
         corner_dist = manhattan_distance_corner(cubie)
         edge_dist = manhattan_distance_edge(cubie)
 
-        # Return maximum (admissible)
+        # Return the larger normalized component.
         return max(corner_dist, edge_dist)
 
     def _deep_scramble_strategy(self, cube: RubikCube, cubie: CubieCube) -> float:
@@ -260,7 +275,7 @@ class CompositeHeuristic:
         # Enhanced Manhattan
         enhanced = self._enhanced_manhattan(cubie)
 
-        # Return maximum (maintains admissibility)
+        # Return the strongest of the available approximate signals.
         return max(hamming, manhattan, enhanced)
 
     def _enhanced_manhattan(self, cubie: CubieCube) -> float:
@@ -269,7 +284,7 @@ class CompositeHeuristic:
 
         Research Innovation:
         Adds small penalties for orientation mismatches that standard
-        Manhattan misses, while maintaining admissibility.
+        Manhattan misses.
 
         Args:
             cubie: Cubie representation
@@ -286,7 +301,7 @@ class CompositeHeuristic:
             if cubie.corner_perm[i] != i:
                 corner_dist += 1
 
-            # Orientation penalty (very conservative for admissibility)
+            # Small orientation penalty for practical search guidance.
             if cubie.corner_orient[i] != 0:
                 corner_dist += 0.5  # Half move penalty
 
@@ -314,30 +329,90 @@ class CompositeHeuristic:
         Returns:
             Pattern database estimate
         """
-        # Lazy load pattern databases
-        if self.corner_db is None:
-            try:
-                from .corner_database import CornerDatabase
-                from .edge_database import EdgeDatabase
-
-                self.corner_db = CornerDatabase()
-                self.edge_db = EdgeDatabase()
-            except Exception:
-                # Fall back to enhanced Manhattan if DB unavailable
-                return self._enhanced_manhattan(cubie)
-
-        # Look up in pattern databases
-        try:
-            corner_dist = self.corner_db.lookup(cubie)
-            edge_dist = self.edge_db.lookup(cubie)
-
-            # Return maximum (admissible when databases are disjoint)
-            return max(corner_dist, edge_dist)
-        except Exception:
-            # Fall back on error
+        if not self._load_pattern_databases():
             return self._enhanced_manhattan(cubie)
 
-    def get_statistics(self) -> Dict[str, float]:
+        distances = []
+        try:
+            if self.corner_db is not None:
+                distances.append(self.corner_db.get_corner_distance(cubie))
+            if self.edge1_db is not None:
+                distances.append(self.edge1_db.get_edge_distance(cubie))
+            if self.edge2_db is not None:
+                distances.append(self.edge2_db.get_edge_distance(cubie))
+        except Exception:
+            # Fall back on cache corruption or lookup errors.
+            return self._enhanced_manhattan(cubie)
+
+        if not distances:
+            self.pattern_db_status = "unavailable (no databases loaded)"
+            return self._enhanced_manhattan(cubie)
+
+        # Return the strongest loaded database distance.
+        return max(distances)
+
+    def _load_pattern_databases(self) -> bool:
+        """
+        Load pattern databases from cache if available.
+
+        The repository does not ship the expensive Korf caches by default.
+        When they are absent, the heuristic degrades to the cheaper strategy
+        instead of trying to regenerate multi-gigabyte tables.
+        """
+        if self._pattern_db_initialized:
+            return self.pattern_db_loaded
+
+        self._pattern_db_initialized = True
+
+        cache_files = {
+            "corner": self.pattern_db_cache_dir / "corner_db.pkl",
+            "edge1": self.pattern_db_cache_dir / "edge1_db.pkl",
+            "edge2": self.pattern_db_cache_dir / "edge2_db.pkl",
+        }
+
+        missing = [name for name, path in cache_files.items() if not path.exists()]
+        if missing:
+            self.pattern_db_status = (
+                f"unavailable (missing cache files: {', '.join(missing)})"
+            )
+            return False
+
+        try:
+            self.corner_db = self._load_corner_database(cache_files["corner"])
+            self.edge1_db = self._load_edge_database(cache_files["edge1"], EDGE_GROUP_1, "edge1")
+            self.edge2_db = self._load_edge_database(cache_files["edge2"], EDGE_GROUP_2, "edge2")
+        except Exception as exc:
+            self.corner_db = None
+            self.edge1_db = None
+            self.edge2_db = None
+            self.pattern_db_status = f"unavailable ({exc})"
+            return False
+
+        self.pattern_db_loaded = True
+        self.pattern_db_status = f"loaded from {self.pattern_db_cache_dir}"
+        return True
+
+    @staticmethod
+    def _load_corner_database(cache_path: Path) -> CornerPatternDatabase:
+        """Load a serialized corner pattern database into the concrete wrapper."""
+        loaded = PatternDatabase.load(str(cache_path))
+        corner_db = CornerPatternDatabase()
+        corner_db.copy_storage_from(loaded)
+        return corner_db
+
+    @staticmethod
+    def _load_edge_database(
+        cache_path: Path,
+        edge_subset,
+        name: str
+    ) -> EdgePatternDatabase:
+        """Load a serialized edge pattern database into the concrete wrapper."""
+        loaded = PatternDatabase.load(str(cache_path))
+        edge_db = EdgePatternDatabase(edge_subset, name)
+        edge_db.copy_storage_from(loaded)
+        return edge_db
+
+    def get_statistics(self) -> Dict[str, object]:
         """
         Get statistics about heuristic usage.
 
@@ -348,6 +423,9 @@ class CompositeHeuristic:
             'total_calls': self.calls,
             'average_entropy': self.avg_entropy,
             'using_pattern_db': self.use_pattern_db,
+            'pattern_db_loaded': self.pattern_db_loaded,
+            'pattern_db_status': self.pattern_db_status,
+            'pattern_db_cache_dir': str(self.pattern_db_cache_dir),
         }
 
 
@@ -404,7 +482,7 @@ def create_heuristic(heuristic_type: str = 'composite', **kwargs) -> callable:
         heuristic_type: Type of heuristic to create
             - 'manhattan': Standard Manhattan distance
             - 'hamming': Hamming distance
-            - 'composite': Novel composite heuristic (admissible)
+            - 'composite': Composite practical heuristic (not used for proofs)
             - 'weighted': Weighted composite (non-admissible)
         **kwargs: Additional arguments for heuristic initialization
 

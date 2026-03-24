@@ -111,7 +111,7 @@ jupyter nbextension enable --py widgetsnbextension
 
 ```bash
 # From project root
-cd /home/user/rubicCubeThesis
+cd "$(git rev-parse --show-toplevel)"
 
 # Start Jupyter Lab (recommended)
 jupyter lab notebooks/
@@ -160,7 +160,7 @@ Each notebook includes:
 
 - Use `05_Algorithm_Comparison` for benchmarking
 - Export results to JSON for further analysis
-- Modify `06_Custom_Experiments` for your needs
+- Duplicate `05_Algorithm_Comparison.ipynb` or `06_Conclusion.ipynb` if you want a custom experiment notebook
 - Integrate with Phase 8 comprehensive testing
 
 ### For Thesis
@@ -181,7 +181,7 @@ from src.cube.rubik_cube import RubikCube
 
 # Create scramble
 cube = RubikCube()
-cube.scramble(n_moves=10, seed=42)
+cube.scramble(moves=10, seed=42)
 
 # Compare algorithms
 comparison = AlgorithmComparison()
@@ -196,14 +196,15 @@ print(f"Korf: {result.korf.solution_length} moves")
 ### Visualization
 
 ```python
-from src.cube.visualize_3d import visualize_cube_3d
+from src.cube.visualize_3d import visualize_3d
 import matplotlib.pyplot as plt
+from src.cube.rubik_cube import RubikCube
 
 # Create and visualize cube
 cube = RubikCube()
-cube.scramble(n_moves=15)
+cube.scramble(moves=15)
 
-fig = visualize_cube_3d(cube)
+fig = visualize_3d(cube, show=False)
 plt.show()
 ```
 
@@ -278,7 +279,7 @@ jupyter nbconvert --to html notebooks/01_Introduction.ipynb
 
 To create your own analysis notebook:
 
-1. Copy `06_Custom_Experiments.ipynb` as a template
+1. Copy `05_Algorithm_Comparison.ipynb` as a starting point
 2. Add your imports and setup
 3. Use the comparison framework for testing
 4. Export results for thesis inclusion

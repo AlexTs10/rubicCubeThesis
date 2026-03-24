@@ -1,0 +1,72 @@
+{
+  "total_cases": 2,
+  "failures": [
+    {
+      "category": "native_incomplete",
+      "scramble": [
+        "D",
+        "F2",
+        "D'",
+        "R2",
+        "U2",
+        "L'",
+        "U'",
+        "F",
+        "R'"
+      ],
+      "message": "native solver did not complete for expected depth 9",
+      "native_stats": {
+        "time": 20.000394821166992,
+        "moves": null,
+        "solution_length": null,
+        "optimal": false,
+        "completed": false,
+        "timed_out": true,
+        "depth_limit_reached": false,
+        "nodes_explored": 310908,
+        "iterations": 6,
+        "initial_bound": 4,
+        "final_bound": 9,
+        "max_depth": 11,
+        "max_depth_limit": 11,
+        "heuristic": "NativeCoordinateHeuristic",
+        "heuristic_name": "NativeCoordinateHeuristic"
+      },
+      "oracle_stats": null
+    },
+    {
+      "category": "native_incomplete",
+      "scramble": [
+        "U",
+        "R2",
+        "F",
+        "R2",
+        "F'",
+        "L2",
+        "F2",
+        "U",
+        "D2"
+      ],
+      "message": "native solver did not complete for expected depth 9",
+      "native_stats": {
+        "time": 20.000579118728638,
+        "moves": null,
+        "solution_length": null,
+        "optimal": false,
+        "completed": false,
+        "timed_out": true,
+        "depth_limit_reached": false,
+        "nodes_explored": 278605,
+        "iterations": 6,
+        "initial_bound": 4,
+        "final_bound": 9,
+        "max_depth": 11,
+        "max_depth_limit": 11,
+        "heuristic": "NativeCoordinateHeuristic",
+        "heuristic_name": "NativeCoordinateHeuristic"
+      },
+      "oracle_stats": null
+    }
+  ],
+  "results": []
+}

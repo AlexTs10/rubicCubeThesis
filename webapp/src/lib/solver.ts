@@ -1,79 +1,163 @@
 import { Algorithm, CubeState, Move, SolveResult } from '@/types/cube';
-import { applyMoves, generateScramble, isSolved, inverseMoves } from './cube';
+import { applyMoves, isSolved, inverseMoves } from './cube';
 import { SOLVED_STATE } from './constants';
 
-// Simulated solver results (in a real app, this would call a backend API)
-// This provides realistic-looking demo data
+// Synthetic demo results. The Next.js frontend is intentionally decoupled from
+// the authoritative thesis benchmark pipeline.
 
-function simulateSolveTime(algorithm: Algorithm, scrambleDepth: number): number {
-  const baseTime = {
-    thistlethwaite: 200,
-    kociemba: 1500,
-    korf: 5000,
-  }[algorithm];
+function hashString(input: string): number {
+  let hash = 2166136261;
 
-  // Add some randomness based on scramble depth
-  const variance = Math.random() * 0.5 + 0.75;
-  const depthFactor = 1 + (scrambleDepth - 10) * 0.05;
+  for (let i = 0; i < input.length; i += 1) {
+    hash ^= input.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
 
-  return Math.round(baseTime * variance * depthFactor);
+  return hash >>> 0;
 }
 
-function simulateSolutionLength(algorithm: Algorithm): number {
+function createDeterministicRng(...parts: string[]): () => number {
+  let state = hashString(parts.join('|')) || 0x6d2b79f5;
+
+  return () => {
+    state = (state + 0x6d2b79f5) >>> 0;
+    let value = state;
+    value ^= value >>> 15;
+    value = Math.imul(value, value | 1);
+    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
+    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function sampleInRange(rng: () => number, min: number, max: number): number {
+  return min + rng() * (max - min);
+}
+
+function scrambleSignature(scramble: Move[]): string {
+  return scramble.join(' ');
+}
+
+function backendInfo(algorithm: Algorithm): Pick<SolveResult, 'backend' | 'optimality' | 'notes'> {
   switch (algorithm) {
     case 'thistlethwaite':
-      return Math.floor(Math.random() * 23) + 30; // 30-52
+      return {
+        backend: 'synthetic demo backend',
+        optimality: 'not guaranteed',
+        notes: 'Demo output is derived from the scramble, not live solver telemetry.',
+      };
     case 'kociemba':
-      return Math.floor(Math.random() * 5) + 15; // 15-19
+      return {
+        backend: 'synthetic demo backend',
+        optimality: 'near-optimal',
+        notes: 'Demo output is derived from the scramble, not live solver telemetry.',
+      };
     case 'korf':
-      return Math.floor(Math.random() * 5) + 16; // 16-20
+      return {
+        backend: 'synthetic demo backend',
+        optimality: 'exact when solved',
+        notes: 'Demo output is derived from the scramble, not live solver telemetry.',
+      };
   }
 }
 
-function simulateMemoryUsage(algorithm: Algorithm): number {
-  const baseMem = {
-    thistlethwaite: 25,
-    kociemba: 80,
-    korf: 150,
-  }[algorithm];
+function simulateSolveTime(
+  algorithm: Algorithm,
+  scrambleDepth: number,
+  rng: () => number
+): number {
+  if (algorithm === 'thistlethwaite') {
+    if (scrambleDepth <= 5) return Math.round(sampleInRange(rng, 40, 90));
+    if (scrambleDepth <= 10) return Math.round(sampleInRange(rng, 700, 1400));
+    if (scrambleDepth <= 15) return Math.round(sampleInRange(rng, 1500, 2600));
+    return Math.round(sampleInRange(rng, 1400, 2600));
+  }
 
-  return Math.round((baseMem + Math.random() * 20) * 100) / 100;
+  if (algorithm === 'kociemba') {
+    if (scrambleDepth <= 5) return Math.round(sampleInRange(rng, 250, 500));
+    if (scrambleDepth <= 10) return Math.round(sampleInRange(rng, 120, 350));
+    if (scrambleDepth <= 15) return Math.round(sampleInRange(rng, 6000, 10000));
+    return Math.round(sampleInRange(rng, 7000, 12000));
+  }
+
+  if (scrambleDepth <= 5) return Math.round(sampleInRange(rng, 1, 5));
+  if (scrambleDepth <= 10) return Math.round(sampleInRange(rng, 1, 8));
+  if (scrambleDepth <= 15) return Math.round(sampleInRange(rng, 200, 800));
+  return Math.round(sampleInRange(rng, 7000, 14000));
 }
 
-function simulateNodesExplored(algorithm: Algorithm, solutionLength: number): number {
-  const multiplier = {
-    thistlethwaite: 100,
-    kociemba: 500,
-    korf: 2000,
-  }[algorithm];
+function simulateMemoryUsage(
+  algorithm: Algorithm,
+  scrambleDepth: number,
+  rng: () => number
+): number {
+  let value = 0;
 
-  return Math.floor(solutionLength * multiplier * (Math.random() * 0.5 + 0.75));
+  switch (algorithm) {
+    case 'thistlethwaite':
+      value = sampleInRange(rng, 2.0, 5.0);
+      break;
+    case 'kociemba':
+      value = sampleInRange(rng, 0.5, 2.5);
+      break;
+    case 'korf':
+      if (scrambleDepth <= 10) value = sampleInRange(rng, 1.0, 5.0);
+      else if (scrambleDepth <= 15) value = sampleInRange(rng, 80, 180);
+      else value = sampleInRange(rng, 180, 360);
+      break;
+  }
+
+  return Math.round(value * 100) / 100;
 }
 
-// Generate a plausible solution (for demo purposes)
-function generateDemoSolution(scramble: Move[], algorithm: Algorithm): Move[] {
-  const length = simulateSolutionLength(algorithm);
+function simulateNodesExplored(
+  algorithm: Algorithm,
+  scrambleDepth: number,
+  solutionLength: number,
+  rng: () => number
+): number {
+  if (algorithm === 'korf') {
+    if (scrambleDepth <= 5) return Math.round(sampleInRange(rng, 20, 120));
+    if (scrambleDepth <= 10) return Math.round(sampleInRange(rng, 80, 300));
+    if (scrambleDepth <= 15) return Math.round(sampleInRange(rng, 20000, 180000));
+    return Math.round(sampleInRange(rng, 2000000, 12000000));
+  }
 
-  // For demo: just generate random moves of appropriate length
-  // In real app, this would be actual solver output
-  return generateScramble(length);
+  const multiplier = algorithm === 'thistlethwaite' ? 100 : 500;
+  return Math.floor(solutionLength * multiplier * sampleInRange(rng, 0.75, 1.25));
+}
+
+// Generate a valid synthetic solution for demo purposes.
+function generateDemoSolution(scramble: Move[]): Move[] {
+  return inverseMoves(scramble);
 }
 
 // Main solve function
 export async function solveCube(
-  state: CubeState,
+  _state: CubeState,
   scramble: Move[],
   algorithm: Algorithm,
   timeout: number = 30000
 ): Promise<SolveResult> {
   const startTime = performance.now();
+  const metadata = backendInfo(algorithm);
+  const scrambleState = applyMoves({ ...SOLVED_STATE }, scramble);
+  const scrambleKey = scrambleSignature(scramble);
+  const solveTimeRng = createDeterministicRng('solve-time', algorithm, scrambleKey);
+  const memoryRng = createDeterministicRng('memory', algorithm, scrambleKey);
+  const nodesRng = createDeterministicRng('nodes', algorithm, scrambleKey);
+  const timeoutRng = createDeterministicRng('timeout', algorithm, scrambleKey);
 
   // Simulate async solving with timeout
   return new Promise((resolve) => {
-    const solveTime = simulateSolveTime(algorithm, scramble.length);
+    const solveTime = simulateSolveTime(algorithm, scramble.length, solveTimeRng);
+    const shouldTimeout =
+      algorithm === 'korf' &&
+      scramble.length >= 20 &&
+      timeout <= 120000 &&
+      timeoutRng() < 0.12;
 
     // Check if it would timeout
-    if (solveTime > timeout) {
+    if (solveTime > timeout || shouldTimeout) {
       setTimeout(() => {
         resolve({
           algorithm,
@@ -81,8 +165,14 @@ export async function solveCube(
           solution: [],
           solutionLength: 0,
           timeMs: timeout,
-          memoryMb: simulateMemoryUsage(algorithm),
-          error: 'Timeout exceeded',
+          memoryMb: simulateMemoryUsage(algorithm, scramble.length, memoryRng),
+          backend: metadata.backend,
+          optimality: metadata.optimality,
+          notes: metadata.notes,
+          demoOnly: true,
+          error: algorithm === 'korf'
+            ? 'Timeout exceeded on a hard exact-search case'
+            : 'Timeout exceeded',
         });
       }, Math.min(timeout, 1000)); // Cap actual wait to 1s for demo
       return;
@@ -90,8 +180,26 @@ export async function solveCube(
 
     // Simulate actual solving
     setTimeout(() => {
-      const solution = generateDemoSolution(scramble, algorithm);
+      const solution = generateDemoSolution(scramble);
+      const solvedState = applyMoves(scrambleState, solution);
       const actualTime = performance.now() - startTime;
+
+      if (!isSolved(solvedState)) {
+        resolve({
+          algorithm,
+          solved: false,
+          solution: [],
+          solutionLength: 0,
+          timeMs: Math.max(solveTime, actualTime),
+          memoryMb: simulateMemoryUsage(algorithm, scramble.length, memoryRng),
+          backend: metadata.backend,
+          optimality: metadata.optimality,
+          notes: metadata.notes,
+          demoOnly: true,
+          error: 'Synthetic demo solution failed validation',
+        });
+        return;
+      }
 
       resolve({
         algorithm,
@@ -99,8 +207,12 @@ export async function solveCube(
         solution,
         solutionLength: solution.length,
         timeMs: Math.max(solveTime, actualTime),
-        memoryMb: simulateMemoryUsage(algorithm),
-        nodesExplored: simulateNodesExplored(algorithm, solution.length),
+        memoryMb: simulateMemoryUsage(algorithm, scramble.length, memoryRng),
+        nodesExplored: simulateNodesExplored(algorithm, scramble.length, solution.length, nodesRng),
+        backend: metadata.backend,
+        optimality: metadata.optimality,
+        notes: metadata.notes,
+        demoOnly: true,
       });
     }, Math.min(solveTime / 10, 500)); // Speed up for demo
   });
@@ -148,19 +260,35 @@ export function analyzeResults(results: SolveResult[]): {
   fewestMoves: Algorithm | null;
   leastMemory: Algorithm | null;
 } {
-  const solved = results.filter(r => r.solved);
+  const solved = results.filter((r) => r.solved);
 
-  if (solved.length === 0) {
-    return { fastest: null, fewestMoves: null, leastMemory: null };
-  }
+  const selectUniqueBest = (selector: (result: SolveResult) => number): Algorithm | null => {
+    if (solved.length === 0) {
+      return null;
+    }
 
-  const fastest = solved.reduce((a, b) => a.timeMs < b.timeMs ? a : b);
-  const fewestMoves = solved.reduce((a, b) => a.solutionLength < b.solutionLength ? a : b);
-  const leastMemory = solved.reduce((a, b) => a.memoryMb < b.memoryMb ? a : b);
+    let bestValue = Number.POSITIVE_INFINITY;
+    let bestAlgorithm: Algorithm | null = null;
+    let tie = false;
+
+    for (const result of solved) {
+      const value = selector(result);
+
+      if (value < bestValue) {
+        bestValue = value;
+        bestAlgorithm = result.algorithm;
+        tie = false;
+      } else if (value === bestValue) {
+        tie = true;
+      }
+    }
+
+    return tie ? null : bestAlgorithm;
+  };
 
   return {
-    fastest: fastest.algorithm,
-    fewestMoves: fewestMoves.algorithm,
-    leastMemory: leastMemory.algorithm,
+    fastest: selectUniqueBest((result) => result.timeMs),
+    fewestMoves: selectUniqueBest((result) => result.solutionLength),
+    leastMemory: selectUniqueBest((result) => result.memoryMb),
   };
 }

@@ -19,11 +19,28 @@ References:
 """
 
 import time
-import psutil
 import os
 from typing import List, Dict, Any, Optional, Callable
 from dataclasses import dataclass, asdict
 import json
+
+try:
+    import psutil
+except ModuleNotFoundError:  # pragma: no cover - depends on optional psutil
+    class _MemoryInfo:
+        rss = 0
+
+    class _FallbackProcess:
+        def __init__(self, pid: int):
+            self.pid = pid
+
+        def memory_info(self):
+            return _MemoryInfo()
+
+    class _PsutilFallback:
+        Process = _FallbackProcess
+
+    psutil = _PsutilFallback()
 
 from ..cube.rubik_cube import RubikCube
 from .a_star import AStarSolver, IDAStarSolver
@@ -80,6 +97,11 @@ class SolverComparison:
         self.max_time_per_solve = max_time_per_solve
         self.results: List[SolveResult] = []
         self.process = psutil.Process(os.getpid())
+
+    @staticmethod
+    def _memory_delta_mb(mem_before: float, mem_after: float) -> float:
+        """Clamp RSS deltas so transient GC does not report negative memory."""
+        return max(mem_after - mem_before, 0.0)
 
     def run_comparison(
         self,
@@ -200,7 +222,7 @@ class SolverComparison:
 
         # Record memory after
         mem_after = self.process.memory_info().rss / 1024 / 1024  # MB
-        mem_used = mem_after - mem_before
+        mem_used = self._memory_delta_mb(mem_before, mem_after)
 
         # Get statistics
         stats = solver.get_statistics()

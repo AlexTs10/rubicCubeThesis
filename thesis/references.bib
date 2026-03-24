@@ -39,10 +39,10 @@
   note         = {Accessed: 2024}
 }
 
-@inproceedings{rokicki2014diameter,
+@article{rokicki2014diameter,
   author    = {Rokicki, Tomas and Kociemba, Herbert and Davidson, Morley and Dethridge, John},
   title     = {The Diameter of the {Rubik's Cube} Group Is Twenty},
-  booktitle = {SIAM Journal on Discrete Mathematics},
+  journal   = {SIAM Journal on Discrete Mathematics},
   volume    = {27},
   number    = {2},
   pages     = {1082--1105},
@@ -71,10 +71,10 @@
   year    = {1985}
 }
 
-@inproceedings{korf2002disjoint,
+@article{korf2002disjoint,
   author    = {Korf, Richard E. and Felner, Ariel},
   title     = {Disjoint Pattern Database Heuristics},
-  booktitle = {Artificial Intelligence},
+  journal   = {Artificial Intelligence},
   volume    = {134},
   pages     = {9--22},
   year      = {2002}
@@ -99,20 +99,20 @@
 
 % --- PATTERN DATABASES ---
 
-@inproceedings{culberson1998pattern,
+@article{culberson1998pattern,
   author    = {Culberson, Joseph C. and Schaeffer, Jonathan},
   title     = {Pattern Databases},
-  booktitle = {Computational Intelligence},
+  journal   = {Computational Intelligence},
   volume    = {14},
   number    = {3},
   pages     = {318--334},
   year      = {1998}
 }
 
-@inproceedings{felner2004additive,
+@article{felner2004additive,
   author    = {Felner, Ariel and Korf, Richard E. and Hanan, Sarit},
   title     = {Additive Pattern Database Heuristics},
-  booktitle = {Journal of Artificial Intelligence Research},
+  journal   = {Journal of Artificial Intelligence Research},
   volume    = {22},
   pages     = {279--318},
   year      = {2004}
@@ -129,10 +129,10 @@
 
 % --- MODERN APPROACHES ---
 
-@inproceedings{mcaleer2018solving,
+@article{mcaleer2018solving,
   author    = {McAleer, Stephen and Agostinelli, Forest and Shmakov, Alexander and Baldi, Pierre},
   title     = {Solving the {Rubik's Cube} with Deep Reinforcement Learning and Search},
-  booktitle = {Nature Machine Intelligence},
+  journal   = {Nature Machine Intelligence},
   volume    = {1},
   pages     = {356--363},
   year      = {2019}
@@ -165,6 +165,34 @@
   note         = {Accessed: 2024}
 }
 
+@misc{kociemba_twophase,
+  author       = {Kociemba, Herbert},
+  title        = {The Two-Phase Algorithm},
+  howpublished = {\url{https://www.kociemba.org/math/twophase.htm}},
+  note         = {Accessed: 2026-03-20}
+}
+
+@misc{kociemba_twophase_details,
+  author       = {Kociemba, Herbert},
+  title        = {Two-Phase Algorithm Details},
+  howpublished = {\url{https://kociemba.org/math/imptwophase.htm}},
+  note         = {Accessed: 2026-03-20}
+}
+
+@misc{kociemba_moves20,
+  author       = {Kociemba, Herbert},
+  title        = {God's Number is 20},
+  howpublished = {\url{https://kociemba.org/moves20.htm}},
+  note         = {Accessed: 2026-03-20}
+}
+
+@misc{kociemba_rubiks_optimal,
+  author       = {Kociemba, Herbert},
+  title        = {{RubiksCube-OptimalSolver}},
+  howpublished = {\url{https://github.com/hkociemba/RubiksCube-OptimalSolver}},
+  note         = {GitHub repository; external exact backend used for the thesis benchmark path; accessed: 2026-03-21}
+}
+
 @misc{wiki_rubiks,
   title        = {{Rubik's Cube}},
   howpublished = {\url{https://en.wikipedia.org/wiki/Rubik's_Cube}},
@@ -175,4 +203,369 @@
   title        = {Optimal Solutions for the {Rubik's Cube}},
   howpublished = {\url{https://en.wikipedia.org/wiki/Optimal_solutions_for_the_Rubik's_Cube}},
   note         = {Wikipedia, Accessed: 2024}
+}
+
+% ============================================================================
+% ADDITIONAL REFERENCES - Machine Learning & Modern Approaches
+% ============================================================================
+
+@article{agostinelli2019deepcubea,
+  author  = {Agostinelli, Forest and McAleer, Stephen and Shmakov, Alexander and Baldi, Pierre},
+  title   = {Solving the {Rubik's Cube} with Deep Reinforcement Learning and Search},
+  journal = {Nature Machine Intelligence},
+  volume  = {1},
+  pages   = {356--363},
+  year    = {2019},
+  doi     = {10.1038/s42256-019-0070-z}
+}
+
+@article{takano2023efficientcube,
+  author  = {Takano, Kyo},
+  title   = {{EfficientCube}: Learning to Solve the {Rubik's Cube} Efficiently with Approximate Policy Iteration and Self-Supervision},
+  journal = {Transactions on Machine Learning Research (TMLR)},
+  year    = {2023},
+  note    = {arXiv:2106.03157}
+}
+
+@article{khoruzhii2025ml,
+  author  = {Khoruzhii, Oleg and Butko, Arsen and Nikulin, Nikita and Morozov, Ilya and Pritykin, Denis},
+  title   = {{ML} Approach Beats Large {Rubik's Cubes}: {4x4x4} and {5x5x5}},
+  journal = {arXiv preprint arXiv:2502.13266},
+  year    = {2025}
+}
+
+@article{lin2024notricky,
+  author  = {Lin, Jieli and Liang, Thomas},
+  title   = {Solving {Rubik's Cube} Without Tricky Sampling},
+  journal = {arXiv preprint arXiv:2411.19583},
+  year    = {2024}
+}
+
+@article{yao2024localgraph,
+  author  = {Yao, Miao},
+  title   = {Solving {Rubik's Cube} Using Local Graph Structure},
+  journal = {arXiv preprint arXiv:2408.07945},
+  year    = {2024}
+}
+
+@article{barro2025nodeclassification,
+  author  = {Barro, David},
+  title   = {Node Classification and Search on the {Rubik's Cube} Graph with Graph Neural Networks},
+  journal = {arXiv preprint arXiv:2501.18580},
+  year    = {2025}
+}
+
+@article{mcaleer2018autodidactic,
+  author  = {McAleer, Stephen and Agostinelli, Forest and Shmakov, Alexander and Baldi, Pierre},
+  title   = {Solving the {Rubik's Cube} Without Human Knowledge},
+  journal = {arXiv preprint arXiv:1805.07470},
+  year    = {2018}
+}
+
+@inproceedings{mcaleer2019iclr,
+  author    = {McAleer, Stephen and Agostinelli, Forest and Shmakov, Alexander and Baldi, Pierre},
+  title     = {Solving the {Rubik's Cube} with Approximate Policy Iteration},
+  booktitle = {International Conference on Learning Representations (ICLR)},
+  year      = {2019}
+}
+
+% ============================================================================
+% SURVEYS AND METHODOLOGICAL PAPERS
+% ============================================================================
+
+@article{mazyavkina2021rl,
+  author  = {Mazyavkina, Nina and Sviridov, Sergey and Ivanov, Sergei and Burnaev, Evgeny},
+  title   = {Reinforcement Learning for Combinatorial Optimization: A Survey},
+  journal = {Computers \& Operations Research},
+  volume  = {134},
+  pages   = {105400},
+  year    = {2021},
+  doi     = {10.1016/j.cor.2021.105400}
+}
+
+@article{cappart2023co,
+  author  = {Cappart, Quentin and Ch{\'e}telat, Didier and Khalil, Elias B. and Lodi, Andrea and Morris, Christopher and Veli{\v{c}}kovi{\'c}, Petar},
+  title   = {Combinatorial Optimization and Reasoning with Graph Neural Networks},
+  journal = {Journal of Machine Learning Research},
+  volume  = {24},
+  number  = {130},
+  pages   = {1--61},
+  year    = {2023}
+}
+
+@article{bengio2021ml,
+  author  = {Bengio, Yoshua and Lodi, Andrea and Prouvost, Antoine},
+  title   = {Machine Learning for Combinatorial Optimization: A Methodological Tour d'Horizon},
+  journal = {European Journal of Operational Research},
+  volume  = {290},
+  number  = {2},
+  pages   = {405--421},
+  year    = {2021},
+  doi     = {10.1016/j.ejor.2020.07.063}
+}
+
+% ============================================================================
+% GOD'S NUMBER PROGRESSION
+% ============================================================================
+
+@article{rokicki2008twentyfive,
+  author  = {Rokicki, Tomas},
+  title   = {Twenty-Five Moves Suffice for {Rubik's Cube}},
+  journal = {arXiv preprint arXiv:0803.3435},
+  year    = {2008}
+}
+
+@article{rokicki2010twentytwo,
+  author  = {Rokicki, Tomas},
+  title   = {Twenty-Two Moves Suffice for {Rubik's Cube}},
+  journal = {The Mathematical Intelligencer},
+  volume  = {32},
+  number  = {1},
+  pages   = {33--40},
+  year    = {2010}
+}
+
+@inproceedings{kunkle2007twentysix,
+  author    = {Kunkle, Daniel and Cooperman, Gene},
+  title     = {Twenty-Six Moves Suffice for {Rubik's Cube}},
+  booktitle = {Proceedings of the International Symposium on Symbolic and Algebraic Computation (ISSAC)},
+  pages     = {235--242},
+  year      = {2007},
+  publisher = {ACM}
+}
+
+% ============================================================================
+% COMPLEXITY AND GROUP THEORY
+% ============================================================================
+
+@inproceedings{demaine2011algorithms,
+  author    = {Demaine, Erik D. and Demaine, Martin L. and Eisenstat, Sarah and Lubiw, Anna and Winslow, Andrew},
+  title     = {Algorithms for Solving {Rubik's Cubes}},
+  booktitle = {European Symposium on Algorithms (ESA)},
+  pages     = {689--700},
+  year      = {2011},
+  publisher = {Springer},
+  note      = {arXiv:1106.5736}
+}
+
+@inproceedings{demaine2018npcomplete,
+  author    = {Demaine, Erik D. and Eisenstat, Sarah and Rudoy, Mikhail},
+  title     = {Solving the {Rubik's Cube} Optimally is {NP-complete}},
+  booktitle = {Symposium on Theoretical Aspects of Computer Science (STACS)},
+  pages     = {24:1--24:13},
+  year      = {2018},
+  note      = {arXiv:1706.06708}
+}
+
+@techreport{chen2005grouptheory,
+  author      = {Chen, Janet},
+  title       = {Group Theory and the {Rubik's Cube}},
+  institution = {Harvard University},
+  year        = {2005},
+  type        = {Technical Report}
+}
+
+@mastersthesis{daniels2008grouptheory,
+  author  = {Daniels, Mark},
+  title   = {Group Theory and the {Rubik's Cube}},
+  school  = {Brock University},
+  year    = {2008},
+  type    = {Honours Thesis}
+}
+
+@book{hearn2009games,
+  author    = {Hearn, Robert A. and Demaine, Erik D.},
+  title     = {Games, Puzzles, and Computation},
+  publisher = {A K Peters/CRC Press},
+  year      = {2009}
+}
+
+% ============================================================================
+% SEARCH ALGORITHMS - ADDITIONAL
+% ============================================================================
+
+@inproceedings{russell1992sma,
+  author    = {Russell, Stuart},
+  title     = {Efficient Memory-Bounded Search Methods},
+  booktitle = {European Conference on Artificial Intelligence (ECAI)},
+  pages     = {1--5},
+  year      = {1992}
+}
+
+@article{korf2001timecomplexity,
+  author  = {Korf, Richard E. and Reid, Michael and Edelkamp, Stefan},
+  title   = {Time Complexity of Iterative-Deepening-{A*}},
+  journal = {Artificial Intelligence},
+  volume  = {129},
+  number  = {1-2},
+  pages   = {199--218},
+  year    = {2001}
+}
+
+@inproceedings{korf1996twentyfour,
+  author    = {Korf, Richard E. and Taylor, Larry A.},
+  title     = {Finding Optimal Solutions to the Twenty-Four Puzzle},
+  booktitle = {Proceedings of the National Conference on Artificial Intelligence (AAAI)},
+  pages     = {1202--1207},
+  year      = {1996}
+}
+
+@article{felner2007compressed,
+  author  = {Felner, Ariel and Korf, Richard E. and Meshulam, Ram and Holte, Robert C.},
+  title   = {Compressed Pattern Databases},
+  journal = {Journal of Artificial Intelligence Research},
+  volume  = {30},
+  pages   = {213--247},
+  year    = {2007}
+}
+
+@inproceedings{felner2004compressing,
+  author    = {Felner, Ariel and Meshulam, Ram and Holte, Robert C. and Korf, Richard E.},
+  title     = {Compressing Pattern Databases},
+  booktitle = {Proceedings of the National Conference on Artificial Intelligence (AAAI)},
+  pages     = {638--643},
+  year      = {2004}
+}
+
+@inproceedings{holte1996hierarchical,
+  author    = {Holte, Robert C. and Perez, M. B. and Zimmer, R. M. and MacDonald, A. J.},
+  title     = {Hierarchical {A*}: Searching Abstraction Hierarchies Efficiently},
+  booktitle = {Proceedings of the National Conference on Artificial Intelligence (AAAI)},
+  pages     = {530--535},
+  year      = {1996}
+}
+
+@inproceedings{korf2004bestfirst,
+  author    = {Korf, Richard E.},
+  title     = {Best-First Frontier Search with Delayed Duplicate Detection},
+  booktitle = {Proceedings of the National Conference on Artificial Intelligence (AAAI)},
+  pages     = {650--657},
+  year      = {2004}
+}
+
+% ============================================================================
+% EXPERIMENTAL METHODOLOGY
+% ============================================================================
+
+@article{mcgeoch2001experimental,
+  author  = {McGeoch, Catherine C.},
+  title   = {Experimental Analysis of Algorithms},
+  journal = {Notices of the AMS},
+  volume  = {48},
+  number  = {3},
+  pages   = {304--311},
+  year    = {2001}
+}
+
+@article{barr1995designing,
+  author  = {Barr, Richard S. and Golden, Bruce L. and Kelly, James P. and Resende, Mauricio G. C. and Stewart, William R.},
+  title   = {Designing and Reporting on Computational Experiments with Heuristic Methods},
+  journal = {Journal of Heuristics},
+  volume  = {1},
+  number  = {1},
+  pages   = {9--32},
+  year    = {1995}
+}
+
+@incollection{johnson2002theoreticians,
+  author    = {Johnson, David S.},
+  title     = {A Theoretician's Guide to the Experimental Analysis of Algorithms},
+  booktitle = {Data Structures, Near Neighbor Searches, and Methodology},
+  series    = {DIMACS Series in Discrete Mathematics and Theoretical Computer Science},
+  volume    = {59},
+  pages     = {215--250},
+  year      = {2002},
+  publisher = {American Mathematical Society}
+}
+
+% ============================================================================
+% FUTURE DIRECTIONS - QUANTUM AND ADVANCED
+% ============================================================================
+
+@article{corli2021quantum,
+  author  = {Corli, Sebastiano and Moro, Lorenzo and Slaviero, Davide and Grossi, Enrico and Trainiti, Domenico and Mandelli, Marco and Ruggeri, Andrea and Prati, Enrico},
+  title   = {Solving {Rubik's Cube} via Quantum Mechanics and Deep Reinforcement Learning},
+  journal = {arXiv preprint arXiv:2109.07199},
+  year    = {2021}
+}
+
+@article{abbas2023quantum,
+  author  = {Abbas, Amira and others},
+  title   = {Challenges and Opportunities in Quantum Optimization},
+  journal = {arXiv preprint arXiv:2312.02279},
+  year    = {2023}
+}
+
+@inproceedings{kissmann2011symbolic,
+  author    = {Kissmann, Peter and Edelkamp, Stefan},
+  title     = {Improving Cost-Optimal Domain-Independent Symbolic Planning},
+  booktitle = {Proceedings of the National Conference on Artificial Intelligence (AAAI)},
+  pages     = {992--997},
+  year      = {2011}
+}
+
+@article{konen2023ntuple,
+  author  = {Konen, Wolfgang},
+  title   = {Towards Learning {Rubik's Cube} with {N-Tuple} Reinforcement Learning},
+  journal = {arXiv preprint arXiv:2301.12167},
+  year    = {2023}
+}
+
+@inproceedings{wen2022autodidactic,
+  author    = {Wen, Yao and others},
+  title     = {Unraveling {Rubik's Cube} with Autodidactic Iteration},
+  booktitle = {Lecture Notes in Electrical Engineering},
+  volume    = {829},
+  year      = {2022},
+  publisher = {Springer}
+}
+
+@article{roshan2024deep,
+  author  = {Roshan, S. and others},
+  title   = {Efficiently Solving {Rubik's Cube} with Deep Reinforcement Learning and Recursion},
+  journal = {E3S Web of Conferences},
+  volume  = {491},
+  year    = {2024}
+}
+
+@article{felner2005twentyfour,
+  author  = {Felner, Ariel and Adler, Amir},
+  title   = {Solving the 24 Puzzle with Instance Dependent Pattern Databases},
+  journal = {Lecture Notes in Computer Science},
+  volume  = {3607},
+  pages   = {248--260},
+  year    = {2005}
+}
+
+% ============================================================================
+% TEXTBOOKS - Additional
+% ============================================================================
+
+@book{pearl1984heuristics,
+  author    = {Pearl, Judea},
+  title     = {Heuristics: Intelligent Search Strategies for Computer Problem Solving},
+  publisher = {Addison-Wesley},
+  year      = {1984}
+}
+
+@book{garey1979computers,
+  author    = {Garey, Michael R. and Johnson, David S.},
+  title     = {Computers and Intractability: A Guide to the Theory of {NP-Completeness}},
+  publisher = {W. H. Freeman},
+  year      = {1979}
+}
+
+@book{sipser2013introduction,
+  author    = {Sipser, Michael},
+  title     = {Introduction to the Theory of Computation},
+  publisher = {Cengage Learning},
+  year      = {2013},
+  edition   = {3rd}
+}
+
+@book{arora2009computational,
+  author    = {Arora, Sanjeev and Barak, Boaz},
+  title     = {Computational Complexity: A Modern Approach},
+  publisher = {Cambridge University Press},
+  year      = {2009}
 }

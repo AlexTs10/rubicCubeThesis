@@ -3,14 +3,523 @@
 
 % Reference: src/korf/, tests/unit/test_a_star_solvers.py
 
-\section{Εισαγωγή στη Βέλτιστη Επίλυση}
-% God's Number = 20, why optimal is hard
+Ο αλγόριθμος Korf αποτελεί τον θεμελιώδη αλγόριθμο για την εύρεση
+\textbf{βέλτιστων λύσεων} του κύβου του Rubik \cite{korf1997finding}. Σε
+αντίθεση με τους αλγορίθμους Thistlethwaite και Kociemba που παράγουν λύσεις
+πολυφασικές ή near-optimal, ο αλγόριθμος Korf εγγυάται ότι η λύση που βρίσκει
+είναι η συντομότερη δυνατή. Στο λογισμικό artifact της παρούσας εργασίας
+υπάρχουν πλέον δύο συμπληρωματικές exact διαδρομές για τον Korf:
+\begin{itemize}
+    \item μια \textbf{εγγενής native διαδρομή} με cubie-level IDA* στο \filepath{src/korf/native_exact_solver.py}, admissible coordinate heuristics στο \filepath{src/korf/native_coordinate_heuristic.py} και exact move-distance API,
+    \item και η \textbf{εξωτερική benchmark διαδρομή} μέσω του \emph{external exact backend} \texttt{RubiksCube-OptimalSolver} \cite{kociemba_rubiks_optimal}, που ενσωματώνεται από το \filepath{src/korf/optimal_solver.py} και παραμένει η reference λύση για βαθύτερα benchmarks.
+\end{itemize}
 
-\section{Pattern Databases για Βέλτιστη Επίλυση}
-% Corner DB, Edge DBs, disjoint property
+\section{Επισκόπηση του Αλγορίθμου}
 
-\section{IDA* με Pattern Database Heuristics}
-% Additive heuristics, admissibility
+\subsection{Ιστορικό Πλαίσιο}
 
-\section{Αποτελέσματα}
-% Optimal solutions ≤20, time analysis
+Το 1997, ο Richard Korf δημοσίευσε την καινοτόμο εργασία του ``Finding Optimal Solutions to Rubik's Cube Using Pattern Databases'' \cite{korf1997finding}, η οποία αποτέλεσε σημείο καμπής στην επίλυση του κύβου του Rubik. Για πρώτη φορά, κατέστη δυνατή η εύρεση βέλτιστων λύσεων για τυχαία ανακατεμένους κύβους.
+
+Η κύρια καινοτομία του Korf ήταν η χρήση \textbf{Pattern Databases} (Βάσεων Δεδομένων Μοτίβων) ως ευρετικές συναρτήσεις για τον αλγόριθμο IDA*. Αυτή η προσέγγιση έδειξε ότι το διάμεσο βέλτιστο μήκος λύσης για τυχαία instances είναι \textbf{18 κινήσεις} \cite{korf1997finding}.
+
+\subsection{Θεμελίωση του IDA*}
+
+Ο αλγόριθμος \textbf{IDA* (Iterative Deepening A*)} \cite{korf1985depth} συνδυάζει τα πλεονεκτήματα του A* με την αποδοτική χρήση μνήμης της επαναληπτικής εμβάθυνσης:
+
+\begin{itemize}
+    \item \textbf{A*:} Χρησιμοποιεί ευρετική καθοδήγηση με $f(n) = g(n) + h(n)$
+    \item \textbf{Iterative Deepening:} Επεκτείνει σταδιακά το όριο αναζήτησης
+    \item \textbf{Αποτέλεσμα:} Μνήμη $O(d)$ αντί $O(b^d)$ του A*
+\end{itemize}
+
+Η συνθήκη \textbf{παραδεκτικότητας} (admissibility) είναι θεμελιώδης: η ευρετική $h(n)$ πρέπει να ικανοποιεί:
+
+\begin{equation}
+h(n) \leq h^*(n) \quad \forall n
+\end{equation}
+
+όπου $h^*(n)$ είναι η πραγματική ελάχιστη απόσταση από τον κόμβο $n$ στον στόχο. Αυτή η συνθήκη εγγυάται την εύρεση βέλτιστης λύσης \cite{hart1968formal,korf1985depth}.
+
+\begin{table}[htbp]
+\centering
+\caption{Σύγκριση A* και IDA*}
+\label{tab:astar_vs_idastar}
+\begin{tabular}{|l|c|c|}
+\hline
+\textbf{Χαρακτηριστικό} & \textbf{A*} & \textbf{IDA*} \\
+\hline
+Πολυπλοκότητα Μνήμης & $O(b^d)$ & $O(d)$ \\
+Βελτιστότητα & Ναι & Ναι \\
+Ανίχνευση Διπλότυπων & Ναι & Όχι \\
+Επανεπέκταση Κόμβων & Όχι & Ναι \\
+Πρακτικό για Rubik's & Όχι & Ναι \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Εγγενής Exact Διαδρομή του Artifact}
+
+Η εγγενής exact διαδρομή του αποθετηρίου δεν ισχυρίζεται ότι αναπαράγει πλήρως
+όλες τις βαριές pattern databases του αρχικού Korf σε Python. Αντίθετα,
+υλοποιεί το ουσιώδες exact search skeleton με τρόπο ελέγξιμο και αναπαραγώγιμο:
+\begin{itemize}
+    \item cubie-level state representation,
+    \item native IDA* με deterministic move ordering και canonical pruning,
+    \item admissible lower bounds από μικρούς exact coordinate tables (corner orientation, edge orientation, UD-slice και corner permutation),
+    \item native corner pattern database υποδομή 88,179,840 καταστάσεων με exact-safe byte storage,
+    \item exact API \texttt{solve\_exact\_native()}, \texttt{solve\_optimal\_native()} και \texttt{optimal\_distance\_native()}.
+\end{itemize}
+
+Η native διαδρομή επικυρώθηκε εξαντλητικά σε 3.501 μοναδικές καταστάσεις έως
+βάθος 3. Σε αναπαραγώγιμο corpus 3.513 περιπτώσεων, η ενεργοποίηση του native
+corner PDB support μείωσε τις native αποτυχίες υπό όριο 20\,s από 3 σε 1 και έλυσε
+δειγματοληπτικές καταστάσεις βάθους 9 που η μικρότερη coordinate heuristic δεν
+ολοκλήρωνε. Το μοναδικό εναπομένον timeout στο ίδιο corpus ήταν μια
+edge-dominated κατάσταση βάθους 8, όπου οι γωνίες βρίσκονται ήδη σχεδόν
+λυμένες και η απουσία βαριών edge PDBs παραμένει το καθοριστικό όριο.
+
+%----------------------------------------------------------------------------
+\section{Pattern Databases}
+
+Τα Pattern Databases είναι προ-υπολογισμένοι πίνακες που αποθηκεύουν την ακριβή
+ελάχιστη απόσταση για την επίλυση υποσυνόλων του κύβου
+\cite{culberson1998pattern,korf1997finding}. Στην ενότητα αυτή περιγράφεται το
+\emph{θεωρητικό} Korf framework. Η native exact υλοποίηση του artifact
+χρησιμοποιεί πλέον native corner PDB support σε συνδυασμό με μικρότερους
+admissible coordinate tables, αλλά όχι ακόμη πλήρη corner/edge PDB stack ίδιου
+μεγέθους με την κλασική βιβλιογραφική διατύπωση.
+
+\subsection{Corner Pattern Database}
+
+Στο κλασικό Korf framework, η βάση δεδομένων γωνιών αποθηκεύει αποστάσεις για όλες τις διατάξεις των 8 γωνιακών cubies \cite{korf1997finding}:
+
+\begin{itemize}
+    \item \textbf{Χώρος καταστάσεων:} $8! \times 3^7 = 40,320 \times 2,187 = 88,179,840$ καταστάσεις
+    \item \textbf{Υπολογισμός δείκτη:} $\text{index} = \text{perm\_rank} \times 2187 + \text{orient\_coord}$
+    \item \textbf{Μέγιστη απόσταση:} 11-12 κινήσεις
+    \item \textbf{Μνήμη:} θεωρητικά ~44 MB (με συμπίεση nibble) ή ~88 MB με exact-safe byte storage
+\end{itemize}
+
+Η συνάρτηση υπολογισμού δείκτη παρατίθεται από το αρχείο
+\filepath{src/korf/corner_database.py}, γραμμές 38--59:
+
+\begin{lstlisting}[language=Python, caption={Υπολογισμός δείκτη γωνίας}]
+def corner_index(cubie: CubieCube) -> int:
+    """
+    Υπολογισμός μοναδικού δείκτη για κατάσταση γωνιών.
+    Index: 0 έως 88,179,839
+    """
+    perm = get_corner_permutation(cubie)
+    orient = get_corner_orientation(cubie)
+
+    # Κάθε μετάθεση έχει 3^7 παραλλαγές προσανατολισμού
+    index = perm * 2187 + orient
+    return index
+\end{lstlisting}
+
+\subsection{Edge Pattern Databases}
+
+Στο θεωρητικό Korf framework, μια πλήρης βάση δεδομένων και για τις 12 ακμές
+θα απαιτούσε περίπου 490\,GB ακόμη και με αποθήκευση 4 bits ανά τιμή. Για
+αυτό το λόγο, ο Korf χώρισε τις ακμές σε δύο υποσύνολα των 6 ακμών
+\cite{korf1997finding}:
+
+\begin{itemize}
+    \item \textbf{Ομάδα 1:} Ακμές 0-5 (UR, UF, UL, UB, DR, DF)
+    \item \textbf{Ομάδα 2:} Ακμές 6-11 (DL, DB, FR, FL, BL, BR)
+\end{itemize}
+
+Για κάθε ομάδα 6 ακμών \cite{korf1997finding}:
+\begin{itemize}
+    \item \textbf{Χώρος:} $12!/6! \times 2^6 = 42.577.920$ καταστάσεις
+    \item \textbf{Μνήμη:} $\sim$20 MB ανά βάση με 4 bits ανά είσοδο
+\end{itemize}
+
+\begin{table}[htbp]
+\centering
+\caption{Θεωρητικές διαστάσεις Pattern Databases στο κλασικό Korf framework}
+\label{tab:korf_pdb_sizes}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Βάση Δεδομένων} & \textbf{Καταστάσεις} & \textbf{Ασυμπίεστη} & \textbf{Συμπιεσμένη} \\
+\hline
+Corner & 88.2M & ~88 MB & ~44 MB \\
+Edge 1 & 42.6M & ~42.6 MB & ~20 MB \\
+Edge 2 & 42.6M & ~42.6 MB & ~20 MB \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Δημιουργία με BFS}
+
+Τα Pattern Databases δημιουργούνται με \textbf{αναζήτηση πρώτα κατά πλάτος (BFS)} από την επιλυμένη κατάσταση \cite{culberson1998pattern,korf1997finding}:
+
+\begin{algorithm}[H]
+\caption{Δημιουργία Pattern Database}
+\begin{algorithmic}[1]
+\Procedure{GeneratePatternDB}{$db$, $solved\_index$, $moves$}
+    \State $db[solved\_index] \gets 0$
+    \State $queue \gets [(solved\_index, 0)]$
+    \State $visited \gets \{solved\_index\}$
+
+    \While{$queue$ δεν είναι άδεια}
+        \State $(state, depth) \gets$ dequeue($queue$)
+
+        \For{$move$ \textbf{in} $moves$}
+            \State $new\_state \gets$ apply\_move($state$, $move$)
+            \If{$new\_state \notin visited$}
+                \State $visited \gets visited \cup \{new\_state\}$
+                \State $db[new\_state] \gets depth + 1$
+                \State enqueue($queue$, $(new\_state, depth + 1)$)
+            \EndIf
+        \EndFor
+    \EndWhile
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+
+%----------------------------------------------------------------------------
+\section{Αποθήκευση Exact Distances στο Artifact}
+
+Στη βιβλιογραφία του Korf, η συμπίεση \textbf{nibble (4 bits)} είναι ένας
+κλασικός τρόπος μείωσης της μνήμης \cite{korf1997finding,felner2007compressed}.
+Στην τρέχουσα native exact διαδρομή του artifact, όμως, η προεπιλογή είναι
+\textbf{exact-safe byte storage}. Ο λόγος είναι πρακτικός αλλά κρίσιμος: η
+τιμή απόστασης 15 δεν πρέπει να συγχέεται με sentinel για
+``uninitialized'' καταστάσεις.
+
+\begin{itemize}
+    \item \textbf{Native default:} 1 byte ανά exact distance με ρητό sentinel 255,
+    \item \textbf{Legacy support:} παλαιά nibble-packed αρχεία φορτώνονται μόνο όταν η μετατροπή σε byte storage είναι αναμφίσημη,
+    \item \textbf{Αντάλλαγμα:} μικρή αύξηση μνήμης υπέρ ισχυρότερης σημασιολογικής ασφάλειας στην exact διαδρομή.
+\end{itemize}
+
+Η υλοποίηση αυτή παρατίθεται από το αρχείο \filepath{src/korf/pattern_database.py}:
+
+\begin{lstlisting}[language=Python, caption={Exact-safe αποθήκευση αποστάσεων}]
+def set_distance(self, index: int, distance: int):
+    """Αποθήκευση exact distance σε byte-safe μορφή."""
+    packed_dist = self._pack_distance(distance)
+    self.data[index] = packed_dist
+
+def get_distance(self, index: int) -> int:
+    """Ανάκτηση απόστασης με explicit uninitialized check."""
+    packed = int(self.data[index])
+    if packed == self.uninitialized_value:
+        raise ValueError("Distance is uninitialized")
+    return packed
+\end{lstlisting}
+
+%----------------------------------------------------------------------------
+\section{Ευρετικές Συναρτήσεις}
+
+Ο αλγόριθμος Korf, ως θεωρητικό πλαίσιο, απαιτεί admissible heuristics για να
+διατηρήσει τη βελτιστότητά του. Στο repository, ωστόσο, οι simple, Hamming και
+Manhattan heuristics του \filepath{src/korf/heuristics.py} χρησιμοποιούνται ως
+lightweight και exploratory estimates και \emph{όχι} ως το θεμέλιο των τελικών
+claims βελτιστότητας του benchmark path.
+
+\subsection{Βασικές Ευρετικές}
+
+\begin{enumerate}
+    \item \textbf{Simple Heuristic:}
+    \begin{equation}
+    h_{simple}(s) = \frac{\text{mismatched\_stickers}}{8}
+    \end{equation}
+    Μετρά τα stickers που δεν ταιριάζουν με το κέντρο της πλευράς.
+
+    \item \textbf{Hamming Distance:}
+    \begin{equation}
+    h_{hamming}(s) = \frac{\text{misplaced\_pieces}}{8}
+    \end{equation}
+    Μετρά τα κομμάτια που δεν είναι στη σωστή θέση/προσανατολισμό.
+
+    \item \textbf{Manhattan Distance:}
+    \begin{equation}
+    h_{manhattan}(s) = \max\left(\frac{\text{corner\_dist}}{4}, \frac{\text{edge\_dist}}{4}\right)
+    \end{equation}
+    Υπολογίζει την ελάχιστη απόσταση κάθε κομματιού από τη θέση του.
+\end{enumerate}
+
+Οι ευρετικές αυτές είναι χρήσιμες για ανάλυση και πρακτικό experimentation,
+αλλά δεν πρέπει να συγχέονται με την exact pattern-database-backed διαδρομή που
+χρησιμοποιείται για τα βελτιστικά αποτελέσματα του Κεφαλαίου~\ref{ch:evaluation}.
+
+\subsection{Ευρετική Pattern Database}
+
+Η ευρετική Pattern Database παρέχει την πιο ακριβή εκτίμηση \cite{korf1997finding}:
+
+\begin{equation}
+h_{PDB}(s) = \max(h_{corner}(s), h_{edge1}(s), h_{edge2}(s))
+\label{eq:pdb_heuristic}
+\end{equation}
+
+\textbf{Απόδειξη παραδεκτικότητας:} Κάθε συνιστώσα $h_i(s) \leq h^*(s)$ επειδή αποθηκεύει την ακριβή απόσταση για ένα υποσύνολο. Το μέγιστο διατηρεί την παραδεκτικότητα:
+\begin{equation}
+\max_i h_i(s) \leq h^*(s)
+\end{equation}
+
+\begin{table}[htbp]
+\centering
+\caption{Σύγκριση Ακρίβειας Ευρετικών}
+\label{tab:heuristic_comparison}
+\begin{tabular}{|l|c|c|c|}
+\hline
+\textbf{Ευρετική} & \textbf{Ακρίβεια} & \textbf{Ταχύτητα} & \textbf{Μνήμη} \\
+\hline
+Simple & Χαμηλή & Πολύ υψηλή & 0 \\
+Hamming & Χαμηλή & Υψηλή & 0 \\
+Manhattan & Μέτρια & Υψηλή & 0 \\
+Pattern DB & Υψηλή & Μέτρια & ~44 MB \\
+\hline
+\end{tabular}
+\end{table}
+
+%----------------------------------------------------------------------------
+\section{Υλοποίηση IDA*}
+
+\subsection{Κύριος Αλγόριθμος}
+
+Η παραγωγική εγγενής exact υλοποίηση IDA* βρίσκεται στο αρχείο
+\filepath{src/korf/native_exact_solver.py}. Το \filepath{src/korf/a_star.py}
+διατηρείται ως εκπαιδευτικό και συγκριτικό module για τα experiments A*/IDA*.
+
+\begin{algorithm}[H]
+\caption{IDA* για Rubik's Cube}
+\begin{algorithmic}[1]
+\Function{IDAStarSolve}{$cubie$}
+    \If{$cubie$ είναι λυμένος}
+        \State \Return $[]$
+    \EndIf
+
+    \State $bound \gets h(cubie)$
+    \State $path \gets []$
+
+    \While{$bound \leq max\_depth$}
+        \State $result \gets$ \Call{Search}{$cubie$, $path$, $0$, $bound$}
+
+        \If{$result$ είναι λίστα κινήσεων}
+            \State \Return $result$ \Comment{Βρέθηκε λύση}
+        \ElsIf{$result = \infty$}
+            \State \Return $None$ \Comment{Μη ολοκληρωμένη αναζήτηση ή depth limit}
+        \Else
+            \State $bound \gets result$ \Comment{Νέο όριο}
+        \EndIf
+    \EndWhile
+
+    \State \Return $None$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Αναδρομική Αναζήτηση}
+
+Η αναδρομική συνάρτηση αναζήτησης της native exact διαδρομής χρησιμοποιεί επίσης
+path-state checking και canonical pruning, ώστε να αποφεύγονται προφανείς
+κύκλοι χωρίς να θυσιάζεται η βελτιστότητα.
+
+\begin{algorithm}[H]
+\caption{Αναδρομική Αναζήτηση IDA*}
+\begin{algorithmic}[1]
+\Function{Search}{$cubie$, $path$, $g$, $bound$}
+    \State $h \gets$ heuristic($cubie$)
+    \State $f \gets g + h$
+
+    \If{$f > bound$}
+        \State \Return $f$ \Comment{Επιστροφή για επόμενη επανάληψη}
+    \EndIf
+
+    \If{$cubie$ είναι λυμένος}
+        \State \Return $path$ \Comment{Βρέθηκε λύση}
+    \EndIf
+
+    \State $min\_bound \gets \infty$
+
+    \For{$move$ \textbf{in} $ALL\_MOVES$}
+        \If{\Call{IsRedundant}{$path$, $move$}}
+            \State \textbf{continue}
+        \EndIf
+
+        \State $next\_cubie \gets$ apply\_move($cubie$, $move$)
+        \State push($path$, $move$)
+        \State $result \gets$ \Call{Search}{$next\_cubie$, $path$, $g+1$, $bound$}
+        \State pop($path$)
+
+        \If{$result$ είναι λίστα}
+            \State \Return $result$
+        \ElsIf{$result < min\_bound$}
+            \State $min\_bound \gets result$
+        \EndIf
+    \EndFor
+
+    \State \Return $min\_bound$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+%----------------------------------------------------------------------------
+\section{Στρατηγικές Κλαδέματος}
+
+\subsection{Κλάδεμα Περιττών Κινήσεων}
+
+Το κλάδεμα περιττών ακολουθιών μειώνει σημαντικά τον παράγοντα διακλάδωσης:
+
+\begin{enumerate}
+    \item \textbf{Ακολουθίες ίδιας πλευράς:} Η U ακολουθούμενη από U' ή U2 είναι περιττή
+    \item \textbf{Κανονική σειρά αντίθετων:} Επιβάλλουμε U πριν D, F πριν B, L πριν R
+\end{enumerate}
+
+Η υλοποίηση παρατίθεται από το αρχείο
+\filepath{src/korf/a_star.py}, γραμμές 418--431:
+
+\begin{lstlisting}[language=Python, caption={Έλεγχος περιττής κίνησης}]
+def _is_redundant_move(self, prev_move: str, current_move: str) -> bool:
+    prev_face = prev_move[0]
+    curr_face = current_move[0]
+
+    # Ίδια πλευρά είναι περιττή
+    if prev_face == curr_face:
+        return True
+
+    # Αντίθετες πλευρές: επιβολή κανονικής σειράς
+    opposite_pairs = [('U', 'D'), ('F', 'B'), ('L', 'R')]
+    for face1, face2 in opposite_pairs:
+        if prev_face == face2 and curr_face == face1:
+            return True
+
+    return False
+\end{lstlisting}
+
+Αυτό το κλάδεμα μειώνει τον ασυμπτωτικό παράγοντα διακλάδωσης από 18 σε περίπου 13.35 \cite{korf1997finding}.
+
+\subsection{Ευρετικό Κλάδεμα}
+
+Το κύριο κλάδεμα προέρχεται από την ευρετική συνάρτηση:
+
+\begin{equation}
+\text{Αν } g + h(n) > bound \Rightarrow \text{κλάδεμα του } n
+\end{equation}
+
+Ακριβέστερες ευρετικές (όπως τα Pattern Databases) παρέχουν ισχυρότερο κλάδεμα.
+
+%----------------------------------------------------------------------------
+\section{Σύγκριση με A*}
+
+\subsection{Υλοποίηση A*}
+
+Ο αλγόριθμος A* παρατίθεται στο
+\filepath{src/korf/a_star.py}, γραμμές 51--269, και χρησιμοποιεί:
+
+\begin{itemize}
+    \item \textbf{Ουρά προτεραιότητας:} Ταξινόμηση κατά $f = g + h$
+    \item \textbf{Open/Closed sets:} Για αποφυγή διπλότυπων
+    \item \textbf{Έλεγχος μνήμης:} Περιορισμός χρήσης RAM
+\end{itemize}
+
+\begin{lstlisting}[language=Python, caption={Δομή κόμβου A*}]
+@dataclass(order=True)
+class SearchNode:
+    f_value: float              # Συνολικό κόστος (g + h)
+    g_value: int                # Κόστος από την αρχή
+    h_value: float              # Ευρετική εκτίμηση
+    cube_state: RubikCube       # Τρέχουσα κατάσταση
+    move_sequence: List[str]    # Ακολουθία κινήσεων
+\end{lstlisting}
+
+\subsection{Πρακτικές Διαφορές}
+
+Στην πράξη, ο A* είναι \textbf{μη πρακτικός} για τον κύβο του Rubik:
+
+\begin{itemize}
+    \item \textbf{A*:} Απαιτεί εκθετικά αυξανόμενο open set, το οποίο γίνεται γρήγορα απαγορευτικό
+    \item \textbf{IDA*:} Επανεξερευνά κόμβους, αλλά κρατά μόνο το τρέχον μονοπάτι στη μνήμη
+    \item \textbf{Αιτία:} Το open set του A* αυξάνεται εκθετικά, ενώ η μνήμη του IDA* παραμένει γραμμική ως προς το βάθος
+\end{itemize}
+
+Για τον λόγο αυτό, ο IDA* παραμένει η ρεαλιστική επιλογή για exact optimal search στον κύβο του Rubik.
+
+%----------------------------------------------------------------------------
+\section{Ανάλυση Απόδοσης}
+
+\subsection{Ανάλυση Πολυπλοκότητας}
+
+\begin{itemize}
+    \item \textbf{Χρόνος:} $O(b^d)$ όπου $b \approx 13.35$ (ενεργός παράγοντας διακλάδωσης \cite{korf1997finding,korf2001timecomplexity})
+    \item \textbf{Μνήμη:} $O(d)$ για αποθήκευση του μονοπατιού
+    \item \textbf{Εκθετική αύξηση:} Εξηγεί γιατί οι δυσκολότερες περιπτώσεις βάθους 20 παραμένουν οριακές ακόμη και με ισχυρό backend
+\end{itemize}
+
+Ο χρόνος αυξάνεται εκθετικά με το βάθος:
+
+\begin{equation}
+T(d) \propto b^d \approx 13.5^d
+\end{equation}
+
+\subsection{Πρακτικοί Περιορισμοί}
+
+Τα διορθωμένα πειραματικά αποτελέσματα του Κεφαλαίου~\ref{ch:evaluation}
+δείχνουν την ακόλουθη συμπεριφορά για την exact benchmark διαδρομή του Korf
+με εξαναγκασμένο timeout 120\,s:
+
+\begin{table}[htbp]
+\centering
+\caption{Korf Exact Backend: Επιτυχία ανά Βάθος Ανακατέματος}
+\label{tab:korf_performance}
+\begin{tabular}{|c|c|c|c|}
+\hline
+\textbf{Βάθος} & \textbf{Επιτυχία} & \textbf{Μέσος Χρόνος} & \textbf{Κόμβοι} \\
+\hline
+5 & 25/25 (100\%) & 0.001s & 55 \\
+10 & 25/25 (100\%) & 0.002s & 148 \\
+15 & 25/25 (100\%) & 0.424s & 96{,}178 \\
+20 & 22/25 (88\%) & 11.229s* & 6{,}606{,}971* \\
+\hline
+\end{tabular}
+\end{table}
+
+\textbf{Σημείωση:} Οι τιμές χρόνου και κόμβων για βάθος 20 είναι μέσοι όροι των
+επιτυχημένων λύσεων. Στο σύνολο του benchmark παρατηρήθηκαν 3 timeouts σε 25
+scrambles βάθους 20.
+
+%----------------------------------------------------------------------------
+\section{Σύνοψη και Αξιολόγηση}
+
+\subsection{Κύρια Ευρήματα}
+
+\begin{enumerate}
+    \item Ο Korf εγγυάται \textbf{βέλτιστες λύσεις} όταν επιτυγχάνει
+    \item Η external exact διαδρομή είναι πλήρως πρακτική έως βάθος 15 στο benchmark corpus
+    \item Σε βάθος 20 παραμένει ισχυρή, αλλά όχι καθολικά επιτυχής υπό fixed timeout
+    \item Τα Pattern Databases παρέχουν τις ισχυρότερες ευρετικές
+    \item Πολύτιμος για επαλήθευση και θεωρητική ανάλυση
+\end{enumerate}
+
+\subsection{Συμβιβασμοί (Trade-offs)}
+
+\begin{itemize}
+    \item \textbf{Εγγύηση βελτιστότητας} έναντι χρόνου υπολογισμού
+    \item \textbf{Αποδοτικότητα μνήμης} (IDA*) έναντι επανεπέκτασης κόμβων
+    \item \textbf{Ποιότητα ευρετικής} έναντι χρόνου δημιουργίας
+\end{itemize}
+
+\subsection{Σύγκριση με Άλλους Αλγορίθμους}
+
+\begin{table}[htbp]
+\centering
+\caption{Σύγκριση Αλγορίθμων Επίλυσης}
+\label{tab:algorithm_comparison}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+\textbf{Αλγόριθμος} & \textbf{Βέλτιστη} & \textbf{Χρόνος} & \textbf{Μήκος} & \textbf{Επιτυχία} \\
+\hline
+Thistlethwaite & Όχι & 1.24s μ.ό. & 23.62 μ.ό. & 100\% \\
+Kociemba & Σχεδόν & 4.62s μ.ό. & 14.33 μ.ό. & 100\% \\
+Korf & Ναι, όταν λύνει & 2.66s μ.ό.* & 9.12 μ.ό.* & 97\% \\
+\hline
+\end{tabular}
+\end{table}
+\textit{*Μέσος όρος μόνο των επιτυχημένων λύσεων του exact backend.}
+
+\subsection{Μετάβαση στο Κεφάλαιο 6}
+
+Η αποτελεσματικότητα του αλγορίθμου Korf εξαρτάται κρίσιμα από την ποιότητα της ευρετικής. Στο Κεφάλαιο \ref{ch:heuristics} εξερευνούμε σε βάθος τον σχεδιασμό ευρετικών και παρουσιάζουμε τη \textbf{σύνθετη ευρετική} (Composite Heuristic) ως ερευνητικό, exploratory εργαλείο του artifact, διακριτό από την exact benchmark διαδρομή.

@@ -1,0 +1,1907 @@
+{
+  "metadata": {
+    "timestamp": "2026-03-20T21:08:41.058167",
+    "total_scrambles": 25,
+    "thistlethwaite_timeout": 30.0,
+    "kociemba_timeout": 60.0,
+    "kociemba_timeout_soft": true,
+    "kociemba_timeout_grace": 10.0,
+    "kociemba_effective_soft_timeout": 70.0,
+    "korf_timeout": 120.0,
+    "korf_max_depth": 20,
+    "korf_backend": "optimal_external",
+    "korf_backend_preference": "auto",
+    "korf_guarantees_optimal": true,
+    "korf_timeout_enforced": true,
+    "korf_pattern_db_loaded": true,
+    "korf_pattern_db_status": "provided by external optimal backend",
+    "solver_instances_reused_per_batch": true,
+    "benchmark_warm_start": false,
+    "timing_methodology": "Solver instances are reused across scrambles within a batch. Thistlethwaite and Kociemba still lazy-load heavy tables inside their first timed solve call, so one-off initialization cost is amortized but not strictly excluded from solve_time_seconds."
+  },
+  "results": [
+    {
+      "scramble_id": 0,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "F",
+        "L2",
+        "B'",
+        "F'",
+        "F"
+      ],
+      "timestamp": "2026-03-20T21:08:30.321949",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 10,
+        "time_seconds": 0.19815587997436523,
+        "memory_mb": 62.34375,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "F",
+          "U2",
+          "B",
+          "L2",
+          "F2",
+          "U2",
+          "F2",
+          "L2",
+          "F2",
+          "U2"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 10,
+        "time_seconds": 0.005407094955444336,
+        "memory_mb": 1.125,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "F",
+          "U2",
+          "B",
+          "R2",
+          "B2",
+          "U2",
+          "F2",
+          "L2",
+          "B2",
+          "D2"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 3,
+        "time_seconds": 0.0010571479797363281,
+        "memory_mb": 2.78125,
+        "nodes_explored": 33,
+        "reason_failed": null,
+        "solution_moves": [
+          "B",
+          "L2",
+          "F'"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    },
+    {
+      "scramble_id": 1,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "D'",
+        "U",
+        "R2",
+        "R'",
+        "R2"
+      ],
+      "timestamp": "2026-03-20T21:08:30.527363",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 4,
+        "time_seconds": 0.0026938915252685547,
+        "memory_mb": 0.125,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "R",
+          "U",
+          "D",
+          "U2"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 3,
+        "time_seconds": 0.00019502639770507812,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "R",
+          "D",
+          "U'"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 3,
+        "time_seconds": 0.00045680999755859375,
+        "memory_mb": 1.140625,
+        "nodes_explored": 14,
+        "reason_failed": null,
+        "solution_moves": [
+          "R",
+          "U'",
+          "D"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    },
+    {
+      "scramble_id": 2,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "D",
+        "R2",
+        "L'",
+        "D",
+        "U"
+      ],
+      "timestamp": "2026-03-20T21:08:30.531033",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 6,
+        "time_seconds": 0.003931760787963867,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "U'",
+          "D'",
+          "L",
+          "R2",
+          "D",
+          "D2"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.0004987716674804688,
+        "memory_mb": 0.03125,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "D'",
+          "U'",
+          "L",
+          "R2",
+          "D'"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.0010018348693847656,
+        "memory_mb": 3.09375,
+        "nodes_explored": 33,
+        "reason_failed": null,
+        "solution_moves": [
+          "U'",
+          "D'",
+          "R2",
+          "L",
+          "D'"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    },
+    {
+      "scramble_id": 3,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "B2",
+        "D",
+        "U",
+        "D",
+        "D'"
+      ],
+      "timestamp": "2026-03-20T21:08:30.536927",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.0017898082733154297,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "U",
+          "D",
+          "U2",
+          "D2",
+          "B2"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 3,
+        "time_seconds": 0.0002491474151611328,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "D'",
+          "U'",
+          "B2"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 3,
+        "time_seconds": 0.0003719329833984375,
+        "memory_mb": 0.796875,
+        "nodes_explored": 23,
+        "reason_failed": null,
+        "solution_moves": [
+          "U'",
+          "D'",
+          "B2"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    },
+    {
+      "scramble_id": 4,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "D2",
+        "F2",
+        "B2",
+        "R'",
+        "B2"
+      ],
+      "timestamp": "2026-03-20T21:08:30.539859",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.002579927444458008,
+        "memory_mb": 0.03125,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "B2",
+          "R",
+          "F2",
+          "B2",
+          "D2"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.00032591819763183594,
+        "memory_mb": 0.015625,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "B2",
+          "R",
+          "F2",
+          "B2",
+          "D2"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.0007860660552978516,
+        "memory_mb": 2.328125,
+        "nodes_explored": 183,
+        "reason_failed": null,
+        "solution_moves": [
+          "B2",
+          "R",
+          "F2",
+          "B2",
+          "D2"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    },
+    {
+      "scramble_id": 5,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "F'",
+        "F",
+        "F'",
+        "F2",
+        "F2"
+      ],
+      "timestamp": "2026-03-20T21:08:30.544032",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 1,
+        "time_seconds": 0.0012328624725341797,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "F"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 1,
+        "time_seconds": 0.00015425682067871094,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "F"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 1,
+        "time_seconds": 0.00015997886657714844,
+        "memory_mb": 0.015625,
+        "nodes_explored": 7,
+        "reason_failed": null,
+        "solution_moves": [
+          "F"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    },
+    {
+      "scramble_id": 6,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "U",
+        "R2",
+        "D'",
+        "R'",
+        "U"
+      ],
+      "timestamp": "2026-03-20T21:08:30.545790",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 12,
+        "time_seconds": 0.0038251876831054688,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "U'",
+          "R",
+          "U",
+          "F2",
+          "D",
+          "L2",
+          "D2",
+          "F2",
+          "U2",
+          "R2",
+          "D2",
+          "B2"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.0002951622009277344,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "U'",
+          "R",
+          "D",
+          "R2",
+          "U'"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.00047206878662109375,
+        "memory_mb": 1.453125,
+        "nodes_explored": 16,
+        "reason_failed": null,
+        "solution_moves": [
+          "U'",
+          "R",
+          "D",
+          "R2",
+          "U'"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    },
+    {
+      "scramble_id": 7,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "B'",
+        "L'",
+        "F2",
+        "L",
+        "D2"
+      ],
+      "timestamp": "2026-03-20T21:08:30.550910",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 19,
+        "time_seconds": 0.007664918899536133,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "D2",
+          "B",
+          "U'",
+          "B2",
+          "U2",
+          "L'",
+          "F2",
+          "L",
+          "U2",
+          "B2",
+          "U",
+          "F2",
+          "L2",
+          "U2",
+          "R2",
+          "B2",
+          "R2",
+          "U2",
+          "L2"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.0004000663757324219,
+        "memory_mb": 0.03125,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "D2",
+          "L'",
+          "F2",
+          "L",
+          "B"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.0009262561798095703,
+        "memory_mb": 2.59375,
+        "nodes_explored": 45,
+        "reason_failed": null,
+        "solution_moves": [
+          "D2",
+          "L'",
+          "F2",
+          "L",
+          "B"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    },
+    {
+      "scramble_id": 8,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "R'",
+        "U",
+        "B2",
+        "L'",
+        "U'"
+      ],
+      "timestamp": "2026-03-20T21:08:30.560657",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.0039060115814208984,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "U",
+          "L",
+          "B2",
+          "U'",
+          "R"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.0003979206085205078,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "U",
+          "L",
+          "B2",
+          "U'",
+          "R"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.0006499290466308594,
+        "memory_mb": 1.921875,
+        "nodes_explored": 26,
+        "reason_failed": null,
+        "solution_moves": [
+          "U",
+          "L",
+          "B2",
+          "U'",
+          "R"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    },
+    {
+      "scramble_id": 9,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "D2",
+        "U",
+        "B",
+        "D2",
+        "R'"
+      ],
+      "timestamp": "2026-03-20T21:08:30.566023",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 31,
+        "time_seconds": 1.0573527812957764,
+        "memory_mb": 0.03125,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "D2",
+          "R",
+          "B",
+          "F2",
+          "U",
+          "L",
+          "U",
+          "D2",
+          "L'",
+          "U'",
+          "L",
+          "U",
+          "B2",
+          "U",
+          "F2",
+          "U'",
+          "F2",
+          "L2",
+          "U'",
+          "L2",
+          "U",
+          "U2",
+          "R2",
+          "U2",
+          "B2",
+          "U2",
+          "B2",
+          "L2",
+          "B2",
+          "U2",
+          "L2"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 6,
+        "time_seconds": 0.00039124488830566406,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "R",
+          "D2",
+          "B",
+          "B2",
+          "D2",
+          "U'"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.0009191036224365234,
+        "memory_mb": 2.25,
+        "nodes_explored": 35,
+        "reason_failed": null,
+        "solution_moves": [
+          "R",
+          "D2",
+          "B'",
+          "U'",
+          "D2"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    },
+    {
+      "scramble_id": 10,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "B2",
+        "L'",
+        "U",
+        "D2",
+        "B'"
+      ],
+      "timestamp": "2026-03-20T21:08:31.625656",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.003052949905395508,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "B",
+          "U'",
+          "D2",
+          "L",
+          "B2"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.0003840923309326172,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "B",
+          "D2",
+          "U'",
+          "L",
+          "B2"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.0006432533264160156,
+        "memory_mb": 1.984375,
+        "nodes_explored": 45,
+        "reason_failed": null,
+        "solution_moves": [
+          "B",
+          "U'",
+          "D2",
+          "L",
+          "B2"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    },
+    {
+      "scramble_id": 11,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "D2",
+        "R'",
+        "L",
+        "B",
+        "D2"
+      ],
+      "timestamp": "2026-03-20T21:08:31.630119",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 11,
+        "time_seconds": 0.004233837127685547,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "D2",
+          "B",
+          "L",
+          "R",
+          "U2",
+          "R2",
+          "F2",
+          "R2",
+          "U2",
+          "L2",
+          "B2"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 11,
+        "time_seconds": 0.0016331672668457031,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "D2",
+          "B",
+          "R",
+          "L",
+          "U2",
+          "R2",
+          "F2",
+          "R2",
+          "U2",
+          "L2",
+          "B2"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.0006821155548095703,
+        "memory_mb": 1.671875,
+        "nodes_explored": 140,
+        "reason_failed": null,
+        "solution_moves": [
+          "D2",
+          "B'",
+          "R",
+          "L'",
+          "D2"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    },
+    {
+      "scramble_id": 12,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "R",
+        "D2",
+        "U2",
+        "R",
+        "U'"
+      ],
+      "timestamp": "2026-03-20T21:08:31.637331",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 17,
+        "time_seconds": 0.0040819644927978516,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "U",
+          "L",
+          "F2",
+          "B2",
+          "L",
+          "U2",
+          "L2",
+          "U2",
+          "F2",
+          "L2",
+          "U2",
+          "B2",
+          "U2",
+          "R2",
+          "B2",
+          "L2",
+          "D2"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 17,
+        "time_seconds": 9.307272911071777,
+        "memory_mb": 0.015625,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "U",
+          "R",
+          "D2",
+          "U2",
+          "R",
+          "U2",
+          "R2",
+          "U",
+          "R2",
+          "L2",
+          "U2",
+          "R2",
+          "L2",
+          "U'",
+          "R2",
+          "U2",
+          "R2"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.0004961490631103516,
+        "memory_mb": 0.359375,
+        "nodes_explored": 17,
+        "reason_failed": null,
+        "solution_moves": [
+          "U",
+          "R'",
+          "U2",
+          "D2",
+          "R'"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    },
+    {
+      "scramble_id": 13,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "L'",
+        "F'",
+        "F2",
+        "D2",
+        "D2"
+      ],
+      "timestamp": "2026-03-20T21:08:40.950162",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 3,
+        "time_seconds": 0.0036840438842773438,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "F",
+          "F2",
+          "L"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 2,
+        "time_seconds": 0.0003399848937988281,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "F'",
+          "L"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 2,
+        "time_seconds": 0.00026798248291015625,
+        "memory_mb": 0.203125,
+        "nodes_explored": 19,
+        "reason_failed": null,
+        "solution_moves": [
+          "F'",
+          "L"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    },
+    {
+      "scramble_id": 14,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "D'",
+        "R",
+        "U",
+        "U2",
+        "B2"
+      ],
+      "timestamp": "2026-03-20T21:08:40.954842",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.004884243011474609,
+        "memory_mb": 0.015625,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "B2",
+          "U",
+          "R",
+          "R2",
+          "D"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.00033211708068847656,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "B2",
+          "U",
+          "R",
+          "R2",
+          "D"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 4,
+        "time_seconds": 0.0004222393035888672,
+        "memory_mb": 0.96875,
+        "nodes_explored": 28,
+        "reason_failed": null,
+        "solution_moves": [
+          "B2",
+          "U",
+          "R'",
+          "D"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    },
+    {
+      "scramble_id": 15,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "R",
+        "D2",
+        "R",
+        "U2",
+        "F2"
+      ],
+      "timestamp": "2026-03-20T21:08:40.960881",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 12,
+        "time_seconds": 0.0041348934173583984,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "F2",
+          "U2",
+          "L'",
+          "F2",
+          "L",
+          "U2",
+          "L2",
+          "F2",
+          "R2",
+          "D2",
+          "L2",
+          "B2"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 6,
+        "time_seconds": 0.0014500617980957031,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "F2",
+          "U2",
+          "R'",
+          "D2",
+          "R",
+          "R2"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.00032806396484375,
+        "memory_mb": 0.359375,
+        "nodes_explored": 24,
+        "reason_failed": null,
+        "solution_moves": [
+          "F2",
+          "U2",
+          "R'",
+          "D2",
+          "R'"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    },
+    {
+      "scramble_id": 16,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "D",
+        "U",
+        "L2",
+        "D",
+        "U'"
+      ],
+      "timestamp": "2026-03-20T21:08:40.967381",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 8,
+        "time_seconds": 0.0005681514739990234,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "F2",
+          "L2",
+          "D2",
+          "F2",
+          "D2",
+          "L2",
+          "D2",
+          "F2"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.0007481575012207031,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "D'",
+          "U",
+          "L2",
+          "D'",
+          "U'"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.0005037784576416016,
+        "memory_mb": 0.34375,
+        "nodes_explored": 474,
+        "reason_failed": null,
+        "solution_moves": [
+          "U",
+          "D'",
+          "L2",
+          "U'",
+          "D'"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    },
+    {
+      "scramble_id": 17,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "R2",
+        "L",
+        "L'",
+        "B2",
+        "R"
+      ],
+      "timestamp": "2026-03-20T21:08:40.969670",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 4,
+        "time_seconds": 0.002025127410888672,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "R",
+          "R2",
+          "B2",
+          "R2"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 4,
+        "time_seconds": 0.000270843505859375,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "R",
+          "R2",
+          "B2",
+          "R2"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 3,
+        "time_seconds": 0.0002448558807373047,
+        "memory_mb": 0.15625,
+        "nodes_explored": 25,
+        "reason_failed": null,
+        "solution_moves": [
+          "R'",
+          "B2",
+          "R2"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    },
+    {
+      "scramble_id": 18,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "L'",
+        "U'",
+        "F",
+        "B'",
+        "R"
+      ],
+      "timestamp": "2026-03-20T21:08:40.972654",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 20,
+        "time_seconds": 0.026115894317626953,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "R",
+          "F",
+          "B",
+          "F2",
+          "U'",
+          "L",
+          "U",
+          "F2",
+          "L2",
+          "B2",
+          "D",
+          "F2",
+          "R2",
+          "U2",
+          "L2",
+          "B2",
+          "L2",
+          "U2",
+          "B2",
+          "L2"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 14,
+        "time_seconds": 0.030215978622436523,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "R",
+          "B",
+          "F'",
+          "U'",
+          "L",
+          "U'",
+          "F2",
+          "R2",
+          "F2",
+          "U2",
+          "F2",
+          "R2",
+          "F2",
+          "U'"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.0006079673767089844,
+        "memory_mb": 1.28125,
+        "nodes_explored": 36,
+        "reason_failed": null,
+        "solution_moves": [
+          "R'",
+          "F'",
+          "B",
+          "U",
+          "L"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    },
+    {
+      "scramble_id": 19,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "D",
+        "U2",
+        "R'",
+        "R",
+        "U2"
+      ],
+      "timestamp": "2026-03-20T21:08:41.030468",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 2,
+        "time_seconds": 0.0013780593872070312,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "D",
+          "D2"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 1,
+        "time_seconds": 0.00016379356384277344,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "D'"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 1,
+        "time_seconds": 0.00019788742065429688,
+        "memory_mb": 0.0,
+        "nodes_explored": 12,
+        "reason_failed": null,
+        "solution_moves": [
+          "D'"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    },
+    {
+      "scramble_id": 20,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "R2",
+        "B",
+        "B2",
+        "R2",
+        "D'"
+      ],
+      "timestamp": "2026-03-20T21:08:41.032456",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 4,
+        "time_seconds": 0.003041982650756836,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "D",
+          "R2",
+          "B",
+          "R2"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 4,
+        "time_seconds": 0.0002810955047607422,
+        "memory_mb": 0.015625,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "D",
+          "R2",
+          "B",
+          "R2"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 4,
+        "time_seconds": 0.0003800392150878906,
+        "memory_mb": 0.90625,
+        "nodes_explored": 30,
+        "reason_failed": null,
+        "solution_moves": [
+          "D",
+          "R2",
+          "B",
+          "R2"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    },
+    {
+      "scramble_id": 21,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "L",
+        "B2",
+        "U",
+        "R2",
+        "U"
+      ],
+      "timestamp": "2026-03-20T21:08:41.036513",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 6,
+        "time_seconds": 0.0035750865936279297,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "U'",
+          "R2",
+          "U'",
+          "B2",
+          "L",
+          "L2"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 6,
+        "time_seconds": 0.00036597251892089844,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "U'",
+          "R2",
+          "U'",
+          "B2",
+          "L",
+          "L2"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.0004899501800537109,
+        "memory_mb": 1.34375,
+        "nodes_explored": 34,
+        "reason_failed": null,
+        "solution_moves": [
+          "U'",
+          "R2",
+          "U'",
+          "B2",
+          "L'"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    },
+    {
+      "scramble_id": 22,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "D'",
+        "F",
+        "F",
+        "R2",
+        "R'"
+      ],
+      "timestamp": "2026-03-20T21:08:41.041457",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 16,
+        "time_seconds": 0.006659984588623047,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "R",
+          "L2",
+          "B2",
+          "U",
+          "F2",
+          "L2",
+          "U2",
+          "F2",
+          "U2",
+          "R2",
+          "B2",
+          "L2",
+          "D2",
+          "L2",
+          "D2",
+          "L2"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 4,
+        "time_seconds": 0.0002522468566894531,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "R",
+          "R2",
+          "F2",
+          "D"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 3,
+        "time_seconds": 0.0002918243408203125,
+        "memory_mb": 0.21875,
+        "nodes_explored": 18,
+        "reason_failed": null,
+        "solution_moves": [
+          "R'",
+          "F2",
+          "D"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    },
+    {
+      "scramble_id": 23,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "L2",
+        "F2",
+        "F'",
+        "F",
+        "F"
+      ],
+      "timestamp": "2026-03-20T21:08:41.049296",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 2,
+        "time_seconds": 0.0012059211730957031,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "F",
+          "L2"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 2,
+        "time_seconds": 0.00023102760314941406,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "F",
+          "L2"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 2,
+        "time_seconds": 0.00016117095947265625,
+        "memory_mb": 0.0,
+        "nodes_explored": 18,
+        "reason_failed": null,
+        "solution_moves": [
+          "F",
+          "L2"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    },
+    {
+      "scramble_id": 24,
+      "scramble_depth": 5,
+      "scramble_moves": [
+        "L'",
+        "R",
+        "B'",
+        "L'",
+        "R'"
+      ],
+      "timestamp": "2026-03-20T21:08:41.051246",
+      "thistlethwaite": {
+        "algorithm": "Thistlethwaite",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 6,
+        "time_seconds": 0.00577998161315918,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "L",
+          "R",
+          "B",
+          "L",
+          "R",
+          "R2"
+        ],
+        "used_fallback": false,
+        "backend": "thistlethwaite_native",
+        "optimal_guaranteed": false
+      },
+      "kociemba": {
+        "algorithm": "Kociemba",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 6,
+        "time_seconds": 0.0003600120544433594,
+        "memory_mb": 0.0,
+        "nodes_explored": null,
+        "reason_failed": null,
+        "solution_moves": [
+          "R",
+          "L",
+          "B",
+          "R",
+          "L",
+          "R2"
+        ],
+        "used_fallback": null,
+        "backend": "kociemba_internal",
+        "optimal_guaranteed": false
+      },
+      "korf": {
+        "algorithm": "Korf_IDA*",
+        "scramble_depth": 5,
+        "solved": true,
+        "solution_length": 5,
+        "time_seconds": 0.0004329681396484375,
+        "memory_mb": 0.828125,
+        "nodes_explored": 40,
+        "reason_failed": null,
+        "solution_moves": [
+          "R",
+          "L",
+          "B",
+          "R'",
+          "L"
+        ],
+        "used_fallback": null,
+        "backend": "optimal_external",
+        "optimal_guaranteed": true
+      }
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 # Phase 9 Demo Guide
 
+> Historical guide with current runtime entrypoints. The Next.js frontend is a synthetic preview layer; for publishable benchmark numbers, use `results/benchmarks/thesis/thesis_results_combined.json` and `thesis/chapters/07_evaluation.tex`.
+
 Complete guide for running and demonstrating the Rubik's Cube solving algorithms.
 
 ## Quick Start
@@ -75,6 +77,7 @@ jupyter lab notebooks/
    - Highlight the results table
    - Show winner analysis
    - Discuss trade-offs
+   - Mention that the shared comparison harness runs the three algorithms on the same scramble sequentially
 
 4. **Educational Mode** (3 minutes)
    - Navigate to "Educational Mode"
@@ -210,7 +213,7 @@ Demos work without it but output is less formatted.
 **Problem:** Import errors
 Make sure you're in the project root:
 ```bash
-cd /home/user/rubicCubeThesis
+cd "$(git rev-parse --show-toplevel)"
 python demos/phase9/interactive_solver.py
 ```
 
@@ -318,10 +321,10 @@ For faster demos:
 - Reduce scramble depth
 - Increase timeout if needed
 
-For optimal solutions:
-- Use Korf (but be patient)
-- Reduce max_depth for speed
-- Use depth 10-12 scrambles
+For the best overall practical experience on the thesis benchmark corpus:
+- Use Kociemba for balanced speed and move quality
+- Use pure Thistlethwaite for deterministic fast demos
+- Use Korf only when you specifically want exact optimal search and can tolerate timeout risk
 
 ### Exporting Results
 
@@ -339,7 +342,7 @@ python demos/phase9/benchmark_demo.py --n-scrambles 50 --export benchmark.md
 A: Web UI comparison mode - it's visual, interactive, and comprehensive.
 
 **Q: How do I make demos faster?**
-A: Use Thistlethwaite algorithm and depth 10 scrambles.
+A: Use Thistlethwaite for the fastest pure solver demos, or Kociemba for the best overall practical compromise on the canonical benchmark set.
 
 **Q: Can I use these demos offline?**
 A: Yes, all demos work offline after installing dependencies.
@@ -348,14 +351,14 @@ A: Yes, all demos work offline after installing dependencies.
 A: Web UI: screenshot, Jupyter: `fig.savefig()`, CLI: use --export
 
 **Q: What if Korf times out during presentation?**
-A: Have a pre-computed result ready, or use depth 8-10 scrambles.
+A: That is expected on some hard cases. Use a shallower scramble, switch to Kociemba, or keep a precomputed exact result ready.
 
 ## Support
 
 For issues or questions:
 - Check troubleshooting section above
 - Review README files in each directory
-- Check Phase 9 plan: `PHASE9_PLAN.md`
+- Review `docs/demos_and_ui.md` for the historical implementation summary.
 
 ## Author
 

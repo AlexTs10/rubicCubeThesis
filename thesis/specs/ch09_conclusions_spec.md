@@ -28,22 +28,22 @@
 
 **Points to Cover:**
 1. **Kociemba achieves best practical performance:**
-   - 96-100% success rate
-   - Sub-10 second solving time
-   - Solutions within 2-3 moves of optimal
+   - 100% success rate in the current thesis corpus
+   - Runtime depends on scramble depth and solver backend
+   - Solutions remain close to optimal in practice
 2. **Korf guarantees optimality but is limited:**
-   - Practical only for depths ≤ 8-10
-   - Exponential time complexity
+   - Exact when the external backend completes within the timeout
+   - Exponential time complexity remains the limiting factor
 3. **Thistlethwaite is reliable but slow:**
-   - 88-96% success rate
-   - Solutions 6-10× longer than optimal
+   - 100% success rate in the current thesis corpus
+   - Solutions are substantially longer than Kociemba and Korf
 
 **Table 9.1: Algorithm Summary**
 | Algorithm | Best Use Case | Success Rate | Avg Moves |
 |-----------|--------------|--------------|-----------|
-| Kociemba | Real-time apps | 96-100% | 10-22 |
-| Korf IDA* | Optimality proof | 0-96%* | Optimal |
-| Thistlethwaite | Education | 88-96% | 23-33 |
+| Kociemba | Real-time apps | 100% | 14.33 |
+| Korf IDA* | Optimality proof | 97%* | Optimal when solved |
+| Thistlethwaite | Education | 100% | 23.62 |
 
 *Korf success rate varies dramatically with scramble depth
 
@@ -59,8 +59,8 @@
    - Low entropy → Manhattan distance (fast, accurate near solution)
    - High entropy → Pattern databases (tight bounds for deep scrambles)
    - Mid-range → Balanced combination
-3. **Admissibility guarantee:** Maintained through max() combination
-4. **Performance improvement:** 15-25% reduction in nodes explored
+3. **Heuristic composition:** Uses `max()` as a practical lower-bound aggregator in the exploratory path
+4. **Performance improvement:** Any node-count improvement should be reported only if backed by the current benchmark corpus
 
 **Algorithm Summary:**
 ```python
@@ -96,14 +96,14 @@ else:
 **Points to Cover:**
 1. **Sample size:** 100 test cases (25 per depth × 4 depths)
 2. **Hardware dependency:** Single-machine benchmarks
-3. **No parallelization:** Sequential algorithm implementations
+3. **No parallelization:** The comparison benchmark executes solvers sequentially
 4. **Random scrambles:** May not represent real-world distribution
 
 ### 9.3.2 Implementation Limitations (~150 words)
 
 **Points to Cover:**
-1. **Thistlethwaite edge cases:** Occasional "no_solution" errors
-2. **Pattern database initialization:** Time not included in solve metrics
+1. **Thistlethwaite edge cases:** Avoid claiming occasional "no_solution" errors unless they are still reproducible
+2. **Pattern database initialization:** First-call loading cost is amortized in the timed benchmark runs
 3. **Memory constraints:** Korf limited by pattern database size
 4. **Python performance:** Could be faster in C/C++
 

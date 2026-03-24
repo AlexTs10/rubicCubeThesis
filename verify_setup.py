@@ -13,8 +13,15 @@ This script verifies that the development environment is correctly set up:
 import sys
 import os
 import importlib
+import importlib.util
 import subprocess
 from pathlib import Path
+
+
+# The full repository suite includes exact-solver validation and can run much
+# longer on colder caches or nested subprocess execution than it does in an
+# already-warmed interactive shell.
+FULL_TEST_TIMEOUT_SECONDS = 1800
 
 
 class Colors:
@@ -76,11 +83,24 @@ def check_required_packages() -> bool:
         ('pytest', 'pytest'),
         ('matplotlib', 'matplotlib'),
         ('pandas', 'pandas'),
+        ('RubikOptimal', 'spec:optimal'),
+    ]
+    optional_packages = [
+        ('kociemba', 'kociemba'),
     ]
 
     all_installed = True
 
     for package_name, import_name in required_packages:
+        if import_name.startswith('spec:'):
+            package_spec = import_name.split(':', 1)[1]
+            if importlib.util.find_spec(package_spec) is not None:
+                print_success(f"{package_name:20s} installed")
+            else:
+                print_error(f"{package_name:20s} NOT INSTALLED")
+                all_installed = False
+            continue
+
         try:
             module = importlib.import_module(import_name)
             version = getattr(module, '__version__', 'unknown')
@@ -88,6 +108,15 @@ def check_required_packages() -> bool:
         except ImportError:
             print_error(f"{package_name:20s} NOT INSTALLED")
             all_installed = False
+
+    print("\nOptional acceleration backends:")
+    for package_name, import_name in optional_packages:
+        try:
+            module = importlib.import_module(import_name)
+            version = getattr(module, '__version__', 'unknown')
+            print_success(f"{package_name:20s} {version}")
+        except ImportError:
+            print_warning(f"{package_name:20s} NOT INSTALLED (internal fallback will be used)")
 
     if all_installed:
         print(f"\n{Colors.GREEN}All required packages are installed{Colors.RESET}")
@@ -116,11 +145,16 @@ def check_project_structure() -> bool:
         'demos',
         'docs',
         'docs/notes',
-        'docs/references',
         'data',
         'data/pattern_databases',
-        'data/test_cases',
+        'papers',
+        'thesis',
         'results',
+    ]
+    optional_dirs = [
+        'docs/references',
+        'data/test_cases',
+        'agent_workflow',
     ]
 
     required_files = [
@@ -143,6 +177,15 @@ def check_project_structure() -> bool:
         else:
             print_error(f"{dir_path:40s} MISSING")
             all_present = False
+
+    if optional_dirs:
+        print("\nChecking optional directories:")
+        for dir_path in optional_dirs:
+            full_path = project_root / dir_path
+            if full_path.exists() and full_path.is_dir():
+                print_success(f"{dir_path:40s}")
+            else:
+                print_warning(f"{dir_path:40s} MISSING (optional)")
 
     print("\nChecking files:")
     for file_path in required_files:
@@ -231,43 +274,45 @@ def check_core_functionality() -> bool:
 
 
 def check_tests() -> bool:
-    """Check if tests can run."""
+    """Check if the supported test suite can run."""
     print_section("5. Test Suite Check")
 
     project_root = Path(__file__).parent
-    test_file = project_root / 'tests' / 'unit' / 'test_rubik_cube.py'
+    tests_dir = project_root / 'tests'
 
-    if not test_file.exists():
-        print_error("Test file not found")
+    if not tests_dir.exists():
+        print_error("Tests directory not found")
         return False
 
     try:
-        print("Running test suite...")
+        print(
+            f"Running supported test command: python -m pytest tests -q "
+            f"(timeout: {FULL_TEST_TIMEOUT_SECONDS}s)"
+        )
         result = subprocess.run(
-            [sys.executable, '-m', 'pytest', str(test_file), '-v', '--tb=short'],
+            [sys.executable, '-m', 'pytest', 'tests', '-q'],
             cwd=str(project_root),
             capture_output=True,
             text=True,
-            timeout=30
+            timeout=FULL_TEST_TIMEOUT_SECONDS
         )
 
         if result.returncode == 0:
-            print_success("All tests passed")
-            # Show test summary
+            print_success("Full test suite passed")
             output_lines = result.stdout.split('\n')
             for line in output_lines:
-                if 'passed' in line.lower() or 'test session starts' in line.lower():
+                if 'passed' in line.lower() or 'collected' in line.lower():
                     print(f"  {line}")
             return True
         else:
-            print_error("Some tests failed")
+            print_error("The supported test command failed")
             print("\nTest output:")
             print(result.stdout)
             print(result.stderr)
             return False
 
     except subprocess.TimeoutExpired:
-        print_error("Tests timed out")
+        print_error(f"Full test suite timed out after {FULL_TEST_TIMEOUT_SECONDS}s")
         return False
     except Exception as e:
         print_error(f"Error running tests: {str(e)}")

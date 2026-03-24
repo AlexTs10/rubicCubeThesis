@@ -4,8 +4,6 @@ Visualization components for the Streamlit UI.
 Provides 3D and 2D cube visualization using existing visualization modules.
 """
 
-import matplotlib.pyplot as plt
-import streamlit as st
 import sys
 from pathlib import Path
 from io import BytesIO
@@ -13,6 +11,12 @@ from io import BytesIO
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
+from src.utils.runtime_cache import ensure_matplotlib_cache
+
+ensure_matplotlib_cache()
+
+import matplotlib.pyplot as plt
+import streamlit as st
 from src.cube.rubik_cube import RubikCube
 from src.cube.visualization import display_cube_unfolded
 from src.cube.visualize_3d import visualize_3d as visualize_cube_3d

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This implements Herbert Kociemba's famous **two-phase algorithm** for solving the Rubik's Cube in near-optimal move counts (typically <19 moves).
+This implements Herbert Kociemba's famous **two-phase algorithm** for solving the Rubik's Cube in near-optimal move counts.
 
 ## Algorithm Description
 
@@ -18,7 +18,7 @@ This implements Herbert Kociemba's famous **two-phase algorithm** for solving th
 
 ### Phase 2: G₁ → Solved
 - **Goal**: Solve within the G₁ subgroup
-- **Search Space**: 19,508,428,800 states (19.5 million)
+- **Search Space**: 39,038,976,000 states (about 3.9 × 10^10)
 - **Coordinates**:
   - Corner Permutation (8! = 40,320 states)
   - Edge Permutation (8! = 40,320 states)
@@ -26,10 +26,10 @@ This implements Herbert Kociemba's famous **two-phase algorithm** for solving th
 - **Max Depth**: 18 moves theoretically
 - **Allowed Moves**: Only U, D, R2, L2, F2, B2 (10 moves)
 
-### Total Performance
-- **Average Moves**: <19 moves
-- **Solve Time**: <5 seconds per cube
-- **Memory**: ~80 MB (pruning tables)
+### Current Thesis Benchmark Profile
+- **Average Moves**: 14.33 moves across the canonical 100-scramble thesis corpus
+- **Solve Time**: 4.62 seconds average across that corpus
+- **On-Disk Cached Tables**: about 8.7 MB in the current repo (`data/kociemba/`)
 
 ## Implementation Structure
 
@@ -95,7 +95,7 @@ Pattern databases providing IDA* heuristics:
 - **Phase 1**: Corner Orient × Edge Orient, Edge Orient × UD-Slice
 - **Phase 2**: Individual tables for CP, EP, UDSP
 
-Generated using BFS, cached to disk (~80 MB).
+Generated using BFS and cached to disk. In the current repo snapshot, the cached move/pruning tables under `data/kociemba/` occupy about 8.7 MB on disk.
 
 ### 5. Solver (`solver.py`)
 
@@ -186,28 +186,28 @@ PYTHONPATH=/home/user/rubicCubeThesis python demos/kociemba_demo.py
 ### Time Complexity
 - **Phase 1**: O(b^d) where b ≈ 13 (average branching), d ≤ 12
 - **Phase 2**: O(b^d) where b ≈ 7 (average branching), d ≤ 18
-- **Typical**: 1-10 seconds per cube on modern hardware
+- **Typical**: highly scramble-dependent; see the thesis benchmark corpus for measured averages
 
 ### Space Complexity
-- **Move Tables**: ~2 MB
-- **Pruning Tables**: ~80 MB
+- **Move Tables**: ~3.4 MB on disk in the current repo snapshot
+- **Pruning Tables**: ~5.3 MB on disk in the current repo snapshot
 - **Search**: O(depth) stack space
 
 ### Optimality
 - **God's Number**: 20 moves (proven optimal)
-- **Kociemba**: ~19 moves average (near-optimal)
-- **This Implementation**: ~19-25 moves (good heuristics)
+- **Kociemba**: near-optimal in practice
+- **This Implementation**: 14.33 moves average on the canonical thesis benchmark corpus
 
 ## Known Limitations
 
-1. **Facelet-to-Cubie Conversion**: The integration between facelet representation (RubikCube class) and cubie representation needs refinement. The core algorithm works correctly in cubie space.
+1. **Symmetry Reduction**: Not yet implemented. It could reduce table sizes further.
 
-2. **Symmetry Reduction**: Not yet implemented. Would reduce memory by 16x (from ~80MB to ~5MB).
-
-3. **Speed Optimizations**: Current implementation prioritizes clarity over speed. Possible optimizations:
+2. **Speed Optimizations**: Current implementation prioritizes clarity over speed. Possible optimizations:
    - Compile move tables to C/Cython
    - Use more aggressive pruning
    - Implement parallel search
+
+3. **Benchmark Context**: The authoritative performance numbers for the thesis live in `results/benchmarks/thesis/`, not in this summary page.
 
 ## References
 

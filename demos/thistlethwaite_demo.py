@@ -1,7 +1,8 @@
 """
-Thistlethwaite Algorithm Demo
+Pure Thistlethwaite Algorithm Demo.
 
-Demonstrates the use of Thistlethwaite's algorithm to solve Rubik's Cube.
+Demonstrates the corrected 4-phase Thistlethwaite solver with pattern
+databases enabled and the Kociemba fallback disabled.
 """
 
 import sys
@@ -30,15 +31,18 @@ def demo_simple_solve():
 
     # Solve with Thistlethwaite
     print("\n2. Solving with Thistlethwaite's Algorithm...")
-    solver = ThistlethwaiteSolver(use_pattern_databases=False)
+    solver = ThistlethwaiteSolver(
+        use_pattern_databases=True,
+        enable_kociemba_fallback=False,
+    )
 
-    result = solver.solve(cube, verbose=True)
+    result = solver.solve(cube, verbose=True, max_time=30.0)
 
     if result is None:
         print("\n❌ Failed to find solution!")
         return
 
-    all_moves, phase_moves = result
+    all_moves, phase_moves, used_fallback = result
 
     # Show results
     print("\n" + "="*70)
@@ -47,6 +51,7 @@ def demo_simple_solve():
 
     print(f"\nTotal solution length: {len(all_moves)} moves")
     print(f"Solution: {' '.join(all_moves)}")
+    print(f"Pure Thistlethwaite path: {'yes' if not used_fallback else 'no'}")
 
     print("\n Phase breakdown:")
     for i, moves in enumerate(phase_moves):
@@ -73,7 +78,10 @@ def demo_multiple_scrambles():
     print("SOLVING MULTIPLE SCRAMBLES")
     print("="*70)
 
-    solver = ThistlethwaiteSolver(use_pattern_databases=False)
+    solver = ThistlethwaiteSolver(
+        use_pattern_databases=True,
+        enable_kociemba_fallback=False,
+    )
 
     results = []
 
@@ -84,10 +92,10 @@ def demo_multiple_scrambles():
 
         print(f"Scramble: {' '.join(scramble)}")
 
-        result = solver.solve(cube, verbose=False)
+        result = solver.solve(cube, verbose=False, max_time=30.0)
 
         if result is not None:
-            all_moves, phase_moves = result
+            all_moves, phase_moves, used_fallback = result
 
             # Verify
             test_cube = RubikCube()
@@ -100,11 +108,13 @@ def demo_multiple_scrambles():
                 'scramble_length': len(scramble),
                 'solution_length': len(all_moves),
                 'phase_lengths': [len(p) for p in phase_moves],
-                'success': success
+                'success': success,
+                'used_fallback': used_fallback,
             })
 
             status = "✅" if success else "❌"
-            print(f"Solution: {len(all_moves)} moves {status}")
+            purity = "pure" if not used_fallback else "unexpected fallback"
+            print(f"Solution: {len(all_moves)} moves {status} ({purity})")
         else:
             print("❌ No solution found")
             results.append(None)
@@ -132,6 +142,9 @@ def demo_multiple_scrambles():
             avg_phase = sum(r['phase_lengths'][phase] for r in successful) / len(successful)
             print(f"  Phase {phase}: {avg_phase:.1f} moves")
 
+        fallback_count = sum(1 for r in successful if r['used_fallback'])
+        print(f"Unexpected fallback count: {fallback_count}")
+
 
 def demo_with_visualization():
     """Demonstrate solving with 2D visualization."""
@@ -155,11 +168,14 @@ def demo_with_visualization():
     visualize_cube(cube)
 
     # Solve
-    solver = ThistlethwaiteSolver(use_pattern_databases=False)
-    result = solver.solve(cube, verbose=False)
+    solver = ThistlethwaiteSolver(
+        use_pattern_databases=True,
+        enable_kociemba_fallback=False,
+    )
+    result = solver.solve(cube, verbose=False, max_time=30.0)
 
     if result is not None:
-        all_moves, _ = result
+        all_moves, _, _ = result
         print(f"\nSolution: {' '.join(all_moves)}")
         print(f"Length: {len(all_moves)} moves")
 

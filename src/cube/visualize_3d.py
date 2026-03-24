@@ -7,6 +7,10 @@ with interactive rotation capabilities.
 Based on techniques similar to davidwhogg/MagicCube but simplified.
 """
 
+from ..utils.runtime_cache import ensure_matplotlib_cache
+
+ensure_matplotlib_cache()
+
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import Poly3DCollection
@@ -201,6 +205,43 @@ def visualize_3d_interactive(cube: RubikCube, title: str = "Rubik's Cube - Inter
             ha='center', fontsize=10, style='italic')
 
     plt.show()
+
+
+def visualize_cube_3d(
+    cube: RubikCube,
+    title: str = "Rubik's Cube - 3D View",
+    view_angles: Optional[Tuple[float, float]] = None,
+    figsize: Tuple[int, int] = (10, 10),
+    elev: float = 20,
+    azim: float = -60,
+    show: bool = False,
+) -> plt.Figure:
+    """
+    Backward-compatible wrapper used by older notebooks and UI helpers.
+
+    Args:
+        cube: RubikCube instance to visualize
+        title: Title for the plot
+        view_angles: Optional ``(elev, azim)`` tuple from legacy callers
+        figsize: Figure size
+        elev: Elevation angle for viewing
+        azim: Azimuth angle for viewing
+        show: Whether to display the figure immediately
+
+    Returns:
+        Matplotlib figure object
+    """
+    if view_angles is not None:
+        elev, azim = view_angles
+
+    return visualize_3d(
+        cube,
+        title=title,
+        figsize=figsize,
+        elev=elev,
+        azim=azim,
+        show=show,
+    )
 
 
 def visualize_3d_sequence(cube: RubikCube, moves: List[str],

@@ -8,6 +8,10 @@ The algorithm works by progressively restricting the cube to nested subgroups:
 G0 (all states) → G1 → G2 → G3 → G4 (solved)
 
 Each phase restricts the allowed moves while maintaining previous invariants.
+
+This implementation can optionally enable a Kociemba rescue fallback for
+interactive/demo usage. Pure Thistlethwaite evaluation should keep that
+fallback disabled.
 """
 
 from typing import List, Optional, Tuple
@@ -30,7 +34,8 @@ class ThistlethwaiteSolver:
     def __init__(
         self,
         use_pattern_databases: bool = True,
-        cache_dir: str = "data/pattern_databases"
+        cache_dir: str = "data/pattern_databases",
+        enable_kociemba_fallback: bool = False,
     ):
         """
         Initialize Thistlethwaite solver.
@@ -38,8 +43,12 @@ class ThistlethwaiteSolver:
         Args:
             use_pattern_databases: Whether to use pattern databases for IDA* heuristic
             cache_dir: Directory to cache pattern databases
+            enable_kociemba_fallback: Whether to fall back to Kociemba if a
+                Thistlethwaite phase fails. This is useful for interactive
+                demos, but should stay disabled for pure algorithm evaluation.
         """
         self.use_pattern_databases = use_pattern_databases
+        self.enable_kociemba_fallback = enable_kociemba_fallback
         self.pattern_databases = None
 
         if use_pattern_databases:
@@ -52,7 +61,7 @@ class ThistlethwaiteSolver:
         self.phase_max_depths = [7, 10, 13, 15]
         self.phase_timeouts = [10.0, 30.0, 60.0, 120.0]
         if not use_pattern_databases:
-            # Keep non-PDB runs snappy; fallback solver will finish remaining work.
+            # Keep non-PDB runs snappy for demos and tests.
             self.phase_timeouts = [2.0, 5.0, 8.0, 12.0]
 
     def _ensure_databases_loaded(self):
@@ -69,7 +78,7 @@ class ThistlethwaiteSolver:
         cube: RubikCube,
         verbose: bool = True,
         max_time: Optional[float] = None
-    ) -> Optional[Tuple[List[str], List[List[str]]]]:
+    ) -> Optional[Tuple[List[str], List[List[str]], bool]]:
         """
         Solve a Rubik's Cube using Thistlethwaite's algorithm.
 
@@ -79,9 +88,10 @@ class ThistlethwaiteSolver:
             max_time: Maximum time in seconds for solving (optional, None = no limit)
 
         Returns:
-            Tuple of (all_moves, phase_moves) where:
+            Tuple of (all_moves, phase_moves, used_fallback) where:
             - all_moves: Complete solution as a single list
             - phase_moves: Solution broken down by phase [[p0_moves], [p1_moves], ...]
+            - used_fallback: True if Kociemba fallback was used for any phase
             Returns None if solving fails or timeout exceeded
         """
         if verbose:
@@ -93,7 +103,7 @@ class ThistlethwaiteSolver:
         if cube.is_solved():
             if verbose:
                 print("Cube is already solved!")
-            return ([], [[], [], [], []])
+            return ([], [[], [], [], []], False)
 
         # Ensure pattern databases are loaded
         if self.use_pattern_databases:
@@ -103,6 +113,7 @@ class ThistlethwaiteSolver:
         current_cube = cube.copy()
         all_moves = []
         phase_solutions = []
+        used_fallback = False
         total_start_time = time.time()
 
         for phase in range(4):
@@ -132,6 +143,12 @@ class ThistlethwaiteSolver:
             phase_moves = self._solve_phase(phase, current_cube, verbose, phase_timeout)
 
             if phase_moves is None:
+                if not self.enable_kociemba_fallback:
+                    if verbose:
+                        print(f"Failed to solve phase {phase}")
+                        print("Kociemba fallback is disabled; aborting pure Thistlethwaite solve.")
+                    return None
+
                 if verbose:
                     print(f"Failed to solve phase {phase}")
                     print("Falling back to Kociemba solver for remaining state...")
@@ -141,6 +158,7 @@ class ThistlethwaiteSolver:
                 for move in fallback:
                     current_cube.apply_move(move)
                 all_moves.extend(fallback)
+                used_fallback = True
 
                 # Ensure previous phase entries remain untouched and fallback
                 # solution is recorded as the final phase.
@@ -186,7 +204,10 @@ class ThistlethwaiteSolver:
             else:
                 print(f"\n✗ WARNING: Solution does not solve cube!")
 
-        return (all_moves, phase_solutions)
+            if used_fallback:
+                print(f"\nNote: Kociemba fallback was used for final phase(s)")
+
+        return (all_moves, phase_solutions, used_fallback)
 
     def _fallback_with_kociemba(
         self,
@@ -222,6 +243,13 @@ class ThistlethwaiteSolver:
         Returns:
             List of moves to reach next group, or None if failed
         """
+        if (
+            phase == 3
+            and self.use_pattern_databases
+            and self._databases_loaded
+        ):
+            return self.pattern_databases.solve_phase3(cube)
+
         # Get goal check and heuristic for this phase
         goal_check = self._get_goal_check(phase)
         heuristic = self._get_heuristic(phase)
@@ -294,8 +322,11 @@ class ThistlethwaiteSolver:
             return check
 
         elif phase == 2:
-            # Phase 2: Corners in tetrads + edges in slices
+            # Phase 2: Reach the exact half-turn subgroup G3
             def check(cube: RubikCube) -> bool:
+                if self.use_pattern_databases and self._databases_loaded:
+                    return self.pattern_databases.is_phase3_reachable(cube)
+
                 coords = CubeCoordinates(cube)
                 ct = coords.get_corner_tetrad_coord()
                 es = coords.get_edge_slice_coord()
@@ -314,11 +345,23 @@ class ThistlethwaiteSolver:
     def _get_heuristic(self, phase: int):
         """Get heuristic function for a phase."""
         if self.use_pattern_databases and self._databases_loaded:
-            # Use pattern database lookup
-            db = self.pattern_databases.get_database(phase)
+            if phase in (0, 1):
+                db = self.pattern_databases.get_database(phase)
+
+                def heuristic(cube: RubikCube) -> int:
+                    return db.lookup(cube)
+
+                return heuristic
+
+            if phase == 2:
+                def heuristic(cube: RubikCube) -> int:
+                    return self.pattern_databases.lookup_phase2(cube)
+
+                return heuristic
 
             def heuristic(cube: RubikCube) -> int:
-                return db.lookup(cube)
+                distance = self.pattern_databases.lookup_phase3_distance(cube)
+                return 0 if distance is None else distance
 
             return heuristic
         else:
@@ -347,7 +390,8 @@ class ThistlethwaiteSolver:
 def solve_cube(
     cube: RubikCube,
     use_pattern_databases: bool = True,
-    verbose: bool = True
+    verbose: bool = True,
+    enable_kociemba_fallback: bool = False,
 ) -> Optional[List[str]]:
     """
     Convenience function to solve a cube with Thistlethwaite's algorithm.
@@ -356,15 +400,19 @@ def solve_cube(
         cube: Cube to solve
         use_pattern_databases: Whether to use pattern databases
         verbose: Whether to print progress
+        enable_kociemba_fallback: Whether to allow Kociemba rescue fallback
 
     Returns:
         List of moves to solve the cube, or None if failed
     """
-    solver = ThistlethwaiteSolver(use_pattern_databases=use_pattern_databases)
+    solver = ThistlethwaiteSolver(
+        use_pattern_databases=use_pattern_databases,
+        enable_kociemba_fallback=enable_kociemba_fallback,
+    )
     result = solver.solve(cube, verbose=verbose)
 
     if result is None:
         return None
 
-    all_moves, _ = result
+    all_moves, _, _ = result
     return all_moves

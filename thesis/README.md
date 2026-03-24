@@ -1,127 +1,107 @@
 # Thesis LaTeX Project
 
+This directory contains the thesis manuscript and its build assets. The manuscript is complete and buildable with the current Tectonic path. The remaining work is review, formatting polish, and final PDF verification.
+
 ## Structure
 
-```
+```text
 thesis/
-├── main.tex              # Main document (compile this)
-├── references.bib        # Bibliography (IEEE format)
-├── Makefile              # Build commands
+├── main.tex
+├── references.bib
+├── Makefile
 ├── chapters/
 │   ├── 00_titlepage.tex
 │   ├── 00_approval.tex
 │   ├── 00_acknowledgements.tex
-│   ├── 00_abstract_gr.tex    # DONE (draft)
-│   ├── 00_abstract_en.tex    # DONE (draft)
-│   ├── 01_introduction.tex   # DONE (draft)
-│   ├── 02_background.tex     # TODO
-│   ├── 03_thistlethwaite.tex # TODO
-│   ├── 04_kociemba.tex       # TODO
-│   ├── 05_korf.tex           # TODO
-│   ├── 06_heuristics.tex     # TODO
-│   ├── 07_evaluation.tex     # TODO
-│   ├── 08_implementation.tex # TODO
-│   ├── 09_conclusions.tex    # TODO
-│   ├── appendix_a.tex        # TODO
-│   └── appendix_b.tex        # TODO
-├── figures/                  # Benchmark figures (copied from ../figures/)
-└── code/                     # Code snippets for appendix
+│   ├── 00_abstract_gr.tex    # Complete
+│   ├── 00_abstract_en.tex    # Complete
+│   ├── 01_introduction.tex   # Complete
+│   ├── 02_background.tex     # Complete
+│   ├── 03_thistlethwaite.tex # Complete
+│   ├── 04_kociemba.tex       # Complete
+│   ├── 05_korf.tex           # Complete
+│   ├── 06_heuristics.tex     # Complete
+│   ├── 07_evaluation.tex     # Complete
+│   ├── 08_implementation.tex # Complete
+│   ├── 09_conclusions.tex    # Complete
+│   ├── appendix_a.tex        # Complete
+│   └── appendix_b.tex        # Complete
+├── figures/                  # Benchmark figures copied from ../figures/
+└── specs/                    # Chapter-specific writing specs
 ```
 
-## Compilation
+## Build Paths
 
-### Requirements
-- pdflatex
-- biber (for bibliography)
-- Standard LaTeX packages (should come with TeX Live or MiKTeX)
+### Preferred Commands
 
-### Commands
+From the repository root:
 
 ```bash
-# Full compilation (recommended first time)
+python scripts/thesis_workflow.py build --mode auto
+python scripts/thesis_workflow.py build --mode docker
+```
+
+From `thesis/`:
+
+```bash
 make
-
-# Quick compilation (no bibliography update)
-make quick
-
-# Clean auxiliary files
+make docker
+make local
 make clean
-
-# View PDF
 make view
 ```
 
-### Manual Compilation
+`build --mode auto` prefers a local `tectonic` build, then falls back to a local `pdflatex` + bibliography toolchain that matches [`main.tex`](/Users/alextoska/Desktop/rubicCubeThesis/thesis/main.tex), and finally to Docker. If Docker is installed but not running on macOS, start it with:
+
+```bash
+open -a Docker
+```
+
+### Manual Local Compilation
+
+```bash
+tectonic --keep-intermediates --keep-logs --reruns 0 --pass tex main.tex
+tectonic --keep-intermediates --keep-logs --reruns 0 --pass bibtex_first main.tex
+tectonic --keep-intermediates --keep-logs --reruns 0 --pass tex main.tex
+tectonic --keep-intermediates --keep-logs --reruns 0 --pass tex main.tex
+tectonic --keep-intermediates --keep-logs --reruns 0 --pass bibtex_first main.tex
+```
+
+If you are using a classic TeX toolchain instead of `tectonic`, follow the current bibliography configuration in [`main.tex`](/Users/alextoska/Desktop/rubicCubeThesis/thesis/main.tex):
 
 ```bash
 pdflatex main
-biber main
+bibtex main
 pdflatex main
 pdflatex main
 ```
 
-## Writing Guide
+## Workflow Commands
 
-1. Each chapter is in a separate file in `chapters/`
-2. Edit individual chapter files, not `main.tex`
-3. Add citations to `references.bib`
-4. Use `\cite{key}` to cite references
-5. Figures go in `figures/`
+```bash
+# Regenerate the thesis status snapshot
+python scripts/thesis_workflow.py status --output agent_workflow/generated/status.md
 
-## Citation Examples
+# Re-run workflow validation
+python scripts/thesis_workflow.py validate --output agent_workflow/generated/validation.md
 
-```latex
-% In text
-According to Korf \cite{korf1997finding}, pattern databases...
-
-% Multiple citations
-Several approaches exist \cite{korf1997finding,kociemba1992close,thistlethwaite1981}.
-
-% With page number
-As shown in \cite[p. 702]{korf1997finding}...
+# Rebuild chapter packets if needed
+python scripts/thesis_workflow.py packets --remaining
 ```
 
-## Math Examples
+## Editing Guide
 
-```latex
-% Inline
-The state space has $4.3 \times 10^{19}$ configurations.
-
-% Display
-\begin{equation}
-    f(n) = g(n) + h(n)
-    \label{eq:astar}
-\end{equation}
-
-% Reference
-As shown in Equation \ref{eq:astar}...
-```
-
-## Code Listings
-
-```latex
-\begin{lstlisting}[caption={IDA* algorithm},label={lst:idastar}]
-def ida_star(cube, heuristic):
-    threshold = heuristic(cube)
-    while True:
-        result = search(cube, 0, threshold)
-        if result == FOUND:
-            return solution
-        threshold = result
-\end{lstlisting}
-```
+1. Edit individual chapter files in `chapters/`, not `main.tex`.
+2. Add citations to `references.bib` and use `\cite{key}` in the chapter text.
+3. Keep figure assets in `figures/` or refer to repo-level diagrams with verified relative paths.
+4. Re-run the workflow status and validation commands after substantial chapter edits.
 
 ## Progress Tracking
 
-- [ ] Abstracts (GR/EN) - review and finalize
-- [ ] Chapter 1: Introduction - expand
-- [ ] Chapter 2: Background - write
-- [ ] Chapter 3: Thistlethwaite - write
-- [ ] Chapter 4: Kociemba - write
-- [ ] Chapter 5: Korf - write
-- [ ] Chapter 6: Heuristics - write (important: your novel contribution!)
-- [ ] Chapter 7: Evaluation - write
-- [ ] Chapter 8: Implementation - write
-- [ ] Chapter 9: Conclusions - write
-- [ ] Appendices - complete
-- [ ] Final review and formatting
+- [x] Manuscript chapters complete
+- [x] Appendices complete
+- [x] Benchmark figures and JSON inputs present
+- [x] Workflow validation reports no open workflow targets
+- [ ] Abstracts and front matter final review
+- [ ] Final proofreading and formatting pass
+- [ ] Final PDF inspection

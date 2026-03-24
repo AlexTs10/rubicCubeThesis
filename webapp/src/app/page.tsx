@@ -27,10 +27,10 @@ export default function DashboardPage() {
           <span className="gradient-text">Rubik's Cube Solver</span>
         </h1>
         <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-          Master's Thesis Project - University of Patras
+          Bachelor's Thesis Project - University of Patras
         </p>
         <p className="text-slate-500 mt-2">
-          Comparing classical cube-solving algorithms: Thistlethwaite, Kociemba, and Korf IDA*
+          Comparing pure Thistlethwaite, Kociemba, and Korf through a synthetic frontend preview aligned with the thesis benchmark
         </p>
       </div>
 
@@ -87,6 +87,10 @@ export default function DashboardPage() {
         {/* Quick Actions */}
         <Card>
           <h2 className="text-xl font-bold mb-4">Quick Actions</h2>
+          <div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-100">
+            The Next.js pages are a frontend preview with benchmark-shaped demo outputs.
+            Authoritative live solver runs are available in the Streamlit UI and thesis artifacts.
+          </div>
           <div className="grid gap-3">
             <Link
               href="/solver"
@@ -182,17 +186,17 @@ export default function DashboardPage() {
                   <span className="text-yellow-400">⚡ Thistlethwaite</span>
                 </td>
                 <td className="py-3 px-4 text-slate-300">1981</td>
-                <td className="py-3 px-4 text-green-400">Fast (0.2-0.5s)</td>
-                <td className="py-3 px-4 text-slate-300">30-52</td>
-                <td className="py-3 px-4 text-slate-400">4-phase group theory</td>
+                <td className="py-3 px-4 text-green-400">Fast, predictable</td>
+                <td className="py-3 px-4 text-slate-300">Longer</td>
+                <td className="py-3 px-4 text-slate-400">Pure 4-phase group theory</td>
               </tr>
               <tr className="border-b border-slate-700/50">
                 <td className="py-3 px-4">
                   <span className="text-blue-400">🚀 Kociemba</span>
                 </td>
                 <td className="py-3 px-4 text-slate-300">1992</td>
-                <td className="py-3 px-4 text-yellow-400">Medium (1-3s)</td>
-                <td className="py-3 px-4 text-slate-300">&lt;19</td>
+                <td className="py-3 px-4 text-yellow-400">Best practical trade-off</td>
+                <td className="py-3 px-4 text-slate-300">Near-optimal</td>
                 <td className="py-3 px-4 text-slate-400">2-phase IDA*</td>
               </tr>
               <tr>
@@ -200,9 +204,9 @@ export default function DashboardPage() {
                   <span className="text-purple-400">🐢 Korf IDA*</span>
                 </td>
                 <td className="py-3 px-4 text-slate-300">1997</td>
-                <td className="py-3 px-4 text-red-400">Variable (1-30s)</td>
-                <td className="py-3 px-4 text-slate-300">≤20</td>
-                <td className="py-3 px-4 text-slate-400">Pattern databases</td>
+                <td className="py-3 px-4 text-red-400">Variable, timeout-sensitive</td>
+                <td className="py-3 px-4 text-slate-300">Optimal when solved</td>
+                <td className="py-3 px-4 text-slate-400">Exact backend + pattern databases</td>
               </tr>
             </tbody>
           </table>
@@ -221,16 +225,16 @@ export default function DashboardPage() {
               <h3 className="font-medium text-blue-400 mb-2">About This Project</h3>
               <p className="text-sm text-slate-400">
                 This thesis project implements and compares three classical Rubik's Cube solving
-                algorithms. The goal is to analyze the trade-offs between solution optimality,
-                execution speed, and memory requirements.
+                algorithms. The goal is to analyze the trade-offs between solution quality,
+                execution speed, memory requirements, and exact optimality under realistic timeouts.
               </p>
             </div>
             <div>
               <h3 className="font-medium text-purple-400 mb-2">Key Features</h3>
               <ul className="text-sm text-slate-400 space-y-1">
                 <li>• Interactive 3D cube visualization</li>
-                <li>• Real-time solving with multiple algorithms</li>
-                <li>• Detailed performance metrics</li>
+                <li>• Streamlit UI for live solver execution</li>
+                <li>• Benchmark-shaped preview data in the web frontend</li>
                 <li>• Educational content on each algorithm</li>
               </ul>
             </div>
@@ -240,7 +244,7 @@ export default function DashboardPage() {
 
       {/* Footer */}
       <footer className="mt-12 text-center text-slate-500 text-sm">
-        <p>Master's Thesis Project • University of Patras • 2024-2025</p>
+        <p>Bachelor's Thesis Project • University of Patras • 2026</p>
       </footer>
     </div>
   );

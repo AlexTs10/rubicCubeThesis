@@ -1,13 +1,240 @@
 \chapter{Υλοποίηση}
 \label{ch:implementation}
 
-% Reference: entire src/, webapp/, ui/
-
 \section{Αρχιτεκτονική Κώδικα}
-% Project structure, modules
 
-\section{Web Εφαρμογές}
-% Next.js, Streamlit
+Η υλοποίηση της παρούσας εργασίας οργανώθηκε με βασικό στόχο τη \textbf{διαχωρισμένη ευθύνη} μεταξύ αναπαράστασης, αλγορίθμων, heuristics, αξιολόγησης και οπτικοποίησης. Η επιλογή αυτή ήταν κρίσιμη, διότι το έργο δεν περιορίζεται σε έναν solver, αλλά συγκρίνει τρεις διαφορετικές αλγοριθμικές προσεγγίσεις και ταυτόχρονα υποστηρίζει benchmarks, web interfaces και εκπαιδευτικό υλικό.
 
-\section{Testing}
-% 203 tests, pytest
+\subsection{Δομή Αποθετηρίου}
+
+Ο πυρήνας του λογισμικού βρίσκεται στον κατάλογο \filepath{src/}, ο οποίος περιέχει \textbf{40 αρχεία Python}. Η οργάνωση είναι θεματική και όχι τεχνητά object-oriented: κάθε αλγοριθμική οικογένεια συγκεντρώνεται στο δικό της module, ενώ οι κοινές εξαρτήσεις απομονώνονται στα \filepath{cube/} και \filepath{evaluation/}.
+
+\begin{table}[htbp]
+\centering
+\caption{Δομή των κύριων Python modules}
+\label{tab:impl_modules}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Module} & \textbf{Αρχεία} & \textbf{Γραμμές Κώδικα} \\
+\midrule
+\texttt{src/cube} & 6  & 1{,}554 \\
+\texttt{src/thistlethwaite} & 6  & 2{,}108 \\
+\texttt{src/kociemba} & 6  & 2{,}233 \\
+\texttt{src/korf} & 14 & 4{,}834 \\
+\texttt{src/evaluation} & 5 & 2{,}169 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Ο Πίνακας~\ref{tab:impl_modules} δείχνει ότι το μεγαλύτερο υλοποιητικό βάρος βρίσκεται στον Korf, κάτι αναμενόμενο: η optimal search απαιτεί pattern databases, heuristics, IDA*, utilities επικύρωσης και βοηθητικά εργαλεία για distance estimation. Αντίστοιχα, ο Kociemba συνδυάζει cubie representation, coordinate compression, move tables και pruning tables, ενώ ο Thistlethwaite βασίζεται στην πολυφασική λογική και στις επιμέρους coordinate abstractions.
+
+\subsection{Εξαρτήσεις Μεταξύ Modules}
+
+Σε αρχιτεκτονικό επίπεδο, το module \texttt{cube} λειτουργεί ως \emph{χαμηλότερο στρώμα}. Δεν εξαρτάται από κανέναν solver και παρέχει:
+\begin{itemize}
+    \item τη βασική αναπαράσταση \texttt{RubikCube},
+    \item την εφαρμογή κινήσεων,
+    \item και τις στοιχειώδεις μεθόδους αντιγραφής, ελέγχου και scrambling.
+\end{itemize}
+
+Πάνω σε αυτό χτίζονται ανεξάρτητα οι τρεις αλγοριθμικές γραμμές:
+\begin{itemize}
+    \item \texttt{thistlethwaite/}
+    \item \texttt{kociemba/}
+    \item \texttt{korf/}
+\end{itemize}
+
+Το module \texttt{evaluation/} βρίσκεται σε ανώτερο επίπεδο και συγκεντρώνει τους solvers χωρίς να παρεμβαίνει στη λογική τους. Αυτή η διάταξη επιτρέπει δίκαιη σύγκριση, επειδή οι ίδιες καταστάσεις κύβου διοχετεύονται σε ανεξάρτητες υλοποιήσεις, χωρίς ad hoc shortcuts ανά αλγόριθμο.
+
+\section{Αναπαράσταση Κατάστασης}
+
+\subsection{Facelet-Based Πυρήνας}
+
+Η κεντρική κλάση \texttt{RubikCube} χρησιμοποιεί facelet-based αναπαράσταση με \texttt{NumPy} πίνακα διαστάσεων $6 \times 9$. Κάθε στοιχείο αποθηκεύει έναν ακέραιο δείκτη έδρας, γεγονός που καθιστά τη λύση συμπαγή και ταυτόχρονα εύκολη στη χρήση από τον τελικό χρήστη.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.72\textwidth]{../figures/diagrams/01_cube_representation.png}
+\caption{Απεικόνιση της αναπαράστασης του κύβου σε επίπεδο facelets.}
+\label{fig:impl_cube_representation}
+\end{figure}
+
+Η επιλογή αυτή έχει τρία πρακτικά πλεονεκτήματα:
+\begin{enumerate}
+    \item \textbf{Αμεσότητα}: ο χρήστης και τα demos χειρίζονται τον κύβο με τρόπο που αντιστοιχεί απευθείας στο φυσικό αντικείμενο.
+    \item \textbf{Αποδοτικότητα}: οι μεταβολές έδρας υλοποιούνται ως απλές αναθέσεις σε \texttt{NumPy} slices.
+    \item \textbf{Καθαρό API}: η ίδια αναπαράσταση χρησιμοποιείται σε tests, demos, UI και benchmarks.
+\end{enumerate}
+
+Η υλοποίηση των βασικών περιστροφών είναι explicit και εύκολα ελέγξιμη. Η παρακάτω επιλογή κώδικα παρουσιάζεται αναλυτικά στο Παράρτημα~\ref{app:code}, αλλά συνοπτικά ο πυρήνας της κλάσης βασίζεται στην αρχικοποίηση solved state και σε deterministic face rotations.
+
+\subsection{Cubie Adapter για Αλγοριθμικούς Υπολογισμούς}
+
+Παρότι η facelet αναπαράσταση είναι ιδανική για οπτικοποίηση και interaction, οι αλγόριθμοι Kociemba και Korf χρειάζονται cubie-level πληροφορία: μεταθέσεις και προσανατολισμούς γωνιών και ακμών. Για αυτό χρησιμοποιείται το \texttt{CubieCube} ως \emph{adapter} ανάμεσα στο user-facing state και στο search state.
+
+Η σχεδιαστική αυτή επιλογή είναι ιδιαίτερα σημαντική: ο χρήστης δεν αναγκάζεται να χειρίζεται έναν πιο αφηρημένο state model, αλλά οι αλγόριθμοι αποκτούν πρόσβαση στις απαραίτητες συντεταγμένες χωρίς να αλλοιώνεται το δημόσιο API του project. Οι συναρτήσεις \filepath{from_facelet_cube()} και \filepath{to_facelet_cube()} αποτελούν έτσι το σημείο επαφής μεταξύ θεωρίας και υλοποίησης.
+
+\section{Μοτίβα Σχεδίασης και Υλοποιητικές Επιλογές}
+
+\subsection{Lazy Loading και Caching}
+
+Οι move tables, pruning tables και pattern databases δεν παράγονται σε κάθε κλήση solver. Αντιθέτως, η φόρτωσή τους γίνεται \emph{lazily}, μόνο όταν απαιτηθεί. Αυτό μειώνει τον χρόνο εκκίνησης για απλά demos και επιτρέπει την εκτέλεση tests χωρίς περιττό initialization overhead.
+
+Στον Kociemba, για παράδειγμα, η μέθοδος \texttt{\_initialize()} φορτώνει move tables και pruning tables μόνο στην πρώτη κλήση του solver. Αντίστοιχα, στο module των pattern databases χρησιμοποιείται load-or-generate λογική: αν υπάρχει serialized μορφή στο disk cache, γίνεται άμεση φόρτωση· διαφορετικά, οι πίνακες παράγονται και αποθηκεύονται για επόμενη χρήση.
+
+Το caching βασίζεται σε αρχεία \texttt{pickle} και πίνακες \texttt{NumPy}. Στην
+τρέχουσα μορφή του artifact, τα Korf-related pattern databases χρησιμοποιούν
+ως προεπιλογή \emph{exact-safe byte storage} με ρητό sentinel για μη
+αρχικοποιημένες τιμές, ενώ legacy nibble-packed αρχεία φορτώνονται μόνο όταν
+μπορούν να μετατραπούν χωρίς αμφισημία. Η επιλογή αυτή θυσιάζει λίγη μνήμη
+υπέρ της αξιοπιστίας της exact διαδρομής.
+
+\subsection{Factory Pattern για Heuristics}
+
+Το module \filepath{src/korf/composite_heuristic.py} παρέχει τη συνάρτηση
+\texttt{create\_heuristic()}. Μέσω αυτής ο solver μπορεί να ζητήσει heuristic
+με symbolic identifiers όπως:
+\begin{itemize}
+    \item \texttt{'manhattan'},
+    \item \texttt{'hamming'},
+    \item \texttt{'composite'}.
+\end{itemize}
+Με αυτόν τον τρόπο:
+\begin{itemize}
+    \item ο solver δεν δένεται με συγκεκριμένη υλοποίηση heuristic,
+    \item η προσθήκη νέων heuristics παραμένει τοπική αλλαγή,
+    \item και η αξιολόγηση διαφορετικών heuristics γίνεται ομοιόμορφα.
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.72\textwidth]{../figures/diagrams/07_composite_heuristic.png}
+\caption{Σχηματική αναπαράσταση της σύνθετης ευρετικής και της δυναμικής επιλογής στρατηγικής.}
+\label{fig:impl_composite_heuristic}
+\end{figure}
+
+\subsection{Υβριδικές Στρατηγικές Εκτέλεσης}
+
+Στην τελική μορφή του project, ο Kociemba solver υποστηρίζει \texttt{auto} backend. Η εσωτερική two-phase υλοποίηση παραμένει ο βασικός ακαδημαϊκός κορμός, αλλά σε διαδραστικά ή αυστηρά time-limited σενάρια μπορεί να χρησιμοποιηθεί προαιρετικά native backend, διατηρώντας την ίδια δημόσια διεπαφή \texttt{(solution, phase1, phase2)}. Η επιλογή αυτή δεν αλλάζει την εννοιολογική δομή του αλγορίθμου· βελτιώνει όμως τη συμπεριφορά του συστήματος σε πρακτικές χρήσεις όπως CLI demos και interactive solving.
+
+\section{Υλοποίηση Αλγορίθμων}
+
+\subsection{Thistlethwaite}
+
+Η υλοποίηση του Thistlethwaite διαχωρίζεται σε τέσσερα κύρια αρχεία: \texttt{solver.py}, \texttt{coordinates.py}, \texttt{moves.py}, και \texttt{tables.py}. Η κύρια κλάση orchestrates τις τέσσερις φάσεις, ενώ το \texttt{coordinates.py} παρέχει τις συντεταγμένες που απαιτούνται για τους επιμέρους στόχους κάθε φάσης. Το \texttt{moves.py} ορίζει phase-specific move sets, και το \texttt{tables.py} διαχειρίζεται τις σχετικές pattern databases.
+
+Το πλεονέκτημα αυτής της διάσπασης είναι ότι κάθε phase invariant εκφράζεται
+καθαρά τόσο θεωρητικά όσο και προγραμματιστικά. Στην τελική, διορθωμένη μορφή
+του project, η διαδρομή benchmark χρησιμοποιεί καθαρό Thistlethwaite χωρίς fallback,
+ώστε η αξιολόγηση να αποτυπώνει την πραγματική συμπεριφορά του αλγορίθμου και
+όχι υβριδική επίλυση.
+
+\subsection{Kociemba}
+
+Το module \texttt{kociemba/} είναι περισσότερο table-driven από τα υπόλοιπα. Ο αλγόριθμος βασίζεται σε:
+\begin{itemize}
+    \item cubie representation,
+    \item έξι coordinate systems,
+    \item move tables για O(1) transitions,
+    \item pruning tables για admissible lower bounds,
+    \item και δύο ξεχωριστές IDA* αναζητήσεις για τις δύο φάσεις.
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.72\textwidth]{../figures/diagrams/04_kociemba_flowchart.png}
+\caption{Διάγραμμα ροής της two-phase υλοποίησης του Kociemba.}
+\label{fig:impl_kociemba_flow}
+\end{figure}
+
+Η επιλογή προϋπολογισμένων move tables είναι καθοριστική: αντί κάθε κόμβος να μετατρέπεται ξανά σε cubie state και να εφαρμόζεται η κίνηση εξ αρχής, οι συντεταγμένες ενημερώνονται με έναν απλό table lookup. Αυτό μεταφέρει κόστος από το online solving στο offline preprocessing.
+
+\subsection{Korf και Βάσεις Δεδομένων Μοτίβων}
+
+Η υλοποίηση του Korf είναι η πιο απαιτητική σε επίπεδο υποδομών. Περιλαμβάνει:
+\begin{itemize}
+    \item generic κώδικα pattern databases,
+    \item corner και edge ειδικεύσεις,
+    \item εγγενή exact solver σε cubie-level IDA*,
+    \item admissible coordinate heuristic με exact μικρούς πίνακες για corner orientation, edge orientation, UD-slice position και corner permutation,
+    \item native corner pattern database infrastructure 88,179,840 καταστάσεων με ειδικευμένο frontier-based generator,
+    \item heuristics χαμηλού κόστους για διερευνητικά πειράματα,
+    \item A* και IDA* solvers,
+    \item καθυστερημένη (lazy) ενσωμάτωση με εξωτερικό backend βέλτιστης επίλυσης για την ακριβή διαδρομή benchmark,
+    \item και τη σύνθετη ευρετική που παρουσιάστηκε στο Κεφάλαιο~\ref{ch:heuristics}.
+\end{itemize}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.72\textwidth]{../figures/diagrams/06_pattern_database.png}
+\caption{Σχηματική αναπαράσταση της υποδομής pattern database που χρησιμοποιείται στον Korf.}
+\label{fig:impl_pdb}
+\end{figure}
+
+Η διάσπαση του edge database σε μικρότερα υποσύνολα αποτελεί χαρακτηριστικό
+παράδειγμα μηχανικού συμβιβασμού. Μια πλήρης edge PDB θα ήταν θεωρητικά
+ισχυρότερη, αλλά πρακτικά δύσκολη να αποθηκευτεί ή να παραχθεί στο πλαίσιο
+μιας διπλωματικής εργασίας σε Python. Για τον λόγο αυτό, το artifact πλέον
+συνδυάζει δύο ακριβείς διαδρομές με διαφορετικό ρόλο:
+\begin{itemize}
+    \item μια \emph{εγγενή} native exact διαδρομή (\filepath{src/korf/native_exact_solver.py}) με admissible coordinate heuristics (\filepath{src/korf/native_coordinate_heuristic.py}), native corner PDB support (\filepath{src/korf/corner_database.py}) και exact move-distance API,
+    \item και έναν \emph{εξωτερικό} ήδη επαληθευμένο optimal backend για τα βαθύτερα benchmark αποτελέσματα και για oracle cross-checks.
+\end{itemize}
+Η native διαδρομή έχει επικυρωθεί εξαντλητικά σε 3.501 μοναδικές καταστάσεις
+έως βάθος 3. Σε corpus 3.513 περιπτώσεων, το native corner PDB support μείωσε
+τις αποτυχίες υπό όριο 20\,s από 3 σε 1 και επέτρεψε την ολοκλήρωση sampled
+depth-9 περιπτώσεων που ο μικρότερος admissible heuristic δεν έλυνε, αλλά
+μια edge-dominated depth-8 κατάσταση εξακολουθεί να αποτελεί δύσκολο όριο
+χωρίς βαριές edge PDBs.
+
+\section{Εφαρμογές και Διεπαφές Χρήστη}
+
+Πέρα από τον αλγοριθμικό πυρήνα, το έργο περιλαμβάνει δύο διακριτές οικογένειες διεπαφών.
+
+\subsection{Streamlit UI}
+
+Ο κατάλογος \texttt{ui/} υλοποιεί μια εκπαιδευτική και πειραματική διεπαφή με \texttt{Streamlit}. Περιλαμβάνει:
+\begin{itemize}
+    \item main dashboard,
+    \item σελίδα single solver,
+    \item σελίδα σύγκρισης αλγορίθμων,
+    \item και σελίδα εκπαιδευτικού περιεχομένου.
+\end{itemize}
+
+Στόχος της συγκεκριμένης διεπαφής δεν είναι η αισθητική επίδειξη, αλλά η γρήγορη πειραματική χρήση: αλλαγή παραμέτρων, εκτέλεση scrambles, απεικόνιση μετρικών και παρουσίαση της διαδικασίας επίλυσης.
+
+\subsection{Next.js Web Application}
+
+Ο κατάλογος \filepath{webapp/} περιλαμβάνει δεύτερη διεπαφή σε Next.js/React. Σε αντίθεση με το Streamlit, το οποίο αποτελεί τη ζωντανή Python-based διεπαφή εκτέλεσης των αλγορίθμων, εδώ δόθηκε έμφαση στην πλοήγηση, στην 3D οπτικοποίηση και στην παρουσίαση του έργου ως ολοκληρωμένης εφαρμογής επίδειξης. Οι τέσσερις βασικές σελίδες είναι:
+\begin{itemize}
+    \item αρχική σελίδα,
+    \item solver,
+    \item comparison,
+    \item educational.
+\end{itemize}
+
+Η συγκεκριμένη εφαρμογή δεν καλεί απευθείας τον solver backend του repository. Αντίθετα, παρουσιάζει \emph{benchmark-shaped} demo αποτελέσματα και οπτικοποιήσεις ως εκπαιδευτική επίδειξη, όχι ως authoritative benchmark evidence. Επομένως, ο ρόλος της είναι παρουσιαστικός και εκπαιδευτικός, ενώ η authoritative live εκτέλεση των αλγορίθμων παραμένει στο Streamlit UI και στα scripts αναπαραγωγής/benchmarking.
+
+\section{Υποδομή Δοκιμών και Αναπαραγωγιμότητας}
+
+Η ποιότητα της υλοποίησης υποστηρίζεται από \textbf{269 συλλεγόμενα tests}.
+Η κύρια οργάνωση βρίσκεται στους καταλόγους \filepath{tests/unit/} και
+\filepath{tests/integration/}, ενώ διατηρείται και το top-level regression test
+\filepath{tests/test_facelet_cubie_conversion.py}. Στο τρέχον επαληθευμένο run
+του πλήρους suite προέκυψαν \textbf{268 επιτυχημένα tests και 1 skipped}. Το
+test suite καλύπτει:
+\begin{itemize}
+    \item βασικές ιδιότητες του κύβου,
+    \item move parsing και inverse sequences,
+    \item conversions facelet/cubie,
+    \item επιμέρους αλγορίθμους,
+    \item heuristics και composite heuristic,
+    \item native exact solving και coordinate heuristics,
+    \item καθώς και end-to-end workflows.
+\end{itemize}
+
+Επιπλέον, το έργο περιλαμβάνει scripts όπως το \filepath{verify_setup.py}, το οποίο ελέγχει το περιβάλλον και επιχειρεί να εκτελέσει το υποστηριζόμενο command \texttt{python -m pytest tests -q} μέσα στο δικό του χρονικό όριο, καθώς και benchmark generators, validation harnesses και notebooks, ώστε το αποθετήριο να λειτουργεί όχι μόνο ως πηγαίος κώδικας αλλά και ως \emph{αναπαραγώγιμο ερευνητικό τεχνούργημα}. Η ύπαρξη JSON exports, figures, oracle agreement tests και scripts ανάλυσης συνέβαλε αποφασιστικά στη συγγραφή του Κεφαλαίου~\ref{ch:evaluation}.
+
+\section{Σύνοψη}
+
+Η αρχιτεκτονική της υλοποίησης υποστηρίζει τρεις διαφορετικές αλγοριθμικές προσεγγίσεις χωρίς να θυσιάζει τη συνοχή του project. Η facelet-based αναπαράσταση παρέχει καθαρό και ενιαίο πυρήνα, οι cubie adapters και οι coordinate abstractions επιτρέπουν αποδοτικούς υπολογισμούς, ενώ το evaluation layer εξασφαλίζει δίκαιη σύγκριση. Οι διεπαφές χρήστη και το test suite συμπληρώνουν το έργο, μετατρέποντάς το από μια απλή υλοποίηση solver σε πλήρες ερευνητικό και εκπαιδευτικό σύστημα.

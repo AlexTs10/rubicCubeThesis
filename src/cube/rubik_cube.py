@@ -79,9 +79,19 @@ class RubikCube:
             for face in Face:
                 self.state[face.value, :] = face.value
 
+        # Scramble metadata is kept on the cube so demos/UI can display and
+        # reproduce the exact sequence that produced the current state.
+        self._scramble_moves: List[str] = []
+        self._scramble_depth: int = 0
+        self._scramble_seed: Optional[int] = None
+
     def copy(self) -> 'RubikCube':
         """Create a deep copy of the cube."""
-        return RubikCube(state=self.state.copy())
+        cube_copy = RubikCube(state=self.state.copy())
+        cube_copy._scramble_moves = self._scramble_moves.copy()
+        cube_copy._scramble_depth = self._scramble_depth
+        cube_copy._scramble_seed = self._scramble_seed
+        return cube_copy
 
     def is_solved(self) -> bool:
         """Check if the cube is in solved state."""
@@ -268,6 +278,11 @@ class RubikCube:
             move = np.random.choice(all_moves)
             scramble_sequence.append(move)
             self.apply_move(move)
+
+        # Persist the latest scramble metadata for interactive tooling.
+        self._scramble_moves = scramble_sequence.copy()
+        self._scramble_depth = moves
+        self._scramble_seed = seed
 
         return scramble_sequence
 

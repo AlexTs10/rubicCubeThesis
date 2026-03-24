@@ -6,11 +6,14 @@ for solving the Rubik's Cube.
 """
 
 import math
+import time
 import pytest
 import numpy as np
 from src.cube.rubik_cube import RubikCube
 from src.thistlethwaite.solver import ThistlethwaiteSolver
 from src.thistlethwaite.coordinates import CubeCoordinates, permutation_to_rank, rank_to_permutation
+from src.kociemba.cubie import from_facelet_cube
+from src.kociemba.coord import get_corner_orientation, get_edge_orientation, get_udslice
 from src.thistlethwaite.moves import (
     PHASE_0_MOVES,
     PHASE_1_MOVES,
@@ -90,6 +93,38 @@ class TestCubeCoordinates:
         coords2 = CubeCoordinates(cube2)
         # Coordinate may or may not be 0 depending on which corners are twisted
         assert coords2.get_corner_orientation_coord() >= 0
+
+    def test_coordinates_match_cubie_model_after_f_turn(self):
+        """Thistlethwaite coordinates must agree with the trusted cubie model."""
+        cube = RubikCube()
+        cube.apply_move('F')
+
+        coords = CubeCoordinates(cube)
+        cubie = from_facelet_cube(cube)
+
+        np.testing.assert_array_equal(coords.corner_permutation, cubie.corner_perm)
+        np.testing.assert_array_equal(coords.corner_orientation, cubie.corner_orient)
+        np.testing.assert_array_equal(coords.edge_permutation, cubie.edge_perm)
+        np.testing.assert_array_equal(coords.edge_orientation, cubie.edge_orient)
+        assert coords.get_corner_orientation_coord() == get_corner_orientation(cubie)
+        assert coords.get_edge_orientation_coord() == get_edge_orientation(cubie)
+        assert coords.get_e_slice_coord() == get_udslice(cubie)
+
+    def test_coordinates_match_cubie_model_after_commutator(self):
+        """Non-trivial states must preserve exact piece data."""
+        cube = RubikCube()
+        cube.apply_moves(['U', 'R', "U'", "R'"])
+
+        coords = CubeCoordinates(cube)
+        cubie = from_facelet_cube(cube)
+
+        np.testing.assert_array_equal(coords.corner_permutation, cubie.corner_perm)
+        np.testing.assert_array_equal(coords.corner_orientation, cubie.corner_orient)
+        np.testing.assert_array_equal(coords.edge_permutation, cubie.edge_perm)
+        np.testing.assert_array_equal(coords.edge_orientation, cubie.edge_orient)
+        assert coords.get_corner_orientation_coord() == get_corner_orientation(cubie)
+        assert coords.get_edge_orientation_coord() == get_edge_orientation(cubie)
+        assert coords.get_e_slice_coord() == get_udslice(cubie)
 
 
 class TestPhaseMoveSets:
@@ -201,6 +236,32 @@ class TestIDAStarSearch:
         test_cube.apply_moves(result)
         assert test_cube.is_solved()
 
+    def test_search_respects_timeout(self):
+        """Search should stop close to the requested timeout instead of overshooting badly."""
+        cube = RubikCube()
+        cube.apply_moves(['U', 'R', 'F'])
+
+        def goal_check(c):
+            return False
+
+        def heuristic(c):
+            return 0
+
+        search = IDAStarSearch(
+            goal_check=goal_check,
+            heuristic=heuristic,
+            allowed_moves=PHASE_0_MOVES,
+            max_depth=20,
+            timeout=0.01,
+        )
+
+        start = time.time()
+        result = search.search(cube)
+        elapsed = time.time() - start
+
+        assert result is None
+        assert elapsed < 1.0
+
 
 class TestIterativeDeepeningSearch:
     """Test iterative deepening search."""
@@ -237,6 +298,7 @@ class TestThistlethwaiteSolver:
         solver = ThistlethwaiteSolver(use_pattern_databases=False)
         assert solver is not None
         assert not solver._databases_loaded
+        assert solver.enable_kociemba_fallback is False
 
     def test_solve_already_solved_cube(self):
         """Test solving an already solved cube."""
@@ -246,9 +308,10 @@ class TestThistlethwaiteSolver:
         result = solver.solve(cube, verbose=False)
         assert result is not None
 
-        all_moves, phase_moves = result
+        all_moves, phase_moves, used_fallback = result
         assert len(all_moves) == 0
         assert all([len(phase) == 0 for phase in phase_moves])
+        assert used_fallback is False  # No fallback needed for solved cube
 
     def test_solve_simple_scramble(self):
         """Test solving a simple scramble."""
@@ -261,7 +324,7 @@ class TestThistlethwaiteSolver:
 
         assert result is not None
 
-        all_moves, phase_moves = result
+        all_moves, phase_moves, used_fallback = result
 
         # Verify solution works
         test_cube = cube.copy()
@@ -270,6 +333,86 @@ class TestThistlethwaiteSolver:
 
         # Solution should be reasonably short
         assert len(all_moves) <= 52  # Thistlethwaite guarantees <= 52 moves
+
+    def test_exact_g3_membership_rejects_old_false_positive(self):
+        """A state that only passed the old tetrad approximation must not count as G3."""
+        solver = ThistlethwaiteSolver(use_pattern_databases=True)
+        solver._ensure_databases_loaded()
+
+        cube = RubikCube()
+        cube.apply_moves(['U', 'R2', "D'", "R'", 'U'])
+
+        # Old buggy run reached this state after phase 1+2 and then entered an
+        # impossible half-turn-only phase 3.
+        cube.apply_moves(["U'", 'R', "U'", 'L2', 'D'])
+
+        assert solver.pattern_databases.is_phase3_reachable(cube) is False
+
+    def test_pattern_database_solver_handles_previous_phase3_false_positive_scramble(self):
+        """The exact G3 table should allow this formerly failing pure solve to succeed."""
+        cube = RubikCube()
+        cube.apply_moves(['U', 'R2', "D'", "R'", 'U'])
+
+        solver = ThistlethwaiteSolver(
+            use_pattern_databases=True,
+            enable_kociemba_fallback=False,
+        )
+
+        result = solver.solve(cube, verbose=False, max_time=30.0)
+        assert result is not None
+
+        all_moves, _, used_fallback = result
+        test_cube = cube.copy()
+        test_cube.apply_moves(all_moves)
+        assert test_cube.is_solved()
+        assert used_fallback is False
+
+    def test_pure_solver_aborts_without_fallback(self, monkeypatch):
+        """Pure Thistlethwaite mode must not silently delegate to Kociemba."""
+        cube = RubikCube()
+        cube.apply_move('U')
+
+        solver = ThistlethwaiteSolver(
+            use_pattern_databases=False,
+            enable_kociemba_fallback=False,
+        )
+
+        monkeypatch.setattr(solver, "_solve_phase", lambda *args, **kwargs: None)
+
+        def fail_if_called(*args, **kwargs):
+            raise AssertionError("Fallback must not be called in pure mode")
+
+        monkeypatch.setattr(solver, "_fallback_with_kociemba", fail_if_called)
+
+        result = solver.solve(cube, verbose=False)
+
+        assert result is None
+
+    def test_hybrid_solver_uses_fallback_when_enabled(self, monkeypatch):
+        """Hybrid mode should use the explicit Kociemba rescue path."""
+        cube = RubikCube()
+        cube.apply_move('U')
+
+        solver = ThistlethwaiteSolver(
+            use_pattern_databases=False,
+            enable_kociemba_fallback=True,
+        )
+
+        monkeypatch.setattr(solver, "_solve_phase", lambda *args, **kwargs: None)
+        monkeypatch.setattr(solver, "_fallback_with_kociemba", lambda *args, **kwargs: ["U'"])
+
+        result = solver.solve(cube, verbose=False)
+
+        assert result is not None
+
+        all_moves, phase_moves, used_fallback = result
+        assert all_moves == ["U'"]
+        assert phase_moves[-1] == ["U'"]
+        assert used_fallback is True
+
+        test_cube = cube.copy()
+        test_cube.apply_moves(all_moves)
+        assert test_cube.is_solved()
 
     def test_solve_multiple_scrambles(self):
         """Test solving multiple different scrambles."""
@@ -282,7 +425,7 @@ class TestThistlethwaiteSolver:
             result = solver.solve(cube, verbose=False)
 
             if result is not None:
-                all_moves, _ = result
+                all_moves, _, _ = result
 
                 # Verify solution
                 test_cube = cube.copy()
@@ -303,7 +446,7 @@ class TestThistlethwaiteSolver:
         if result is None:
             pytest.skip("Solver failed (may need pattern databases)")
 
-        all_moves, phase_moves = result
+        all_moves, phase_moves, _ = result
 
         # Apply phase by phase and check goals
         test_cube = cube.copy()
@@ -339,7 +482,7 @@ class TestSolutionQuality:
             result = solver.solve(cube, verbose=False)
 
             if result is not None:
-                all_moves, phase_moves = result
+                all_moves, phase_moves, _ = result
 
                 # Check overall bound
                 assert len(all_moves) <= 52
@@ -361,7 +504,7 @@ class TestSolutionQuality:
             result = solver.solve(cube, verbose=False)
 
             if result is not None:
-                all_moves, _ = result
+                all_moves, _, _ = result
 
                 # Verify solution
                 test_cube = cube.copy()
@@ -384,10 +527,11 @@ def test_integration_example():
     result = solver.solve(cube, verbose=True)
 
     if result is not None:
-        all_moves, phase_moves = result
+        all_moves, phase_moves, used_fallback = result
 
         print(f"\nSolution: {' '.join(all_moves)}")
         print(f"Total moves: {len(all_moves)}")
+        print(f"Used fallback: {used_fallback}")
 
         # Verify
         test_cube = RubikCube()

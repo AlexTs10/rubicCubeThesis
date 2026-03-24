@@ -1,11 +1,17 @@
 # Project Screenshots
 
-This directory contains screenshots and visual documentation for the Rubik's Cube Solving Algorithms thesis project.
+This directory contains optional UI screenshots and visual documentation for the Rubik's Cube Solving Algorithms thesis project.
+
+The written thesis does not rely on these screenshots as canonical evidence for
+the benchmark results. They are supplementary assets for demos, appendix-style
+usage notes, or defense material.
+
+No screenshot assets are committed in the current tree. Capture them locally if
+you want presentation backups or appendix illustrations.
 
 ## Directory Structure
 
 - `web_ui/` - Screenshots from the Streamlit web interface
-- `cli_demos/` - Output logs and screenshots from CLI demonstrations
 
 ## Web UI Screenshots
 
@@ -102,46 +108,13 @@ This directory contains screenshots and visual documentation for the Rubik's Cub
 
 ---
 
-## CLI Demo Outputs
+## Supplementary Use
 
-### Basic Usage Demo
-**File:** `cli_demos/basic_usage_output.txt`
-**Status:** ✅ Captured
-**Description:** Basic cube manipulation and move operations
+These screenshots can be used in optional supplementary material:
 
-### Thistlethwaite Demo
-**File:** `cli_demos/thistlethwaite_output.txt`
-**Status:** ✅ Captured
-**Description:** Full Thistlethwaite algorithm execution with phase-by-phase solving
-
-### Kociemba Demo
-**File:** `cli_demos/kociemba_output.txt`
-**Status:** ✅ Captured
-**Description:** Kociemba two-phase algorithm demonstration
-
-### Animation Demo
-**File:** `cli_demos/animation_demo_output.txt`
-**Status:** ✅ Captured
-**Description:** Phase 9 animation demo showing rich terminal output
-
----
-
-## Usage in Thesis
-
-These screenshots and outputs can be used in:
-
-### Chapter 4: Implementation
+### Chapter 8: Implementation
 - UI architecture screenshots
 - Code structure visualization
-
-### Chapter 5: User Interface
-- Web UI screenshots demonstrating usability
-- User interaction flows
-
-### Chapter 6: Results & Evaluation
-- Algorithm comparison screenshots
-- Performance metrics visualization
-- Solution quality examples
 
 ### Appendix A: User Manual
 - Step-by-step feature demonstrations
@@ -181,7 +154,7 @@ Use the format: `##_description.png`
 
 ## Screenshot Checklist
 
-### Web UI (Required)
+### Web UI (Optional)
 - [ ] `01_home_page.png` - Landing page
 - [ ] `02_single_solver_thistlethwaite.png` - Thistlethwaite solving
 - [ ] `03_single_solver_kociemba.png` - Kociemba solving
@@ -191,14 +164,6 @@ Use the format: `##_description.png`
 ### Web UI (Optional - if features exist)
 - [ ] `06_3d_visualization.png` - 3D cube view
 - [ ] `07_export.png` - Export functionality
-
-### CLI Demos (Already Completed)
-- [x] `basic_usage_output.txt`
-- [x] `thistlethwaite_output.txt`
-- [x] `kociemba_output.txt`
-- [x] `animation_demo_output.txt`
-
----
 
 ## Technical Notes
 
@@ -229,5 +194,5 @@ For questions about screenshots or documentation:
 
 ---
 
-**Last Updated:** 2025-11-07
-**Status:** CLI demos completed ✅ | Web UI screenshots pending 📸
+**Last Updated:** 2026-03-21
+**Status:** Optional supplementary screenshots pending capture

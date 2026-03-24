@@ -73,6 +73,9 @@ export default function EducationalPage() {
           <span className="gradient-text">Educational Mode</span>
         </h1>
         <p className="text-slate-400">Learn how each algorithm works</p>
+        <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-100">
+          This educational page mixes explanatory content with synthetic preview data. Use the thesis artifacts for citation or benchmark claims.
+        </div>
       </div>
 
       {/* Tabs */}
@@ -139,14 +142,14 @@ export default function EducationalPage() {
                   <tr className="border-b border-slate-700/50">
                     <td className="py-3 px-4">Max Moves</td>
                     <td className="text-center py-3 px-4">52</td>
-                    <td className="text-center py-3 px-4">~29</td>
-                    <td className="text-center py-3 px-4">20</td>
+                    <td className="text-center py-3 px-4">Near-optimal</td>
+                    <td className="text-center py-3 px-4">Optimal when solved</td>
                   </tr>
                   <tr className="border-b border-slate-700/50">
                     <td className="py-3 px-4">Optimal?</td>
                     <td className="text-center py-3 px-4">No</td>
                     <td className="text-center py-3 px-4">Near-optimal</td>
-                    <td className="text-center py-3 px-4">Yes</td>
+                    <td className="text-center py-3 px-4">Exact when solved</td>
                   </tr>
                   <tr>
                     <td className="py-3 px-4">Memory</td>
@@ -157,6 +160,11 @@ export default function EducationalPage() {
                 </tbody>
               </table>
             </div>
+            <p className="mt-4 text-sm text-slate-400">
+              Repository benchmark summary: pure Thistlethwaite solved 100/100 test cases, Kociemba also solved
+              100/100 with the best practical balance, and the exact Korf backend solved 97/100 within the enforced
+              120 second limit.
+            </p>
           </Card>
 
           <Card>
@@ -171,7 +179,7 @@ export default function EducationalPage() {
                 { year: '1992', event: 'Kociemba introduces Two-Phase Algorithm', color: 'blue' },
                 { year: '1997', event: 'Korf uses pattern databases for optimal solving', color: 'purple' },
                 { year: '2010', event: 'God\'s Number proven to be 20', color: 'red' },
-                { year: '2025', event: 'This thesis project! 🎓', color: 'green' },
+                { year: '2026', event: 'This thesis project! 🎓', color: 'green' },
               ].map((item, index) => (
                 <div key={index} className="flex items-center gap-4">
                   <span className={`px-3 py-1 rounded-full text-sm font-mono bg-${item.color}-500/20 text-${item.color}-400`}>
@@ -263,16 +271,16 @@ export default function EducationalPage() {
               <div>
                 <h4 className="text-green-400 font-medium mb-2">✅ Advantages</h4>
                 <ul className="space-y-2 text-sm text-slate-300">
-                  <li>• Very fast execution (sub-second)</li>
+                  <li>• Pure 4-phase solver with predictable behavior</li>
                   <li>• Low memory requirements</li>
-                  <li>• Predictable performance</li>
+                  <li>• 100% success on the thesis benchmark corpus</li>
                   <li>• Easy to implement lookup tables</li>
                 </ul>
               </div>
               <div>
                 <h4 className="text-red-400 font-medium mb-2">❌ Disadvantages</h4>
                 <ul className="space-y-2 text-sm text-slate-300">
-                  <li>• Non-optimal solutions (30-52 moves)</li>
+                  <li>• Longer solutions than Kociemba or Korf</li>
                   <li>• Solutions are longer than necessary</li>
                   <li>• Fixed phases may miss shortcuts</li>
                 </ul>
@@ -296,7 +304,7 @@ export default function EducationalPage() {
             <p className="text-slate-300 mb-4">
               Herbert Kociemba improved on Thistlethwaite by reducing from 4 phases to 2 and
               using IDA* search within each phase. This produces near-optimal solutions
-              (typically under 20 moves) while remaining fast.
+              and delivered the best overall practical trade-off in the thesis benchmark.
             </p>
           </Card>
 
@@ -381,7 +389,7 @@ export default function EducationalPage() {
               <div>
                 <h4 className="text-green-400 font-medium mb-2">✅ Advantages</h4>
                 <ul className="space-y-2 text-sm text-slate-300">
-                  <li>• Near-optimal solutions (&lt;20 moves typical)</li>
+                  <li>• Near-optimal solutions with strong practical performance</li>
                   <li>• Good balance of speed and quality</li>
                   <li>• Widely used in speedcubing software</li>
                   <li>• Reasonable memory requirements</li>
@@ -412,9 +420,10 @@ export default function EducationalPage() {
               </div>
             </div>
             <p className="text-slate-300 mb-4">
-              Richard Korf developed an optimal solver using pattern databases as heuristics.
-              By precomputing optimal solutions for subproblems, the algorithm can guarantee
-              finding the shortest solution.
+              Richard Korf developed an optimal solver using admissible pattern databases as heuristics.
+              In this repository, the publishable benchmark path uses an external exact backend.
+              That path is exact on completed runs, but hard instances can still time out under
+              a fixed runtime budget.
             </p>
           </Card>
 
@@ -450,14 +459,15 @@ export default function EducationalPage() {
           <Card>
             <ExpandableSection title="Composite Heuristic">
               <p className="text-slate-300 mb-4">
-                The final heuristic is the maximum of all pattern database lookups:
+                The repository also contains a lightweight composite heuristic for exploratory work:
               </p>
               <code className="block p-4 bg-slate-900 rounded-lg text-green-400 text-center mb-4">
                 h(state) = max(corner_db[state], edge_db1[state], edge_db2[state])
               </code>
               <p className="text-slate-300">
-                Taking the maximum ensures the heuristic remains admissible (never overestimates)
-                while providing a tighter lower bound than any single database.
+                This is useful as a practical estimate, but the thesis does not treat every
+                lightweight heuristic path in the repository as generally admissible. The exact
+                optimality claims are reserved for the external benchmark backend.
               </p>
             </ExpandableSection>
           </Card>
@@ -474,7 +484,7 @@ export default function EducationalPage() {
                 </li>
                 <li className="flex gap-3">
                   <span className="text-purple-400">•</span>
-                  <span><strong>Optimal:</strong> Guaranteed to find shortest solution with admissible heuristic</span>
+                  <span><strong>Optimal:</strong> Guaranteed to find the shortest solution when paired with an admissible heuristic</span>
                 </li>
                 <li className="flex gap-3">
                   <span className="text-purple-400">•</span>
@@ -490,8 +500,8 @@ export default function EducationalPage() {
               <div>
                 <h4 className="text-green-400 font-medium mb-2">✅ Advantages</h4>
                 <ul className="space-y-2 text-sm text-slate-300">
-                  <li>• Guaranteed optimal solutions</li>
-                  <li>• Solutions ≤ 20 moves (God's Number)</li>
+                  <li>• Exact optimality on completed runs</li>
+                  <li>• Shortest solutions among the compared solvers</li>
                   <li>• Memory-efficient search</li>
                   <li>• Theoretically beautiful</li>
                 </ul>
@@ -500,6 +510,7 @@ export default function EducationalPage() {
                 <h4 className="text-red-400 font-medium mb-2">❌ Disadvantages</h4>
                 <ul className="space-y-2 text-sm text-slate-300">
                   <li>• Slow for difficult scrambles</li>
+                  <li>• Hard depth-20 cases can time out under a fixed budget</li>
                   <li>• Large pattern database storage</li>
                   <li>• Long preprocessing time</li>
                   <li>• Variable execution time</li>

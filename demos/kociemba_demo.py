@@ -2,9 +2,6 @@
 Kociemba Algorithm Demo
 
 This demo shows the Kociemba two-phase algorithm in action.
-
-Note: Currently works best when testing moves directly in cubie space.
-Integration with facelet representation is a known area for improvement.
 """
 
 import sys
@@ -60,12 +57,12 @@ print("            - Max depth: 12 moves theoretically")
 print("            - Uses 3 coordinates: corner orient, edge orient, UD-slice")
 print()
 print("   Phase 2: G₁ → Solved")
-print("            - Search space: 19.5 million states")
+print("            - Search space: 39,038,976,000 states before pruning")
 print("            - Max depth: 18 moves theoretically")
 print("            - Uses 3 coordinates: corner perm, edge perm, UD-slice perm")
 print("            - Only moves: U, D, R2, L2, F2, B2")
 print()
-print("   Total: Typically <19 moves, <5 seconds")
+print("   Total: Near-optimal solutions with strong practical performance")
 
 print("\n" + "="*70)
 print("IMPLEMENTATION COMPLETE")
@@ -75,15 +72,14 @@ print("\nFeatures implemented:")
 print("  ✓ Cubie-level representation")
 print("  ✓ Six coordinate systems (CO, EO, UDS, CP, EP, UDSP)")
 print("  ✓ Move tables for fast coordinate updates")
-print("  ✓ Pruning tables for IDA* heuristic (~80MB)")
+print("  ✓ Pruning tables for IDA* heuristic (~8.7 MB cached on disk in this repo)")
 print("  ✓ Two-phase IDA* solver")
 print("  ✓ Comprehensive test suite")
 
 print("\nKnown limitations:")
-print("  • Facelet-to-cubie conversion needs refinement for complex cases")
 print("  • Symmetry reduction not yet implemented (would reduce memory by 16x)")
 print("  • Can be further optimized for speed")
 
 print("\nPerformance:")
-print("  • Expected: <19 moves average, <5 seconds per cube")
-print("  • Actual performance may vary based on system and table depth")
+print("  • Expected: near-optimal solutions with strong practical performance")
+print("  • Actual runtime varies strongly with scramble depth, cache state, and timeout settings")

@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "purpose": "Canonical report map for the native exact solver validation artifacts referenced by the thesis.",
+  "canonical_reports": {
+    "corner_pdb_enabled": {
+      "file": "native_exact_validation_20260322_144046.json",
+      "date": "2026-03-22",
+      "description": "Primary thesis validation run with the full native corner pattern database enabled.",
+      "total_cases": 3513,
+      "failure_count": 1,
+      "timeout_seconds": 20.0,
+      "max_depth": 12
+    },
+    "corner_pdb_disabled_baseline": {
+      "file": "native_exact_validation_20260322_144158.json",
+      "date": "2026-03-22",
+      "description": "Matched baseline run on the same corpus with the full native corner pattern database disabled.",
+      "total_cases": 3513,
+      "failure_count": 3,
+      "timeout_seconds": 20.0,
+      "max_depth": 12
+    }
+  },
+  "reproducibility": {
+    "preset": "canonical_3513_case_depth12",
+    "command": "python scripts/verification/native_exact_validation.py --preset canonical --output-dir results/validation/native_exact",
+    "corpus_generation": {
+      "exhaustive_depth": 3,
+      "oracle_depths": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "oracle_samples_per_depth": 2,
+      "seed": 42
+    },
+    "report_schema": {
+      "config.corpus_generation": "preserved in every new report emitted by the validation harness"
+    }
+  },
+  "supplemental_reports": {
+    "pre_corner_pdb_zero_failure_run": {
+      "file": "native_exact_validation_20260322_130107.json",
+      "description": "Earlier 3509-case validation run with zero failures."
+    },
+    "depth8_followup": {
+      "file": "native_exact_validation_20260322_130141.json",
+      "description": "Two-case follow-up run with zero failures."
+    },
+    "depth9_timeout_boundary": {
+      "file": "native_exact_validation_20260322_130238.json",
+      "description": "Two-case sampled boundary run showing native timeouts at depth 9 under the 20-second limit."
+    }
+  },
+  "legacy_reports": {
+    "pattern": "native_exact_validation_20260322_12*.json and native_exact_validation_20260322_143*.json excluding the canonical pair",
+    "description": "Historical exploratory outputs kept for traceability. They predate the richer report schema and should not be cited as the final thesis evidence when a canonical report exists."
+  },
+  "thesis_claims_supported": [
+    "The native exact solver is validated on a reproducible 3513-case corpus.",
+    "Enabling the full native corner PDB reduces failures under a 20-second limit from 3 to 1.",
+    "One edge-dominated depth-8 timeout remains in the corner-PDB-enabled run."
+  ]
+}

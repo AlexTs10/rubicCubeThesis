@@ -57,16 +57,16 @@ with tab1:
         **Phases:** 4
 
         **Strengths:**
-        - ⚡ Very fast
+        - ⚡ Pure 4-phase solver
         - 💾 Low memory
-        - 🎯 Guaranteed to solve
+        - 🎯 100% success on the thesis benchmark corpus
 
         **Weaknesses:**
-        - 📏 Sub-optimal solutions (30-52 moves)
-        - Not practical for speedcubing
+        - 📏 Longer solutions than Kociemba or Korf
+        - Not optimal
 
         **Best for:**
-        Quick demos, educational purposes
+        Educational demonstrations, subgroup-based solving
         """)
 
     with col2:
@@ -77,16 +77,16 @@ with tab1:
         **Phases:** 2
 
         **Strengths:**
-        - 🎯 Near-optimal (<19 moves)
-        - ⚡ Reasonably fast
-        - 🏆 Industry standard
+        - 🎯 Near-optimal solutions
+        - ⚡ Best overall practical trade-off
+        - 🏆 100% success on the thesis benchmark corpus
 
         **Weaknesses:**
-        - 💾 Higher memory usage
+        - 💾 More table infrastructure than Thistlethwaite
         - Not guaranteed optimal
 
         **Best for:**
-        Practical solving, competitions
+        Practical solving and mainline comparisons
         """)
 
     with col3:
@@ -97,16 +97,16 @@ with tab1:
         **Phases:** 1 (IDA*)
 
         **Strengths:**
-        - ✨ Optimal solutions
-        - 🎯 Admissible heuristic
-        - 🧠 AI research benchmark
+        - ✨ Exact optimality when the external backend finishes
+        - 🎯 Shortest solutions among completed runs
+        - 🧠 Strong research baseline
 
         **Weaknesses:**
-        - 🐢 Can be slow
-        - 💾 Moderate memory
+        - 🐢 Can time out on hard scrambles
+        - 💾 Highest memory cost of the three solvers
 
         **Best for:**
-        Research, optimal solutions
+        Optimal search experiments and validation
         """)
 
     st.markdown("---")
@@ -122,7 +122,7 @@ with tab1:
     | 1992 | **Kociemba's algorithm** - Two-phase near-optimal |
     | 1997 | **Korf's IDA*** - Pattern database optimal solver |
     | 2010 | God's Number proven to be 20 |
-    | 2025 | This thesis compares all three! 🎓 |
+    | 2026 | This thesis compares all three! 🎓 |
     """)
 
 with tab2:
@@ -216,16 +216,16 @@ with tab2:
     with col1:
         st.markdown("""
         **Pros:**
-        - ⚡ Very fast (0.2-0.5 seconds)
-        - 💾 Low memory (<2 MB)
-        - 🎯 Always finds a solution
+        - ⚡ Fast on the benchmark corpus
+        - 💾 Low memory footprint
+        - 🎯 Pure solver with 100/100 thesis benchmark success
         - 📚 Elegant mathematical approach
         """)
 
     with col2:
         st.markdown("""
         **Cons:**
-        - 📏 Sub-optimal (30-52 moves vs 20 optimal)
+        - 📏 Clearly longer solutions than the other two solvers
         - 🤔 Not human-friendly sequences
         - 🏆 Not used in speedcubing
         """)
@@ -236,8 +236,9 @@ with tab3:
     st.markdown("""
     ## Overview
 
-    Kociemba's algorithm is a **two-phase IDA* search** that finds near-optimal solutions
-    (usually <19 moves). It's the **industry standard** and used in most cube solvers.
+    Kociemba's algorithm is a **two-phase IDA* search** that finds near-optimal solutions.
+    It is the **industry standard** and delivered the best overall practical trade-off
+    in the corrected thesis benchmark.
 
     ## The Two Phases
     """)
@@ -302,8 +303,8 @@ with tab3:
     with col1:
         st.markdown("""
         **Pros:**
-        - 🎯 Near-optimal solutions (<19 moves)
-        - 🚀 Fast enough for real-time use (1-3s)
+        - 🎯 Near-optimal solutions
+        - 🚀 Best overall practical trade-off in the thesis benchmark
         - 🏆 Industry standard
         - 💡 Good balance of speed/quality
         """)
@@ -311,7 +312,7 @@ with tab3:
     with col2:
         st.markdown("""
         **Cons:**
-        - 💾 Higher memory (~80 MB pruning tables)
+        - 💾 More table infrastructure than Thistlethwaite
         - 🔧 Complex implementation
         - ❌ Not guaranteed optimal
         """)
@@ -322,8 +323,10 @@ with tab4:
     st.markdown("""
     ## Overview
 
-    Korf's algorithm uses **IDA* search with pattern databases** to find **optimal solutions**
-    (guaranteed ≤20 moves). It's a landmark achievement in AI and heuristic search.
+    Korf's algorithm uses **IDA* search with admissible pattern databases** to find
+    **optimal solutions**. In this repository, the publishable benchmark path uses an
+    **external optimal backend**, while the lightweight internal composite heuristic is
+    retained only for exploratory experiments and is **not** treated as generally admissible.
 
     ## Pattern Databases
 
@@ -346,9 +349,9 @@ with tab4:
         - Each considers 6 edges, ignores the rest
         - Size: C(12,6) × 6! × 2⁵ = ~42 million entries (~0.6 MB each)
 
-        **Why it works:**
-        Since we ignore some pieces, the distance is never overestimated (admissible).
-        This guarantees optimal solutions.
+        **Why it works in the exact setting:**
+        When the database stores exact distances for a subset of pieces, that lookup is an
+        admissible lower bound for the full cube and can support optimal IDA* search.
         """)
 
     with st.expander("**IDA* Search Algorithm**"):
@@ -365,15 +368,16 @@ with tab4:
         - For Rubik's Cube: ~20 states in memory instead of millions
         - Essential for solving optimally
 
-        **Heuristic Function:**
+        **Exact setting:**
         h(n) = max(corner_DB, edge_DB1, edge_DB2, ...)
 
-        Taking the maximum of multiple admissible heuristics is still admissible!
+        This optimality guarantee applies to admissible pattern-database heuristics.
+        It does **not** automatically apply to every lightweight heuristic implementation.
         """)
 
     with st.expander("**Composite Heuristic (Our Implementation)**"):
         st.markdown("""
-        This thesis implements a **composite heuristic** using:
+        This repository also contains a **composite heuristic** for exploratory experiments:
 
         1. **Corner Pattern Database** (44 MB)
            - All 8 corners
@@ -388,12 +392,13 @@ with tab4:
            h(state) = max(corner_distance, edge_distance)
            ```
 
-        This provides strong guidance while keeping memory reasonable (~45 MB total).
+        This provides useful guidance while keeping memory moderate, but it is **not**
+        the basis for the final optimality claims of the thesis benchmark.
 
-        **Alternative: Full Korf (not implemented):**
-        - Multiple edge databases for better accuracy
-        - ~200+ MB total
-        - Slight speed improvement
+        **Benchmark path used in the thesis:**
+        - External exact optimal backend
+        - Enforced 120-second timeout
+        - Exact on completed runs, but 3/25 depth-20 benchmark cases timed out
         """)
 
     st.markdown("---")
@@ -404,8 +409,8 @@ with tab4:
     with col1:
         st.markdown("""
         **Pros:**
-        - ✨ **Optimal solutions** (≤20 moves)
-        - 🎯 Admissible heuristic (never overestimates)
+        - ✨ **Optimal solutions when the exact backend finishes**
+        - 🎯 Shortest solutions among completed runs
         - 🧠 AI research benchmark
         - 📊 Useful for validating other algorithms
         """)
@@ -413,10 +418,10 @@ with tab4:
     with col2:
         st.markdown("""
         **Cons:**
-        - 🐢 Variable speed (1-60+ seconds)
-        - 💾 Moderate memory (~45 MB)
+        - 🐢 Variable speed with visible timeout risk on hard depth-20 cases
+        - 💾 Highest memory demand among the three compared solvers
         - 🔬 Overkill for casual solving
-        - 💻 Requires pattern DB precomputation
+        - 💻 Exact backend setup is heavier than the other two algorithms
         """)
 
 # Glossary

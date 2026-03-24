@@ -2,24 +2,119 @@
 \label{app:usage}
 
 \section{Απαιτήσεις Συστήματος}
-% Python 3.8+, dependencies
+
+Για την εκτέλεση του project απαιτείται:
+\begin{itemize}
+    \item Python 3.8 ή νεότερο
+    \item \texttt{pip} για εγκατάσταση εξαρτήσεων
+    \item βασικές βιβλιοθήκες επιστημονικού Python stack:
+    \texttt{numpy}, \texttt{scipy}, \texttt{pandas}, \texttt{matplotlib}
+    \item προαιρετικά: \texttt{streamlit} για το Python UI
+    \item προαιρετικά: \texttt{node/npm} για τη Next.js εφαρμογή
+\end{itemize}
+
+Η τρέχουσα έκδοση του αποθετηρίου έχει επαληθευθεί με \texttt{Python 3.12.2}. Για πλήρη έλεγχο του περιβάλλοντος διατίθεται το script \filepath{verify_setup.py}.
 
 \section{Εγκατάσταση}
+
+\subsection{Βασική Εγκατάσταση}
+
 \begin{lstlisting}
+python3 -m venv venv
+source venv/bin/activate
 pip install -r requirements.txt
 \end{lstlisting}
 
-\section{Εκτέλεση Demos}
+\subsection{Έλεγχος Περιβάλλοντος}
+
 \begin{lstlisting}
+python verify_setup.py
+\end{lstlisting}
+
+\subsection{Εκτέλεση Test Suite}
+
+\begin{lstlisting}
+python -m pytest tests -q
+\end{lstlisting}
+
+\section{Βασική Χρήση}
+
+Η απλούστερη χρήση του project είναι μέσω των demo scripts. Τα scripts αυτά καλύπτουν δημιουργία κύβου, scrambling, επίλυση και σύγκριση αλγορίθμων.
+
+\subsection{Εκτέλεση Demos}
+\begin{lstlisting}
+python demos/basic_usage.py
 python demos/kociemba_demo.py
 python demos/thistlethwaite_demo.py
+python demos/a_star_comparison_demo.py
+python demos/distance_estimator_demo.py
 \end{lstlisting}
 
-\section{Web Εφαρμογές}
-\begin{lstlisting}
-# Streamlit
-streamlit run ui/app.py
+\subsection{Benchmarks και Συγκρίσεις}
 
-# Next.js
+\begin{lstlisting}
+python demos/phase9/benchmark_demo.py --n-scrambles 20
+python demos/phase9/algorithm_comparison_cli.py --depth 10 --seed 42
+\end{lstlisting}
+
+\section{Διαδραστικές Εφαρμογές}
+
+\subsection{Streamlit}
+
+\begin{lstlisting}
+streamlit run ui/app.py
+\end{lstlisting}
+
+\subsection{Next.js Web Application}
+
+\begin{lstlisting}
 cd webapp && npm install && npm run dev
 \end{lstlisting}
+
+Η εφαρμογή Next.js λειτουργεί ως presentation/demo frontend και όχι ως authoritative live διεπαφή εκτέλεσης των Python solvers. Παρέχει σελίδες για:
+\begin{itemize}
+    \item αρχική παρουσίαση του project,
+    \item demo επίλυσης μεμονωμένου scramble,
+    \item demo σύγκρισης αλγορίθμων,
+    \item και εκπαιδευτικό περιεχόμενο.
+\end{itemize}
+Η ζωντανή εκτέλεση των αλγορίθμων γίνεται από το \filepath{ui/} και από τα scripts benchmark/validation του repository.
+
+\section{Αναπαραγωγή Αποτελεσμάτων Διπλωματικής}
+
+Για την ακριβή αναπαραγωγή των αποτελεσμάτων του Κεφαλαίου~\ref{ch:evaluation}
+χρησιμοποιείται ως επίσημη διαδρομή το script
+\filepath{scripts/benchmarks/regenerate_thesis_benchmarks.py}, το οποίο
+επαναεκτελεί τα benchmarks πάνω στο αποθηκευμένο σύνολο scrambles και
+αναδημιουργεί τα αρχεία
+\filepath{results/benchmarks/thesis/thesis_bench_d*.json} και
+\filepath{results/benchmarks/thesis/thesis_results_combined.json}. Προαιρετικά
+μπορούν να εκτελεστούν και τα scripts ανάλυσης, τα οποία διαβάζουν τα παραπάνω
+αρχεία από τον ίδιο κατάλογο:
+
+\begin{lstlisting}
+python scripts/benchmarks/regenerate_thesis_benchmarks.py
+python scripts/benchmarks/analyze_thesis_data.py
+python scripts/benchmarks/generate_latex_tables.py
+\end{lstlisting}
+
+Τα scripts \filepath{generate_thesis_data.py} και
+\filepath{generate_complete_thesis_data.py} διατηρούνται μόνο για ιστορικούς ή
+διερευνητικούς λόγους και δεν αποτελούν τη διαδρομή αναπαραγωγής της
+διπλωματικής.
+
+Για τη διαχείριση της συγγραφής και των chapter packets προστέθηκε επίσης workflow script:
+
+\begin{lstlisting}
+python scripts/thesis_workflow.py status
+python scripts/thesis_workflow.py packets --remaining
+python scripts/thesis_workflow.py validate
+\end{lstlisting}
+
+\section{Σημειώσεις}
+
+\begin{itemize}
+    \item Η πρώτη εκτέλεση ορισμένων solvers μπορεί να είναι αισθητά πιο αργή λόγω δημιουργίας ή φόρτωσης πινάκων.
+    \item Τα benchmark scripts αποθηκεύουν ρητά τα scrambles και τα αποτελέσματα σε JSON μορφή.
+    \item Η πλήρης παραγωγή PDF της διπλωματικής απαιτεί TeX toolchain συμβατό με το \filepath{thesis/main.tex}. Στο αποθετήριο χρησιμοποιείται \texttt{tectonic}.
+\end{itemize}

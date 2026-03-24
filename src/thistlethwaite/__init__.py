@@ -19,7 +19,7 @@ Example Usage:
     >>> cube.scramble(20)
     >>>
     >>> solver = ThistlethwaiteSolver()
-    >>> solution, phases = solver.solve(cube)
+    >>> solution, phases, used_fallback = solver.solve(cube)
     >>>
     >>> print("Solution: " + ' '.join(solution))
     >>> print("Total moves: " + str(len(solution)))

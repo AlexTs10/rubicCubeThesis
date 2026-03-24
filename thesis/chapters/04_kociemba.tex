@@ -1,16 +1,424 @@
+% ============================================================================
+% CHAPTER 4: KOCIEMBA ALGORITHM
+% ============================================================================
+
 \chapter{Αλγόριθμος Kociemba}
 \label{ch:kociemba}
 
-% Reference: src/kociemba/, tests/unit/test_kociemba.py
+Ο αλγόριθμος Kociemba αποτελεί τη βελτιστοποιημένη εξέλιξη του αλγορίθμου Thistlethwaite, συμπτύσσοντας τέσσερις φάσεις σε δύο \cite{kociemba1992close,kociemba_twophase_details}. Παράγει σχεδόν βέλτιστες λύσεις σε πρακτικές υλοποιήσεις και καθιστά τη two-phase προσέγγιση ιδιαίτερα χρήσιμη για εφαρμογές επίλυσης \cite{kociemba_moves20,kociemba_website}. Τα ακριβή μετρημένα αποτελέσματα της παρούσας εργασίας παρουσιάζονται στο Κεφάλαιο~\ref{ch:evaluation}.
 
-\section{Περιγραφή του Αλγορίθμου}
-% 2 phases, improvement over Thistlethwaite
+
+\section{Επισκόπηση του Αλγορίθμου}
+\label{sec:kociemba_overview}
+
+\subsection{Ιστορικό Πλαίσιο}
+
+Ο Herbert Kociemba παρουσίασε τον αλγόριθμο το 1992 \cite{kociemba1992close}, αναγνωρίζοντας ότι οι τέσσερις φάσεις του Thistlethwaite μπορούν να συνδυαστούν αποδοτικά σε δύο. Η βασική παρατήρηση είναι ότι οι Φάσεις 0-1 του Thistlethwaite (προσανατολισμός ακμών, προσανατολισμός γωνιών, E-slice) μπορούν να αντιμετωπιστούν ως ενιαίο πρόβλημα \cite{kociemba_twophase_details}.
+
+Ο αλγόριθμος Kociemba χρησιμοποιείται ευρέως σε εφαρμογές speedcubing, ρομποτικούς επιλυτές, και διαδικτυακά εργαλεία επίλυσης \cite{kociemba_website}.
+
+\subsection{Δομή Δύο Φάσεων}
+
+\begin{equation}
+    G = G_0 \xrightarrow{\text{Φάση 1}} G_1 \xrightarrow{\text{Φάση 2}} G_2 = \{I\}
+\end{equation}
+
+\textbf{Φάση 1} ($G_0 \to G_1$):
+\begin{itemize}
+    \item Προσανατολισμός όλων των κομματιών (ακμές και γωνίες)
+    \item Τοποθέτηση ακμών UD-slice στο UD-slice
+    \item Επιτρέπονται όλες οι 18 κινήσεις
+    \item Χώρος: $2.187 \times 2.048 \times 495 \approx 2.2 \times 10^9$ καταστάσεις
+\end{itemize}
+
+\textbf{Φάση 2} ($G_1 \to G_2$):
+\begin{itemize}
+    \item Πλήρης επίλυση εντός της ομάδας $G_1$
+    \item Μόνο 10 κινήσεις: $\{U, U', U2, D, D', D2, F2, B2, L2, R2\}$
+    \item Χώρος: $40.320 \times 40.320 \times 24 \approx 3.9 \times 10^{10}$ καταστάσεις
+\end{itemize}
+
+\begin{table}[h]
+\centering
+\caption{Σύγκριση φάσεων του αλγορίθμου Kociemba}
+\label{tab:kociemba_phases}
+\begin{tabular}{clcrl}
+\toprule
+\textbf{Φάση} & \textbf{Μετάβαση} & \textbf{Κινήσεις} & \textbf{Χώρος} & \textbf{Στόχος} \\
+\midrule
+1 & $G_0 \to G_1$ & 18 & $2.2 \times 10^9$ & Προσανατ. + UD-slice \\
+2 & $G_1 \to G_2$ & 10 & $3.9 \times 10^{10}$ & Πλήρης επίλυση \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Θεωρητικά, η Φάση 1 απαιτεί έως 12 κινήσεις και η Φάση 2 έως 18, δίνοντας μέγιστο 30 \cite{kociemba_twophase,kociemba_twophase_details}. Στην πράξη, ώριμες two-phase υλοποιήσεις επιστρέφουν συνήθως σύντομες σχεδόν βέλτιστες λύσεις \cite{kociemba_moves20,kociemba_website}, αλλά τα τελικά ποσοτικά συμπεράσματα της εργασίας πρέπει να λαμβάνονται από το benchmark corpus του Κεφαλαίου~\ref{ch:evaluation}.
+
 
 \section{Σύστημα Συντεταγμένων}
-% 6 coordinates, CoordCube
+\label{sec:kociemba_coords}
 
-\section{Move Tables και Pruning Tables}
-% Pre-computed tables, ~80MB
+Ο αλγόριθμος χρησιμοποιεί \textbf{έξι συντεταγμένες} για την αποδοτική αναπαράσταση της κατάστασης του κύβου: τρεις για τη Φάση 1 και τρεις για τη Φάση 2 \cite{kociemba_twophase,kociemba_twophase_details}.
 
-\section{Υλοποίηση και Αποτελέσματα}
-% Two-phase IDA*, <19 moves
+\subsection{Συντεταγμένες Φάσης 1}
+
+\textbf{1. Προσανατολισμός Γωνιών (Corner Orientation - CO):}
+\begin{itemize}
+    \item Κωδικοποίηση βάσης-3 των 7 γωνιών (η 8η καθορίζεται από ισοτιμία)
+    \item Εύρος: $0$ έως $3^7 - 1 = 2.186$
+    \item Μέγεθος: \textbf{2.187 καταστάσεις}
+\end{itemize}
+\begin{equation}
+    CO = \sum_{i=0}^{6} \text{orient}[i] \times 3^i
+\end{equation}
+
+\textbf{2. Προσανατολισμός Ακμών (Edge Orientation - EO):}
+\begin{itemize}
+    \item Δυαδική κωδικοποίηση των 11 ακμών (η 12η καθορίζεται από ισοτιμία)
+    \item Εύρος: $0$ έως $2^{11} - 1 = 2.047$
+    \item Μέγεθος: \textbf{2.048 καταστάσεις}
+\end{itemize}
+\begin{equation}
+    EO = \sum_{i=0}^{10} \text{orient}[i] \times 2^i
+\end{equation}
+
+\textbf{3. Θέση UD-Slice (UDS):}
+\begin{itemize}
+    \item Ποιες 4 από τις 12 θέσεις περιέχουν ακμές του UD-slice
+    \item Εύρος: $0$ έως $\binom{12}{4} - 1 = 494$
+    \item Μέγεθος: \textbf{495 καταστάσεις}
+\end{itemize}
+
+\subsection{Συντεταγμένες Φάσης 2}
+
+\textbf{4. Μετάθεση Γωνιών (Corner Permutation - CP):}
+\begin{itemize}
+    \item Λεξικογραφική κατάταξη της μετάθεσης 8 γωνιών
+    \item Εύρος: $0$ έως $8! - 1 = 40.319$
+    \item Μέγεθος: \textbf{40.320 καταστάσεις}
+\end{itemize}
+
+\textbf{5. Μετάθεση Ακμών U/D (Edge Permutation - EP):}
+\begin{itemize}
+    \item Λεξικογραφική κατάταξη των 8 ακμών U/D (θέσεις 0-7)
+    \item Εύρος: $0$ έως $8! - 1 = 40.319$
+    \item Μέγεθος: \textbf{40.320 καταστάσεις}
+\end{itemize}
+
+\textbf{6. Μετάθεση UD-Slice (Slice Permutation - SP):}
+\begin{itemize}
+    \item Μετάθεση των 4 ακμών εντός του UD-slice
+    \item Εύρος: $0$ έως $4! - 1 = 23$
+    \item Μέγεθος: \textbf{24 καταστάσεις}
+\end{itemize}
+
+\begin{table}[h]
+\centering
+\caption{Σύνοψη συντεταγμένων Kociemba}
+\label{tab:kociemba_coords}
+\begin{tabular}{clrrl}
+\toprule
+\textbf{Φάση} & \textbf{Συντεταγμένη} & \textbf{Μέγεθος} & \textbf{Τύπος} & \textbf{Περιγραφή} \\
+\midrule
+1 & CO & 2.187 & $3^7$ & Προσαν. γωνιών \\
+1 & EO & 2.048 & $2^{11}$ & Προσαν. ακμών \\
+1 & UDS & 495 & $\binom{12}{4}$ & Θέση UD-slice \\
+\midrule
+2 & CP & 40.320 & $8!$ & Μετάθ. γωνιών \\
+2 & EP & 40.320 & $8!$ & Μετάθ. ακμών U/D \\
+2 & SP & 24 & $4!$ & Μετάθ. UD-slice \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+
+\section{Move Tables}
+\label{sec:move_tables}
+
+\subsection{Δομή Πινάκων}
+
+Οι \textbf{Move Tables} είναι προ-υπολογισμένοι πίνακες που δίνουν τη νέα συντεταγμένη μετά την εφαρμογή μιας κίνησης \cite{kociemba_twophase_details}:
+
+\begin{equation}
+    \text{new\_coord} = \text{move\_table}[\text{coord}][\text{move}]
+\end{equation}
+
+Αυτό επιτρέπει ενημέρωση συντεταγμένων σε $O(1)$ χρόνο, αντί για επανυπολογισμό από την κατάσταση του κύβου.
+
+\subsection{Διαστάσεις Πινάκων}
+
+\begin{table}[h]
+\centering
+\caption{Διαστάσεις Move Tables}
+\label{tab:move_tables}
+\begin{tabular}{llrr}
+\toprule
+\textbf{Συντεταγμένη} & \textbf{Φάση} & \textbf{Διάσταση} & \textbf{Μνήμη} \\
+\midrule
+CO & 1 & $[2.187][18]$ & $\sim$39 KB \\
+EO & 1 & $[2.048][18]$ & $\sim$37 KB \\
+UDS & 1 & $[495][18]$ & $\sim$9 KB \\
+\midrule
+CP & 2 & $[40.320][10]$ & $\sim$403 KB \\
+EP & 2 & $[40.320][10]$ & $\sim$403 KB \\
+SP & 2 & $[24][10]$ & $\sim$240 B \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Κατασκευή}
+
+Οι πίνακες κατασκευάζονται με προσομοίωση κάθε κίνησης σε κάθε δυνατή συντεταγμένη:
+
+\begin{algorithm}[H]
+\caption{Κατασκευή Move Table}
+\begin{algorithmic}[1]
+\For{coord $= 0$ \textbf{to} size$-1$}
+    \State cube $\gets$ state\_from\_coord(coord)
+    \For{κάθε κίνηση $m$}
+        \State new\_cube $\gets$ apply(cube, $m$)
+        \State move\_table[coord][$m$] $\gets$ coord\_from\_state(new\_cube)
+    \EndFor
+\EndFor
+\end{algorithmic}
+\end{algorithm}
+
+
+\section{Pruning Tables}
+\label{sec:pruning_tables}
+
+\subsection{Ρόλος και Κατασκευή}
+
+Οι \textbf{Pruning Tables} αποθηκεύουν την ελάχιστη απόσταση από κάθε κατάσταση στον στόχο. Χρησιμοποιούνται ως ευρετικές στον αλγόριθμο IDA* \cite{kociemba_twophase_details,korf1985depth}.
+
+Κατασκευάζονται με \textbf{BFS από τον στόχο} (όπου όλες οι συντεταγμένες = 0):
+
+\begin{algorithm}[H]
+\caption{Κατασκευή Pruning Table}
+\begin{algorithmic}[1]
+\State pruning\_table $\gets$ array filled with $\infty$
+\State pruning\_table[0] $\gets$ 0 \Comment{Στόχος}
+\State queue $\gets \{0\}$
+\While{queue $\neq \emptyset$}
+    \State coord $\gets$ queue.dequeue()
+    \For{κάθε κίνηση $m$}
+        \State new\_coord $\gets$ move\_table[coord][$m$]
+        \If{pruning\_table[new\_coord] = $\infty$}
+            \State pruning\_table[new\_coord] $\gets$ pruning\_table[coord] + 1
+            \State queue.enqueue(new\_coord)
+        \EndIf
+    \EndFor
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Συνδυασμός Συντεταγμένων}
+
+Για ισχυρότερες ευρετικές, συνδυάζονται ζεύγη συντεταγμένων \cite{kociemba_twophase_details}:
+
+\textbf{Φάση 1:}
+\begin{itemize}
+    \item $\text{phase1\_co\_eo}[CO][EO]$: $2.187 \times 2.048 \approx 4.5$ εκατ. καταστάσεις
+    \item $\text{phase1\_eo\_slice}[EO][UDS]$: $2.048 \times 495 \approx 1$ εκατ. καταστάσεις
+\end{itemize}
+
+\textbf{Ευρετική Φάσης 1:}
+\begin{equation}
+    h_1 = \max(\text{phase1\_co\_eo}[CO, EO], \text{phase1\_eo\_slice}[EO, UDS])
+\end{equation}
+
+\textbf{Φάση 2:}
+\begin{itemize}
+    \item $\text{phase2\_cp}[CP]$: 40.320 καταστάσεις
+    \item $\text{phase2\_ep}[EP]$: 40.320 καταστάσεις
+    \item $\text{phase2\_sp}[SP]$: 24 καταστάσεις
+\end{itemize}
+
+\textbf{Ευρετική Φάσης 2:}
+\begin{equation}
+    h_2 = \max(\text{phase2\_cp}[CP], \text{phase2\_ep}[EP], \text{phase2\_sp}[SP])
+\end{equation}
+
+\subsection{Απαιτήσεις Μνήμης}
+
+\begin{table}[h]
+\centering
+\caption{Μεγέθη Pruning Tables}
+\label{tab:pruning_sizes}
+\begin{tabular}{llr}
+\toprule
+\textbf{Πίνακας} & \textbf{Φάση} & \textbf{Μνήμη} \\
+\midrule
+phase1\_co\_eo & 1 & $\sim$4.5 MB \\
+phase1\_eo\_slice & 1 & $\sim$1 MB \\
+phase2\_cp & 2 & $\sim$40 KB \\
+phase2\_ep & 2 & $\sim$40 KB \\
+phase2\_sp & 2 & $<$ 1 KB \\
+\midrule
+\textbf{Σύνολο} & & $\sim$\textbf{6 MB} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Τα παραπάνω μεγέθη αφορούν τις αποθηκευμένες pruning tables σε serialized
+μορφή. Το πραγματικό process footprint είναι υψηλότερο όταν φορτωθούν οι πίνακες
+στο Python runtime, επειδή συνυπολογίζονται τα move tables, τα Python objects και
+το υπόλοιπο solver state.
+
+
+\section{Αναζήτηση IDA*}
+\label{sec:kociemba_ida}
+
+\subsection{Φάση 1}
+
+Η αναζήτηση στη Φάση 1 χρησιμοποιεί IDA* με την ευρετική $h_1$ \cite{korf1985depth,kociemba_twophase_details}:
+
+\begin{algorithm}[H]
+\caption{IDA* Φάσης 1}
+\begin{algorithmic}[1]
+\Function{SolvePhase1}{cube, max\_depth}
+    \State $(CO, EO, UDS) \gets$ extract\_phase1\_coords(cube)
+    \For{depth $= 0$ \textbf{to} max\_depth}
+        \State result $\gets$ Search1(CO, EO, UDS, depth, [])
+        \If{result $\neq$ None}
+            \State \Return result
+        \EndIf
+    \EndFor
+    \State \Return None
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\textbf{Στόχος Φάσης 1:} $CO = 0 \land EO = 0 \land UDS = 0$
+
+\subsection{Φάση 2}
+
+Μετά την ολοκλήρωση της Φάσης 1, η Φάση 2 ξεκινά από την ενδιάμεση κατάσταση:
+
+\begin{algorithm}[H]
+\caption{IDA* Φάσης 2}
+\begin{algorithmic}[1]
+\Function{SolvePhase2}{cube\_after\_phase1, max\_depth}
+    \State $(CP, EP, SP) \gets$ extract\_phase2\_coords(cube\_after\_phase1)
+    \For{depth $= 0$ \textbf{to} max\_depth}
+        \State result $\gets$ Search2(CP, EP, SP, depth, [], PHASE2\_MOVES)
+        \If{result $\neq$ None}
+            \State \Return result
+        \EndIf
+    \EndFor
+    \State \Return None
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\textbf{Στόχος Φάσης 2:} $CP = 0 \land EP = 0 \land SP = 0$
+
+\textbf{Περιορισμός κινήσεων:} Μόνο $\{U, U', U2, D, D', D2, F2, B2, L2, R2\}$
+
+\subsection{Αποκοπή Περιττών Κινήσεων}
+
+Όπως στον Thistlethwaite, αποκλείονται περιττές ακολουθίες \cite{kociemba_twophase_details}:
+\begin{itemize}
+    \item Διαδοχικές κινήσεις ίδιας έδρας ($U$ μετά $U'$)
+    \item Επιβολή σειράς για αντίθετες έδρες ($U$ πριν $D$)
+\end{itemize}
+
+Αυτές οι αποκοπές μειώνουν τον πραγματικό παράγοντα διακλάδωσης από 18/10 σε περίπου 13/8.
+
+
+\section{Αναπαράσταση Cubie}
+\label{sec:cubie_repr}
+
+\subsection{Κλάση CubieCube}
+
+Ο αλγόριθμος Kociemba χρησιμοποιεί την αναπαράσταση \textbf{cubie} (Κεφάλαιο~\ref{ch:background}) για αποδοτικούς υπολογισμούς:
+
+\begin{itemize}
+    \item \filepath{corner_perm[8]}: Μετάθεση γωνιών (ποια γωνία σε κάθε θέση)
+    \item \filepath{corner_orient[8]}: Προσανατολισμός γωνιών (0, 1, ή 2)
+    \item \filepath{edge_perm[12]}: Μετάθεση ακμών
+    \item \filepath{edge_orient[12]}: Προσανατολισμός ακμών (0 ή 1)
+\end{itemize}
+
+\subsection{Σύνθεση Κινήσεων}
+
+Η εφαρμογή κίνησης γίνεται με \textbf{πολλαπλασιασμό}:
+\begin{equation}
+    \text{result} = \text{cube} \cdot \text{move}
+\end{equation}
+
+\begin{lstlisting}[language=Python, caption=Σύνθεση CubieCube]
+def multiply(self, other):
+    result = CubieCube()
+    for i in range(8):
+        result.corner_perm[i] = self.corner_perm[other.corner_perm[i]]
+        result.corner_orient[i] = (self.corner_orient[other.corner_perm[i]]
+                                   + other.corner_orient[i]) % 3
+    for i in range(12):
+        result.edge_perm[i] = self.edge_perm[other.edge_perm[i]]
+        result.edge_orient[i] = (self.edge_orient[other.edge_perm[i]]
+                                 + other.edge_orient[i]) % 2
+    return result
+\end{lstlisting}
+
+\subsection{Μετατροπή από/προς Facelet}
+
+Η υλοποίηση περιλαμβάνει συναρτήσεις μετατροπής:
+\begin{itemize}
+    \item \texttt{from\_facelet\_cube()}: Facelet → CubieCube
+    \item \texttt{to\_facelet\_cube()}: CubieCube → Facelet
+\end{itemize}
+
+Αυτό επιτρέπει την είσοδο από οπτική αναπαράσταση και την επαλήθευση της λύσης.
+
+
+\section{Σύνοψη και Αξιολόγηση}
+\label{sec:kociemba_summary}
+
+\subsection{Χαρακτηριστικά Απόδοσης}
+
+\begin{itemize}
+    \item \textbf{Ποιότητα λύσης}: σχεδόν βέλτιστη· στο benchmark corpus της εργασίας 14.33 κινήσεις κατά μέσο όρο
+    \item \textbf{Χρόνος}: εξαρτάται έντονα από το scramble· οι ακριβείς μέσοι χρόνοι δίνονται στο Κεφάλαιο~\ref{ch:evaluation}
+    \item \textbf{Μνήμη}: υψηλότερη από του Thistlethwaite λόγω των προϋπολογισμένων tables, αλλά σαφώς χαμηλότερη από του πλήρως βέλτιστου Korf
+    \item \textbf{Αξιοπιστία}: 100\% επιτυχία στο benchmark corpus της εργασίας
+\end{itemize}
+
+\subsection{Σύγκριση με Thistlethwaite}
+
+\begin{table}[h]
+\centering
+\caption{Σύγκριση Kociemba vs Thistlethwaite}
+\label{tab:kociemba_vs_thistlethwaite}
+\begin{tabular}{lcc}
+\toprule
+\textbf{Χαρακτηριστικό} & \textbf{Thistlethwaite} & \textbf{Kociemba} \\
+\midrule
+Φάσεις & 4 & 2 \\
+Τυπική ποιότητα λύσης & Μεγαλύτερο μήκος λύσης & Κοντά στο βέλτιστο \\
+Χρόνος & Σταθερά χαμηλός & Εξαρτάται από το scramble \\
+Μνήμη & Χαμηλή & Μέτρια \\
+Πολυπλοκότητα & Χαμηλότερη & Υψηλότερη \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Πλεονεκτήματα και Μειονεκτήματα}
+
+\textbf{Πλεονεκτήματα}:
+\begin{itemize}
+    \item Εξαιρετική ισορροπία ταχύτητας και ποιότητας λύσης
+    \item Ευρέως χρησιμοποιούμενος σε πρακτικές εφαρμογές
+    \item Αξιόπιστη απόδοση σε όλες τις καταστάσεις
+\end{itemize}
+
+\textbf{Μειονεκτήματα}:
+\begin{itemize}
+    \item Δεν εγγυάται βέλτιστες λύσεις
+    \item Υψηλότερες απαιτήσεις μνήμης από τον Thistlethwaite
+    \item Αρχική καθυστέρηση για κατασκευή πινάκων
+\end{itemize}
+
+\subsection{Μετάβαση στον Korf}
+
+Ενώ ο Kociemba παράγει αποδοτικές λύσεις κοντά στο βέλτιστο, ο αλγόριθμος Korf (Κεφάλαιο~\ref{ch:korf}) εγγυάται \textbf{πραγματικά βέλτιστες λύσεις} χρησιμοποιώντας IDA* με pattern databases, ανταλλάσσοντας χρόνο υπολογισμού για ποιότητα λύσης.

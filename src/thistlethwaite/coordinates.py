@@ -6,11 +6,27 @@ of the Rubik's Cube state for each phase of Thistlethwaite's algorithm.
 
 Each coordinate system maps a specific aspect of the cube to an integer,
 allowing efficient representation and lookup in pattern databases.
+
+Important:
+    The original implementation attempted to decode pieces directly from
+    facelets inside this module. That decoder was unsound and silently left
+    unmatched pieces at solved defaults. Thistlethwaite coordinates now use
+    the verified cubie conversion from ``src.kociemba.cubie`` as the single
+    source of truth for permutation and orientation data.
 """
 
 import numpy as np
 from typing import Tuple
 from ..cube.rubik_cube import RubikCube, Face
+from ..kociemba.cubie import from_facelet_cube
+from ..kociemba.coord import (
+    get_corner_orientation,
+    get_edge_orientation,
+    get_udslice,
+    get_corner_permutation,
+    get_edge_permutation,
+    get_udslice_permutation,
+)
 
 
 # Permutation to rank conversion utilities
@@ -151,107 +167,13 @@ class CubeCoordinates:
         self._extract_pieces()
 
     def _extract_pieces(self):
-        """Extract edge and corner pieces from the cube."""
-        # This is a simplified extraction - in practice, you'd need to
-        # map the facelet representation to edge/corner permutations and orientations
-
-        # For edges: 12 edges, each can be in one of 12 positions with 2 orientations
-        # For corners: 8 corners, each can be in one of 8 positions with 3 orientations
-
-        # Initialize with solved state
-        self.edge_permutation = np.arange(12)
-        self.edge_orientation = np.zeros(12, dtype=int)
-        self.corner_permutation = np.arange(8)
-        self.corner_orientation = np.zeros(8, dtype=int)
-
-        # Extract from facelet representation
-        # This is a complex mapping that needs to be implemented properly
-        self._extract_edges_from_facelets()
-        self._extract_corners_from_facelets()
-
-    def _extract_edges_from_facelets(self):
-        """Extract edge permutation and orientation from facelets."""
-        # Edge mapping from facelets to edge pieces
-        # Each edge is defined by two facelets
-        edge_facelets = [
-            ((Face.U, 7), (Face.F, 1)),  # UF
-            ((Face.U, 5), (Face.R, 1)),  # UR
-            ((Face.U, 1), (Face.B, 1)),  # UB
-            ((Face.U, 3), (Face.L, 1)),  # UL
-            ((Face.D, 1), (Face.F, 7)),  # DF
-            ((Face.D, 5), (Face.R, 7)),  # DR
-            ((Face.D, 7), (Face.B, 7)),  # DB
-            ((Face.D, 3), (Face.L, 7)),  # DL
-            ((Face.F, 5), (Face.R, 3)),  # FR
-            ((Face.F, 3), (Face.L, 5)),  # FL
-            ((Face.B, 3), (Face.R, 5)),  # BR
-            ((Face.B, 5), (Face.L, 3)),  # BL
-        ]
-
-        # For each position, find which edge is there
-        for pos, (facelet1, facelet2) in enumerate(edge_facelets):
-            face1, idx1 = facelet1
-            face2, idx2 = facelet2
-            color1 = self.cube.state[face1.value, idx1]
-            color2 = self.cube.state[face2.value, idx2]
-
-            # Find which edge this is by matching colors
-            # In solved state, facelet1 has face1's color and facelet2 has face2's color
-            for edge_idx, (ref_f1, ref_f2) in enumerate(edge_facelets):
-                ref_face1, _ = ref_f1
-                ref_face2, _ = ref_f2
-
-                if color1 == ref_face1.value and color2 == ref_face2.value:
-                    self.edge_permutation[pos] = edge_idx
-                    self.edge_orientation[pos] = 0
-                    break
-                elif color1 == ref_face2.value and color2 == ref_face1.value:
-                    self.edge_permutation[pos] = edge_idx
-                    self.edge_orientation[pos] = 1
-                    break
-
-    def _extract_corners_from_facelets(self):
-        """Extract corner permutation and orientation from facelets."""
-        # Corner mapping from facelets to corner pieces
-        # Each corner is defined by three facelets
-        corner_facelets = [
-            ((Face.U, 6), (Face.F, 0), (Face.L, 2)),  # UFL
-            ((Face.U, 8), (Face.F, 2), (Face.R, 0)),  # UFR
-            ((Face.U, 2), (Face.B, 2), (Face.R, 2)),  # UBR
-            ((Face.U, 0), (Face.B, 0), (Face.L, 0)),  # UBL
-            ((Face.D, 0), (Face.F, 6), (Face.L, 8)),  # DFL
-            ((Face.D, 2), (Face.F, 8), (Face.R, 6)),  # DFR
-            ((Face.D, 8), (Face.B, 8), (Face.R, 8)),  # DBR
-            ((Face.D, 6), (Face.B, 6), (Face.L, 6)),  # DBL
-        ]
-
-        for pos, (facelet1, facelet2, facelet3) in enumerate(corner_facelets):
-            face1, idx1 = facelet1
-            face2, idx2 = facelet2
-            face3, idx3 = facelet3
-            colors = [
-                self.cube.state[face1.value, idx1],
-                self.cube.state[face2.value, idx2],
-                self.cube.state[face3.value, idx3]
-            ]
-
-            # Find which corner this is by matching colors
-            found = False
-            for corner_idx, (ref_f1, ref_f2, ref_f3) in enumerate(corner_facelets):
-                ref_colors = [ref_f1[0].value, ref_f2[0].value, ref_f3[0].value]
-
-                # Check all rotations
-                for rot in range(3):
-                    rotated_colors = colors[rot:] + colors[:rot]
-                    if rotated_colors[0] == ref_colors[0] and \
-                       rotated_colors[1] == ref_colors[1] and \
-                       rotated_colors[2] == ref_colors[2]:
-                        self.corner_permutation[pos] = corner_idx
-                        self.corner_orientation[pos] = rot
-                        found = True
-                        break
-                if found:
-                    break
+        """Extract edge and corner data from the verified cubie model."""
+        cubie = from_facelet_cube(self.cube)
+        self._cubie = cubie
+        self.edge_permutation = cubie.edge_perm.astype(int).copy()
+        self.edge_orientation = cubie.edge_orient.astype(int).copy()
+        self.corner_permutation = cubie.corner_perm.astype(int).copy()
+        self.corner_orientation = cubie.corner_orient.astype(int).copy()
 
     # Phase 0 → G1: Edge Orientation
     def get_edge_orientation_coord(self) -> int:
@@ -264,11 +186,7 @@ class CubeCoordinates:
         Returns:
             Edge orientation coordinate (11 edges encode 2^11 states)
         """
-        # Only 11 edges matter (12th is determined by parity)
-        coord = 0
-        for i in range(11):
-            coord = coord * 2 + self.edge_orientation[i]
-        return coord
+        return int(get_edge_orientation(self._cubie))
 
     def count_misoriented_edges(self) -> int:
         """Number of edges with incorrect orientation."""
@@ -285,10 +203,7 @@ class CubeCoordinates:
         Returns:
             Corner orientation coordinate (7 corners encode 3^7 states)
         """
-        coord = 0
-        for i in range(7):  # 8th corner determined by parity
-            coord = coord * 3 + self.corner_orientation[i]
-        return coord
+        return int(get_corner_orientation(self._cubie))
 
     def count_misoriented_corners(self) -> int:
         """Number of corners with incorrect orientation."""
@@ -304,17 +219,7 @@ class CubeCoordinates:
         Returns:
             E-slice combination coordinate C(12, 4) = 495
         """
-        # Find which edges are in E-slice positions (8, 9, 10, 11)
-        e_slice_positions = []
-        for pos in range(8, 12):
-            if self.edge_permutation[pos] in [8, 9, 10, 11]:
-                e_slice_positions.append(pos - 8)
-
-        if len(e_slice_positions) != 4:
-            # Not in G2 yet, use full 12 positions
-            e_slice_positions = [i for i, e in enumerate(self.edge_permutation) if e in [8, 9, 10, 11]]
-
-        return combination_to_rank(np.array(e_slice_positions), 12)
+        return int(get_udslice(self._cubie))
 
     def count_e_slice_misplacements(self) -> int:
         """Count how many E-slice edges are not in the E-slice positions."""
@@ -412,7 +317,7 @@ class CubeCoordinates:
         Returns:
             Corner permutation rank (8! = 40320 states)
         """
-        return permutation_to_rank(self.corner_permutation)
+        return int(get_corner_permutation(self._cubie))
 
     def get_edge_permutation_coord(self) -> int:
         """
@@ -432,9 +337,7 @@ class CubeCoordinates:
         Returns:
             UD edge permutation coordinate (8! = 40320)
         """
-        # Get edges in UD positions
-        ud_edges = self.edge_permutation[:8]
-        return permutation_to_rank(ud_edges)
+        return int(get_edge_permutation(self._cubie))
 
     def get_e_edge_permutation_coord(self) -> int:
         """
@@ -445,6 +348,4 @@ class CubeCoordinates:
         Returns:
             E edge permutation coordinate (4! = 24)
         """
-        # Get edges in E positions
-        e_edges = self.edge_permutation[8:12]
-        return permutation_to_rank(e_edges)
+        return int(get_udslice_permutation(self._cubie))

@@ -1,13 +1,316 @@
 \chapter{Πειραματική Αξιολόγηση}
 \label{ch:evaluation}
 
-% Reference: figures/, thesis_data_*.csv
-
 \section{Μεθοδολογία}
-% Test set, metrics, environment
 
-\section{Σύγκριση Αλγορίθμων}
-% Tables and figures from figures/
+Η πειραματική αξιολόγηση έχει ως στόχο τη σύγκριση των τριών υλοποιημένων αλγορίθμων υπό κοινές συνθήκες εκτέλεσης και με κοινό σύνολο δοκιμών. Η βασική αρχή του πειραματικού σχεδιασμού είναι ότι κάθε scramble επιλύεται \emph{ακριβώς} από τους ίδιους τρεις επιλυτές, ώστε οι διαφορές στην απόδοση να αποδίδονται στον αλγοριθμικό σχεδιασμό και όχι στο input set \cite{mcgeoch2001experimental,barr1995designing,johnson2002theoreticians}.
 
-\section{Συζήτηση}
-% When to use each algorithm
+\subsection{Περιβάλλον Εκτέλεσης}
+
+Τα benchmarks εκτελέστηκαν σε έναν υπολογιστή με \textbf{Apple M3},
+\textbf{16 GB RAM}, λειτουργικό \textbf{macOS 26.2}, και \textbf{Python 3.12.2}.
+Η συλλογή μετρήσεων υλοποιείται από την κλάση \texttt{AlgorithmComparison},
+η οποία ορίζεται στο \filepath{src/evaluation/algorithm_comparison.py}. Η
+κλάση αρχικοποιεί τους solvers μία φορά και στη συνέχεια εκτελεί διαδοχικά τα
+πειράματα για κάθε scramble. Οι ίδιοι solver instances επαναχρησιμοποιούνται
+σε κάθε batch, άρα το one-off κόστος των μεγάλων πινάκων αμβλύνεται στα
+επόμενα scrambles. Για τους Thistlethwaite και Kociemba η πρώτη χρονομετρημένη
+κλήση του \texttt{solve()} εξακολουθεί να περιλαμβάνει lazy loading βοηθητικών
+πινάκων, επομένως οι αναφερόμενοι χρόνοι πρέπει να ερμηνεύονται ως
+batch-amortized timings και όχι ως καθαρά steady-state solve times.
+
+Για κάθε αλγόριθμο χρησιμοποιήθηκαν τα ακόλουθα όρια:
+\begin{itemize}
+    \item \textbf{Thistlethwaite}: timeout 30 s
+    \item \textbf{Kociemba}: ζητούμενο timeout 60 s με επιπλέον soft grace 10 s στο implementation
+    \item \textbf{Εξωτερικός exact backend}: timeout 120 s, μέγιστο βάθος 20
+\end{itemize}
+
+Για τον Kociemba αυτό σημαίνει ότι η ακύρωση μιας αναζήτησης δεν είναι αυστηρό
+hard cutoff στα 60 s, αλλά soft cutoff περίπου στα 70 s. Για αυτόν τον λόγο
+στο benchmark corpus εμφανίζονται μεμονωμένες επιτυχείς εκτελέσεις λίγο πάνω
+από τα 60 s χωρίς να πρόκειται για ασυνέπεια των καταγεγραμμένων αποτελεσμάτων.
+
+Στην περίπτωση της benchmark διαδρομής βέλτιστης επίλυσης, η επίσημη ροή χρησιμοποιεί τον
+εξωτερικό \emph{optimal backend} \texttt{RubiksCube-OptimalSolver} του Herbert
+Kociemba \cite{kociemba_rubiks_optimal}, ο οποίος ενσωματώνεται μέσω του
+\filepath{src/korf/optimal_solver.py}. Η περιβάλλουσα διεπαφή του έργου επιβάλλει ρητά το
+όριο των 120 s και εξάγει από τα logs του backend τον αριθμό των παραγόμενων
+κόμβων, ώστε τα αναφερόμενα αποτελέσματα να παραμένουν συγκρίσιμα και
+αναπαραγώγιμα.
+
+Στο υπόλοιπο κεφάλαιο, ο όρος \emph{εξωτερικός exact backend} αναφέρεται αποκλειστικά σε αυτή τη διαδρομή benchmark.
+
+\subsection{Σύνολο Δοκιμών}
+
+Το τελικό benchmark dataset περιλαμβάνει \textbf{100 scrambles}, οργανωμένα σε τέσσερα επίπεδα ονομαστικού βάθους:
+\begin{itemize}
+    \item 25 scrambles βάθους 5
+    \item 25 scrambles βάθους 10
+    \item 25 scrambles βάθους 15
+    \item 25 scrambles βάθους 20
+\end{itemize}
+
+Τα αποτελέσματα αποθηκεύτηκαν στα ακόλουθα αρχεία:
+\begin{itemize}
+    \item \filepath{results/benchmarks/thesis/thesis_bench_d5.json}
+    \item \filepath{results/benchmarks/thesis/thesis_bench_d10.json}
+    \item \filepath{results/benchmarks/thesis/thesis_bench_d15.json}
+    \item \filepath{results/benchmarks/thesis/thesis_bench_d20.json}
+    \item \filepath{results/benchmarks/thesis/thesis_results_combined.json}
+\end{itemize}
+Κάθε εγγραφή περιέχει:
+\begin{enumerate}
+    \item το αναγνωριστικό του scramble,
+    \item την ακολουθία κινήσεων που χρησιμοποιήθηκε για το scramble,
+    \item τον χρόνο εκτέλεσης,
+    \item το μήκος λύσης,
+    \item την επιτυχία ή αποτυχία επίλυσης,
+    \item την κατανάλωση μνήμης σε επίπεδο process RSS,
+    \item και, για τον εξωτερικό exact backend, τον αριθμό των επεκταθέντων κόμβων.
+\end{enumerate}
+
+Αξίζει να σημειωθεί ότι το \textbf{ονομαστικό βάθος scramble} δεν ταυτίζεται απαραίτητα με τη βέλτιστη απόσταση της κατάστασης από τη λύση. Για παράδειγμα, ένα scramble 10 κινήσεων μπορεί να καταλήξει σε κατάσταση που επιλύεται βέλτιστα σε λιγότερες από 10 κινήσεις λόγω αμοιβαίων αναιρέσεων ή πλεοναζουσών μετακινήσεων. Αυτό εξηγεί γιατί ο εξωτερικός exact backend, όταν επιτυγχάνει επίλυση, επιστρέφει συχνά λύσεις μικρότερου μήκους από το ονομαστικό βάθος scramble.
+
+\subsection{Μετρικές}
+
+Συλλέχθηκαν οι εξής μετρικές:
+\begin{itemize}
+    \item \textbf{Success rate}: ποσοστό επιτυχούς επίλυσης εντός timeout
+    \item \textbf{Solution length}: αριθμός κινήσεων στην τελική λύση
+    \item \textbf{Solve time}: χρόνος επίλυσης σε δευτερόλεπτα
+    \item \textbf{Memory delta}: διαφορά process RSS πριν και μετά την επίλυση
+    \item \textbf{Nodes explored}: διαθέσιμο μόνο για τον εξωτερικό exact backend
+\end{itemize}
+
+Η μετρική μνήμης είναι χρήσιμη συγκριτικά, αλλά είναι πιο θορυβώδης από τον χρόνο και το μήκος λύσης, ειδικά για πολύ γρήγορες εκτελέσεις. Για αυτόν τον λόγο, στα συμπεράσματα του παρόντος κεφαλαίου δίνεται μεγαλύτερη βαρύτητα στις μετρικές ποσοστού επιτυχίας, χρόνου και ποιότητας λύσης.
+
+\section{Αποτελέσματα}
+
+\subsection{Ποσοστά Επιτυχίας}
+
+Ο Πίνακας~\ref{tab:eval_success} συνοψίζει τα ποσοστά επιτυχίας ανά βάθος scramble.
+Μετά τη διόρθωση της καθαρής διαδρομής του Thistlethwaite, τόσο ο Thistlethwaite όσο και ο
+Kociemba επιλύουν επιτυχώς \emph{όλα} τα 100 scrambles του benchmark. Ο εξωτερικός exact backend
+παραμένει επίσης πλήρως επιτυχής μέχρι βάθος 15, αλλά στο βάθος 20 εμφανίζει
+τρεις πραγματικές timeout αποτυχίες εντός του ορίου των 120 s, με τελικό
+ποσοστό επιτυχίας 88\%. Το εύρημα αυτό συνάδει με τη θεωρητική εκθετική αύξηση του
+κόστους του IDA* σε βαθύτερες καταστάσεις \cite{korf2001timecomplexity,demaine2018npcomplete},
+αλλά είναι σημαντικά ισχυρότερο από την παλαιότερη, λανθασμένη εικόνα ότι ο
+εξωτερικός exact backend καταρρέει ήδη από βάθος 10.
+
+\begin{table}[htbp]
+\centering
+\caption{Ποσοστά επιτυχίας ανά αλγόριθμο και βάθος scramble}
+\label{tab:eval_success}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Βάθος} & \textbf{Thistlethwaite} & \textbf{Kociemba} & \textbf{Εξωτερικός exact backend} \\
+\midrule
+5  & 25/25 (100\%) & 25/25 (100\%) & 25/25 (100\%) \\
+10 & 25/25 (100\%) & 25/25 (100\%) & 25/25 (100\%) \\
+15 & 25/25 (100\%) & 25/25 (100\%) & 25/25 (100\%) \\
+20 & 25/25 (100\%) & 25/25 (100\%) & 22/25 (88\%)  \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.82\textwidth]{figures/fig4_success_rate.png}
+\caption[Ποσοστά επιτυχίας ανά αλγόριθμο]{Ποσοστά επιτυχίας ανά αλγόριθμο. Ο Thistlethwaite και ο Kociemba διατηρούν 100\% επιτυχία, ενώ ο εξωτερικός exact backend πέφτει μόνο στο βάθος 20 λόγω timeout.}
+\label{fig:eval_success_rates}
+\end{figure}
+
+\subsection{Ποιότητα Λύσεων}
+
+Η ποιότητα λύσης αποτυπώνεται στον Πίνακα~\ref{tab:eval_lengths}. Ο εξωτερικός exact backend
+παρέχει σταθερά τις συντομότερες λύσεις στις περιπτώσεις όπου ολοκληρώνεται,
+όπως αναμένεται από έναν βέλτιστο επιλυτή. Ο Kociemba παραμένει κοντά στο
+βέλτιστο, με διαφορά περίπου 2--8 κινήσεων από τον εξωτερικό exact backend καθώς αυξάνει το βάθος.
+Ο Thistlethwaite, αν και πλέον πλήρως αξιόπιστος, πληρώνει την πολυφασική
+στρατηγική του με σημαντικά μεγαλύτερα μήκη λύσης, φθάνοντας κατά μέσο όρο τις
+30.88 κινήσεις στα scrambles βάθους 20.
+
+\begin{table}[htbp]
+\centering
+\caption{Μέσο μήκος λύσης ανά αλγόριθμο και βάθος scramble}
+\label{tab:eval_lengths}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Βάθος} & \textbf{Thistlethwaite} & \textbf{Kociemba} & \textbf{Εξωτερικός exact backend} \\
+\midrule
+5  & 8.76  & 5.60  & 3.96  \\
+10 & 24.84 & 9.92  & 7.40  \\
+15 & 30.00 & 19.84 & 11.56 \\
+20 & 30.88 & 21.96 & 14.18 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Τα αποτελέσματα αυτά συνδέονται άμεσα με το θεωρητικό πλαίσιο του
+Κεφαλαίου~\ref{ch:background}. Το \emph{God's Number} είναι ίσο με 20 στην HTM
+μετρική \cite{rokicki2010gods,rokicki2014diameter}, επομένως οι λύσεις του
+Kociemba και ιδιαίτερα της εξωτερικής exact benchmark διαδρομής παραμένουν εντός του αναμενόμενου εύρους
+σχεδόν βέλτιστης και βέλτιστης αναζήτησης αντίστοιχα. Αντίθετα, οι λύσεις του
+Thistlethwaite είναι σημαντικά μακρύτερες, κάτι αναμενόμενο για έναν
+αλγόριθμο διαδοχικής μείωσης υποομάδων.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.82\textwidth]{figures/fig1_solution_length_boxplot.png}
+\caption[Κατανομή μήκους λύσεων]{Κατανομή μήκους λύσεων. Ο εξωτερικός exact backend δίνει τις συντομότερες λύσεις όταν ολοκληρώνεται, ενώ ο Kociemba παραμένει κοντά στο βέλτιστο.}
+\label{fig:eval_length_boxplot}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.82\textwidth]{figures/fig5_solution_distribution.png}
+\caption[Ιστόγραμμα μήκους λύσεων ανά αλγόριθμο]{Ιστόγραμμα μήκους λύσεων ανά αλγόριθμο. Η μετατόπιση της κατανομής του Thistlethwaite προς μεγαλύτερα μήκη είναι εμφανής.}
+\label{fig:eval_length_distribution}
+\end{figure}
+
+\subsection{Χρόνος Εκτέλεσης και Κόστος Αναζήτησης}
+
+Ο Πίνακας~\ref{tab:eval_times} δείχνει μια πιο σύνθετη εικόνα από την αρχική,
+λανθασμένη εκδοχή των αποτελεσμάτων. Στα βάθη 5 και 10 ο εξωτερικός exact backend είναι ο
+ταχύτερος solver του συνόλου και ταυτόχρονα βέλτιστος. Στο βάθος 15 παραμένει
+ταχύτερος από τον Kociemba, αλλά το κόστος μνήμης και αναζήτησης αυξάνεται
+απότομα. Στο βάθος 20 οι επιτυχείς λύσεις του εξωτερικού exact backend χρειάζονται κατά μέσο όρο
+11.23 s και τρεις από τις είκοσι πέντε περιπτώσεις σταματούν στο όριο των
+120 s. Ο Thistlethwaite, μετά τη διόρθωση των pattern databases, είναι
+σταθερά γρήγορος αλλά παράγει σαφώς μακρύτερες λύσεις.
+
+\begin{table}[htbp]
+\centering
+\caption{Μέσος χρόνος επίλυσης (s) ανά αλγόριθμο και βάθος scramble}
+\label{tab:eval_times}
+\begin{tabular}{lccc}
+\toprule
+\textbf{Βάθος} & \textbf{Thistlethwaite} & \textbf{Kociemba} & \textbf{Εξωτερικός exact backend} \\
+\midrule
+5  & 0.054 & 0.374 & 0.001  \\
+10 & 1.054 & 0.201 & 0.002  \\
+15 & 2.029 & 8.163 & 0.424  \\
+20 & 1.821 & 9.749 & 11.229 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Η διαφορά γίνεται ακόμη πιο εμφανής αν εξεταστούν οι κόμβοι αναζήτησης. Για
+τον εξωτερικό exact backend, ο μέσος αριθμός κόμβων αυξάνεται από μόλις 55.0 στο βάθος 5 σε
+147.64 στο βάθος 10, σε 96{,}177.96 στο βάθος 15, και σε
+6{,}606{,}970.64 στις επιτυχείς περιπτώσεις βάθους 20. Η συμπεριφορά αυτή
+είναι απόλυτα συμβατή με τα θεωρητικά αποτελέσματα για το IDA*
+\cite{korf2001timecomplexity}: η βελτιστότητα επιτυγχάνεται, αλλά με έντονη
+εκθετική κλιμάκωση της αναζήτησης.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.82\textwidth]{figures/fig2_time_comparison.png}
+\caption[Σύγκριση μέσου χρόνου επίλυσης]{Σύγκριση μέσου χρόνου επίλυσης για τις επιτυχείς λύσεις. Ο εξωτερικός exact backend είναι εξαιρετικά γρήγορος στα μικρότερα βάθη, αλλά στο βάθος 20 εμφανίζει timeout και υψηλή διακύμανση.}
+\label{fig:eval_time_comparison}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.82\textwidth]{figures/fig6_nodes_comparison.png}
+\caption[Κόμβοι αναζήτησης του εξωτερικού exact backend]{Κόμβοι αναζήτησης που εξερευνήθηκαν από τον εξωτερικό exact backend σε λογαριθμική κλίμακα.}
+\label{fig:eval_nodes}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.82\textwidth]{figures/fig3_memory_comparison.png}
+\caption[Συγκριτική απεικόνιση μεταβολής μνήμης]{Συγκριτική απεικόνιση process-level μεταβολής μνήμης. Η μέτρηση είναι ενδεικτική και πιο θορυβώδης από τις υπόλοιπες μετρικές.}
+\label{fig:eval_memory}
+\end{figure}
+
+\section{Ανάλυση και Συζήτηση}
+
+\subsection{Συμβιβασμοί Μεταξύ Ποιότητας και Χρόνου}
+
+Τα αποτελέσματα δείχνουν τρεις καθαρά διαφορετικές περιοχές του design space:
+\begin{enumerate}
+    \item \textbf{Εξωτερικός exact backend}: βέλτιστες λύσεις και πολύ καλή απόδοση έως βάθος 15, αλλά με απότομη αύξηση κόστους και timeout στο βάθος 20.
+    \item \textbf{Kociemba}: η καλύτερη ισορροπία μεταξύ ποιότητας λύσης, αξιοπιστίας και συγκρατημένου κόστους μνήμης.
+    \item \textbf{Thistlethwaite}: πλήρως αξιόπιστος και πλέον ταχύτερος από τον Kociemba σε αυτή τη μέτρηση χρόνου, αλλά σαφώς υποβέλτιστος ως προς το μήκος λύσης.
+\end{enumerate}
+
+Ο Kociemba είναι ιδιαίτερα ενδιαφέρων επειδή δεν επιδιώκει αυστηρή
+βελτιστότητα, αλλά παραμένει σταθερά κοντά σε αυτήν. Στα βάθη 15 και 20 δίνει
+λύσεις περίπου 20--22 κινήσεων με 100\% επιτυχία. Το χαρακτηριστικό αυτό τον
+καθιστά ισχυρή προεπιλεγμένη επιλογή όταν ζητείται καλή ποιότητα λύσης χωρίς τη
+μνημονική και αναζητησιακή έκρηξη του πλήρως βέλτιστου search.
+
+Ο εξωτερικός exact backend λειτουργεί ως \emph{baseline optimality}. Στην παρούσα εργασία η
+baseline αυτή μετράται μέσω του εξωτερικού backend
+\texttt{RubiksCube-OptimalSolver} \cite{kociemba_rubiks_optimal}. Η αξία του
+δεν βρίσκεται μόνο στην καθημερινή χρήση, αλλά κυρίως στο ότι παρέχει το
+χρυσό πρότυπο για τη μελέτη optimal search. Τα δεδομένα δείχνουν ότι η
+βελτιστότητα είναι απολύτως εφικτή σε μεγάλο τμήμα του benchmark, αλλά στο
+βάθος 20 συνοδεύεται από πολύ υψηλό κόστος μνήμης και εκατομμύρια επεκτάσεις
+κόμβων \cite{demaine2018npcomplete}.
+
+Ο Thistlethwaite παραμένει χρήσιμος κυρίως για δύο λόγους. Πρώτον, αποτελεί
+ιστορικό ορόσημο στην επίλυση του κύβου. Δεύτερον, η πολυφασική μείωση
+υποομάδων είναι εξαιρετικά διδακτική για την κατανόηση της σχέσης θεωρίας
+ομάδων και αναζήτησης. Η παρούσα υλοποίηση αποδεικνύεται πλέον και εμπειρικά
+αξιόπιστη, αλλά η ποιότητα λύσης της παραμένει εμφανώς χειρότερη από των άλλων
+δύο μεθόδων.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.82\textwidth]{figures/fig7_performance_vs_depth.png}
+\caption[Μέσο μήκος λύσης ως προς το βάθος scramble]{Μέσο μήκος λύσης συναρτήσει του βάθους scramble. Το σχήμα αποτυπώνει την κλιμάκωση της ποιότητας λύσης και όχι μια συνολική μετρική απόδοσης.}
+\label{fig:eval_depth_tradeoff}
+\end{figure}
+
+\subsection{Πρακτικές Συστάσεις}
+
+Με βάση τα παραπάνω, ο Πίνακας~\ref{tab:eval_recommendations} συνοψίζει την καταλληλότητα κάθε αλγορίθμου ανά περίπτωση χρήσης.
+
+\begin{table}[htbp]
+\centering
+\caption{Οδηγός επιλογής αλγορίθμου}
+\label{tab:eval_recommendations}
+\begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{3.8cm} >{\RaggedRight\arraybackslash}p{2.6cm} Y}
+\toprule
+\textbf{Use case} & \textbf{Πρόταση} & \textbf{Αιτιολόγηση} \\
+\midrule
+Διαδραστική επίλυση / καλή ποιότητα λύσης & Kociemba & 100\% επιτυχία στο benchmark και λύσεις κοντά στο βέλτιστο χωρίς ακραία κατανάλωση πόρων \\
+Βέλτιστη επίλυση / verification & Εξωτερικός exact backend & Εγγύηση βέλτιστης λύσης όπου η αναζήτηση ολοκληρώνεται εντός του ορίου των 120 s \\
+Εκπαιδευτική παρουσίαση & Thistlethwaite & Διαφανής πολυφασική δομή, καθαρή υλοποίηση και ισχυρή σύνδεση με θεωρία ομάδων \\
+Μελέτη κλιμάκωσης optimal search & Εξωτερικός exact backend & Παρέχει απτά δεδομένα για timeout, μνήμη και επέκταση κόμβων σε βαθύτερα scrambles \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\subsection{Περιορισμοί της Αξιολόγησης}
+
+Η αξιολόγηση συνοδεύεται από ορισμένους σαφείς περιορισμούς:
+\begin{itemize}
+    \item \textbf{Μέγεθος δείγματος}: 100 scrambles επαρκούν για καθαρά συμπεράσματα, όχι όμως για αυστηρή στατιστική γενίκευση.
+    \item \textbf{Single-machine setup}: τα benchmarks αφορούν μία συγκεκριμένη πλατφόρμα υλικού και λογισμικού.
+    \item \textbf{One-time preprocessing}: οι αναφερόμενοι χρόνοι εξακολουθούν να περιλαμβάνουν το αρχικό κόστος φόρτωσης για τους solvers που κάνουν lazy loading, άρα είναι batch-amortized και όχι καθαρά cold-start-excluded.
+    \item \textbf{Random scrambles}: δεν εξετάστηκαν ειδικές ακραίες καταστάσεις όπως superflip ή hand-crafted hard instances.
+    \item \textbf{Memory metric noise}: η process-level μέτρηση RSS είναι επαρκής για χονδρική σύγκριση, όχι για απόλυτη μικρο-ανάλυση.
+\end{itemize}
+
+\section{Σύνοψη}
+
+Η πειραματική αξιολόγηση οδηγεί σε τρία ξεκάθαρα συμπεράσματα. Πρώτον, ο
+\textbf{Thistlethwaite} μετά τη διόρθωση της υλοποίησης είναι πλήρως αξιόπιστος
+και γρήγορος, αλλά παραμένει σαφώς υποβέλτιστος ως προς το μήκος λύσης.
+Δεύτερον, ο \textbf{Kociemba} είναι ο ισχυρότερος συνολικός συμβιβασμός, με
+100\% ποσοστό επιτυχίας και λύσεις αισθητά κοντύτερες από του Thistlethwaite.
+Τρίτον, ο \textbf{εξωτερικός exact backend} παρέχει την optimal baseline του συστήματος και
+αποδίδει εντυπωσιακά καλά μέχρι βάθος 15, αλλά στο βάθος 20 εμφανίζει τα
+πρώτα σαφή όρια της εκθετικής κλιμάκωσης, με 3 timeout αποτυχίες και πολύ
+υψηλό κόστος αναζήτησης.
+
+Τα αποτελέσματα αυτά δεν είναι απλώς ποσοτικές παρατηρήσεις. Αποτυπώνουν τρεις
+διαφορετικές αλγοριθμικές φιλοσοφίες: μείωση υποομάδων, two-phase αναζήτηση
+σχεδόν βέλτιστης ποιότητας, και πλήρη optimal search με pattern databases. Στο επόμενο κεφάλαιο
+παρουσιάζεται η αρχιτεκτονική υλοποίησης που επέτρεψε αυτή τη δίκαιη και
+αναπαραγώγιμη σύγκριση.

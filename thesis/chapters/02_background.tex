@@ -5,47 +5,389 @@
 \chapter{Θεωρητικό Υπόβαθρο}
 \label{ch:background}
 
-% TODO: Write this chapter based on THESIS_OUTLINE.md Section 2
+Το παρόν κεφάλαιο παρουσιάζει το θεωρητικό υπόβαθρο που απαιτείται για την κατανόηση των αλγορίθμων επίλυσης του κύβου του Rubik. Αναλύονται οι δύο βασικές αναπαραστάσεις της κατάστασης του κύβου, τα θεμελιώδη στοιχεία της θεωρίας ομάδων που διέπουν τη δομή του προβλήματος, και οι αλγόριθμοι αναζήτησης που χρησιμοποιούνται για την εύρεση λύσεων.
 
 \section{Αναπαράσταση του Κύβου}
 \label{sec:bg_representation}
 
-% Content: Facelet, Cubie, Singmaster notation
-% Reference: src/cube/rubik_cube.py, src/kociemba/cubie.py
+Η επιλογή κατάλληλης αναπαράστασης της κατάστασης του κύβου είναι κρίσιμη για την αποδοτικότητα των αλγορίθμων επίλυσης. Στην παρούσα εργασία χρησιμοποιούνται δύο συμπληρωματικές αναπαραστάσεις: η αναπαράσταση facelets και η αναπαράσταση cubies.
 
 \subsection{Αναπαράσταση Facelets}
+\label{subsec:facelet_repr}
 
-% 54 αυτοκόλλητα, αρίθμηση
+Η αναπαράσταση facelets αποτυπώνει τον κύβο ως συλλογή 54 χρωματιστών αυτοκόλλητων (facelets), 9 ανά έδρα. Κάθε έδρα του κύβου αντιστοιχεί σε μία από τις έξι κατευθύνσεις:
+
+\begin{itemize}
+    \item \textbf{U} (Up) -- Πάνω έδρα (Λευκή)
+    \item \textbf{D} (Down) -- Κάτω έδρα (Κίτρινη)
+    \item \textbf{F} (Front) -- Μπροστινή έδρα (Πράσινη)
+    \item \textbf{B} (Back) -- Πίσω έδρα (Μπλε)
+    \item \textbf{L} (Left) -- Αριστερή έδρα (Πορτοκαλί)
+    \item \textbf{R} (Right) -- Δεξιά έδρα (Κόκκινη)
+\end{itemize}
+
+Τα facelets κάθε έδρας αριθμούνται από 0 έως 8 σύμφωνα με το ακόλουθο σχήμα:
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+0 & 1 & 2 \\
+\hline
+3 & 4 & 5 \\
+\hline
+6 & 7 & 8 \\
+\hline
+\end{tabular}
+\end{center}
+
+Η θέση 4 αντιστοιχεί στο κεντρικό facelet, το οποίο παραμένει σταθερό και καθορίζει την ταυτότητα της έδρας. Η κατάσταση του κύβου αναπαρίσταται ως πίνακας διαστάσεων $6 \times 9$, όπου κάθε στοιχείο περιέχει τον δείκτη χρώματος του αντίστοιχου facelet.
+
+Η αναπαράσταση facelets είναι διαισθητική και κατάλληλη για οπτικοποίηση, αλλά δεν αποτυπώνει άμεσα τη μαθηματική δομή του κύβου ως ομάδα μεταθέσεων.
 
 \subsection{Αναπαράσταση Cubies}
+\label{subsec:cubie_repr}
 
-% 8 γωνίες, 12 ακμές, προσανατολισμός
+Η αναπαράσταση cubies εστιάζει στα φυσικά κομμάτια του κύβου αντί για τα επιφανειακά χρώματα. Ο κύβος αποτελείται από:
+
+\begin{itemize}
+    \item \textbf{8 γωνιακά κομμάτια (corners)}: URF, UFL, ULB, UBR, DFR, DLF, DBL, DRB
+    \item \textbf{12 ακμιαία κομμάτια (edges)}: UR, UF, UL, UB, DR, DF, DL, DB, FR, FL, BL, BR
+    \item \textbf{6 κεντρικά κομμάτια (centers)}: Σταθερά, δεν μετακινούνται
+\end{itemize}
+
+Κάθε cubie χαρακτηρίζεται από δύο ιδιότητες:
+
+\begin{enumerate}
+    \item \textbf{Θέση (permutation)}: Σε ποια από τις 8 (ή 12) θέσεις βρίσκεται το κομμάτι.
+    \item \textbf{Προσανατολισμός (orientation)}: Πώς είναι στραμμένο το κομμάτι στη θέση του.
+\end{enumerate}
+
+Για τις \textbf{γωνίες}, ο προσανατολισμός παίρνει τιμές 0, 1, ή 2:
+\begin{itemize}
+    \item 0: Σωστός προσανατολισμός
+    \item 1: Στροφή κατά 120° δεξιόστροφα
+    \item 2: Στροφή κατά 240° δεξιόστροφα (ή 120° αριστερόστροφα)
+\end{itemize}
+
+Για τις \textbf{ακμές}, ο προσανατολισμός είναι δυαδικός (0 ή 1):
+\begin{itemize}
+    \item 0: Σωστός προσανατολισμός
+    \item 1: Αναστροφή (flipped)
+\end{itemize}
+
+Η αναπαράσταση cubies είναι πιο συμπαγής και αποδοτική για υπολογισμούς, καθώς αποτυπώνει άμεσα τη δομή ομάδας του κύβου. Χρησιμοποιείται ευρέως στους αλγορίθμους Kociemba και Korf.
 
 \subsection{Συμβολισμός Singmaster}
+\label{subsec:singmaster}
 
-% U, D, L, R, F, B και παραλλαγές
+Ο συμβολισμός Singmaster \cite{singmaster1981notes} είναι το πρότυπο σύστημα αναγραφής κινήσεων του κύβου. Οι βασικές κινήσεις αντιστοιχούν στη στροφή μιας έδρας κατά 90° δεξιόστροφα (όταν κοιτάμε την έδρα):
+
+\begin{center}
+\begin{tabular}{cl}
+\toprule
+\textbf{Σύμβολο} & \textbf{Περιγραφή} \\
+\midrule
+U & Στροφή πάνω έδρας 90° δεξιόστροφα \\
+D & Στροφή κάτω έδρας 90° δεξιόστροφα \\
+F & Στροφή μπροστινής έδρας 90° δεξιόστροφα \\
+B & Στροφή πίσω έδρας 90° δεξιόστροφα \\
+L & Στροφή αριστερής έδρας 90° δεξιόστροφα \\
+R & Στροφή δεξιάς έδρας 90° δεξιόστροφα \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Οι παραλλαγές των βασικών κινήσεων είναι:
+\begin{itemize}
+    \item \textbf{X'} (prime): Αντίστροφη κίνηση, 90° αριστερόστροφα (π.χ. U', R')
+    \item \textbf{X2} (double): Διπλή κίνηση, 180° (π.χ. U2, F2)
+\end{itemize}
+
+Συνολικά υπάρχουν 18 πιθανές κινήσεις. Το πλήρες σύνολο είναι:
+\begin{equation*}
+\{U, U', U2, D, D', D2, F, F', F2, B, B', B2, L, L', L2, R, R', R2\}
+\end{equation*}
+Μια ακολουθία κινήσεων γράφεται με κενά μεταξύ τους, για παράδειγμα: \texttt{R U R' U'} (γνωστή ως ``sexy move'').
 
 
 \section{Στοιχεία Θεωρίας Ομάδων}
 \label{sec:bg_group_theory}
 
-% Content: Groups, permutations, subgroups, cosets
-% Reference: docs/notes/01_group_theory_fundamentals.md
+Η μαθηματική δομή του κύβου του Rubik περιγράφεται με εργαλεία της θεωρίας ομάδων. Η κατανόηση αυτής της δομής είναι θεμελιώδης για τους αλγορίθμους που παρουσιάζονται στα επόμενα κεφάλαια, ιδιαίτερα για τον αλγόριθμο Thistlethwaite.
+
+\subsection{Ομάδες Μεταθέσεων}
+\label{subsec:permutation_groups}
+
+Το σύνολο όλων των δυνατών καταστάσεων του κύβου, μαζί με τη λειτουργία της σύνθεσης κινήσεων, αποτελεί μια μαθηματική \textbf{ομάδα} $G$. Η ομάδα αυτή είναι υποομάδα της ομάδας μεταθέσεων και ικανοποιεί τις ακόλουθες ιδιότητες:
+
+\begin{itemize}
+    \item \textbf{Κλειστότητα}: Η σύνθεση δύο κινήσεων δίνει πάντα έγκυρη κατάσταση του κύβου.
+    \item \textbf{Προσεταιριστικότητα}: $(a \cdot b) \cdot c = a \cdot (b \cdot c)$ για οποιεσδήποτε κινήσεις.
+    \item \textbf{Ουδέτερο στοιχείο}: Η ταυτοτική κίνηση (καμία κίνηση) αφήνει τον κύβο αμετάβλητο.
+    \item \textbf{Αντίστροφα}: Κάθε ακολουθία κινήσεων έχει αντίστροφη που επαναφέρει τον κύβο.
+\end{itemize}
+
+Η ομάδα $G$ παράγεται από τις 18 βασικές κινήσεις (6 έδρες $\times$ 3 τύποι στροφής):
+\begin{equation}
+    G = \langle U, U', U2, D, D', D2, F, F', F2, B, B', B2, L, L', L2, R, R', R2 \rangle
+\end{equation}
+
+Το μέγεθος της ομάδας υπολογίζεται από τους βαθμούς ελευθερίας:
+
+\begin{equation}
+    |G| = \frac{8! \times 3^7 \times 12! \times 2^{11}}{1} = 43{,}252{,}003{,}274{,}489{,}856{,}000 \approx 4.3 \times 10^{19}
+    \label{eq:group_size}
+\end{equation}
+
+Ο υπολογισμός προκύπτει ως εξής:
+\begin{itemize}
+    \item $8!$ = μεταθέσεις των 8 γωνιών
+    \item $3^7$ = προσανατολισμοί γωνιών (η 8η καθορίζεται από τις 7 πρώτες)
+    \item $12!$ = μεταθέσεις των 12 ακμών
+    \item $2^{11}$ = προσανατολισμοί ακμών (η 12η καθορίζεται από τις 11 πρώτες)
+\end{itemize}
+
+\textbf{Περιορισμός ισοτιμίας}: Μια θεμελιώδης ιδιότητα είναι ότι η ισοτιμία (parity) της μετάθεσης των γωνιών πρέπει να ισούται με την ισοτιμία της μετάθεσης των ακμών. Αυτό σημαίνει ότι δεν μπορούμε να εναλλάξουμε μόνο δύο γωνίες χωρίς να εναλλάξουμε και δύο ακμές.
+
+\subsection{Υποομάδες και Συνσύνολα}
+\label{subsec:subgroups_cosets}
+
+Ο αλγόριθμος Thistlethwaite \cite{thistlethwaite1981} εκμεταλλεύεται μια αλυσίδα υποομάδων για να μειώσει σταδιακά την πολυπλοκότητα του προβλήματος:
+
+\begin{equation}
+    G = G_0 \supset G_1 \supset G_2 \supset G_3 \supset G_4 = \{I\}
+\end{equation}
+
+όπου:
+\begin{itemize}
+    \item $G_0 = G$ = πλήρης ομάδα (όλες οι 18 κινήσεις)
+    \item $G_1 = \langle U, D, F, B, L2, R2 \rangle$ = ακμές σωστά προσανατολισμένες
+    \item $G_2 = \langle U, D, F2, B2, L2, R2 \rangle$ = γωνίες σωστά προσανατολισμένες, M-slice ακμές στο M-slice
+    \item $G_3 = \langle U2, D2, F2, B2, L2, R2 \rangle$ = τετράδες σωστές, ισοτιμία σωστή
+    \item $G_4 = \{I\}$ = λυμένος κύβος
+\end{itemize}
+
+\begin{table}[h]
+\centering
+\caption{Μεγέθη υποομάδων στην αλυσίδα Thistlethwaite}
+\label{tab:subgroup_sizes}
+\begin{tabular}{lrr}
+\toprule
+\textbf{Υποομάδα} & \textbf{Μέγεθος} & \textbf{Δείκτης} $[G_{i-1}:G_i]$ \\
+\midrule
+$G_0$ & $4.3 \times 10^{19}$ & -- \\
+$G_1$ & $2.1 \times 10^{16}$ & 2,048 \\
+$G_2$ & $1.9 \times 10^{13}$ & 1,082,565 \\
+$G_3$ & $6.6 \times 10^{8}$ & 29,400 \\
+$G_4$ & 1 & $6.6 \times 10^{8}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Κάθε φάση του αλγορίθμου μετακινεί τον κύβο από μια υποομάδα στην επόμενη, μειώνοντας δραστικά τον χώρο αναζήτησης. Σύμφωνα με το \textbf{θεώρημα του Lagrange}, αν $H$ είναι υποομάδα της $G$, τότε:
+\begin{equation}
+    |G| = |H| \times [G:H]
+\end{equation}
+
+όπου $[G:H]$ είναι ο δείκτης της $H$ στην $G$ (αριθμός συνσυνόλων).
+
+\subsection{God's Number}
+\label{subsec:gods_number}
+
+Ο \textbf{God's Number} είναι η διάμετρος του γράφου Cayley της ομάδας $G$: ο μέγιστος αριθμός κινήσεων που απαιτούνται για να λυθεί οποιαδήποτε κατάσταση του κύβου με βέλτιστη λύση.
+
+\begin{table}[h]
+\centering
+\caption{Ιστορική εξέλιξη του άνω φράγματος για τον God's Number}
+\label{tab:gods_number_history}
+\begin{tabular}{lcl}
+\toprule
+\textbf{Έτος} & \textbf{Άνω Φράγμα} & \textbf{Ερευνητές} \\
+\midrule
+1981 & 52 & Thistlethwaite \\
+1990 & 42 & Reid \\
+1995 & 29 & Reid \\
+2008 & 22 & Kociemba, Rokicki \\
+2010 & 20 & Rokicki et al. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Το 2010, οι Rokicki et al. \cite{rokicki2010gods} απέδειξαν ότι \textbf{God's Number = 20} στη μετρική HTM. Η απόδειξη απαίτησε:
+\begin{itemize}
+    \item 35 CPU-χρόνια υπολογισμών
+    \item Ανάλυση όλων των $4.3 \times 10^{19}$ καταστάσεων μέσω συμμετρίας
+    \item Υπολογιστικούς πόρους από την Google
+\end{itemize}
+
+Η πιο ``δύσκολη'' κατάσταση είναι το \textbf{superflip}: όλες οι ακμές στη σωστή θέση αλλά ανεστραμμένες. Αυτή και μερικές άλλες καταστάσεις απαιτούν ακριβώς 20 κινήσεις.
+
+Ο God's Number αποτελεί θεωρητικό κάτω φράγμα για κάθε αλγόριθμο επίλυσης: κανένας αλγόριθμος δεν μπορεί να εγγυηθεί λύσεις μικρότερες από 20 κινήσεις για όλες τις καταστάσεις.
 
 
 \section{Αλγόριθμοι Αναζήτησης}
 \label{sec:bg_search}
 
-\subsection{Αλγόριθμος A*}
+Η επίλυση του κύβου του Rubik είναι ένα πρόβλημα αναζήτησης σε γράφο, όπου κάθε κόμβος αντιπροσωπεύει μια κατάσταση του κύβου και κάθε ακμή μια επιτρεπόμενη κίνηση. Οι αλγόριθμοι αναζήτησης που χρησιμοποιούνται πρέπει να αντιμετωπίσουν τον τεράστιο χώρο καταστάσεων ($4.3 \times 10^{19}$) με αποδοτικό τρόπο.
 
-% f(n) = g(n) + h(n), admissibility
+\subsection{Αλγόριθμος A*}
+\label{subsec:a_star}
+
+Ο αλγόριθμος A* \cite{hart1968formal} είναι ένας αλγόριθμος αναζήτησης βέλτιστης διαδρομής που συνδυάζει το κόστος διαδρομής με εκτίμηση του εναπομείναντος κόστους. Για κάθε κόμβο $n$, ο A* υπολογίζει:
+
+\begin{equation}
+    f(n) = g(n) + h(n)
+\end{equation}
+
+όπου:
+\begin{itemize}
+    \item $g(n)$ = το πραγματικό κόστος από την αρχική κατάσταση έως την $n$
+    \item $h(n)$ = ευρετική εκτίμηση του κόστους από την $n$ έως τον στόχο
+    \item $f(n)$ = εκτιμώμενο συνολικό κόστος της διαδρομής μέσω $n$
+\end{itemize}
+
+\begin{algorithm}[H]
+\caption{Αλγόριθμος A*}
+\begin{algorithmic}[1]
+\State Αρχικοποίηση: OPEN $\gets \{s_0\}$, CLOSED $\gets \emptyset$
+\While{OPEN $\neq \emptyset$}
+    \State $n \gets$ κόμβος με ελάχιστο $f(n)$ στο OPEN
+    \If{$n$ είναι στόχος}
+        \State \Return διαδρομή προς $n$
+    \EndIf
+    \State Μετακίνηση $n$ από OPEN σε CLOSED
+    \For{κάθε διάδοχο $n'$ του $n$}
+        \If{$n' \notin$ CLOSED}
+            \State Υπολόγισε $f(n') = g(n') + h(n')$
+            \State Πρόσθεσε $n'$ στο OPEN
+        \EndIf
+    \EndFor
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+
+\textbf{Παραδεκτότητα (Admissibility)}: Μια ευρετική $h$ είναι \textit{παραδεκτή} αν δεν υπερεκτιμά ποτέ το πραγματικό κόστος:
+\begin{equation}
+    h(n) \leq h^*(n), \quad \forall n
+\end{equation}
+όπου $h^*(n)$ είναι το πραγματικό ελάχιστο κόστος από $n$ στον στόχο. Με παραδεκτή ευρετική, ο A* εγγυάται βέλτιστη λύση.
+
+\textbf{Πρόβλημα μνήμης}: Ο A* διατηρεί τα σύνολα OPEN και CLOSED στη μνήμη, που αυξάνονται εκθετικά. Για τον κύβο του Rubik με branching factor $\approx 15$ και βάθος λύσης $\approx 18$:
+\begin{equation}
+    \text{Μνήμη} = \bigO{b^d} \approx 15^{18} \approx 10^{21} \text{ καταστάσεις}
+\end{equation}
+
+Στην πράξη, ο A* μπορεί να λύσει περίπου 40-50 κύβους πριν εξαντληθεί η μνήμη, ακόμα και με gigabytes διαθέσιμα.
 
 \subsection{Αλγόριθμος IDA*}
+\label{subsec:ida_star}
 
-% Iterative deepening, memory efficiency
-% Reference: src/korf/a_star.py
+Ο αλγόριθμος IDA* (Iterative Deepening A*) \cite{korf1985depth} συνδυάζει τα πλεονεκτήματα του A* (χρήση ευρετικής) με την εξοικονόμηση μνήμης της επαναληπτικής εμβάθυνσης.
+
+\begin{algorithm}[H]
+\caption{Αλγόριθμος IDA*}
+\begin{algorithmic}[1]
+\State $bound \gets h(s_0)$
+\Loop
+    \State $result \gets$ SEARCH($s_0$, $0$, $bound$)
+    \If{$result$ = FOUND}
+        \State \Return λύση
+    \ElsIf{$result$ = $\infty$}
+        \State \Return αποτυχία
+    \EndIf
+    \State $bound \gets result$
+\EndLoop
+\end{algorithmic}
+\end{algorithm}
+
+\begin{algorithm}[H]
+\caption{SEARCH (IDA*)}
+\begin{algorithmic}[1]
+\Function{Search}{$n$, $g$, $bound$}
+    \State $f \gets g + h(n)$
+    \If{$f > bound$}
+        \State \Return $f$
+    \EndIf
+    \If{$n$ είναι στόχος}
+        \State \Return FOUND
+    \EndIf
+    \State $min \gets \infty$
+    \For{κάθε διάδοχο $n'$ του $n$}
+        \State $result \gets$ SEARCH($n'$, $g + 1$, $bound$)
+        \If{$result$ = FOUND}
+            \State \Return FOUND
+        \EndIf
+        \State $min \gets \min(min, result)$
+    \EndFor
+    \State \Return $min$
+\EndFunction
+\end{algorithmic}
+\end{algorithm}
+
+\textbf{Πλεονεκτήματα}:
+\begin{itemize}
+    \item \textbf{Μνήμη}: $\bigO{d}$ -- αποθηκεύει μόνο το τρέχον μονοπάτι
+    \item Μπορεί να λύσει χιλιάδες κύβους χωρίς πρόβλημα μνήμης
+    \item Εγγυάται βέλτιστη λύση με παραδεκτή ευρετική
+\end{itemize}
+
+\textbf{Μειονεκτήματα}:
+\begin{itemize}
+    \item Επαναλαμβάνει την επέκταση κόμβων σε κάθε επανάληψη
+    \item Πιο αργός από τον A* για μικρά βάθη
+\end{itemize}
+
+Στην πράξη, ο IDA* είναι ο αλγόριθμος επιλογής για βέλτιστη επίλυση του κύβου.
 
 \subsection{Pattern Databases}
+\label{subsec:pattern_databases}
 
-% Concept, admissibility, additive heuristics
-% Reference: src/korf/pattern_database.py
+Τα \textbf{Pattern Databases} (PDBs) \cite{korf1997finding,culberson1998pattern} είναι προ-υπολογισμένοι πίνακες που αποθηκεύουν τις ακριβείς ελάχιστες αποστάσεις για υποσύνολα του κύβου.
+
+\textbf{Κατασκευή}: Ένα PDB κατασκευάζεται με αναζήτηση κατά πλάτος (BFS) από τη λυμένη κατάσταση:
+
+\begin{enumerate}
+    \item Ξεκινάμε από τη λυμένη κατάσταση (απόσταση 0)
+    \item Εφαρμόζουμε όλες τις δυνατές κινήσεις
+    \item Καταγράφουμε την απόσταση κάθε νέας κατάστασης
+    \item Συνεχίζουμε μέχρι να καλυφθούν όλες οι καταστάσεις του υποσυνόλου
+\end{enumerate}
+
+\textbf{Παραδείγματα υποσυνόλων}:
+\begin{itemize}
+    \item \textbf{Corner PDB}: Όλες οι γωνίες (88,179,840 καταστάσεις, $\approx$44 MB)
+    \item \textbf{Edge PDB}: 6 ακμές ($\approx$42,577,920 καταστάσεις, δηλαδή περίπου 42.6 εκατομμύρια)
+\end{itemize}
+
+\textbf{Παραδεκτότητα}: Τα PDBs είναι εγγενώς παραδεκτά ευρετικά, αφού δίνουν την ακριβή απόσταση για ένα υποπρόβλημα -- η λύση του πλήρους κύβου απαιτεί τουλάχιστον τόσες κινήσεις όσες χρειάζεται το υποσύνολο.
+
+\textbf{Συνδυασμός PDBs}: Αν δύο PDBs καλύπτουν \textit{διαζευγμένα} (disjoint) υποσύνολα του κύβου, οι εκτιμήσεις τους μπορούν να αθροιστούν διατηρώντας την παραδεκτότητα \cite{korf2002disjoint}:
+\begin{equation}
+    h_{combined}(n) = h_{PDB1}(n) + h_{PDB2}(n)
+\end{equation}
+
+Για μη-διαζευγμένα PDBs, χρησιμοποιείται το μέγιστο:
+\begin{equation}
+    h_{combined}(n) = \max(h_{PDB1}(n), h_{PDB2}(n))
+\end{equation}
+
+
+\section{Σύνοψη Κεφαλαίου}
+\label{sec:bg_summary}
+
+Στο παρόν κεφάλαιο παρουσιάστηκε το θεωρητικό υπόβαθρο για την επίλυση του κύβου του Rubik:
+
+\begin{itemize}
+    \item \textbf{Αναπαραστάσεις}: Η αναπαράσταση facelets είναι κατάλληλη για οπτικοποίηση, ενώ η αναπαράσταση cubies είναι πιο αποδοτική για υπολογισμούς και αποτυπώνει άμεσα τη δομή ομάδας.
+
+    \item \textbf{Θεωρία ομάδων}: Ο κύβος αποτελεί ομάδα μεγέθους $4.3 \times 10^{19}$. Η αλυσίδα υποομάδων του Thistlethwaite επιτρέπει τη σταδιακή μείωση της πολυπλοκότητας. Ο God's Number (20 κινήσεις) αποτελεί θεωρητικό κάτω φράγμα.
+
+    \item \textbf{Αλγόριθμοι αναζήτησης}: Ο A* εγγυάται βέλτιστες λύσεις αλλά απαιτεί υπερβολική μνήμη. Ο IDA* επιλύει το πρόβλημα μνήμης με επαναληπτική εμβάθυνση. Τα Pattern Databases παρέχουν ισχυρές παραδεκτές ευρετικές.
+\end{itemize}
+
+Τα επόμενα κεφάλαια παρουσιάζουν τρεις αλγορίθμους που αξιοποιούν αυτά τα θεωρητικά εργαλεία:
+\begin{itemize}
+    \item \textbf{Κεφάλαιο 3}: Αλγόριθμος Thistlethwaite -- εκμεταλλεύεται την αλυσίδα υποομάδων
+    \item \textbf{Κεφάλαιο 4}: Αλγόριθμος Kociemba -- βελτιστοποιημένη 2-φάσεων προσέγγιση
+    \item \textbf{Κεφάλαιο 5}: Αλγόριθμος Korf -- IDA* με pattern databases για βέλτιστες λύσεις
+\end{itemize}

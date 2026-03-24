@@ -14,6 +14,7 @@ import pytest
 import numpy as np
 import time
 from src.cube.rubik_cube import RubikCube
+import src.kociemba.solver as solver_module
 from src.kociemba.cubie import (
     CubieCube, from_facelet_cube, apply_move_to_cubie,
     ALL_MOVES
@@ -256,6 +257,29 @@ class TestPruningTables:
 
 class TestKociembaSolver:
     """Test the full Kociemba solver."""
+
+    def test_native_backend_honors_timeout_budget(self, monkeypatch):
+        """The optional native backend should stop once the soft budget expires."""
+
+        class SlowNativeBackend:
+            @staticmethod
+            def solve(cube_string, max_depth=None):
+                time.sleep(0.2)
+                return "R'"
+
+        monkeypatch.setattr(solver_module, "native_kociemba", SlowNativeBackend())
+
+        cube = RubikCube()
+        cube.apply_move("R")
+        solver = KociembaSolver(backend="native", timeout_grace=0.0)
+
+        start = time.time()
+        result = solver.solve(cube, timeout=0.05, verbose=False)
+        elapsed = time.time() - start
+
+        assert result is None
+        assert solver.last_backend_used == "native_timeout"
+        assert elapsed < 1.0
 
     def test_solve_solved_cube(self):
         """Test solving an already solved cube."""

@@ -1,5 +1,7 @@
 # PHASE 9: DEMOS & UI - IMPLEMENTATION SUMMARY
 
+> Historical phase report. For the corrected publishable state, use `results/benchmarks/thesis/`, `thesis/chapters/07_evaluation.tex`, and the current runtime code under `ui/`, `demos/`, and `webapp/`.
+
 **Author**: Alex Toska, University of Patras
 **Phase**: 9 (Demos & UI Visualization)
 **Status**: ✅ IMPLEMENTED
@@ -9,11 +11,11 @@
 
 ## 📋 Executive Summary
 
-Phase 9 successfully implements interactive demonstrations and user interfaces to showcase the three Rubik's Cube solving algorithms implemented in this thesis:
+Phase 9 implements interactive demonstrations and user interfaces to showcase the three Rubik's Cube solving algorithms implemented in this thesis.
 
-- **Thistlethwaite's Algorithm** (1981) - Fast, 30-52 moves
-- **Kociemba's Algorithm** (1992) - Near-optimal, <19 moves
-- **Korf's IDA*** (1997) - Optimal, ≤20 moves
+- **Thistlethwaite's Algorithm** (1981) - pure 4-phase solver with longer solutions
+- **Kociemba's Algorithm** (1992) - best overall practical compromise
+- **Korf's IDA*** (1997) - exact when the optimal backend finishes, but timeout-sensitive on hard cases
 
 This phase provides accessible, interactive tools for algorithm demonstration, comparison, and educational purposes.
 
@@ -86,11 +88,11 @@ python demos/phase9/benchmark_demo.py --n-scrambles 20
 
 **Notebooks:**
 1. ✅ `01_Introduction.ipynb` - Project overview and basics
-2. ⚠️ `02_Thistlethwaite_Algorithm.ipynb` - Template available
-3. ⚠️ `03_Kociemba_Algorithm.ipynb` - Template available
-4. ⚠️ `04_Korf_IDA_Star.ipynb` - Template available
+2. ✅ `02_Thistlethwaite.ipynb` - Thistlethwaite deep dive
+3. ✅ `03_Kociemba.ipynb` - Kociemba deep dive
+4. ✅ `04_Korf.ipynb` - Korf / optimal search deep dive
 5. ✅ `05_Algorithm_Comparison.ipynb` - Complete comparison analysis
-6. ⚠️ `06_Custom_Experiments.ipynb` - Template available
+6. ✅ `06_Conclusion.ipynb` - Summary and future directions
 7. ✅ `README.md` - Notebook usage guide
 
 **Features:**
@@ -118,8 +120,7 @@ jupyter lab notebooks/
    - Recording and presentation advice
 
 **Also Available:**
-- ✅ `PHASE9_PLAN.md` - Comprehensive implementation plan (root directory)
-- ✅ `PHASE9_README.md` - This summary document (root directory)
+- ✅ `docs/phase9/DEMO_GUIDE.md` - Practical demo instructions
 - ✅ `demos/phase9/README.md` - CLI demos documentation
 - ✅ `notebooks/README.md` - Jupyter notebooks guide
 
@@ -141,8 +142,8 @@ rich>=13.5.0               # Enhanced CLI formatting
 
 ### Directory Structure
 
-```
-/home/user/rubicCubeThesis/
+```text
+$(git rev-parse --show-toplevel)/
 │
 ├── ui/                              # Web UI (NEW)
 │   ├── app.py                       # Main Streamlit app
@@ -164,14 +165,15 @@ rich>=13.5.0               # Enhanced CLI formatting
 │
 ├── notebooks/                       # Jupyter Notebooks (NEW)
 │   ├── 01_Introduction.ipynb
+│   ├── 02_Thistlethwaite.ipynb
+│   ├── 03_Kociemba.ipynb
+│   ├── 04_Korf.ipynb
 │   ├── 05_Algorithm_Comparison.ipynb
+│   ├── 06_Conclusion.ipynb
 │   └── README.md
 │
 ├── docs/phase9/                     # Documentation (NEW)
 │   └── DEMO_GUIDE.md
-│
-├── PHASE9_PLAN.md                   # Implementation plan
-└── PHASE9_README.md                 # This file
 ```
 
 ---
@@ -182,8 +184,8 @@ rich>=13.5.0               # Enhanced CLI formatting
 
 **Inspired by**: `benbotto/rubiks-cube-cracker` F1/F2 comparison feature
 
-Allows direct comparison of all three algorithms on identical scrambles with:
-- Parallel execution
+Allows direct comparison of all three algorithms on identical scrambles through the shared comparison harness with:
+- Sequential execution on the same scramble
 - Comprehensive metrics (moves, time, memory, nodes)
 - Winner analysis by different criteria
 - Visual comparison tables
@@ -227,14 +229,16 @@ Available in:
 
 ## 📊 Performance & Validation
 
-### Tested Configurations
+### Corrected Benchmark Profile
 
 | Scramble Depth | Thistlethwaite | Kociemba | Korf IDA* |
 |----------------|----------------|----------|-----------|
-| 5-7 moves      | <0.1s          | <1s      | <2s       |
-| 8-10 moves     | <0.3s          | 1-3s     | 2-10s     |
-| 11-15 moves    | <0.5s          | 2-8s     | 5-60s     |
-| 16-20 moves    | <1s            | 5-20s    | 10s-5min  |
+| 5 moves        | 25/25 solved, 0.054s avg | 25/25 solved, 0.374s avg | 25/25 solved, 0.001s avg |
+| 10 moves       | 25/25 solved, 1.054s avg | 25/25 solved, 0.201s avg | 25/25 solved, 0.002s avg |
+| 15 moves       | 25/25 solved, 2.029s avg | 25/25 solved, 8.163s avg | 25/25 solved, 0.424s avg |
+| 20 moves       | 25/25 solved, 1.821s avg | 25/25 solved, 9.749s avg | 22/25 solved, 11.229s avg* |
+
+\*Successful runs only; 3 of 25 depth-20 Korf cases hit the 120-second timeout.
 
 ### Integration with Phase 8
 
@@ -319,7 +323,7 @@ jupyter lab notebooks/
 
 - ✅ Enhanced CLI demos (4 new scripts)
 - ✅ Educational mode in UI
-- ✅ Jupyter notebooks (2 complete + 4 templates)
+- ✅ Jupyter notebooks (all 6 current notebooks)
 - ✅ Export functionality
 - ✅ Comprehensive documentation
 
@@ -329,7 +333,7 @@ jupyter lab notebooks/
 - ⚠️ Video export (optional, not implemented)
 - ⚠️ Conference poster (optional, not implemented)
 - ⚠️ Demo videos (optional, not implemented)
-- ⚠️ All 6 notebooks fully detailed (2 complete + 4 templates)
+- ✅ All 6 notebooks present and referenced
 
 ---
 
@@ -363,11 +367,11 @@ jupyter lab notebooks/
 
 ## 📝 Known Limitations
 
-1. **Jupyter Notebooks**: Only 2 fully implemented (01, 05), others are templates
-2. **Korf Performance**: May timeout on scrambles >15 moves without adjustment
-3. **Web UI Responsiveness**: Long-running solves can block UI (no async yet)
-4. **Video Export**: Not implemented (optional feature)
-5. **F1/F2/F3 Shortcuts**: Not implemented in web UI (keyboard shortcuts planned)
+1. **Jupyter Notebooks**: The notebooks are documentation and analysis aids, not the authoritative benchmark artifacts.
+2. **Korf Performance**: May timeout on hard scrambles without adjustment.
+3. **Web UI Responsiveness**: Long-running solves can block UI (no async yet).
+4. **Video Export**: Not implemented (optional feature).
+5. **F1/F2/F3 Shortcuts**: Not implemented in web UI (keyboard shortcuts planned).
 
 ---
 
@@ -378,7 +382,7 @@ jupyter lab notebooks/
 1. **WebGL 3D Rendering** - Smoother animations
 2. **Mobile Responsive** - Phone/tablet support
 3. **Online Deployment** - Public access via Streamlit Cloud
-4. **Complete Notebooks** - Fully detailed 02, 03, 04, 06
+4. **Complete Notebooks** - Expand or split notebook coverage as needed
 5. **Video Tutorials** - Recorded demos
 6. **Gamification** - Interactive tutorials, challenges
 
@@ -414,8 +418,6 @@ jupyter lab notebooks/
 
 | Document | Purpose | Location |
 |----------|---------|----------|
-| **PHASE9_PLAN.md** | Implementation plan | `/` |
-| **PHASE9_README.md** | This summary | `/` |
 | **DEMO_GUIDE.md** | Demo instructions | `/docs/phase9/` |
 | **CLI README** | CLI demo guide | `/demos/phase9/` |
 | **Notebook README** | Jupyter guide | `/notebooks/` |

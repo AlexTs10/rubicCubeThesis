@@ -1,10 +1,10 @@
 """
 Unit Tests for Composite Heuristic
 
-Tests the novel composite heuristic research contribution, including:
+Tests the composite heuristic implementation, including:
 1. State analysis components
 2. Adaptive heuristic selection
-3. Admissibility verification
+3. Approximate-estimate behavior
 4. Performance characteristics
 """
 
@@ -110,7 +110,7 @@ class TestStateAnalyzer:
 
 
 class TestCompositeHeuristic:
-    """Test the novel composite heuristic."""
+    """Test the composite heuristic."""
 
     def test_solved_cube_returns_zero(self):
         """Test that solved cube has heuristic value of 0."""
@@ -131,27 +131,13 @@ class TestCompositeHeuristic:
 
         assert value > 0.0
 
-    def test_admissibility(self):
-        """Test that heuristic is admissible (never overestimates)."""
+    def test_single_move_state_can_be_overestimated(self):
+        """The composite heuristic is not used as a formal lower bound."""
         heuristic = CompositeHeuristic()
+        cube = RubikCube()
+        cube.apply_move('F')
 
-        # Test cases with known optimal solutions
-        test_cases = [
-            (['U'], 1),           # 1 move: optimal is 1-2
-            (['U', 'R'], 2),      # 2 moves: optimal is 2-4
-            (['U', 'R', 'F'], 3), # 3 moves: optimal is 3-6
-        ]
-
-        for scramble, min_moves in test_cases:
-            cube = RubikCube()
-            for move in scramble:
-                cube.apply_move(move)
-
-            h_value = heuristic(cube)
-
-            # Heuristic should not vastly overestimate
-            # (allowing some slack for admissibility)
-            assert h_value <= min_moves + 5  # Conservative bound
+        assert heuristic(cube) == 2.0
 
     def test_consistent_values(self):
         """Test that heuristic returns consistent values for same state."""
@@ -212,6 +198,22 @@ class TestCompositeHeuristic:
         # Should return a value without crashing
         value = heuristic(cube)
         assert value >= 0.0
+
+    def test_pattern_database_mode_degrades_without_cache(self, tmp_path):
+        """Test that missing Korf caches fall back cleanly."""
+        heuristic = CompositeHeuristic(use_pattern_db=True)
+        heuristic.pattern_db_cache_dir = tmp_path / "korf"
+
+        cube = RubikCube()
+        cube.scramble(moves=5, seed=42)
+
+        cubie = from_facelet_cube(cube)
+        value = heuristic._pattern_db_heuristic(cubie)
+        stats = heuristic.get_statistics()
+
+        assert value >= 0.0
+        assert stats["pattern_db_loaded"] is False
+        assert "missing cache files" in stats["pattern_db_status"]
 
 
 class TestWeightedCompositeHeuristic:
@@ -333,9 +335,8 @@ class TestHeuristicComparison:
         assert val_hamming > 0
         assert val_composite > 0
 
-        # Composite should be at least as good as the others
-        # (it takes max of multiple heuristics)
-        assert val_composite >= val_manhattan * 0.8  # Allow some tolerance
+        # Composite should stay in the same order of magnitude as the simpler heuristics.
+        assert val_composite >= min(val_manhattan, val_hamming) * 0.5
 
     def test_heuristic_ordering(self):
         """Test that more scrambled states have higher heuristic values."""

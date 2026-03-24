@@ -1,5 +1,7 @@
 # Thesis Outline: Αλγόριθμοι Βέλτιστης Επίλυσης για τον Κύβο του Rubik
 
+> Historical planning outline. Some fallback, admissibility, and benchmark-number notes below predate the March 2026 verification pass and should not be cited as final thesis truth.
+
 **Επίπεδο**: Διπλωματική Εργασία (Undergraduate Thesis)
 **Πανεπιστήμιο Πατρών** - Τμήμα Ηλεκτρολόγων Μηχανικών και Τεχνολογίας Υπολογιστών
 **Επιβλέπων**: Κυριάκος Σγάρμπας
@@ -153,7 +155,7 @@ src/thistlethwaite/ida_star.py    - IDA* search
 
 **Δεδομένα από:**
 ```
-thesis_data_*.csv - Benchmark results
+results/benchmarks/thesis/thesis_data_*.csv - Benchmark results
 tests/unit/test_thistlethwaite.py - Test results
 ```
 

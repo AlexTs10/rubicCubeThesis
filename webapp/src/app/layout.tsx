@@ -4,7 +4,7 @@ import Navigation from '@/components/ui/Navigation';
 
 export const metadata: Metadata = {
   title: 'Rubik\'s Cube Solver - Thesis Project',
-  description: 'Interactive Rubik\'s Cube Solver comparing Thistlethwaite, Kociemba, and Korf IDA* algorithms',
+  description: 'Interactive Rubik\'s Cube thesis preview comparing pure Thistlethwaite, Kociemba, and Korf with synthetic demo outputs',
   keywords: ['rubiks cube', 'solver', 'algorithm', 'thistlethwaite', 'kociemba', 'korf', 'ida*'],
 };
 

@@ -1,14 +1,87 @@
 \chapter{Επιλεγμένος Κώδικας}
 \label{app:code}
 
-% Include key code snippets here
-% Don't include entire files - just highlights
+Το παρόν παράρτημα περιλαμβάνει αντιπροσωπευτικά αποσπάσματα κώδικα από την υλοποίηση. Ο στόχος δεν είναι η εξαντλητική παράθεση αρχείων, αλλά η ανάδειξη των πιο χαρακτηριστικών σημείων της αρχιτεκτονικής: της βασικής αναπαράστασης κύβου, του optimal search βρόχου του IDA*, και της σύνθετης ευρετικής που αποτελεί την κύρια ερευνητική συνεισφορά της εργασίας.
 
 \section{Κλάση RubikCube}
-% Simplified version from src/cube/rubik_cube.py
+
+Το ακόλουθο απόσπασμα δείχνει την αρχικοποίηση solved state και τον βασικό έλεγχο ολοκλήρωσης. Η επιλογή \texttt{NumPy} πίνακα διαστάσεων $6 \times 9$ κρατά την αναπαράσταση απλή και ενιαία για όλο το αποθετήριο.
+
+\begin{lstlisting}[language=Python, caption={Βασικός πυρήνας της κλάσης \texttt{RubikCube}}, label={lst:rubikcube_core}]
+class RubikCube:
+    def __init__(self, state: Optional[np.ndarray] = None):
+        if state is not None:
+            self.state = state.copy()
+        else:
+            self.state = np.zeros((6, 9), dtype=int)
+            for face in Face:
+                self.state[face.value, :] = face.value
+
+    def copy(self) -> 'RubikCube':
+        return RubikCube(state=self.state.copy())
+
+    def is_solved(self) -> bool:
+        for face in Face:
+            if not np.all(self.state[face.value] == face.value):
+                return False
+        return True
+\end{lstlisting}
+
+Η κλάση αυτή αποτελεί το κοινό API για tests, demos, UI και benchmarks. Οι αλγόριθμοι που απαιτούν cubie-level πληροφορία δεν αλλάζουν το δημόσιο interface· χρησιμοποιούν adapters για μετατροπή της κατάστασης.
 
 \section{Αλγόριθμος IDA*}
-% From src/korf/a_star.py
+
+Ο επόμενος κώδικας παρουσιάζει τον κύριο iterative deepening βρόχο του IDA*. Το bound αρχικοποιείται από admissible heuristic estimate και αυξάνεται σταδιακά μέχρι να βρεθεί λύση ή να ξεπεραστεί το μέγιστο επιτρεπτό βάθος.
+
+\begin{lstlisting}[language=Python, caption={Κύριος βρόχος του IDA* solver}, label={lst:idastar_loop}]
+class IDAStarSolver:
+    def solve(self, cube: RubikCube) -> Optional[List[str]]:
+        self.start_time = time.time()
+        self.nodes_explored = 0
+
+        if cube.is_solved():
+            return []
+
+        bound = self.heuristic(cube)
+        path: List[str] = []
+
+        while bound <= self.max_depth:
+            if time.time() - self.start_time > self.timeout:
+                return None
+
+            result = self._search(cube, path, 0, bound)
+
+            if isinstance(result, list):
+                return result
+            elif result == float('inf'):
+                return None
+            else:
+                bound = result
+\end{lstlisting}
+
+Το βασικό πλεονέκτημα της προσέγγισης είναι η πολύ χαμηλή χρήση μνήμης σε σχέση με τον A*. Το μειονέκτημα είναι οι επαναλαμβανόμενες επεκτάσεις κόμβων, οι οποίες όμως αντισταθμίζονται εν μέρει από ισχυρές heuristics και pattern databases.
 
 \section{Σύνθετη Ευρετική}
-% From src/korf/composite_heuristic.py
+
+Η σύνθετη ευρετική χρησιμοποιεί χαρακτηριστικά της τρέχουσας κατάστασης για να επιλέξει στρατηγική εκτίμησης. Στην ελαφριά exploratory υλοποίηση της εργασίας, ο τελικός συνδυασμός \emph{δεν} τεκμηριώνεται ως γενικά admissible lower bound· αντιμετωπίζεται ως πρακτική heuristic στρατηγική και όχι ως θεωρητικά ασφαλής substitute της PDB-based benchmark διαδρομής.
+
+\begin{lstlisting}[language=Python, caption={Δυναμική επιλογή στρατηγικής στη σύνθετη ευρετική}, label={lst:composite_heuristic}]
+class CompositeHeuristic:
+    def __call__(self, cube: RubikCube) -> float:
+        if cube.is_solved():
+            return 0.0
+
+        cubie = from_facelet_cube(cube)
+        entropy = self.analyzer.calculate_entropy(cube)
+        separation = self.analyzer.calculate_separation(cubie)
+        has_layer = self.analyzer.has_oriented_layer(cube)
+
+        if entropy < 0.3 or has_layer:
+            return self._near_solved_strategy(cube, cubie)
+        elif entropy > 0.7:
+            return self._deep_scramble_strategy(cube, cubie)
+        else:
+            return self._balanced_strategy(cube, cubie, entropy)
+\end{lstlisting}
+
+Στη near-solved περίπτωση δίνεται έμφαση σε Manhattan-style estimates, ενώ στις highly scrambled καταστάσεις χρησιμοποιείται ισχυρότερη στρατηγική. Η ενδιάμεση περιοχή αντιμετωπίζεται με balanced combination πολλαπλών heuristics. Η λογική αυτή επιτρέπει καλύτερη εκμετάλλευση του search effort σε διαφορετικές περιοχές του state space, αλλά δεν πρέπει να διαβάζεται ως εγγύηση admissibility για τη σύνθετη ευρετική.

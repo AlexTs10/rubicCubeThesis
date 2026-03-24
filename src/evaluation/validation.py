@@ -1,21 +1,20 @@
 """
-Validation Suite - Phase 8
+Reference Validation Suite - Phase 8
 
-This module provides validation against cube20.org God's Number data and
-known hard positions. Tests algorithms against standardized benchmarks for
-academic rigor.
+This module provides a small set of reference checks centered on the Superflip
+position plus a few illustrative hard scrambles. It is useful for smoke-testing
+solver behavior, but it is not a full cube20.org reproduction and should not be
+described as formal optimality validation beyond the cases with known proofs.
 
 Features:
 - Superflip validation (known 20-move position)
-- Distance-20 position tests
+- Additional illustrative hard-position checks
 - Solution verification
-- Optimality validation
-- Comparison against God's Number
+- Conservative reporting of what is and is not proven optimal
 
 Reference:
-- cube20.org: Official God's Number proof and test cases
+- cube20.org: published God's Number proof and distance results
 - God's Number = 20 moves (worst case optimal)
-- Average optimal: ~17.8 moves
 
 Usage:
     from src.evaluation.validation import ValidationSuite
@@ -27,6 +26,7 @@ Usage:
 
 from typing import List, Dict, Optional, Tuple
 from dataclasses import dataclass
+from pathlib import Path
 import time
 
 from ..cube.rubik_cube import RubikCube
@@ -48,9 +48,7 @@ class ValidationResult:
 
 
 class ValidationSuite:
-    """
-    Comprehensive validation suite using cube20.org test cases.
-    """
+    """Small reference validation suite with one proven case and illustrative extras."""
 
     def __init__(self):
         """Initialize validation suite with known test cases."""
@@ -60,8 +58,8 @@ class ValidationSuite:
             "R", "U'", "D'", "R2", "F", "R'", "L", "B2", "U2", "F2"
         ]
 
-        # Additional hard positions (sub-optimal known solutions)
-        # These are challenging but not necessarily optimal
+        # Additional illustrative hard positions.
+        # These are challenging examples, not cube20-certified optimal cases.
         self.hard_positions = {
             "hard_1": {
                 "scramble": ["F", "U'", "F2", "D'", "B", "U", "R'", "F'", "L", "D'"],
@@ -73,8 +71,7 @@ class ValidationSuite:
             }
         }
 
-        # Distance distribution validation
-        # From cube20.org: percentage of cubes at each distance
+        # Reference distance-distribution values from cube20.org kept for notes.
         self.distance_distribution = {
             15: 2.11,    # 2.11% of cubes require 15 moves
             16: 2.55,    # 2.55% require 16 moves
@@ -101,7 +98,7 @@ class ValidationSuite:
         results = {}
 
         print("=" * 80)
-        print("CUBE20.ORG VALIDATION SUITE")
+        print("REFERENCE VALIDATION SUITE")
         print("=" * 80)
         print(f"\nTesting {len(algorithms)} algorithm(s)")
         print("=" * 80)
@@ -217,7 +214,7 @@ class ValidationSuite:
             if solution is None:
                 return ValidationResult(
                     test_name=position_name,
-                    description=f"Hard position (min {min_moves} moves)",
+                    description=f"Illustrative hard position (reverse scramble length {min_moves}; no proven optimal known)",
                     expected_optimal=min_moves,
                     algorithm=algo_name,
                     solved=False,
@@ -237,18 +234,15 @@ class ValidationSuite:
             is_solved = test_cube.is_solved()
             solution_length = len(solution)
 
-            # Hard positions don't have proven optimal, just check if reasonable
-            is_optimal = (solution_length <= min_moves * 2) if is_solved else False
-
             return ValidationResult(
                 test_name=position_name,
-                description=f"Hard position (min {min_moves} moves)",
+                description=f"Illustrative hard position (reverse scramble length {min_moves}; no proven optimal known)",
                 expected_optimal=min_moves,
                 algorithm=algo_name,
                 solved=is_solved,
                 solution_length=solution_length,
                 time_seconds=elapsed,
-                is_optimal=is_optimal,
+                is_optimal=False,
                 solution_moves=solution if is_solved else None
             )
 
@@ -256,7 +250,7 @@ class ValidationSuite:
             elapsed = time.time() - start_time
             return ValidationResult(
                 test_name=position_name,
-                description=f"Hard position (min {min_moves} moves)",
+                description=f"Illustrative hard position (reverse scramble length {min_moves}; no proven optimal known)",
                 expected_optimal=min_moves,
                 algorithm=algo_name,
                 solved=False,
@@ -288,7 +282,7 @@ class ValidationSuite:
                 if result is None:
                     return None
                 elif isinstance(result, tuple):
-                    # Thistlethwaite returns (moves, phase_moves)
+                    # Group solvers return tuples with the flat move list first.
                     return result[0]
                 elif isinstance(result, list):
                     # Korf returns list of moves
@@ -347,7 +341,7 @@ class ValidationSuite:
                     print(f"    {status} {result.test_name}: FAILED - {result.error_message}")
 
         print("\n" + "=" * 80)
-        print("REFERENCE: cube20.org God's Number")
+        print("REFERENCE: published God's Number results")
         print("=" * 80)
         print("  God's Number:        20 moves (worst case)")
         print("  Average optimal:     ~17.8 moves")
@@ -364,7 +358,7 @@ class ValidationSuite:
             output_path: Output file path
         """
         lines = [
-            "# Validation Report - cube20.org Test Cases\n",
+            "# Validation Report - Reference Validation Cases\n",
             "## Summary\n"
         ]
 
@@ -400,13 +394,16 @@ class ValidationSuite:
             "- **Average Optimal**: ~17.8 moves",
             "- **Superflip**: 20 moves (first proven distance-20 position)",
             "- **Total Positions**: 43,252,003,274,489,856,000",
-            "\n*Source: cube20.org*"
+            "\n*Reference values sourced from cube20.org where applicable*"
         ])
 
-        with open(output_path, 'w') as f:
+        output_file = Path(output_path)
+        output_file.parent.mkdir(parents=True, exist_ok=True)
+
+        with open(output_file, 'w') as f:
             f.write('\n'.join(lines))
 
-        print(f"\n✓ Validation report exported to: {output_path}")
+        print(f"\n✓ Validation report exported to: {output_file}")
 
 
 def main():
@@ -423,7 +420,7 @@ suite = ValidationSuite()
 
 # Create algorithm instances
 korf_solver = IDAStarSolver(
-    heuristic=create_heuristic('composite'),
+    heuristic=create_heuristic('composite', use_pattern_db=True),
     max_depth=25,
     timeout=300.0  # 5 minutes for hard positions
 )
@@ -435,7 +432,7 @@ results = suite.run_all_validations(algorithms=[korf_solver])
 suite.print_report(results)
 
 # Export report
-suite.export_validation_report(results, 'results/validation_report.md')
+suite.export_validation_report(results, 'results/reports/validation_report.md')
     """)
 
 

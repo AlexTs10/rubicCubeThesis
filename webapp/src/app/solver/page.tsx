@@ -45,6 +45,7 @@ export default function SolverPage() {
   // Animation state
   const [animationIndex, setAnimationIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const scrambledState = applyMoves({ ...SOLVED_STATE }, scrambleMoves);
 
   // Generate scramble
   const handleGenerateScramble = useCallback(() => {
@@ -86,7 +87,7 @@ export default function SolverPage() {
     setSolveResult(null);
 
     try {
-      const result = await solveCube(cubeState, scrambleMoves, selectedAlgorithm, timeout * 1000);
+      const result = await solveCube(scrambledState, scrambleMoves, selectedAlgorithm, timeout * 1000);
       setSolveResult(result);
       setAnimationIndex(0);
     } catch (error) {
@@ -94,34 +95,30 @@ export default function SolverPage() {
     } finally {
       setSolving(false);
     }
-  }, [cubeState, scrambleMoves, selectedAlgorithm, timeout]);
+  }, [cubeState, scrambleMoves, scrambledState, selectedAlgorithm, timeout]);
 
   // Animation controls
   const handleAnimationStep = useCallback((direction: 'prev' | 'next') => {
     if (!solveResult?.solution) return;
 
     if (direction === 'next' && animationIndex < solveResult.solution.length) {
-      const move = solveResult.solution[animationIndex];
-      const scrambledState = applyMoves({ ...SOLVED_STATE }, scrambleMoves);
       const partialSolution = solveResult.solution.slice(0, animationIndex + 1);
       setCubeState(applyMoves(scrambledState, partialSolution));
-      setAnimationIndex(animationIndex + 1);
+      setAnimationIndex((currentIndex) => currentIndex + 1);
     } else if (direction === 'prev' && animationIndex > 0) {
-      const scrambledState = applyMoves({ ...SOLVED_STATE }, scrambleMoves);
       const partialSolution = solveResult.solution.slice(0, animationIndex - 1);
       setCubeState(applyMoves(scrambledState, partialSolution));
-      setAnimationIndex(animationIndex - 1);
+      setAnimationIndex((currentIndex) => currentIndex - 1);
     }
-  }, [solveResult, animationIndex, scrambleMoves]);
+  }, [solveResult, animationIndex, scrambledState]);
 
   const handleSliderChange = useCallback((value: number) => {
     if (!solveResult?.solution) return;
 
-    const scrambledState = applyMoves({ ...SOLVED_STATE }, scrambleMoves);
     const partialSolution = solveResult.solution.slice(0, value);
     setCubeState(applyMoves(scrambledState, partialSolution));
     setAnimationIndex(value);
-  }, [solveResult, scrambleMoves]);
+  }, [solveResult, scrambledState]);
 
   const cubeIsSolved = isSolved(cubeState);
 
@@ -131,7 +128,15 @@ export default function SolverPage() {
         <h1 className="text-3xl font-bold mb-2">
           <span className="gradient-text">Single Solver</span>
         </h1>
-        <p className="text-slate-400">Test individual algorithms on scrambled cubes</p>
+        <p className="text-slate-400">Preview individual algorithms on scrambled cubes</p>
+        <p className="text-sm text-slate-500 mt-2">
+          Demo behavior mirrors the corrected thesis results, but the Next.js output is synthetic preview data rather than an authoritative solver backend.
+        </p>
+        <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-100">
+          This Next.js page replays benchmark-shaped demo data. The returned move list is
+          synthetic and derived from the scramble, so it should not be cited as benchmark
+          evidence. For authoritative live solver execution, use the Streamlit UI in <code>ui/</code>.
+        </div>
       </div>
 
       <div className="grid lg:grid-cols-3 gap-8">
@@ -274,6 +279,12 @@ export default function SolverPage() {
             <Card>
               <h2 className="text-lg font-bold mb-4">Solution Results</h2>
 
+              {solveResult.demoOnly && (
+                <div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-100">
+                  Synthetic preview only. The solution below is generated locally from the scramble and is not thesis evidence.
+                </div>
+              )}
+
               {solveResult.solved ? (
                 <>
                   {/* Metrics */}
@@ -303,6 +314,16 @@ export default function SolverPage() {
                       icon={<HardDrive className="w-4 h-4" />}
                     />
                   </div>
+
+                  {(solveResult.backend || solveResult.optimality || solveResult.notes) && (
+                    <div className="mb-6 p-4 bg-slate-700/30 rounded-lg text-sm text-slate-300 space-y-1">
+                      <div><span className="text-slate-400">Backend:</span> {solveResult.backend || '-'}</div>
+                      <div><span className="text-slate-400">Optimality:</span> {solveResult.optimality || '-'}</div>
+                      {solveResult.notes && (
+                        <div><span className="text-slate-400">Notes:</span> {solveResult.notes}</div>
+                      )}
+                    </div>
+                  )}
 
                   {/* Solution Animation */}
                   <div className="p-4 bg-slate-700/30 rounded-lg mb-4">

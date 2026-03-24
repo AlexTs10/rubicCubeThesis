@@ -10,6 +10,10 @@ The layout follows the standard cross pattern:
        D
 """
 
+from ..utils.runtime_cache import ensure_matplotlib_cache
+
+ensure_matplotlib_cache()
+
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import numpy as np

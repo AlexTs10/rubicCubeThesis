@@ -11,9 +11,24 @@ Example:
 """
 
 import sys
+import os
 from pathlib import Path
 import argparse
 import time
+
+
+def _configure_local_cache() -> None:
+    """Point matplotlib/fontconfig at a writable cache under /tmp."""
+    cache_root = Path("/tmp/rubicCubeThesis_phase9_cache")
+    mpl_cache = cache_root / "matplotlib"
+    xdg_cache = cache_root / "xdg"
+    mpl_cache.mkdir(parents=True, exist_ok=True)
+    xdg_cache.mkdir(parents=True, exist_ok=True)
+    os.environ.setdefault("MPLCONFIGDIR", str(mpl_cache))
+    os.environ.setdefault("XDG_CACHE_HOME", str(xdg_cache))
+
+
+_configure_local_cache()
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -22,9 +37,9 @@ from src.cube.rubik_cube import RubikCube
 from src.cube.visualization import display_cube_unfolded
 from src.thistlethwaite import ThistlethwaiteSolver
 from src.kociemba.solver import KociembaSolver
-from src.kociemba.cubie import from_facelet_cube
 from src.korf.a_star import IDAStarSolver
 from src.korf.composite_heuristic import create_heuristic
+from src.korf.optimal_solver import KorfOptimalSolver, OPTIMAL_AVAILABLE
 
 try:
     from rich.console import Console
@@ -40,6 +55,46 @@ def clear_screen():
     """Clear the terminal screen."""
     import os
     os.system('cls' if os.name == 'nt' else 'clear')
+
+
+def solve_thistlethwaite(cube: RubikCube):
+    """Solve with pure Thistlethwaite and normalize the return value."""
+    solver = ThistlethwaiteSolver(
+        use_pattern_databases=True,
+        enable_kociemba_fallback=False,
+    )
+    result = solver.solve(cube.copy(), max_time=30, verbose=False)
+    if not result:
+        return None
+
+    solution, _phase_moves, _used_fallback = result
+    return solution
+
+
+def solve_kociemba(cube: RubikCube):
+    """Solve with Kociemba and normalize the return value."""
+    solver = KociembaSolver()
+    result = solver.solve(cube.copy(), timeout=60)
+    if not result:
+        return None
+
+    solution, _phase1_moves, _phase2_moves = result
+    return solution
+
+
+def solve_korf(cube: RubikCube):
+    """Solve with the preferred Korf backend and normalize the return value."""
+    if OPTIMAL_AVAILABLE:
+        solver = KorfOptimalSolver()
+        result = solver.solve(cube.copy(), verbose=False, timeout=120)
+        if not result:
+            return None
+        solution, _stats = result
+        return solution
+
+    heuristic = create_heuristic('composite', use_pattern_db=True)
+    solver = IDAStarSolver(heuristic=heuristic, max_depth=20, timeout=120)
+    return solver.solve(cube.copy())
 
 
 def animate_solution(cube, solution, speed=1.0, algorithm_name="Algorithm"):
@@ -177,8 +232,7 @@ def main():
         print(f"\nCreating scramble (depth {args.depth}, seed {args.seed})...")
 
     cube = RubikCube()
-    cube.scramble(moves=args.depth, seed=args.seed)
-    scramble_moves = getattr(cube, '_scramble_moves', [])
+    scramble_moves = cube.scramble(moves=args.depth, seed=args.seed)
 
     if console:
         console.print(f"[green]✓ Scramble:[/green] {' '.join(scramble_moves)}\n")
@@ -193,25 +247,21 @@ def main():
 
     solution = None
     algorithm_name = args.algorithm.capitalize()
-
     if args.algorithm == 'thistlethwaite':
-        solver = ThistlethwaiteSolver(use_pattern_databases=False)
-        solution = solver.solve(cube.copy())
+        solution = solve_thistlethwaite(cube)
         algorithm_name = "Thistlethwaite"
 
     elif args.algorithm == 'kociemba':
-        solver = KociembaSolver()
-        cubie = from_facelet_cube(cube)
-        solution = solver.solve(cubie, timeout=60)
+        solution = solve_kociemba(cube)
         algorithm_name = "Kociemba"
 
     elif args.algorithm == 'korf':
-        heuristic = create_heuristic('composite')
-        solver = IDAStarSolver(heuristic=heuristic, max_depth=20, timeout=120)
-        result = solver.solve(cube.copy())
-        if result and 'moves' in result:
-            solution = result['moves']
-        algorithm_name = "Korf IDA*"
+        solution = solve_korf(cube)
+        algorithm_name = (
+            "Korf IDA* (optimal backend)"
+            if OPTIMAL_AVAILABLE
+            else "Korf IDA* (heuristic fallback)"
+        )
 
     if not solution:
         if console:

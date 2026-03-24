@@ -14,24 +14,24 @@
 **Points to Cover:**
 1. Herbert Kociemba's 1992 algorithm: refinement of Thistlethwaite
 2. Two-phase approach: reduced from four phases
-3. Near-optimal solutions in sub-second time
+3. Near-optimal solutions in practice, with runtime depending on the scramble and backend
 
 **Citations:**
 - `\cite{kociemba1992close}` - Original algorithm
-- `\cite{kociemba2024optimalsolver}` - Modern implementation notes
+- `\cite{kociemba_twophase_details}` - Modern implementation notes
 
 ### 4.1.2 Two-Phase Structure (~250 words)
 
 **Points to Cover:**
 1. Phase 1: G₀ → G₁ (orient pieces, place UD-slice edges) - 2.2 billion states
-2. Phase 2: G₁ → Solved (complete solution within G₁) - 19.5 million states
+2. Phase 2: G₁ → Solved (complete solution within G₁) - tens of billions of theoretical states before pruning
 3. Total theoretical max: 12 + 18 = 30 moves (practical: ~22 average)
 
 **Table 4.1: Phase Comparison**
 | Phase | State Space | Max Depth | Allowed Moves |
 |-------|-------------|-----------|---------------|
 | 1 | 2.2 × 10⁹ | 12 | All 18 |
-| 2 | 1.95 × 10⁷ | 18 | 10 (U, U', U2, D, D', D2, F2, B2, L2, R2) |
+| 2 | 3.9 × 10¹⁰ | 18 | 10 (U, U', U2, D, D', D2, F2, B2, L2, R2) |
 
 **Code References:**
 - `src/kociemba/solver.py:31-449` - KociembaSolver class
@@ -120,7 +120,7 @@
 **Points to Cover:**
 1. Backward BFS from goal state (all coordinates = 0)
 2. Records minimum move distance at each coordinate combination
-3. Tables provide admissible heuristics for IDA*
+3. Tables provide admissible lower bounds for IDA*
 
 **Code References:**
 - `src/kociemba/pruning.py:31-303` - PruningTables class
@@ -139,7 +139,7 @@
 | phase2_ep | 2 | [40320] | Edge permutation |
 | phase2_sp | 2 | [24] | Slice permutation |
 
-**Memory Estimate:** ~8-10 MB total
+**Memory Estimate:** roughly 6 MB for the raw serialized pruning tables, with higher process memory once loaded into Python objects
 
 **Heuristic Functions:**
 - Phase 1: `h = max(phase1_co_eo[co,eo], phase1_eo_slice[eo,uds])`
@@ -241,15 +241,15 @@ function solve_phase1(cubie, max_depth, timeout):
 ## Section 4.8: Summary and Evaluation (~200 words)
 
 **Key Findings:**
-1. Kociemba achieves 96-100% success rate in benchmarks
-2. Sub-second solving time for most scrambles
-3. Solutions within 2-3 moves of optimal
+1. Kociemba achieves 100% success rate in the current thesis corpus
+2. Runtime varies by scramble depth and backend, but remains practical
+3. Solutions remain close to optimal in practice
 4. Best practical algorithm for real-time applications
 
 **Performance Characteristics:**
-- Time: 0.4-10 seconds typical
-- Solution length: 5-22 moves typical
-- Memory: ~80 MB for all tables
+- Time: depends on scramble depth and solver backend
+- Solution length: 5-22 moves typical in the thesis corpus
+- Memory: modest to moderate, depending on whether you count raw tables or loaded runtime objects
 
 **Transition to Chapter 5:**
 "While Kociemba produces near-optimal solutions efficiently, Korf's IDA* algorithm with pattern databases guarantees truly optimal solutions, trading computation time for solution quality."
@@ -273,7 +273,7 @@ function solve_phase1(cubie, max_depth, timeout):
 
 ### Citations
 - [ ] `\cite{kociemba1992close}` - Original algorithm
-- [ ] `\cite{kociemba2024optimalsolver}` - Modern implementation
+- [ ] `\cite{kociemba_twophase_details}` - Modern implementation
 - [ ] `\cite{korf1997finding}` - Pattern databases
 - [ ] `\cite{korf2002disjoint}` - Heuristic combination
 - [ ] `\cite{korf1985depth}` - IDA* algorithm

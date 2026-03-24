@@ -14,8 +14,23 @@ Features:
 """
 
 import sys
+import os
 from pathlib import Path
 import time
+
+
+def _configure_local_cache() -> None:
+    """Point matplotlib/fontconfig at a writable cache under /tmp."""
+    cache_root = Path("/tmp/rubicCubeThesis_phase9_cache")
+    mpl_cache = cache_root / "matplotlib"
+    xdg_cache = cache_root / "xdg"
+    mpl_cache.mkdir(parents=True, exist_ok=True)
+    xdg_cache.mkdir(parents=True, exist_ok=True)
+    os.environ.setdefault("MPLCONFIGDIR", str(mpl_cache))
+    os.environ.setdefault("XDG_CACHE_HOME", str(xdg_cache))
+
+
+_configure_local_cache()
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
@@ -24,9 +39,9 @@ from src.cube.rubik_cube import RubikCube
 from src.cube.visualization import display_cube_unfolded
 from src.thistlethwaite import ThistlethwaiteSolver
 from src.kociemba.solver import KociembaSolver
-from src.kociemba.cubie import from_facelet_cube
 from src.korf.a_star import IDAStarSolver
 from src.korf.composite_heuristic import create_heuristic
+from src.korf.optimal_solver import KorfOptimalSolver, OPTIMAL_AVAILABLE
 
 try:
     from rich.console import Console
@@ -62,6 +77,43 @@ class InteractiveSolver:
             self.console.print(*args, **kwargs)
         else:
             print(*args, **kwargs)
+
+    def _solve_thistlethwaite(self):
+        """Solve with pure Thistlethwaite and normalize the return value."""
+        solver = ThistlethwaiteSolver(
+            use_pattern_databases=True,
+            enable_kociemba_fallback=False,
+        )
+        result = solver.solve(self.cube.copy(), max_time=30, verbose=False)
+        if not result:
+            return None
+
+        solution, _phase_moves, _used_fallback = result
+        return solution
+
+    def _solve_kociemba(self):
+        """Solve with Kociemba and normalize the return value."""
+        solver = KociembaSolver()
+        result = solver.solve(self.cube.copy(), timeout=60)
+        if not result:
+            return None
+
+        solution, _phase1_moves, _phase2_moves = result
+        return solution
+
+    def _solve_korf(self):
+        """Solve with the preferred Korf backend and normalize the return value."""
+        if OPTIMAL_AVAILABLE:
+            solver = KorfOptimalSolver()
+            result = solver.solve(self.cube.copy(), verbose=False, timeout=120)
+            if not result:
+                return None
+            solution, _stats = result
+            return solution
+
+        heuristic = create_heuristic('composite', use_pattern_db=True)
+        solver = IDAStarSolver(heuristic=heuristic, max_depth=20, timeout=120)
+        return solver.solve(self.cube.copy())
 
     def display_header(self):
         """Display application header."""
@@ -136,8 +188,7 @@ class InteractiveSolver:
         depth = max(5, min(25, depth))
 
         self.cube = RubikCube()
-        self.cube.scramble(moves=depth)
-        scramble_moves = getattr(self.cube, '_scramble_moves', [])
+        scramble_moves = self.cube.scramble(moves=depth)
 
         self.print(f"\n[green]✓ Scrambled with {depth} random moves[/green]" if self.console
                   else f"\n✓ Scrambled with {depth} random moves")
@@ -158,8 +209,7 @@ class InteractiveSolver:
         depth = max(5, min(25, depth))
 
         self.cube = RubikCube()
-        self.cube.scramble(moves=depth, seed=seed)
-        scramble_moves = getattr(self.cube, '_scramble_moves', [])
+        scramble_moves = self.cube.scramble(moves=depth, seed=seed)
 
         self.print(f"\n[green]✓ Scrambled with seed {seed}, depth {depth}[/green]" if self.console
                   else f"\n✓ Scrambled with seed {seed}, depth {depth}")
@@ -197,17 +247,21 @@ class InteractiveSolver:
         self.print("\n[cyan]Solving with Thistlethwaite...[/cyan]" if self.console
                   else "\nSolving with Thistlethwaite...")
 
-        solver = ThistlethwaiteSolver(use_pattern_databases=False)
-
         start_time = time.time()
-        self.solution = solver.solve(self.cube.copy())
+        result = self._solve_thistlethwaite()
         self.solve_time = time.time() - start_time
         self.algorithm_name = "Thistlethwaite"
 
-        self.print(f"[green]✓ Solution found![/green]" if self.console
-                  else "✓ Solution found!")
-        self.print(f"  Moves: {len(self.solution)}")
-        self.print(f"  Time: {self.solve_time:.3f}s")
+        if result:
+            self.solution = result
+            self.print(f"[green]✓ Solution found![/green]" if self.console
+                      else "✓ Solution found!")
+            self.print(f"  Moves: {len(self.solution)}")
+            self.print(f"  Time: {self.solve_time:.3f}s")
+        else:
+            self.solution = None
+            self.print("[red]✗ No solution found[/red]" if self.console
+                      else "✗ No solution found")
 
     def solve_kociemba(self):
         """Solve using Kociemba algorithm."""
@@ -219,11 +273,8 @@ class InteractiveSolver:
         self.print("\n[cyan]Solving with Kociemba...[/cyan]" if self.console
                   else "\nSolving with Kociemba...")
 
-        solver = KociembaSolver()
-        cubie = from_facelet_cube(self.cube)
-
         start_time = time.time()
-        self.solution = solver.solve(cubie, timeout=60)
+        self.solution = self._solve_kociemba()
         self.solve_time = time.time() - start_time
         self.algorithm_name = "Kociemba"
 
@@ -248,20 +299,21 @@ class InteractiveSolver:
         self.print("[yellow]Warning: This may take a while![/yellow]" if self.console
                   else "Warning: This may take a while!")
 
-        heuristic = create_heuristic('composite')
-        solver = IDAStarSolver(heuristic=heuristic, max_depth=20, timeout=120)
-
         start_time = time.time()
-        result = solver.solve(self.cube.copy())
+        result = self._solve_korf()
         self.solve_time = time.time() - start_time
         self.algorithm_name = "Korf IDA*"
 
-        if result and 'moves' in result:
-            self.solution = result['moves']
+        if result:
+            self.solution = result
             self.print(f"[green]✓ Solution found![/green]" if self.console
                       else "✓ Solution found!")
             self.print(f"  Moves: {len(self.solution)}")
             self.print(f"  Time: {self.solve_time:.3f}s")
+            if OPTIMAL_AVAILABLE:
+                self.print("  Backend: external optimal solver")
+            else:
+                self.print("  Backend: internal heuristic IDA* fallback")
         else:
             self.print("[red]✗ No solution found (timeout or depth limit)[/red]" if self.console
                       else "✗ No solution found (timeout or depth limit)")

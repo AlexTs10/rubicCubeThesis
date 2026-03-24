@@ -1,5 +1,7 @@
 # Phase 5: Distance Estimator Implementation
 
+> Scope note: this document mixes exact pattern-database theory with exploratory heuristic code paths. In the corrected thesis story, exact optimality claims are reserved for the external Korf backend; lightweight heuristics in `src/korf/heuristics.py` and `src/korf/composite_heuristic.py` are not treated as blanket admissible guarantees.
+
 ## Overview
 
 This implementation provides a comprehensive distance estimation system for Rubik's Cube states, combining pattern databases with multiple heuristic approaches. The system estimates the minimum number of moves required to solve a cube from any given state.
@@ -314,5 +316,5 @@ Potential improvements for future work:
 
 ## License
 
-Part of the Rubik's Cube Master's Thesis project.
+Part of the Rubik's Cube bachelor's thesis project.
 University of Patras, 2024.

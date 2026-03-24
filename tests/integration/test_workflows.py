@@ -6,7 +6,7 @@ These tests verify that different components work together correctly.
 
 import pytest
 import numpy as np
-import matplotlib
+matplotlib = pytest.importorskip("matplotlib")
 matplotlib.use('Agg')  # Use non-interactive backend for testing
 
 from src.cube import (

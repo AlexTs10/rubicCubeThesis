@@ -18,8 +18,8 @@ Usage:
 
     analyzer = StatisticalAnalyzer('results/comprehensive_test.json')
     summary = analyzer.generate_summary()
-    analyzer.export_table('results/summary.md', format='markdown')
-    analyzer.export_table('results/summary.tex', format='latex')
+    analyzer.export_table('results/reports/summary.md', format='markdown')
+    analyzer.export_table('results/reports/summary.tex', format='latex')
 """
 
 import json
@@ -420,9 +420,9 @@ def main():
 
     # Export tables
     base_path = Path(results_path).stem
-    analyzer.export_table(f'results/{base_path}_summary.md', format='markdown')
-    analyzer.export_table(f'results/{base_path}_summary.tex', format='latex')
-    analyzer.export_table(f'results/{base_path}_summary.csv', format='csv')
+    analyzer.export_table(f'results/reports/{base_path}_summary.md', format='markdown')
+    analyzer.export_table(f'results/reports/{base_path}_summary.tex', format='latex')
+    analyzer.export_table(f'results/reports/{base_path}_summary.csv', format='csv')
 
     print("\n✓ Analysis complete!")
 

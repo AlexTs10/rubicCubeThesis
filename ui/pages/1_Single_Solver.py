@@ -4,7 +4,9 @@ Single Algorithm Solver Page
 Test individual solving algorithms on scrambled cubes.
 """
 
+import json
 import streamlit as st
+import streamlit.components.v1 as components
 import sys
 from pathlib import Path
 import time
@@ -19,6 +21,7 @@ from src.thistlethwaite import ThistlethwaiteSolver
 from src.kociemba.solver import KociembaSolver
 from src.korf.a_star import IDAStarSolver
 from src.korf.composite_heuristic import create_heuristic
+from src.korf.optimal_solver import KorfOptimalSolver, OPTIMAL_AVAILABLE
 
 # Import UI components
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -34,6 +37,46 @@ init_session_state()
 # Title
 st.title("🎯 Single Algorithm Solver")
 st.markdown("Test individual algorithms on scrambled cubes")
+
+
+def _solve_thistlethwaite(cube: RubikCube, timeout: float):
+    """Return a flat solution list from the pure Thistlethwaite solver."""
+    solver = ThistlethwaiteSolver(
+        use_pattern_databases=True,
+        enable_kociemba_fallback=False,
+    )
+    result = solver.solve(cube, max_time=timeout, verbose=False)
+    if not result:
+        return None
+
+    all_moves, _phase_moves, _used_fallback = result
+    return all_moves
+
+
+def _solve_kociemba(cube: RubikCube, timeout: float):
+    """Return a flat solution list from the Kociemba solver."""
+    solver = KociembaSolver()
+    result = solver.solve(cube, timeout=timeout)
+    if not result:
+        return None
+
+    solution, _phase1_moves, _phase2_moves = result
+    return solution
+
+
+def _solve_korf(cube: RubikCube, max_depth: int, timeout: float):
+    """Return a flat solution list from the preferred Korf backend."""
+    if OPTIMAL_AVAILABLE:
+        solver = KorfOptimalSolver()
+        result = solver.solve(cube, verbose=False, timeout=timeout)
+        if not result:
+            return None
+        solution, _stats = result
+        return solution
+
+    heuristic = create_heuristic('composite', use_pattern_db=True)
+    solver = IDAStarSolver(heuristic=heuristic, max_depth=max_depth, timeout=timeout)
+    return solver.solve(cube)
 
 # Sidebar controls
 st.sidebar.header("Configuration")
@@ -85,24 +128,22 @@ elif scramble_method == "Seeded Random":
 if st.sidebar.button("🎲 Generate New Scramble", use_container_width=True):
     reset_solve_state()
     st.session_state.cube = RubikCube()
-
+    st.session_state.scramble_moves = []
     if scramble_method == "Random":
-        st.session_state.cube.scramble(moves=scramble_depth)
-        st.session_state.scramble_moves = getattr(st.session_state.cube, '_scramble_moves', [])
+        st.session_state.scramble_moves = st.session_state.cube.scramble(moves=scramble_depth)
     elif scramble_method == "Custom Sequence":
         if custom_moves:
             moves = custom_moves.split()
+            applied_moves = []
             for move in moves:
                 try:
                     st.session_state.cube.apply_move(move)
+                    applied_moves.append(move)
                 except:
                     st.sidebar.error(f"Invalid move: {move}")
-            st.session_state.scramble_moves = moves
+            st.session_state.scramble_moves = applied_moves
     elif scramble_method == "Seeded Random":
-        import random
-        random.seed(seed)
-        st.session_state.cube.scramble(moves=scramble_depth, seed=seed)
-        st.session_state.scramble_moves = getattr(st.session_state.cube, '_scramble_moves', [])
+        st.session_state.scramble_moves = st.session_state.cube.scramble(moves=scramble_depth, seed=seed)
 
     st.rerun()
 
@@ -141,28 +182,28 @@ with col2:
     if algorithm == "Thistlethwaite":
         st.info("""
         **Thistlethwaite's Algorithm (1981)**
-        - 4-phase group-theoretic approach
-        - Fast: 0.2-0.5 seconds
-        - Solution: 30-52 moves
-        - Memory: ~2 MB
+        - Pure 4-phase group-theoretic solver
+        - 100% success on the thesis benchmark corpus
+        - Typically longer solutions than Kociemba or Korf
+        - No fallback in this page
         """)
         timeout = st.slider("Timeout (seconds)", 5, 60, 30)
     elif algorithm == "Kociemba":
         st.info("""
         **Kociemba's Algorithm (1992)**
         - 2-phase IDA* approach
-        - Medium: 1-3 seconds
-        - Solution: <19 moves
-        - Memory: ~80 MB
+        - 100% success on the thesis benchmark corpus
+        - Near-optimal solutions
+        - Strong default trade-off between quality and cost
         """)
         timeout = st.slider("Timeout (seconds)", 10, 120, 60)
     else:  # Korf IDA*
         st.info("""
         **Korf's IDA* (1997)**
-        - Pattern database heuristic search
-        - Variable: 1-30+ seconds
-        - Solution: ≤20 moves (optimal)
-        - Memory: ~45 MB
+        - Exact optimal solver path when backend is available
+        - Extremely fast on shallow/mid-depth scrambles
+        - Can still time out on hard depth-20 cases
+        - Highest memory cost of the three solvers
         """)
         timeout = st.slider("Timeout (seconds)", 30, 300, 120)
         max_depth = st.slider("Max Search Depth", 10, 25, 20)
@@ -182,29 +223,25 @@ with col2:
 
                 try:
                     if algorithm == "Thistlethwaite":
-                        solver = ThistlethwaiteSolver(use_pattern_databases=False)
-                        result = solver.solve(st.session_state.cube.copy())
+                        result = _solve_thistlethwaite(st.session_state.cube.copy(), timeout=timeout)
                         if result:
-                            solution = result[0]  # Extract just the moves list
+                            solution = result
                             success = True
                         else:
                             success = False
 
                     elif algorithm == "Kociemba":
-                        solver = KociembaSolver()
-                        result = solver.solve(st.session_state.cube, timeout=timeout)
+                        result = _solve_kociemba(st.session_state.cube.copy(), timeout=timeout)
                         if result:
-                            solution = result[0]  # Extract just the moves list
+                            solution = result
                             success = True
                         else:
                             success = False
 
                     else:  # Korf IDA*
-                        heuristic = create_heuristic('composite')
-                        solver = IDAStarSolver(heuristic=heuristic, max_depth=max_depth, timeout=timeout)
-                        result = solver.solve(st.session_state.cube.copy())
+                        result = _solve_korf(st.session_state.cube.copy(), max_depth=max_depth, timeout=timeout)
                         if result:
-                            solution = result['moves']
+                            solution = result
                             success = True
 
                 except Exception as e:
@@ -213,7 +250,7 @@ with col2:
 
                 elapsed_time = time.time() - start_time
                 mem_after = process.memory_info().rss / 1024 / 1024
-                mem_used = mem_after - mem_before
+                mem_used = max(mem_after - mem_before, 0.0)
 
                 if success and solution:
                     st.session_state.solution_moves = solution
@@ -240,9 +277,37 @@ if st.session_state.solution_moves and st.session_state.algorithm_used:
     with st.expander("📋 Solution Sequence", expanded=True):
         st.code(" ".join(st.session_state.solution_moves))
 
-        # Copy button
-        if st.button("📋 Copy to Clipboard"):
-            st.code(" ".join(st.session_state.solution_moves))
+        solution_text = " ".join(st.session_state.solution_moves)
+        components.html(
+            f"""
+            <div style="display:flex; align-items:center; gap:0.5rem; margin-top:0.5rem;">
+              <button id="copy-solution-btn" style="
+                background:#0f766e;
+                color:white;
+                border:none;
+                border-radius:0.5rem;
+                padding:0.5rem 0.9rem;
+                cursor:pointer;
+                font:inherit;
+              ">Copy to Clipboard</button>
+              <span id="copy-solution-status" style="font-size:0.9rem; color:#475569;"></span>
+            </div>
+            <script>
+              const button = document.getElementById('copy-solution-btn');
+              const status = document.getElementById('copy-solution-status');
+              const solutionText = {json.dumps(solution_text)};
+              button.addEventListener('click', async () => {{
+                try {{
+                  await navigator.clipboard.writeText(solutionText);
+                  status.textContent = 'Copied';
+                }} catch (error) {{
+                  status.textContent = 'Copy failed';
+                }}
+              }});
+            </script>
+            """,
+            height=72,
+        )
 
     # Animation controls
     st.subheader("🎬 Solution Animation")

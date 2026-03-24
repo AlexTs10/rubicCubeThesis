@@ -1,9 +1,9 @@
 """
 Heuristic Functions for Distance Estimation
 
-This module implements multiple heuristic approaches for estimating the distance
-to solve a Rubik's Cube. These heuristics can be used standalone or compared
-against pattern database estimates.
+This module implements lightweight heuristic estimates for Rubik's Cube states.
+They are useful for analysis and practical search experiments, but the simple
+facelet/cubie estimates in this file are not guaranteed lower bounds.
 
 Heuristic Types:
 1. Simple Heuristic: Count of mismatched face centers
@@ -12,7 +12,7 @@ Heuristic Types:
 4. Corner Manhattan: Manhattan distance for corners only
 5. Edge Manhattan: Manhattan distance for edges only
 
-All heuristics are admissible (never overestimate) but vary in accuracy.
+The exact pattern-database-backed optimal solver lives elsewhere in the codebase.
 
 References:
 - BenSDuggan/CubeAI: Multiple heuristic implementations
@@ -54,8 +54,7 @@ def simple_heuristic(cube: RubikCube) -> float:
             if i != 4 and face_state[i] != center_color:
                 mismatched += 1
 
-    # Convert to admissible distance estimate
-    # Each move can fix at most 8 stickers, so divide by 8
+    # Normalize the sticker mismatch count into a rough move estimate.
     return mismatched / 8.0
 
 
@@ -90,7 +89,7 @@ def hamming_distance(cube: RubikCube) -> float:
         if cubie.edge_perm[i] != i or cubie.edge_orient[i] != 0:
             misplaced += 1
 
-    # Each move affects 8 pieces, so divide by 8 for admissibility
+    # Normalize the misplaced-piece count into a rough move estimate.
     return misplaced / 8.0
 
 
@@ -101,7 +100,7 @@ def manhattan_distance_corner(cubie: CubieCube) -> float:
     Computes the minimum number of moves each corner needs to reach
     its home position (ignoring other pieces), then sums these values.
 
-    For admissibility, the sum is divided by 4 (each move affects 4 corners).
+    The sum is normalized by 4 because a face turn moves four corners.
 
     Args:
         cubie: Cubie cube state
@@ -129,7 +128,7 @@ def manhattan_distance_corner(cubie: CubieCube) -> float:
         if current_orient != 0:
             total_distance += 1
 
-    # Divide by 4 for admissibility (each move affects 4 corners)
+    # Normalize by the number of corners moved by a single face turn.
     return total_distance / 4.0
 
 
@@ -140,7 +139,7 @@ def manhattan_distance_edge(cubie: CubieCube) -> float:
     Computes the minimum number of moves each edge needs to reach
     its home position (ignoring other pieces), then sums these values.
 
-    For admissibility, the sum is divided by 4 (each move affects 4 edges).
+    The sum is normalized by 4 because a face turn moves four edges.
 
     Args:
         cubie: Cubie cube state
@@ -162,7 +161,7 @@ def manhattan_distance_edge(cubie: CubieCube) -> float:
         if current_orient != 0:
             total_distance += 1
 
-    # Divide by 4 for admissibility (each move affects 4 edges)
+    # Normalize by the number of edges moved by a single face turn.
     return total_distance / 4.0
 
 
@@ -170,8 +169,8 @@ def manhattan_distance(cube: RubikCube) -> float:
     """
     Combined Manhattan distance for all pieces.
 
-    Takes the maximum of corner and edge Manhattan distances, as this
-    provides a better admissible estimate than summing them.
+    Takes the maximum of corner and edge Manhattan components as a practical
+    combined estimate.
 
     Args:
         cube: Rubik's cube state
@@ -188,7 +187,7 @@ def manhattan_distance(cube: RubikCube) -> float:
     corner_dist = manhattan_distance_corner(cubie)
     edge_dist = manhattan_distance_edge(cubie)
 
-    # Return maximum for better estimate while maintaining admissibility
+    # Combine the two normalized components conservatively.
     return max(corner_dist, edge_dist)
 
 
@@ -242,7 +241,7 @@ def improved_manhattan_distance(cubie: CubieCube) -> float:
         if cubie.edge_orient[i] != 0:
             total_edge += 1
 
-    # Divide by 4 for admissibility
+    # Normalize by the number of pieces moved by a single face turn.
     return max(total_corner / 4.0, total_edge / 4.0)
 
 

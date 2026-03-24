@@ -1,13 +1,326 @@
+% ============================================================================
+% CHAPTER 3: THISTLETHWAITE ALGORITHM
+% ============================================================================
+
 \chapter{Αλγόριθμος Thistlethwaite}
 \label{ch:thistlethwaite}
 
-% Reference: src/thistlethwaite/, tests/unit/test_thistlethwaite.py
+Ο αλγόριθμος Thistlethwaite αποτελεί την πρώτη μεθοδολογική προσέγγιση στην επίλυση του κύβου του Rubik με εγγυημένο άνω φράγμα στον αριθμό κινήσεων \cite{thistlethwaite1981}. Το παρόν κεφάλαιο αναλύει τη θεωρητική βάση και την υλοποίηση του αλγορίθμου τεσσάρων φάσεων.
 
-\section{Περιγραφή του Αλγορίθμου}
-% 4 phases, G0 -> G1 -> G2 -> G3 -> G4
 
-\section{Υλοποίηση}
-% Coordinates, pattern databases, IDA* per phase
+\section{Επισκόπηση του Αλγορίθμου}
+\label{sec:thistlethwaite_overview}
 
-\section{Αποτελέσματα}
-% Performance metrics, solution lengths
+\subsection{Ιστορικό Πλαίσιο}
+
+Ο Morwen Thistlethwaite παρουσίασε τον αλγόριθμο το 1981 \cite{thistlethwaite1981}, επιτυγχάνοντας το πρώτο θεωρητικό άνω φράγμα 52 κινήσεων για την επίλυση οποιασδήποτε κατάστασης του κύβου. Η καινοτομία του αλγορίθμου έγκειται στην αξιοποίηση της αλγεβρικής δομής του κύβου μέσω μιας αλυσίδας εμφωλευμένων υποομάδων \cite{thistlethwaite1981,kociemba_twophase_details}.
+
+Ο αλγόριθμος αποτέλεσε πρόδρομο του αλγορίθμου Kociemba (Κεφάλαιο~\ref{ch:kociemba}), ο οποίος συμπύκνωσε τις τέσσερις φάσεις σε δύο, επιτυγχάνοντας καλύτερη απόδοση \cite{kociemba1992close,kociemba_twophase_details}.
+
+\subsection{Δομή Τεσσάρων Φάσεων}
+
+Ο αλγόριθμος λειτουργεί μέσω διαδοχικής μετάβασης σε υποομάδες με περιορισμένες κινήσεις:
+
+\begin{equation}
+    G = G_0 \supset G_1 \supset G_2 \supset G_3 \supset G_4 = \{I\}
+\end{equation}
+
+Κάθε φάση επιτυγχάνει συγκεκριμένους στόχους και \textit{διατηρεί τα αμετάβλητα} (invariants) των προηγούμενων φάσεων. Αυτό επιτρέπει τη σταδιακή μείωση του προβλήματος \cite{thistlethwaite1981,kociemba_twophase_details}.
+
+\begin{table}[h]
+\centering
+\caption{Επισκόπηση φάσεων του αλγορίθμου Thistlethwaite}
+\label{tab:thistlethwaite_phases}
+\begin{tabular}{clcrl}
+\toprule
+\textbf{Φάση} & \textbf{Μετάβαση} & \textbf{Κινήσεις} & \textbf{Χώρος} & \textbf{Στόχος} \\
+\midrule
+0 & $G_0 \to G_1$ & 18 & 2.048 & Προσανατολισμός ακμών \\
+1 & $G_1 \to G_2$ & 14 & 1.082.565 & Προσανατολισμός γωνιών + E-slice \\
+2 & $G_2 \to G_3$ & 10 & 29.400 & Τετράδες + ισοτιμία \\
+3 & $G_3 \to G_4$ & 6 & 663.552 & Πλήρης επίλυση \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Η μείωση των επιτρεπόμενων κινήσεων (18 → 14 → 10 → 6) είναι κρίσιμη: κάθε αφαίρεση κίνησης διατηρεί τα αμετάβλητα που έχουν επιτευχθεί \cite{thistlethwaite1981,kociemba_twophase_details}.
+
+
+\section{Φάση 0: Προσανατολισμός Ακμών}
+\label{sec:phase0}
+
+\subsection{Μαθηματική Θεμελίωση}
+
+Ο \textbf{προσανατολισμός ακμής} ορίζει αν η ακμή είναι ``σωστά'' τοποθετημένη ως προς τις γειτονικές έδρες:
+\begin{itemize}
+    \item 0 = σωστός προσανατολισμός
+    \item 1 = ανεστραμμένος (flipped)
+\end{itemize}
+
+Με 12 ακμές και δυαδικό προσανατολισμό, το άθροισμα προσανατολισμών είναι πάντα άρτιο (περιορισμός ισοτιμίας). Επομένως, ο χώρος καταστάσεων είναι \cite{thistlethwaite1981}:
+\begin{equation}
+    2^{11} = 2.048 \text{ καταστάσεις}
+\end{equation}
+
+\subsection{Επιτρεπόμενες Κινήσεις}
+
+Στη Φάση 0 επιτρέπονται \textbf{όλες οι 18 κινήσεις}:
+\begin{equation}
+    \{U, U', U2, D, D', D2, F, F', F2, B, B', B2, L, L', L2, R, R', R2\}
+\end{equation}
+
+Οι κινήσεις $F$, $F'$, $B$, $B'$, $L$, $L'$, $R$, $R'$ αλλάζουν τον
+προσανατολισμό ακμών, επειδή είναι στροφές 90° εκτός του άξονα U/D. Αντίθετα,
+οι διπλές κινήσεις ($X2$) και οι U/D στροφές τον διατηρούν
+\cite{thistlethwaite1981,kociemba_twophase_details}.
+
+\subsection{Στόχος}
+
+Η φάση ολοκληρώνεται όταν:
+\begin{equation}
+    \text{edge\_orientation\_coord} = 0
+\end{equation}
+
+Δηλαδή, όλες οι ακμές έχουν σωστό προσανατολισμό (coordinate = 0).
+
+
+\section{Φάση 1: Προσανατολισμός Γωνιών και E-Slice}
+\label{sec:phase1}
+
+\subsection{Προσανατολισμός Γωνιών}
+
+Κάθε γωνία μπορεί να στραφεί σε τρεις θέσεις:
+\begin{itemize}
+    \item 0 = σωστός προσανατολισμός
+    \item 1 = στροφή 120° δεξιόστροφα
+    \item 2 = στροφή 240° δεξιόστροφα
+\end{itemize}
+
+Το άθροισμα προσανατολισμών γωνιών είναι πάντα πολλαπλάσιο του 3, οπότε \cite{thistlethwaite1981}:
+\begin{equation}
+    3^7 = 2.187 \text{ καταστάσεις}
+\end{equation}
+
+Οι κινήσεις $F$, $F'$, $B$, $B'$ (στροφές 90° μπροστά/πίσω) αλλάζουν τον προσανατολισμό γωνιών.
+
+\subsection{Τοποθέτηση E-Slice}
+
+Το \textbf{E-slice} είναι η μεσαία στρώση που περιέχει τις ακμές FR, FL, BL, BR (θέσεις 8-11). Ο στόχος είναι αυτές οι 4 ακμές να βρίσκονται \textit{κάπου} στο E-slice, όχι απαραίτητα στη σωστή θέση.
+
+Ο αριθμός τρόπων επιλογής 4 θέσεων από 12:
+\begin{equation}
+    \binom{12}{4} = 495 \text{ καταστάσεις}
+\end{equation}
+
+\subsection{Συνδυασμένος Χώρος}
+
+Ο συνολικός χώρος της Φάσης 1 είναι \cite{thistlethwaite1981,kociemba_twophase}:
+\begin{equation}
+    2.187 \times 495 = 1.082.565 \text{ καταστάσεις}
+\end{equation}
+
+\subsection{Περιορισμός Κινήσεων}
+
+Αφαιρούνται οι $F$, $F'$, $B$, $B'$ (διατηρούνται $F2$, $B2$):
+\begin{equation}
+    \{U, U', U2, D, D', D2, F2, B2, L, L', L2, R, R', R2\} \quad (14 \text{ κινήσεις})
+\end{equation}
+
+Αυτός ο περιορισμός διατηρεί τον προσανατολισμό ακμών (Φάση 0) ενώ επιτρέπει τη διόρθωση γωνιών και E-slice \cite{thistlethwaite1981,kociemba_twophase_details}.
+
+
+\section{Φάση 2: Τετράδες και Ισοτιμία}
+\label{sec:phase2}
+
+\subsection{Περιορισμός Τετράδων Γωνιών}
+
+Οι 8 γωνίες χωρίζονται σε δύο \textbf{τετράδες}:
+\begin{itemize}
+    \item \textbf{Τετράδα 1}: URF, UFL, DFR, DLF (μπροστινές γωνίες)
+    \item \textbf{Τετράδα 2}: ULB, UBR, DBL, DRB (πίσω γωνίες)
+\end{itemize}
+
+Ο στόχος είναι οι γωνίες κάθε τετράδας να βρίσκονται σε θέσεις της ίδιας τετράδας (όχι απαραίτητα στη σωστή θέση) \cite{thistlethwaite1981}.
+
+Αριθμός τρόπων τοποθέτησης:
+\begin{equation}
+    \binom{8}{4} = 70 \text{ καταστάσεις}
+\end{equation}
+
+\subsection{Διαχωρισμός Ακμών σε Slices}
+
+Επιπλέον, οι ακμές πρέπει να παραμείνουν στα αντίστοιχα slices:
+\begin{itemize}
+    \item \textbf{UD-slice}: ακμές των εδρών U και D (θέσεις 0-7)
+    \item \textbf{E-slice}: μεσαίες ακμές (θέσεις 8-11)
+\end{itemize}
+
+\subsection{Περιορισμός Ισοτιμίας}
+
+Η \textbf{ισοτιμία μετάθεσης} (parity) πρέπει να είναι άρτια: η ισοτιμία γωνιών ισούται με την ισοτιμία ακμών. Οι στροφές 90° αλλάζουν την ισοτιμία, ενώ οι διπλές ($X2$) τη διατηρούν \cite{thistlethwaite1981,kociemba_twophase_details}.
+
+\subsection{Περιορισμός Κινήσεων}
+
+Αφαιρούνται οι $L$, $L'$, $R$, $R'$ (διατηρούνται $L2$, $R2$):
+\begin{equation}
+    \{U, U', U2, D, D', D2, F2, B2, L2, R2\} \quad (10 \text{ κινήσεις})
+\end{equation}
+
+
+\section{Φάση 3: Τελική Επίλυση}
+\label{sec:phase3}
+
+\subsection{Μόνο Διπλές Κινήσεις}
+
+Στην τελική φάση επιτρέπονται μόνο οι 6 διπλές κινήσεις:
+\begin{equation}
+    \{U2, D2, F2, B2, L2, R2\}
+\end{equation}
+
+Αυτές οι κινήσεις διατηρούν \textbf{όλα} τα προηγούμενα αμετάβλητα \cite{thistlethwaite1981,kociemba_twophase_details}:
+\begin{itemize}
+    \item Προσανατολισμό ακμών (Φάση 0)
+    \item Προσανατολισμό γωνιών (Φάση 1)
+    \item E-slice τοποθέτηση (Φάση 1)
+    \item Τετράδες και ισοτιμία (Φάση 2)
+\end{itemize}
+
+\subsection{Χώρος Μεταθέσεων}
+
+Ο χώρος αναζήτησης περιορίζεται στις μεταθέσεις εντός κάθε τετράδας/slice:
+\begin{itemize}
+    \item Μεταθέσεις γωνιών εντός τετράδων: $(4!)^2 / 2 = 288$ (λόγω ισοτιμίας)
+    \item Μεταθέσεις ακμών εντός slices: $(4!)^2 \times (4!)^2 / 2$
+\end{itemize}
+
+\subsection{Στόχος}
+
+Η φάση ολοκληρώνεται όταν ο κύβος είναι πλήρως λυμένος:
+\begin{equation}
+    \text{cube.is\_solved()} = \text{True}
+\end{equation}
+
+
+\section{Κατασκευή Pattern Databases}
+\label{sec:thistlethwaite_pdb}
+
+\subsection{Μέθοδος BFS}
+
+Στην παρούσα υλοποίηση, κάθε φάση χρησιμοποιεί \textbf{Pattern Database} (PDB)
+που κατασκευάζεται με αναζήτηση κατά πλάτος (BFS) από τη λυμένη κατάσταση.
+Η διαδικασία ακολουθεί τη γενική μεθοδολογία των pattern databases
+\cite{culberson1998pattern}:
+
+\begin{algorithm}[H]
+\caption{Κατασκευή Pattern Database}
+\begin{algorithmic}[1]
+\State $\text{distance}[0] \gets 0$ \Comment{Λυμένη κατάσταση}
+\State $\text{queue} \gets \{0\}$
+\While{queue $\neq \emptyset$}
+    \State $\text{coord} \gets$ queue.dequeue()
+    \For{κάθε κίνηση $m$ στις επιτρεπόμενες}
+        \State $\text{new\_coord} \gets$ apply($m$, coord)
+        \If{distance[new\_coord] δεν έχει οριστεί}
+            \State $\text{distance}[\text{new\_coord}] \gets \text{distance}[\text{coord}] + 1$
+            \State queue.enqueue(new\_coord)
+        \EndIf
+    \EndFor
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Προδιαγραφές Βάσεων Δεδομένων}
+
+\begin{table}[h]
+\centering
+\caption{Μεγέθη Pattern Databases ανά φάση}
+\label{tab:pdb_sizes}
+\begin{tabular}{clrrr}
+\toprule
+\textbf{Φάση} & \textbf{Συντεταγμένη} & \textbf{Μέγεθος} & \textbf{Μέγ. Βάθος} & \textbf{Μνήμη} \\
+\midrule
+0 & Προσ. ακμών & 2.048 & 7 & $\sim$2 KB \\
+1 & Γωνίες $\times$ E-slice & 1.082.565 & 10 & $\sim$1 MB \\
+2 & Τετράδες & 29.400 & 13 & $\sim$29 KB \\
+3 & Μετάθεση γωνιών & 40.320 & 15 & $\sim$40 KB \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Τα PDBs αποθηκεύονται σε αρχεία για επαναχρησιμοποίηση. Η αρχική κατασκευή απαιτεί λίγα δευτερόλεπτα.
+
+
+\section{Αναζήτηση IDA* ανά Φάση}
+\label{sec:thistlethwaite_ida}
+
+\subsection{Αλγόριθμος Αναζήτησης}
+
+Κάθε φάση χρησιμοποιεί τον αλγόριθμο IDA* (Κεφάλαιο~\ref{ch:background}) με \cite{korf1985depth}:
+\begin{itemize}
+    \item \textbf{Ευρετική}: η τιμή από το αντίστοιχο Pattern Database
+    \item \textbf{Επιτρεπόμενες κινήσεις}: το σύνολο κινήσεων της φάσης
+    \item \textbf{Στόχος}: η συνθήκη μετάβασης στην επόμενη υποομάδα
+\end{itemize}
+
+\begin{algorithm}[H]
+\caption{IDA* για φάση $i$}
+\begin{algorithmic}[1]
+\State $\text{bound} \gets \text{PDB}_i[\text{coord}]$
+\Loop
+    \State $\text{result} \gets$ SEARCH(cube, 0, bound, phase\_moves[$i$])
+    \If{result = FOUND}
+        \State \Return λύση φάσης
+    \EndIf
+    \State $\text{bound} \gets \text{result}$
+\EndLoop
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Αποκοπή Περιττών Κινήσεων}
+
+Για βελτίωση απόδοσης, αποκλείονται περιττές ακολουθίες:
+\begin{itemize}
+    \item \textbf{Ίδια έδρα}: $U$ μετά $U'$ είναι περιττό (= $I$)
+    \item \textbf{Αντίθετες έδρες}: επιβάλλεται σειρά $U$ πριν $D$ για κανονικοποίηση
+    \item \textbf{Τριπλές επαναλήψεις}: $U U U = U'$
+\end{itemize}
+
+Αυτές οι αποκοπές μειώνουν σημαντικά τον παράγοντα διακλάδωσης.
+
+
+\section{Σύνοψη και Αξιολόγηση}
+\label{sec:thistlethwaite_summary}
+
+\subsection{Χαρακτηριστικά Αλγορίθμου}
+
+\begin{itemize}
+    \item \textbf{Εγγύηση}: Λύση σε $\leq 52$ κινήσεις (τυπικά 30-45)
+    \item \textbf{Ντετερμινισμός}: Πάντα βρίσκει λύση, χωρίς τυχαιότητα
+    \item \textbf{Μνήμη}: Χαμηλές απαιτήσεις ($\sim$1.2 MB για όλα τα PDBs)
+    \item \textbf{Χρόνος}: Μέτριος (τυπικά 1-5 δευτερόλεπτα)
+\end{itemize}
+
+\subsection{Πλεονεκτήματα και Μειονεκτήματα}
+
+\textbf{Πλεονεκτήματα}:
+\begin{itemize}
+    \item Κομψή μαθηματική δομή βασισμένη στη θεωρία ομάδων
+    \item Εκπαιδευτική αξία για κατανόηση της αλγεβρικής δομής του κύβου
+    \item Αξιόπιστη και προβλέψιμη συμπεριφορά
+\end{itemize}
+
+\textbf{Μειονεκτήματα}:
+\begin{itemize}
+    \item Μακρύτερες λύσεις σε σχέση με σύγχρονους αλγορίθμους
+    \item Πιο αργός από τον Kociemba
+    \item Τέσσερις φάσεις αντί δύο (περισσότερη επεξεργασία)
+\end{itemize}
+
+\subsection{Μετάβαση στον Kociemba}
+
+Ο αλγόριθμος Kociemba (Κεφάλαιο~\ref{ch:kociemba}) βελτιώνει τον Thistlethwaite συμπτύσσοντας τις τέσσερις φάσεις σε δύο, επιτυγχάνοντας:
+\begin{itemize}
+    \item Λύσεις σημαντικά κοντύτερες από του Thistlethwaite και, γενικά, κοντά στο βέλτιστο
+    \item Σημαντικά ταχύτερη εκτέλεση
+    \item Ευρεία χρήση σε εφαρμογές speedcubing
+\end{itemize}

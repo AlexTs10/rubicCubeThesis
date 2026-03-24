@@ -311,9 +311,7 @@ def create_edge_database(
         db = PatternDatabase.load(save_path)
         # Convert to EdgePatternDatabase
         edge_db = EdgePatternDatabase(edge_subset, name)
-        edge_db.data = db.data
-        edge_db.max_depth = db.max_depth
-        edge_db.states_at_depth = db.states_at_depth
+        edge_db.copy_storage_from(db)
         print("  Loaded successfully!")
         return edge_db
 

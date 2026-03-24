@@ -8,32 +8,78 @@
 % ============================================================================
 % PACKAGES
 % ============================================================================
-\usepackage[utf8]{inputenc}
-\usepackage[greek,english]{babel}
-\usepackage{alphabeta}
+\usepackage{iftex}
+\ifPDFTeX
+    \usepackage[utf8]{inputenc}
+    \usepackage[greek,english]{babel}
+    \usepackage{alphabeta}
+\else
+    \usepackage[greek,english]{babel}
+    \usepackage{fontspec}
+    \babelfont{rm}[
+        Path=fonts/,
+        Ligatures=TeX,
+        Language=Default,
+        UprightFont={Times New Roman.ttf},
+        ItalicFont={Times New Roman Italic.ttf},
+        BoldFont={Times New Roman Bold.ttf},
+        BoldItalicFont={Times New Roman Bold Italic.ttf}
+    ]{Times New Roman}
+    \babelfont{sf}[
+        Path=fonts/,
+        Ligatures=TeX,
+        Language=Default,
+        UprightFont={Arial.ttf},
+        ItalicFont={Arial Italic.ttf},
+        BoldFont={Arial Bold.ttf},
+        BoldItalicFont={Arial Bold Italic.ttf}
+    ]{Arial}
+    \setmonofont[
+        Path=fonts/,
+        Scale=MatchLowercase,
+        Language=Default,
+        UprightFont={Courier New.ttf},
+        ItalicFont={Courier New Italic.ttf},
+        BoldFont={Courier New Bold.ttf},
+        BoldItalicFont={Courier New Bold Italic.ttf}
+    ]{Courier New}
+\fi
 
 % Math
 \usepackage{amsmath,amssymb,amsthm}
 \usepackage{mathtools}
+\usepackage{microtype}
+\usepackage[htt]{hyphenat}
+\newtheorem{theorem}{Θεώρημα}[chapter]
 
 % Figures and Tables
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{array}
 \usepackage{booktabs}
 \usepackage{multirow}
 \usepackage{subcaption}
+\usepackage{tabularx}
+\usepackage{ragged2e}
+\captionsetup{justification=RaggedRight,singlelinecheck=false}
 
 % Code listings
 \usepackage{listings}
 \usepackage{xcolor}
+\usepackage{silence}
+\WarningFilter{latexfont}{Font shape}
+\WarningFilter{latexfont}{Some font shapes were not available}
 
 % Page layout
 \usepackage[left=3.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm]{geometry}
 \usepackage{setspace}
 \onehalfspacing
+\setlength{\emergencystretch}{6em}
+\hbadness=10000
 
 % Headers
 \usepackage{fancyhdr}
+\setlength{\headheight}{14.5pt}
 \pagestyle{fancy}
 \fancyhf{}
 \fancyhead[L]{\leftmark}
@@ -41,14 +87,15 @@
 
 % Links
 \usepackage[hidelinks]{hyperref}
-
-% Bibliography - IEEE style
-\usepackage[style=ieee,backend=biber]{biblatex}
-\addbibresource{references.bib}
+\usepackage{xurl}
+\urlstyle{tt}
 
 % Algorithms
-\usepackage{algorithm}
 \usepackage{algpseudocode}
+\floatstyle{ruled}
+\newfloat{algorithm}{tbp}{loa}[chapter]
+\floatname{algorithm}{Αλγόριθμος}
+\algrenewcommand\textproc[1]{\texttt{#1}}
 
 % ============================================================================
 % CODE LISTING STYLE
@@ -83,7 +130,9 @@
 % CUSTOM COMMANDS
 % ============================================================================
 \newcommand{\code}[1]{\texttt{#1}}
+\newcommand{\filepath}[1]{\path{#1}}
 \newcommand{\bigO}[1]{\mathcal{O}(#1)}
+\newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
 
 % ============================================================================
 % DOCUMENT INFO
@@ -100,12 +149,15 @@
 % ----------------------------------------------------------------------------
 % FRONT MATTER
 % ----------------------------------------------------------------------------
+\hypersetup{pageanchor=false}
+\input{chapters/00_titlepage}
+\clearpage
+\hypersetup{pageanchor=true}
 \frontmatter
-\include{chapters/00_titlepage}
-\include{chapters/00_approval}
-\include{chapters/00_acknowledgements}
-\include{chapters/00_abstract_gr}
-\include{chapters/00_abstract_en}
+\input{chapters/00_approval}
+\input{chapters/00_acknowledgements}
+\input{chapters/00_abstract_gr}
+\input{chapters/00_abstract_en}
 
 \tableofcontents
 \listoffigures
@@ -115,24 +167,26 @@
 % MAIN MATTER
 % ----------------------------------------------------------------------------
 \mainmatter
-\include{chapters/01_introduction}
-\include{chapters/02_background}
-\include{chapters/03_thistlethwaite}
-\include{chapters/04_kociemba}
-\include{chapters/05_korf}
-\include{chapters/06_heuristics}
-\include{chapters/07_evaluation}
-\include{chapters/08_implementation}
-\include{chapters/09_conclusions}
+\input{chapters/01_introduction}
+\input{chapters/02_background}
+\input{chapters/03_thistlethwaite}
+\input{chapters/04_kociemba}
+\input{chapters/05_korf}
+\input{chapters/06_heuristics}
+\input{chapters/07_evaluation}
+\input{chapters/08_implementation}
+\input{chapters/09_conclusions}
 
 % ----------------------------------------------------------------------------
 % BACK MATTER
 % ----------------------------------------------------------------------------
 \backmatter
-\printbibliography[heading=bibintoc,title={Βιβλιογραφία}]
+\addcontentsline{toc}{chapter}{Βιβλιογραφία}
+\bibliographystyle{IEEEtran}
+\bibliography{references}
 
 \appendix
-\include{chapters/appendix_a}
-\include{chapters/appendix_b}
+\input{chapters/appendix_a}
+\input{chapters/appendix_b}
 
 \end{document}

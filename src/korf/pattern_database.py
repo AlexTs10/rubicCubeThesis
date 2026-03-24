@@ -5,11 +5,11 @@ This module provides the base infrastructure for creating and using pattern data
 for Rubik's Cube distance estimation. Pattern databases store the exact minimum number
 of moves needed to solve specific subsets of the cube (e.g., corners only, edges only).
 
-Key Concepts:
-- Pattern Database: Exhaustive BFS from solved state for a subset of pieces
-- Compression: Store distances in nibbles (4 bits) to save memory
-- Indexing: Use lexicographic ranking for perfect hashing
-- Admissibility: Estimates never overestimate actual distance
+The original repository stored distances in packed nibbles. That representation was
+space-efficient, but it conflated the valid distance value 15 with the implicit
+"uninitialized" sentinel and also clamped larger distances. The exact solver path
+needs exact-safe semantics first, so the default storage format is now one byte per
+state with an explicit uninitialized value of 255.
 
 References:
 - Korf, R. (1997). Finding Optimal Solutions to Rubik's Cube Using Pattern Databases
@@ -31,6 +31,11 @@ class PatternDatabase:
     subset of the cube (e.g., all corners, or a subset of edges).
     """
 
+    FORMAT_VERSION = 2
+    STORAGE_FORMAT_BYTE = "byte"
+    LEGACY_STORAGE_FORMAT_NIBBLE = "legacy_nibble"
+    BYTE_UNINITIALIZED = np.uint8(0xFF)
+
     def __init__(self, name: str, size: int):
         """
         Initialize a pattern database.
@@ -42,10 +47,10 @@ class PatternDatabase:
         self.name = name
         self.size = size
 
-        # Store distances in nibbles (4 bits each)
-        # This allows distances 0-15, which is sufficient for Rubik's Cube
-        # We pack two distances per byte for 2x compression
-        self.data = np.full((size + 1) // 2, 0xFF, dtype=np.uint8)
+        # Exact-safe default: one byte per entry, with a dedicated uninitialized sentinel.
+        self.storage_format = self.STORAGE_FORMAT_BYTE
+        self.uninitialized_value = int(self.BYTE_UNINITIALIZED)
+        self.data = np.full(size, self.BYTE_UNINITIALIZED, dtype=np.uint8)
 
         # Track statistics
         self.max_depth = 0
@@ -53,25 +58,32 @@ class PatternDatabase:
 
     def _pack_distance(self, distance: int) -> int:
         """
-        Pack a distance value into a nibble (4 bits).
+        Pack a distance value for storage.
 
         Args:
-            distance: Distance value (0-15)
+            distance: Distance value
 
         Returns:
-            Packed value (0-15)
+            Packed value
         """
-        return min(distance, 15)
+        if distance < 0:
+            raise ValueError(f"Distance must be non-negative, got {distance}")
+        if distance >= self.uninitialized_value:
+            raise ValueError(
+                f"Distance {distance} cannot be stored in {self.storage_format} format "
+                f"(reserved sentinel={self.uninitialized_value})"
+            )
+        return distance
 
     def _unpack_distance(self, packed: int) -> int:
         """
-        Unpack a distance value from a nibble.
+        Unpack a distance value from storage.
 
         Args:
-            packed: Packed value (0-15)
+            packed: Packed value
 
         Returns:
-            Distance value (0-15, where 15 may mean "15 or more")
+            Distance value
         """
         return packed
 
@@ -87,14 +99,7 @@ class PatternDatabase:
             raise ValueError(f"Index {index} out of range [0, {self.size})")
 
         packed_dist = self._pack_distance(distance)
-        byte_idx = index // 2
-
-        if index % 2 == 0:
-            # Store in lower nibble
-            self.data[byte_idx] = (self.data[byte_idx] & 0xF0) | packed_dist
-        else:
-            # Store in upper nibble
-            self.data[byte_idx] = (self.data[byte_idx] & 0x0F) | (packed_dist << 4)
+        self.data[index] = packed_dist
 
     def get_distance(self, index: int) -> int:
         """
@@ -104,20 +109,14 @@ class PatternDatabase:
             index: State index in the pattern database
 
         Returns:
-            Minimum distance to solve this state (0-15)
+            Minimum distance to solve this state
         """
         if index < 0 or index >= self.size:
             raise ValueError(f"Index {index} out of range [0, {self.size})")
 
-        byte_idx = index // 2
-
-        if index % 2 == 0:
-            # Lower nibble
-            packed = self.data[byte_idx] & 0x0F
-        else:
-            # Upper nibble
-            packed = (self.data[byte_idx] >> 4) & 0x0F
-
+        packed = int(self.data[index])
+        if packed == self.uninitialized_value:
+            raise ValueError(f"Distance at index {index} is uninitialized")
         return self._unpack_distance(packed)
 
     def is_initialized(self, index: int) -> bool:
@@ -128,9 +127,43 @@ class PatternDatabase:
             index: State index
 
         Returns:
-            True if distance has been set, False if still uninitialized (0xFF)
+            True if distance has been set, False if still uninitialized
         """
-        return self.get_distance(index) != 15
+        if index < 0 or index >= self.size:
+            raise ValueError(f"Index {index} out of range [0, {self.size})")
+        return int(self.data[index]) != self.uninitialized_value
+
+    def copy_storage_from(self, other: 'PatternDatabase') -> None:
+        """
+        Copy serialized storage state from another pattern database instance.
+
+        This is used when loading a base `PatternDatabase` from disk and
+        reconstructing a concrete subclass wrapper.
+        """
+        if self.size != other.size:
+            raise ValueError(f"Size mismatch: expected {self.size}, got {other.size}")
+
+        self.storage_format = other.storage_format
+        self.uninitialized_value = other.uninitialized_value
+        self.data = other.data.copy()
+        self.max_depth = other.max_depth
+        self.states_at_depth = dict(other.states_at_depth)
+
+    def initialized_count(self) -> int:
+        """
+        Return the number of states with initialized distances.
+
+        Pattern databases built through the repository track a depth histogram,
+        which is the cheapest source of truth. Fall back to scanning the array
+        only when that metadata is unavailable.
+        """
+        if self.states_at_depth:
+            return int(sum(int(v) for v in self.states_at_depth.values()))
+        return int(np.count_nonzero(self.data != self.uninitialized_value))
+
+    def is_complete(self) -> bool:
+        """Return True when distances have been generated for every state."""
+        return self.initialized_count() == self.size
 
     def save(self, filepath: str) -> None:
         """
@@ -142,8 +175,11 @@ class PatternDatabase:
         os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
         data_dict = {
+            'format_version': self.FORMAT_VERSION,
             'name': self.name,
             'size': self.size,
+            'storage_format': self.storage_format,
+            'uninitialized_value': self.uninitialized_value,
             'data': self.data,
             'max_depth': self.max_depth,
             'states_at_depth': self.states_at_depth
@@ -167,11 +203,54 @@ class PatternDatabase:
             data_dict = pickle.load(f)
 
         db = cls(data_dict['name'], data_dict['size'])
-        db.data = data_dict['data']
-        db.max_depth = data_dict['max_depth']
-        db.states_at_depth = data_dict['states_at_depth']
+
+        if data_dict.get('format_version') == cls.FORMAT_VERSION:
+            db.storage_format = data_dict['storage_format']
+            db.uninitialized_value = int(data_dict['uninitialized_value'])
+            db.data = data_dict['data']
+            db.max_depth = data_dict['max_depth']
+            db.states_at_depth = data_dict['states_at_depth']
+            return db
+
+        db._load_legacy_nibble_payload(data_dict)
 
         return db
+
+    def _load_legacy_nibble_payload(self, data_dict: Dict) -> None:
+        """
+        Load the original nibble-packed format when it is provably safe to convert.
+
+        Legacy payloads are accepted only when we can show they do not rely on the
+        ambiguous nibble value 15 and that every state has been initialized.
+        """
+        legacy_data = data_dict['data']
+        decoded = np.full(self.size, self.BYTE_UNINITIALIZED, dtype=np.uint8)
+
+        for index in range(self.size):
+            byte_idx = index // 2
+            if index % 2 == 0:
+                decoded[index] = legacy_data[byte_idx] & 0x0F
+            else:
+                decoded[index] = (legacy_data[byte_idx] >> 4) & 0x0F
+
+        initialized_count = sum(int(v) for v in data_dict.get('states_at_depth', {}).values())
+        if initialized_count != self.size:
+            raise ValueError(
+                "Legacy pattern database is incomplete and cannot be upgraded safely. "
+                "Regenerate it with the exact-safe storage format."
+            )
+
+        if data_dict.get('max_depth', 0) >= 15 or np.any(decoded == 15):
+            raise ValueError(
+                "Legacy nibble-packed pattern database may contain ambiguous distance 15 values. "
+                "Regenerate it with the exact-safe storage format."
+            )
+
+        self.storage_format = self.STORAGE_FORMAT_BYTE
+        self.uninitialized_value = int(self.BYTE_UNINITIALIZED)
+        self.data = decoded
+        self.max_depth = data_dict['max_depth']
+        self.states_at_depth = data_dict['states_at_depth']
 
     def get_statistics(self) -> Dict:
         """
@@ -183,8 +262,11 @@ class PatternDatabase:
         return {
             'name': self.name,
             'size': self.size,
+            'storage_format': self.storage_format,
             'max_depth': self.max_depth,
             'states_at_depth': self.states_at_depth,
+            'initialized_states': self.initialized_count(),
+            'complete': self.is_complete(),
             'memory_bytes': self.data.nbytes
         }
 

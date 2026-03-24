@@ -39,6 +39,8 @@ ENV/
 .coverage
 htmlcov/
 *.cover
+.mypy_cache/
+.ruff_cache/
 
 # Jupyter Notebooks
 .ipynb_checkpoints
@@ -53,6 +55,10 @@ htmlcov/
 *.log
 results/*.csv
 results/*.json
+results/benchmarks/thesis/thesis_data_*.csv
+results/benchmarks/thesis/thesis_data_*.json
+results/benchmarks/thesis/thesis_data_complete_*.csv
+results/benchmarks/thesis/thesis_data_complete_*.json
 
 # OS
 .DS_Store
@@ -64,6 +70,44 @@ docs/thesis_chapters/*.log
 docs/thesis_chapters/*.out
 docs/thesis_chapters/*.pdf
 docs/thesis_chapters/*.synctex.gz
+thesis/*.aux
+thesis/*.bbl
+thesis/*.bcf
+thesis/*.blg
+thesis/*.fdb_latexmk
+thesis/*.fls
+thesis/*.lof
+thesis/*.log
+thesis/*.lot
+thesis/*.out
+thesis/*.run.xml
+thesis/*.toc
+thesis/*.xdv
+thesis/main-blx.bib
+thesis/chapters/*.aux
+thesis/chapters/*.blg
+thesis/main.pdf
 conj_twist
-thesis_data_*.csv
-thesis_data_*.json
+
+# Generated workflow outputs
+agent_workflow/generated/
+figures/diagrams/
+
+# Local exact-solver caches / generated tables
+cornerprun
+fs24_classidx
+fs24_rep
+fs24_sym
+move_corners
+move_flip
+move_slice_sorted
+move_twist
+phase1x24_prun
+
+# Local frontend build artifacts
+webapp/node_modules/
+webapp/.next/
+
+# Historical local benchmark/report outputs
+results/benchmarks/thesis/backup_*/
+results/reports/

@@ -1,5 +1,7 @@
 # Code-to-Thesis Mapping
 
+> Working reference, updated for the March 2026 verification pass. For publication-facing benchmark claims, use `results/benchmarks/thesis/thesis_results_combined.json` and `thesis/chapters/07_evaluation.tex` as the source of truth.
+
 Quick reference: what code to cite for each thesis section.
 
 ---
@@ -67,19 +69,21 @@ def is_phase1_solved(coord_cube):
 
 | Topic | File | What to Reference |
 |-------|------|-------------------|
-| IDA* optimal solver | `src/korf/a_star.py` | `IDAStarSolver` |
+| Exact benchmark solver | `src/korf/optimal_solver.py` | `KorfOptimalSolver` |
+| Internal heuristic search | `src/korf/a_star.py` | `IDAStarSolver` |
 | Pattern database base | `src/korf/pattern_database.py` | `PatternDatabase` class |
 | Corner database | `src/korf/corner_database.py` | `CornerDatabase` |
 | Edge database | `src/korf/edge_database.py` | `EdgeDatabase` |
-| Heuristic functions | `src/korf/heuristics.py` | All heuristic functions |
-| Optimal solver | `src/korf/optimal_solver.py` | Main optimal solver |
+| Heuristic functions | `src/korf/heuristics.py` | Exploratory / low-cost heuristics |
+| Composite heuristic | `src/korf/composite_heuristic.py` | Exploratory composite path |
 
-**Key concept - additive heuristics:**
+**Key distinction:**
 ```python
-# From src/korf/heuristics.py
-def combined_heuristic(cube):
-    """Sum of disjoint pattern database heuristics"""
-    return corner_heuristic(cube) + edge_heuristic(cube)
+# Exact benchmark claims use the external optimal backend.
+solver = KorfOptimalSolver()
+
+# Internal lightweight heuristics remain useful for experiments,
+# but are not the basis for exact optimality claims.
 ```
 
 **Test data:**
@@ -97,14 +101,14 @@ def combined_heuristic(cube):
 | State analyzer | `src/korf/composite_heuristic.py` | `StateAnalyzer` class |
 | Heuristic factory | `src/korf/composite_heuristic.py` | `HeuristicFactory` |
 
-**Novel contribution - Composite Heuristic:**
+**Exploratory composite heuristic:**
 ```python
 # From src/korf/composite_heuristic.py
 class CompositeHeuristic:
-    """Adaptive heuristic that selects strategy based on cube state"""
+    """Adaptive heuristic for exploratory state-aware estimates"""
     def __call__(self, cube):
         entropy = self.analyzer.calculate_entropy(cube)
-        # Select optimal heuristic based on state characteristics
+        # Select a practical heuristic strategy based on state characteristics
         ...
 ```
 
@@ -119,27 +123,26 @@ class CompositeHeuristic:
 ### Benchmark Data
 | Data | File |
 |------|------|
-| CSV results | `thesis_data_20251107_054744.csv` |
-| JSON results | `thesis_data_20251107_054744.json` |
+| Combined JSON results | `results/benchmarks/thesis/thesis_results_combined.json` |
+| Per-depth JSON results | `results/benchmarks/thesis/thesis_bench_d5.json` etc. |
 
 ### Figures (ready to use)
 | Figure | File | Use For |
 |--------|------|---------|
-| Solution lengths | `figures/fig1_solution_length_boxplot.png` | Algorithm comparison |
-| Time comparison | `figures/fig2_time_comparison.png` | Performance analysis |
-| Memory comparison | `figures/fig3_memory_comparison.png` | Resource usage |
-| Success rate | `figures/fig4_success_rate.png` | Reliability |
-| Solution distribution | `figures/fig5_solution_distribution.png` | Quality analysis |
-| Nodes expanded | `figures/fig6_nodes_comparison.png` | Efficiency |
-| Performance vs depth | `figures/fig7_performance_vs_depth.png` | Scalability |
+| Solution lengths | `thesis/figures/fig1_solution_length_boxplot.png` | Algorithm comparison |
+| Time comparison | `thesis/figures/fig2_time_comparison.png` | Performance analysis |
+| Memory comparison | `thesis/figures/fig3_memory_comparison.png` | Resource usage |
+| Success rate | `thesis/figures/fig4_success_rate.png` | Reliability |
+| Solution distribution | `thesis/figures/fig5_solution_distribution.png` | Quality analysis |
+| Nodes expanded | `thesis/figures/fig6_nodes_comparison.png` | Search cost |
+| Performance vs depth | `thesis/figures/fig7_performance_vs_depth.png` | Scalability |
 
 ### Scripts for Generating Data
 | Purpose | Script |
 |---------|--------|
-| Generate benchmarks | `generate_thesis_data.py` |
-| Complete data generation | `generate_complete_thesis_data.py` |
-| LaTeX tables | `generate_latex_tables.py` |
-| Analysis | `analyze_thesis_data.py` |
+| Regenerate thesis benchmark set | `scripts/benchmarks/regenerate_thesis_benchmarks.py` |
+| LaTeX tables | `scripts/benchmarks/generate_latex_tables.py` |
+| Analysis | `scripts/benchmarks/analyze_thesis_data.py` |
 
 ---
 
@@ -216,19 +219,15 @@ src/
 
 ## Quick Stats to Cite
 
-```
-Total Python files: 74
-Total lines of code: ~8,157
-Total test files: 9 + 1 integration
-Total tests: 203 (100% passing)
-Test coverage: Comprehensive
+```text
+Corrected thesis benchmark (100 scrambles, depths 5/10/15/20):
+- Thistlethwaite: 100/100 solved, avg 23.62 moves, avg 1.24s
+- Kociemba: 100/100 solved, avg 14.33 moves, avg 4.62s
+- Korf exact backend: 97/100 solved, avg 9.12 moves on completed runs, 3 depth-20 timeouts
 
-Algorithm Performance:
-- Thistlethwaite: 40-52 moves, <2s, ~2MB
-- Kociemba: <19 moves, <5s, ~80MB
-- Korf/IDA*: optimal (≤20), variable time, ~500MB
-
-Novel contribution:
-- CompositeHeuristic: 15-25% reduction in node expansions
-- Maintains admissibility (optimal solutions guaranteed)
+Important wording:
+- Thistlethwaite benchmark path is pure (no fallback)
+- Kociemba is the best overall practical compromise
+- Korf is exact when solved within the enforced timeout
+- CompositeHeuristic is exploratory and not a blanket admissible guarantee
 ```

@@ -19,12 +19,15 @@ class TestRubikCubeBasics:
     def test_cube_copy(self):
         """Test cube copying."""
         cube1 = RubikCube()
-        cube1.scramble(moves=5, seed=42)
+        scramble_moves = cube1.scramble(moves=5, seed=42)
 
         cube2 = cube1.copy()
         assert cube1 == cube2
         assert cube1 is not cube2
         assert not np.shares_memory(cube1.state, cube2.state)
+        assert cube2._scramble_moves == scramble_moves
+        assert cube2._scramble_depth == 5
+        assert cube2._scramble_seed == 42
 
     def test_cube_equality(self):
         """Test cube equality."""
@@ -124,6 +127,9 @@ class TestScrambling:
         moves = cube.scramble(moves=20, seed=42)
 
         assert len(moves) == 20
+        assert cube._scramble_moves == moves
+        assert cube._scramble_depth == 20
+        assert cube._scramble_seed == 42
         # After 20 random moves, cube is very likely not solved
         # (though technically possible with specific moves)
 
@@ -137,6 +143,12 @@ class TestScrambling:
 
         assert moves1 == moves2
         assert cube1 == cube2
+        assert cube1._scramble_moves == moves1
+        assert cube2._scramble_moves == moves2
+        assert cube1._scramble_depth == 10
+        assert cube2._scramble_depth == 10
+        assert cube1._scramble_seed == 123
+        assert cube2._scramble_seed == 123
 
 
 class TestMoveValidation:

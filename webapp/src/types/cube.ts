@@ -42,7 +42,11 @@ export interface SolveResult {
   timeMs: number;
   memoryMb: number;
   nodesExplored?: number;
+  backend?: string;
+  optimality?: string;
+  notes?: string;
   error?: string;
+  demoOnly?: boolean;
 }
 
 // Comparison result

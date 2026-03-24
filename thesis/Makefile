@@ -1,33 +1,31 @@
-# Makefile for LaTeX thesis compilation
+# Makefile for thesis compilation
 
-MAIN = main
-LATEX = pdflatex
-BIBER = biber
+ROOT := $(abspath ..)
+MAIN := main
+PYTHON ?= python3
+WORKFLOW := $(ROOT)/scripts/thesis_workflow.py
 
-.PHONY: all clean view
+.PHONY: all auto local docker quick clean view
 
-all: $(MAIN).pdf
+all: auto
 
-$(MAIN).pdf: $(MAIN).tex references.bib chapters/*.tex
-	$(LATEX) $(MAIN)
-	$(BIBER) $(MAIN)
-	$(LATEX) $(MAIN)
-	$(LATEX) $(MAIN)
+auto:
+	$(PYTHON) $(WORKFLOW) build --mode auto
 
-quick:
-	$(LATEX) $(MAIN)
+local:
+	$(PYTHON) $(WORKFLOW) build --mode local
+
+docker:
+	$(PYTHON) $(WORKFLOW) build --mode docker
+
+quick: auto
 
 clean:
-	rm -f *.aux *.bbl *.bcf *.blg *.log *.out *.toc *.lof *.lot *.run.xml *.synctex.gz
+	rm -f *.aux *.bbl *.bcf *.blg *.log *.out *.toc *.lof *.lot *.run.xml *.synctex.gz *.xdv
+	rm -f *.fdb_latexmk *.fls
 	rm -f chapters/*.aux
 
 view: $(MAIN).pdf
 	open $(MAIN).pdf || xdg-open $(MAIN).pdf
 
-# Watch for changes and recompile (requires fswatch or inotifywait)
-watch:
-	@echo "Watching for changes..."
-	while true; do \
-		inotifywait -e modify $(MAIN).tex chapters/*.tex references.bib; \
-		make quick; \
-	done
+$(MAIN).pdf: auto

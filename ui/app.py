@@ -2,9 +2,9 @@
 Rubik's Cube Solver - Interactive Web UI
 
 Main Streamlit application for demonstrating and comparing three solving algorithms:
-- Thistlethwaite's Algorithm (fast, 30-52 moves)
-- Kociemba's Algorithm (medium speed, <19 moves)
-- Korf's IDA* (optimal, 20 moves)
+- Thistlethwaite's Algorithm (pure 4-phase solver, longer solutions)
+- Kociemba's Algorithm (best overall practical compromise)
+- Korf's IDA* (exact when solved, timeout-sensitive on hard cases)
 
 Author: Alex Toska, University of Patras
 Phase: 9 (Demos & UI Visualization)
@@ -86,15 +86,14 @@ def main():
     1. **🎯 Single Solver** - Test individual algorithms
     2. **⚖️ Algorithm Comparison** - Compare all three algorithms side-by-side
     3. **📚 Educational Mode** - Learn how each algorithm works
-    4. **📈 Performance Dashboard** - View detailed performance metrics
 
     ### 🔍 Algorithm Overview
 
-    | Algorithm | Speed | Solution Length | Optimality | Memory |
-    |-----------|-------|-----------------|------------|--------|
-    | **Thistlethwaite** | ⚡ Fast (0.2-0.5s) | 30-52 moves | Sub-optimal | 💾 Low (2 MB) |
-    | **Kociemba** | 🚀 Medium (1-3s) | <19 moves | Near-optimal | 💾 Medium (80 MB) |
-    | **Korf IDA*** | 🐢 Variable (1-30s) | ≤20 moves | Optimal | 💾 High (45 MB) |
+    | Algorithm | Speed Profile | Solution Length | Optimality | Memory |
+    |-----------|---------------|-----------------|------------|--------|
+    | **Thistlethwaite** | ⚡ Fast, predictable | Longer than the others | Not optimal | 💾 Low |
+    | **Kociemba** | 🚀 Best practical trade-off | Near-optimal | Not guaranteed | 💾 Moderate |
+    | **Korf IDA*** | 🐢 Variable, timeout-sensitive | Shortest when solved | Exact when solved | 💾 Highest |
 
     ### 🎮 Getting Started
 
@@ -127,7 +126,7 @@ def main():
         <div class="metric-card">
             <h3>✨ Most Optimal</h3>
             <p><strong>Korf IDA*</strong></p>
-            <p>Best solution quality</p>
+            <p>Exact on completed runs</p>
         </div>
         """, unsafe_allow_html=True)
 
@@ -154,12 +153,12 @@ def main():
         - Testing Framework: Comprehensive Phase 8 evaluation
 
         **Algorithms:**
-        1. **Thistlethwaite (1981)**: 4-phase group-theoretic approach
-        2. **Kociemba (1992)**: 2-phase IDA* with coordinate transformation
-        3. **Korf (1997)**: IDA* with pattern databases (composite heuristic)
+        1. **Thistlethwaite (1981)**: pure 4-phase group-theoretic approach
+        2. **Kociemba (1992)**: 2-phase IDA* with the best overall practical benchmark profile
+        3. **Korf (1997)**: external exact backend for benchmark runs, with exploratory heuristic code kept separately
 
         **References:**
-        - Phase 8 comprehensive testing results
+        - Corrected thesis benchmark results
         - Integration with existing visualization modules
         - Standardized metric collection framework
         """)

@@ -21,6 +21,27 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from components.visualizer import show_3d_cube, show_side_by_side_cubes
 from utils.session_state import init_session_state
 
+
+def _backend_label(algo_result) -> str:
+    """Human-readable backend label for tables and captions."""
+    labels = {
+        "thistlethwaite_native": "native pure solver",
+        "kociemba_internal": "internal two-phase solver",
+        "kociemba_native": "native two-phase solver",
+        "optimal_external": "external optimal backend",
+        "heuristic_ida_star": "internal heuristic IDA*",
+    }
+    return labels.get(algo_result.backend or "", algo_result.backend or "n/a")
+
+
+def _optimality_label(algo_result) -> str:
+    """Human-readable optimality label."""
+    if algo_result.optimal_guaranteed is True:
+        return "Exact when solved"
+    if algo_result.optimal_guaranteed is False:
+        return "Not guaranteed"
+    return "Unknown"
+
 # Page config
 st.set_page_config(page_title="Algorithm Comparison", page_icon="⚖️", layout="wide")
 
@@ -33,8 +54,8 @@ st.markdown("Compare all three algorithms side-by-side on identical scrambles")
 
 # Info box
 st.info("""
-💡 **Inspired by rubiks-cube-cracker**: This mode runs all three algorithms on the same scramble
-and displays the results side-by-side for direct comparison.
+💡 This mode runs the repository's current benchmark paths on the same scramble:
+pure Thistlethwaite, Kociemba, and the configured Korf backend.
 """)
 
 # Sidebar controls
@@ -60,7 +81,7 @@ seed = st.sidebar.number_input(
 st.sidebar.subheader("Timeout Settings")
 thistle_timeout = st.sidebar.slider("Thistlethwaite (s)", 5, 60, 30)
 kociemba_timeout = st.sidebar.slider("Kociemba (s)", 10, 120, 60)
-korf_timeout = st.sidebar.slider("Korf IDA* (s)", 30, 300, 120)
+korf_timeout = st.sidebar.slider("Korf Exact / IDA* (s)", 30, 300, 120)
 korf_max_depth = st.sidebar.slider("Korf Max Depth", 10, 25, 20)
 
 # Comparison button
@@ -127,6 +148,7 @@ if st.session_state.comparison_results:
     with col1:
         st.markdown("### 🔵 Thistlethwaite")
         r = result.thistlethwaite
+        st.caption("Pure 4-phase solver with pattern databases; no fallback.")
         if r.solved:
             st.success("✅ Solved")
             st.metric("Moves", r.solution_length)
@@ -141,6 +163,7 @@ if st.session_state.comparison_results:
     with col2:
         st.markdown("### 🟢 Kociemba")
         r = result.kociemba
+        st.caption("Best overall practical compromise in the thesis benchmark.")
         if r.solved:
             st.success("✅ Solved")
             st.metric("Moves", r.solution_length)
@@ -153,8 +176,12 @@ if st.session_state.comparison_results:
             st.caption(r.reason_failed or "Timeout")
 
     with col3:
-        st.markdown("### 🟣 Korf IDA*")
+        st.markdown("### 🟣 Korf")
         r = result.korf
+        st.caption(
+            "External optimal backend when available; exact on solved cases, "
+            "but hard depth-20 scrambles can still time out."
+        )
         if r.solved:
             st.success("✅ Solved")
             st.metric("Moves", r.solution_length)
@@ -162,9 +189,13 @@ if st.session_state.comparison_results:
             st.metric("Memory", f"{r.memory_mb:.2f} MB")
             if r.nodes_explored:
                 st.metric("Nodes", f"{r.nodes_explored:,}")
+            st.caption(f"Backend: {_backend_label(r)} | {_optimality_label(r)}")
         else:
             st.error("❌ Failed")
-            st.caption(r.reason_failed or "Timeout")
+            st.caption(
+                f"{r.reason_failed or 'Timeout'} | "
+                f"Backend: {_backend_label(r)} | {_optimality_label(r)}"
+            )
 
     # Comparison table
     st.markdown("---")
@@ -174,7 +205,7 @@ if st.session_state.comparison_results:
     for name, algo_result in [
         ("Thistlethwaite", result.thistlethwaite),
         ("Kociemba", result.kociemba),
-        ("Korf IDA*", result.korf)
+        ("Korf", result.korf)
     ]:
         if algo_result.solved:
             data.append({
@@ -183,7 +214,9 @@ if st.session_state.comparison_results:
                 "Moves": algo_result.solution_length,
                 "Time (s)": f"{algo_result.time_seconds:.3f}",
                 "Memory (MB)": f"{algo_result.memory_mb:.2f}",
-                "Nodes": algo_result.nodes_explored or "N/A"
+                "Nodes": algo_result.nodes_explored or "N/A",
+                "Backend": _backend_label(algo_result),
+                "Optimality": _optimality_label(algo_result),
             })
         else:
             data.append({
@@ -192,7 +225,9 @@ if st.session_state.comparison_results:
                 "Moves": "-",
                 "Time (s)": f"{algo_result.time_seconds:.3f}",
                 "Memory (MB)": f"{algo_result.memory_mb:.2f}",
-                "Nodes": "-"
+                "Nodes": "-",
+                "Backend": _backend_label(algo_result),
+                "Optimality": _optimality_label(algo_result),
             })
 
     df = pd.DataFrame(data)
@@ -208,7 +243,7 @@ if st.session_state.comparison_results:
     solved_results = [
         ("Thistlethwaite", result.thistlethwaite),
         ("Kociemba", result.kociemba),
-        ("Korf IDA*", result.korf)
+        ("Korf", result.korf)
     ]
     solved_results = [(name, r) for name, r in solved_results if r.solved]
 
@@ -235,7 +270,7 @@ if st.session_state.comparison_results:
     for name, algo_result in [
         ("Thistlethwaite", result.thistlethwaite),
         ("Kociemba", result.kociemba),
-        ("Korf IDA*", result.korf)
+        ("Korf", result.korf)
     ]:
         if algo_result.solved and algo_result.solution_moves:
             with st.expander(f"{name} Solution ({algo_result.solution_length} moves)"):
@@ -261,19 +296,27 @@ if st.session_state.comparison_results:
                     "solved": result.thistlethwaite.solved,
                     "moves": result.thistlethwaite.solution_length,
                     "time": result.thistlethwaite.time_seconds,
-                    "memory": result.thistlethwaite.memory_mb
+                    "memory": result.thistlethwaite.memory_mb,
+                    "backend": result.thistlethwaite.backend,
+                    "optimal_guaranteed": result.thistlethwaite.optimal_guaranteed,
                 },
                 "kociemba": {
                     "solved": result.kociemba.solved,
                     "moves": result.kociemba.solution_length,
                     "time": result.kociemba.time_seconds,
-                    "memory": result.kociemba.memory_mb
+                    "memory": result.kociemba.memory_mb,
+                    "backend": result.kociemba.backend,
+                    "optimal_guaranteed": result.kociemba.optimal_guaranteed,
                 },
                 "korf": {
                     "solved": result.korf.solved,
                     "moves": result.korf.solution_length,
                     "time": result.korf.time_seconds,
-                    "memory": result.korf.memory_mb
+                    "memory": result.korf.memory_mb,
+                    "backend": result.korf.backend,
+                    "optimal_guaranteed": result.korf.optimal_guaranteed,
+                    "nodes_explored": result.korf.nodes_explored,
+                    "reason_failed": result.korf.reason_failed,
                 }
             }
         }
@@ -301,9 +344,9 @@ with st.expander("❓ Help & Tips"):
 
     1. **Configure scramble**: Set scramble depth (5-20 moves recommended)
     2. **Set timeouts**: Adjust based on your patience level
-       - Thistlethwaite: Usually completes in <1s
-       - Kociemba: Usually completes in 1-5s
-       - Korf: Can take 1-60s depending on scramble
+       - Thistlethwaite: Pure 4-phase solver; usually fast, but solutions are long
+       - Kociemba: Best overall practical compromise in the thesis benchmark
+       - Korf: Exact on solved cases with the external backend, but depth-20 cases can still time out
     3. **Run comparison**: Click "Run Comparison" and wait
     4. **Analyze results**: Compare metrics and solution quality
 
@@ -318,8 +361,9 @@ with st.expander("❓ Help & Tips"):
 
     - Start with shallow scrambles (7-10 moves) to get quick results
     - Use the same seed to reproduce exact comparisons
-    - Korf may time out on scrambles >15 moves with default settings
-    - Increase timeouts if you get failures
+    - Thistlethwaite on this page is pure and does not fall back to Kociemba
+    - In the thesis benchmark, Korf timed out on 3 of 25 depth-20 scrambles with a 120s limit
+    - If Korf fails here, check the backend column in the results table before drawing conclusions
     """)
 
 # Footer

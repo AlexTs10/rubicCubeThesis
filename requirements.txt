@@ -1,6 +1,8 @@
 # Core dependencies
 numpy>=1.24.0
 scipy>=1.10.0
+kociemba>=1.2.1              # Native two-phase solver backend for fast fallback
+RubikOptimal>=1.1.0          # Exact optimal solver backend; first use may generate large tables
 
 # Data structures and utilities
 dataclasses-json>=0.6.0

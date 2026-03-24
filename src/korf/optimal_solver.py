@@ -5,10 +5,14 @@ This module implements an optimal solver for the Rubik's Cube using
 Richard Korf's IDA* algorithm with pattern databases. This guarantees
 optimal solutions (minimum number of moves).
 
-Uses the RubikOptimal package (hkociemba implementation) which implements:
+Uses the optional `RubikOptimal` package (imported as `optimal.solver` in
+the common distribution) which implements:
 - Pattern databases for corners (~42MB) and edges (~244MB each)
 - IDA* search with additive heuristics
 - Guaranteed optimal solutions (≤20 moves)
+
+The backend is loaded lazily when `KorfOptimalSolver` is instantiated so that
+importing `src.korf` does not trigger any heavy table-generation side effects.
 
 Performance:
 - PyPy: ~13 minutes for 10 random cubes
@@ -20,15 +24,42 @@ References:
 - https://github.com/hkociemba/RubiksCube-OptimalSolver
 """
 
+import io
+import re
+import signal
 import time
+from contextlib import redirect_stdout
+from importlib import import_module
+from importlib import util as importlib_util
 from typing import List, Optional, Tuple
 import numpy as np
 
-try:
-    import optimal.solver as sv
-    OPTIMAL_AVAILABLE = True
-except ImportError:
-    OPTIMAL_AVAILABLE = False
+_BACKEND_PACKAGE_NAMES = ("optimal", "RubikOptimal")
+_BACKEND_MODULE_NAMES = ("optimal.solver", "RubikOptimal.solver")
+_HAS_REALTIME_TIMER = all(
+    hasattr(signal, attr)
+    for attr in ("SIGALRM", "setitimer", "ITIMER_REAL")
+)
+
+
+def _backend_available() -> bool:
+    """Check whether a supported RubikOptimal backend is installed."""
+    return any(importlib_util.find_spec(name) is not None for name in _BACKEND_PACKAGE_NAMES)
+
+
+def _load_backend_module():
+    """Import the RubikOptimal backend lazily to avoid heavy import-time work."""
+    for package_name, module_name in zip(_BACKEND_PACKAGE_NAMES, _BACKEND_MODULE_NAMES):
+        if importlib_util.find_spec(package_name) is None:
+            continue
+        try:
+            return import_module(module_name)
+        except ImportError:
+            continue
+    return None
+
+
+OPTIMAL_AVAILABLE = _backend_available()
 
 from ..cube.rubik_cube import RubikCube, Face
 
@@ -43,17 +74,21 @@ class KorfOptimalSolver:
 
     def __init__(self):
         """Initialize the optimal solver."""
-        if not OPTIMAL_AVAILABLE:
+        self._backend = _load_backend_module()
+        if self._backend is None:
             raise ImportError(
-                "RubikOptimal package not installed. "
+                "Optional RubikOptimal backend is not installed or not importable. "
                 "Install with: pip install RubikOptimal\n"
-                "For best performance, use PyPy: pypy3 -m pip install RubikOptimal"
+                "If you are using a local checkout, ensure the solver is importable "
+                "as `optimal.solver`."
             )
 
         # Statistics
         self.solve_count = 0
         self.total_time = 0.0
         self.total_moves = 0
+        self.timeout_supported = _HAS_REALTIME_TIMER
+        self.last_stats = {}
 
     def _cube_to_string(self, cube: RubikCube) -> str:
         """
@@ -150,7 +185,7 @@ class KorfOptimalSolver:
         Args:
             cube: Scrambled cube to solve
             verbose: Whether to print progress
-            timeout: Maximum time in seconds (not enforced by underlying solver)
+            timeout: Maximum time in seconds
 
         Returns:
             Tuple of (solution_moves, stats_dict) or None if failed
@@ -182,18 +217,43 @@ class KorfOptimalSolver:
 
         # Solve
         start_time = time.time()
+        backend_output = io.StringIO()
 
         try:
-            # Note: The optimal solver doesn't support timeout parameter
-            # and will generate pattern databases on first run (~13 min with PyPy)
-            solution_str = sv.solve(cube_string)
+            def _timeout_handler(signum, frame):  # pragma: no cover - exercised via signal delivery
+                raise TimeoutError("Korf optimal solver exceeded timeout")
+
+            def _invoke_backend() -> str:
+                if verbose:
+                    return self._backend.solve(cube_string)
+                with redirect_stdout(backend_output):
+                    return self._backend.solve(cube_string)
+
+            if timeout is not None and self.timeout_supported:
+                previous_handler = signal.getsignal(signal.SIGALRM)
+                signal.signal(signal.SIGALRM, _timeout_handler)
+                signal.setitimer(signal.ITIMER_REAL, timeout)
+                try:
+                    solution_str = _invoke_backend()
+                finally:
+                    signal.setitimer(signal.ITIMER_REAL, 0.0)
+                    signal.signal(signal.SIGALRM, previous_handler)
+            else:
+                solution_str = _invoke_backend()
+
+            solve_time = time.time() - start_time
+            backend_stats = self._parse_backend_output(backend_output.getvalue())
 
             if solution_str is None:
+                self.last_stats = {
+                    'time': solve_time,
+                    'optimal': False,
+                    'timed_out': False,
+                    **backend_stats,
+                }
                 if verbose:
                     print("\n❌ Failed to find solution")
                 return None
-
-            solve_time = time.time() - start_time
 
             # Parse solution
             solution = self._parse_solution(solution_str)
@@ -208,8 +268,11 @@ class KorfOptimalSolver:
                 'time': solve_time,
                 'moves': len(solution),
                 'optimal': True,
-                'raw_solution': solution_str
+                'raw_solution': solution_str,
+                'timed_out': False,
+                **backend_stats,
             }
+            self.last_stats = stats.copy()
 
             if verbose:
                 print(f"\n✓ Optimal solution found!")
@@ -228,10 +291,53 @@ class KorfOptimalSolver:
 
             return (solution, stats)
 
+        except TimeoutError:
+            solve_time = time.time() - start_time
+            backend_stats = self._parse_backend_output(backend_output.getvalue())
+            self.last_stats = {
+                'time': solve_time,
+                'optimal': False,
+                'timed_out': True,
+                **backend_stats,
+            }
+            if verbose:
+                print(f"\n❌ Timeout after {solve_time:.2f} seconds")
+            return None
         except Exception as e:
+            self.last_stats = {
+                'time': time.time() - start_time,
+                'optimal': False,
+                'timed_out': False,
+                'error': str(e),
+            }
             if verbose:
                 print(f"\n❌ Error during solving: {e}")
             return None
+
+    @staticmethod
+    def _parse_backend_output(output: str) -> dict:
+        """Extract useful metrics from the backend's progress prints."""
+        stats = {}
+
+        match = re.search(r"nodes generated:\s*(\d+)", output)
+        if match:
+            stats['nodes_explored'] = int(match.group(1))
+
+        depth_matches = re.findall(
+            r"depth\s+(\d+)\s+done in\s+([0-9.]+)\s+s,\s+(\d+)\s+nodes generated",
+            output,
+        )
+        if depth_matches:
+            stats['depth_progress'] = [
+                {
+                    'depth': int(depth),
+                    'seconds': float(seconds),
+                    'nodes_generated': int(nodes),
+                }
+                for depth, seconds, nodes in depth_matches
+            ]
+
+        return stats
 
     def get_statistics(self) -> dict:
         """
@@ -241,19 +347,29 @@ class KorfOptimalSolver:
             Dictionary with average time, moves, etc.
         """
         if self.solve_count == 0:
-            return {
+            base_stats = {
                 'cubes_solved': 0,
                 'avg_time': 0.0,
                 'avg_moves': 0.0,
-                'total_time': 0.0
+                'total_time': 0.0,
+            }
+        else:
+            base_stats = {
+                'cubes_solved': self.solve_count,
+                'avg_time': self.total_time / self.solve_count,
+                'avg_moves': self.total_moves / self.solve_count,
+                'total_time': self.total_time,
             }
 
-        return {
-            'cubes_solved': self.solve_count,
-            'avg_time': self.total_time / self.solve_count,
-            'avg_moves': self.total_moves / self.solve_count,
-            'total_time': self.total_time
-        }
+        base_stats.update(
+            {
+                'timeout_supported': self.timeout_supported,
+                'nodes_explored': self.last_stats.get('nodes_explored'),
+                'last_time': self.last_stats.get('time', 0.0),
+                'last_timed_out': self.last_stats.get('timed_out', False),
+            }
+        )
+        return base_stats
 
 
 def solve_optimal(cube: RubikCube, verbose: bool = True) -> Optional[List[str]]:

@@ -1,17 +1,461 @@
-\chapter{Εκτίμηση Απόστασης και Ευρετικές Συναρτήσεις}
+\chapter{Ευρετικές Συναρτήσεις}
 \label{ch:heuristics}
 
 % Reference: src/korf/heuristics.py, src/korf/composite_heuristic.py
 
-\section{Το Πρόβλημα της Εκτίμησης Απόστασης}
-% Definition, usefulness
+Οι ευρετικές συναρτήσεις αποτελούν θεμελιώδες εργαλείο στην επίλυση
+προβλημάτων αναζήτησης, παρέχοντας εκτιμήσεις του κόστους από μια κατάσταση
+στον στόχο. Στο πλαίσιο του κύβου Rubik, η ευρετική συνάρτηση $h(n)$ εκτιμά
+τον αριθμό κινήσεων που απαιτούνται για την επίλυση μιας δεδομένης
+διαμόρφωσης του κύβου. Το παρόν κεφάλαιο παρουσιάζει τις θεμελιώδεις αρχές,
+τις υλοποιημένες ευρετικές, και τη \textbf{σύνθετη ευρετική} ως διερευνητικό,
+προσαρμοστικό μηχανισμό εκτίμησης. Τα αυστηρά αποτελέσματα βελτιστότητας της
+εργασίας δεν στηρίζονται σε αυτές τις ελαφριές ευρετικές, αλλά στην ακριβή
+Korf διαδρομή με pattern databases του Κεφαλαίου~\ref{ch:korf}.
 
-\section{Υλοποιημένες Ευρετικές}
-% Hamming, Manhattan, Pattern DB, Composite
+%----------------------------------------------------------------------------
+\section{Θεμελιώδεις Αρχές Ευρετικών}
+\label{sec:heuristic-fundamentals}
 
-\section{Σύνθετη Ευρετική (Composite Heuristic)}
-% YOUR NOVEL CONTRIBUTION - expand this section!
-% Dynamic strategy selection, entropy analysis
+\subsection{Απαίτηση Αποδεκτότητας}
+\label{subsec:admissibility}
 
-\section{Σύγκριση A* vs IDA*}
-% Memory vs time tradeoff
+Η \textbf{αποδεκτότητα} (admissibility) αποτελεί κρίσιμη ιδιότητα για την εγγύηση βέλτιστων λύσεων \cite{hart1968formal}. Μια ευρετική συνάρτηση $h(n)$ θεωρείται αποδεκτή αν και μόνο αν ικανοποιεί την ακόλουθη ανισότητα:
+
+\begin{equation}
+\label{eq:admissibility}
+h(n) \leq h^{*}(n), \quad \forall n \in S
+\end{equation}
+
+\noindent όπου:
+\begin{itemize}
+    \item $h(n)$: η εκτιμώμενη απόσταση από τον κόμβο $n$ στον στόχο
+    \item $h^{*}(n)$: η πραγματική (βέλτιστη) απόσταση από τον κόμβο $n$ στον στόχο
+    \item $S$: ο χώρος καταστάσεων του προβλήματος
+\end{itemize}
+
+Η αποδεκτότητα εγγυάται ότι ο αλγόριθμος A* θα βρει πάντα τη βέλτιστη λύση,
+καθώς ποτέ δεν υπερεκτιμάται το πραγματικό κόστος
+\cite{pearl1984heuristics}. Η ιδιότητα αυτή είναι κρίσιμη για το θεωρητικό
+υπόβαθρο του IDA* και των ακριβών pattern databases. Δεν ικανοποιείται,
+ωστόσο, αυτόματα από κάθε κανονικοποιημένη heuristic που υλοποιείται
+πρακτικά.
+
+Μια ισχυρότερη ιδιότητα είναι η \textbf{συνέπεια} (consistency):
+\begin{equation}
+h(n) \leq c(n, n') + h(n'), \quad \forall \text{ διαδόχους } n'
+\end{equation}
+όπου $c(n, n')$ είναι το κόστος μετάβασης. Η συνέπεια εγγυάται ότι δεν χρειάζεται επαναξέταση κόμβων.
+
+\subsection{Μετρικές Ποιότητας Ευρετικών}
+\label{subsec:heuristic-quality}
+
+Η ποιότητα μιας ευρετικής αξιολογείται μέσω δύο βασικών κριτηρίων:
+
+\subsubsection{Πληροφορητικότητα (Informedness)}
+
+Η \textbf{πληροφορητικότητα} μετρά πόσο κοντά είναι η εκτίμηση στην πραγματική απόσταση. Μια ευρετική $h_1$ είναι πιο πληροφορητική από την $h_2$ αν:
+
+\begin{equation}
+\label{eq:informedness}
+h_1(n) \geq h_2(n), \quad \forall n \in S
+\end{equation}
+
+\noindent με την προϋπόθεση ότι αμφότερες παραμένουν αποδεκτές. Όσο αυξάνεται η πληροφορητικότητα, τόσο μειώνεται ο αριθμός των κόμβων που επεκτείνονται κατά την αναζήτηση.
+
+\subsubsection{Συμβιβασμοί Αποδοτικότητας}
+
+Υπάρχει θεμελιώδης συμβιβασμός μεταξύ:
+
+\begin{itemize}
+    \item \textbf{Ακρίβειας εκτίμησης:} Ακριβέστερες ευρετικές μειώνουν τους κόμβους αναζήτησης
+    \item \textbf{Υπολογιστικού κόστους:} Πολυπλοκότερες ευρετικές απαιτούν περισσότερο χρόνο υπολογισμού
+\end{itemize}
+
+Ο δείκτης αποδοτικότητας ορίζεται ως:
+\begin{equation}
+\label{eq:efficiency}
+\eta = \frac{\text{Μείωση κόμβων αναζήτησης}}{\text{Επιπλέον υπολογιστικό κόστος}}
+\end{equation}
+
+Για τον κύβο Rubik, τα Pattern Databases προσφέρουν εξαιρετική πληροφορητικότητα με σταθερό χρόνο αναζήτησης $O(1)$, αποτελώντας τη βέλτιστη επιλογή για τον αλγόριθμο IDA* \cite{korf1997finding}.
+
+%----------------------------------------------------------------------------
+\section{Βασικές Ευρετικές}
+\label{sec:basic-heuristics}
+
+Σε αυτήν την ενότητα παρουσιάζουμε τις βασικές ευρετικές συναρτήσεις που
+υλοποιήθηκαν στο αρχείο \filepath{src/korf/heuristics.py}. Οι συναρτήσεις αυτές
+λειτουργούν ως κανονικοποιημένες, χαμηλού κόστους εκτιμήσεις και όχι ως
+αυστηρά admissible lower bounds για τη διαδρομή benchmark.
+
+\subsection{Απλή Ευρετική (Simple Heuristic)}
+\label{subsec:simple-heuristic}
+
+Η απλή ευρετική βασίζεται στον αριθμό των αυτοκόλλητων που δεν ταιριάζουν με το χρώμα του κέντρου της αντίστοιχης πλευράς. Για κάθε πλευρά του κύβου, συγκρίνονται τα 8 περιφερειακά αυτοκόλλητα με το κεντρικό.
+
+\begin{equation}
+\label{eq:simple-heuristic}
+h_{\text{simple}}(n) = \frac{\sum_{f \in \text{Faces}} \sum_{i \neq \text{center}} \mathbf{1}[\text{sticker}_i \neq \text{center}_f]}{8}
+\end{equation}
+
+\noindent όπου $\mathbf{1}[\cdot]$ είναι η συνάρτηση δείκτη. Η διαίρεση με το 8
+παράγει μια εύχρηστη κανονικοποιημένη εκτίμηση στην ίδια κλίμακα με τον αριθμό
+κινήσεων.
+
+\begin{lstlisting}[language=Python, caption={Υλοποίηση απλής ευρετικής (src/korf/heuristics.py:28-59)}]
+def simple_heuristic(cube: RubikCube) -> float:
+    if cube.is_solved():
+        return 0.0
+    mismatched = 0
+    for face in Face:
+        face_state = cube.get_face(face)
+        center_color = face_state[4]
+        for i in range(9):
+            if i != 4 and face_state[i] != center_color:
+                mismatched += 1
+    return mismatched / 8.0
+\end{lstlisting}
+
+\subsection{Απόσταση Hamming}
+\label{subsec:hamming-distance}
+
+Η απόσταση Hamming μετρά τον αριθμό των κομματιών (γωνίες και ακμές) που βρίσκονται σε λανθασμένη θέση ή προσανατολισμό. Αυτή η μέτρηση λειτουργεί στο επίπεδο των cubies αντί των αυτοκόλλητων.
+
+\begin{equation}
+\label{eq:hamming-distance}
+h_{\text{hamming}}(n) = \frac{|\{c \in \text{Corners} : c \neq \text{solved}\}| + |\{e \in \text{Edges} : e \neq \text{solved}\}|}{8}
+\end{equation}
+
+Ένα κομμάτι θεωρείται ``λυμένο'' μόνο αν βρίσκεται στη σωστή θέση \textbf{και} έχει σωστό προσανατολισμό:
+
+\begin{lstlisting}[language=Python, caption={Υλοποίηση απόστασης Hamming (src/korf/heuristics.py:62-94)}]
+def hamming_distance(cube: RubikCube) -> float:
+    if cube.is_solved():
+        return 0.0
+    cubie = from_facelet_cube(cube)
+    misplaced = 0
+    for i in range(8):  # Corners
+        if cubie.corner_perm[i] != i or cubie.corner_orient[i] != 0:
+            misplaced += 1
+    for i in range(12):  # Edges
+        if cubie.edge_perm[i] != i or cubie.edge_orient[i] != 0:
+            misplaced += 1
+    return misplaced / 8.0
+\end{lstlisting}
+
+\subsection{Απόσταση Manhattan}
+\label{subsec:manhattan-distance}
+
+Η απόσταση Manhattan υπολογίζει το άθροισμα των ελάχιστων κινήσεων που απαιτούνται για κάθε κομμάτι ξεχωριστά, αγνοώντας τις αλληλεπιδράσεις μεταξύ κομματιών. Υπολογίζεται χωριστά για γωνίες και ακμές:
+
+\begin{equation}
+\label{eq:manhattan-corner}
+h_{\text{corner}}(n) = \frac{\sum_{i=0}^{7} d(\text{pos}_i, \text{target}_i) + \mathbf{1}[\text{orient}_i \neq 0]}{4}
+\end{equation}
+
+\begin{equation}
+\label{eq:manhattan-edge}
+h_{\text{edge}}(n) = \frac{\sum_{i=0}^{11} d(\text{pos}_i, \text{target}_i) + \mathbf{1}[\text{orient}_i \neq 0]}{4}
+\end{equation}
+
+Η τελική εκτίμηση λαμβάνει το μέγιστο των δύο αποστάσεων. Με αυτόν τον τρόπο
+παράγεται ένα πρακτικό combined estimate:
+
+\begin{equation}
+\label{eq:manhattan-combined}
+h_{\text{manhattan}}(n) = \max(h_{\text{corner}}(n), h_{\text{edge}}(n))
+\end{equation}
+
+\begin{lstlisting}[language=Python, caption={Συνδυασμένη απόσταση Manhattan (src/korf/heuristics.py:169-192)}]
+def manhattan_distance(cube: RubikCube) -> float:
+    if cube.is_solved():
+        return 0.0
+    cubie = from_facelet_cube(cube)
+    corner_dist = manhattan_distance_corner(cubie)
+    edge_dist = manhattan_distance_edge(cubie)
+    return max(corner_dist, edge_dist)
+\end{lstlisting}
+
+Η διαίρεση με το 4 αντί του 8 οφείλεται στο γεγονός ότι κάθε κίνηση επηρεάζει
+ακριβώς 4 γωνίες και 4 ακμές αντίστοιχα. Η χρήση του μεγίστου αντί του
+αθροίσματος αποφεύγει την υπερβολική διπλομέτρηση, αλλά δεν πρέπει να
+θεωρείται αυτόματα απόδειξη admissibility για την ελαφριά υλοποίηση.
+
+%----------------------------------------------------------------------------
+\section{Ευρετικές Pattern Database}
+\label{sec:pattern-databases}
+
+Οι ευρετικές Pattern Database (PDB) αποτελούν μία από τις πιο αποτελεσματικές τεχνικές για την εκτίμηση της ελάχιστης απόστασης στον Κύβο του Rubik. Η βασική ιδέα είναι η προϋπολογισμένη αποθήκευση βέλτιστων αποστάσεων για υποπροβλήματα του κύβου \cite{culberson1998pattern}.
+
+\subsection{Αρχές Pattern Database}
+\label{subsec:pdb-principles}
+
+Μία Pattern Database αποθηκεύει την ακριβή ελάχιστη απόσταση για την επίλυση ενός υποσυνόλου του κύβου. Για παράδειγμα, η \texttt{CornerPatternDatabase}, η οποία υλοποιείται στο \filepath{src/korf/corner_database.py}, αποθηκεύει αποστάσεις μόνο για τις 8 γωνίες και αγνοεί τις ακμές. Ο χώρος καταστάσεων για τις γωνίες είναι:
+\begin{equation}
+|S_{corners}| = 8! \times 3^7 = 88.179.840
+\end{equation}
+δηλαδή 88.179.840 διακριτές καταστάσεις.
+
+Η κατασκευή της βάσης δεδομένων γίνεται μέσω αναζήτησης κατά πλάτος (BFS) ξεκινώντας από τη λυμένη κατάσταση:
+
+\begin{algorithm}[H]
+\caption{Κατασκευή Pattern Database μέσω BFS}
+\label{alg:pdb-construction}
+\begin{algorithmic}[1]
+\Require Συνάρτηση δεικτοδότησης $\text{index}(s)$, συνάρτηση μετάβασης $\text{apply}(s, m)$
+\Ensure Pattern Database $PDB$ με αποστάσεις για όλες τις καταστάσεις
+\State $PDB \gets$ πίνακας με τιμές $\infty$
+\State $PDB[\text{index}(s_{solved})] \gets 0$
+\State $Q \gets$ ουρά με $(s_{solved}, 0)$
+\State $visited \gets \{s_{solved}\}$
+\While{$Q \neq \emptyset$}
+    \State $(s, d) \gets Q.\text{dequeue}()$
+    \ForAll{κίνηση $m \in \{U, U', U2, D, D', D2, \ldots, R2\}$}
+        \State $s' \gets \text{apply}(s, m)$
+        \If{$s' \notin visited$}
+            \State $visited \gets visited \cup \{s'\}$
+            \State $PDB[\text{index}(s')] \gets d + 1$
+            \State $Q.\text{enqueue}((s', d + 1))$
+        \EndIf
+    \EndFor
+\EndWhile
+\State \Return $PDB$
+\end{algorithmic}
+\end{algorithm}
+
+Η αναζήτηση τιμής από την PDB παρέχει ένα \textbf{παραδεκτό κάτω φράγμα} ακαριαία ($O(1)$), καθώς η απόσταση για το υποπρόβλημα δεν μπορεί να υπερβαίνει την πραγματική απόσταση για το πλήρες πρόβλημα.
+
+\subsection{Συνδυασμός Pattern Databases}
+\label{subsec:pdb-combining}
+
+Για τη βελτίωση της εκτίμησης, συνδυάζουμε πολλαπλές PDBs. Η υλοποίηση στο \filepath{src/korf/distance_estimator.py} χρησιμοποιεί τρεις βάσεις δεδομένων: μία για τις γωνίες και δύο για τις ακμές (6 ακμές ανά ομάδα).
+
+\subsubsection{Συνδυασμός Maximum}
+
+Η στρατηγική maximum παίρνει το μέγιστο των επιμέρους εκτιμήσεων:
+\begin{equation}
+h(s) = \max(h_{corner}(s), h_{edge1}(s), h_{edge2}(s))
+\end{equation}
+
+\begin{theorem}[Παραδεκτότητα Συνδυασμού Maximum]
+Αν $h_1, h_2, \ldots, h_k$ είναι παραδεκτές ευρετικές, τότε $h(s) = \max_i h_i(s)$ είναι επίσης παραδεκτή.
+\end{theorem}
+
+\begin{proof}
+Έστω $h^*(s)$ η πραγματική βέλτιστη απόσταση. Για κάθε παραδεκτή ευρετική ισχύει $h_i(s) \leq h^*(s)$. Επομένως:
+\begin{equation}
+h(s) = \max_i h_i(s) \leq h^*(s)
+\end{equation}
+Άρα η $h$ δεν υπερεκτιμά ποτέ την πραγματική απόσταση.
+\end{proof}
+
+\subsubsection{Αθροιστικοί Συνδυασμοί υπό Προϋποθέσεις}
+
+Η γενική θεωρία των disjoint Pattern Databases δείχνει ότι αθροιστικός
+συνδυασμός είναι δυνατός μόνο όταν οι αφαιρέσεις είναι πραγματικά ανεξάρτητες
+και όταν το κόστος κάθε πραγματικής κίνησης κατανέμεται έτσι ώστε να μη
+χρεώνεται σε περισσότερες από μία βάσεις δεδομένων
+\cite{korf2002disjoint,felner2004additive}. Χωρίς αυτές τις προϋποθέσεις, ένα
+απλό άθροισμα μπορεί να οδηγήσει σε υπερεκτίμηση.
+
+Στο αποθετήριο της παρούσας εργασίας δεν τεκμηριώνεται τέτοια κατανομή κόστους
+μεταξύ αφαιρέσεων για τον κύβο του Rubik. Για τον λόγο αυτό, η ασφαλής θεωρητική
+διατύπωση για τη benchmark διαδρομή παραμένει ο συνδυασμός μέσω $\max(\cdot)$
+του Κεφαλαίου~\ref{ch:korf}, και όχι αθροιστικές διατυπώσεις για τη
+ελαφριά υλοποίηση.
+
+%----------------------------------------------------------------------------
+\section{Σύνθετη Ευρετική ως Διερευνητική Συνεισφορά}
+\label{sec:composite-heuristic}
+
+Η παρούσα ενότητα παρουσιάζει τη \textbf{σύνθετη ευρετική} της εργασίας ως μια
+νέα, διερευνητική heuristic συνάρτηση που προσαρμόζει δυναμικά τη στρατηγική
+εκτίμησης βάσει χαρακτηριστικών της τρέχουσας κατάστασης του κύβου.
+Η υλοποίηση βρίσκεται στην κλάση \texttt{CompositeHeuristic} του αρχείου
+\filepath{src/korf/composite_heuristic.py}.
+
+\subsection{Κίνητρο}
+\label{subsec:composite-motivation}
+
+Η βιβλιογραφική έρευνα αποκάλυψε ότι διαφορετικές ευρετικές συναρτήσεις υπερέχουν σε διαφορετικά βάθη ανακατέματος. Ο Korf (1997) απέδειξε ότι τα Pattern Databases παρέχουν τις ακριβέστερες εκτιμήσεις για βαθιά ανακατεμένες καταστάσεις, αλλά με σημαντικό υπολογιστικό κόστος. Αντίθετα, η απόσταση Manhattan είναι υπολογιστικά αποδοτική και επαρκής για καταστάσεις κοντά στη λύση.
+
+Η βασική παρατήρηση είναι ότι \textbf{καμία μεμονωμένη ευρετική δεν είναι
+βέλτιστη για όλες τις καταστάσεις}. Αυτό οδήγησε στην ανάπτυξη μιας
+προσαρμοστικής προσέγγισης που επιλέγει δυναμικά τη στρατηγική ευρετικής βάσει
+ανάλυσης της τρέχουσας κατάστασης. Η αξία της ενότητας αυτής είναι κυρίως
+σχεδιαστική και διερευνητική: δεν διατυπώνεται εδώ ανεξάρτητο ποσοτικό
+συμπέρασμα μείωσης κόμβων που να χρησιμοποιείται ως κεντρικό αποτέλεσμα της
+διατριβής.
+
+\subsection{Ανάλυση Κατάστασης}
+\label{subsec:state-analysis}
+
+Η κλάση \texttt{StateAnalyzer} (γραμμές 39--120) υλοποιεί τρεις μεθόδους ανάλυσης κατάστασης:
+
+\subsubsection{Υπολογισμός Εντροπίας}
+
+Η εντροπία μετρά τον βαθμό αταξίας του κύβου:
+
+\begin{equation}
+\label{eq:entropy}
+\text{entropy} = \frac{\sum_{f=1}^{6} \sum_{i \neq \text{center}} \mathbb{1}[s_{f,i} \neq c_f]}{48}
+\end{equation}
+
+όπου $s_{f,i}$ είναι το χρώμα της θέσης $i$ στην έδρα $f$, $c_f$ το χρώμα του κέντρου, και ο παρονομαστής 48 αντιστοιχεί στα μη-κεντρικά αυτοκόλλητα (6 έδρες × 8 θέσεις). Η τιμή κυμαίνεται από 0.0 (λυμένος) έως 1.0 (μέγιστη αταξία).
+
+\subsubsection{Υπολογισμός Διαχωρισμού}
+
+Ο διαχωρισμός μετρά πόσα κομμάτια βρίσκονται εκτός αρχικής θέσης:
+
+\begin{equation}
+\label{eq:separation}
+\text{separation} = \frac{\sum_{i=0}^{7} \mathbb{1}[\pi_c(i) \neq i] + \sum_{j=0}^{11} \mathbb{1}[\pi_e(j) \neq j]}{20}
+\end{equation}
+
+όπου $\pi_c$ και $\pi_e$ είναι οι μεταθέσεις γωνιών και ακμών αντίστοιχα.
+
+\subsubsection{Ανίχνευση Προσανατολισμένου Επιπέδου}
+
+Η μέθοδος \filepath{has_oriented_layer()} ελέγχει αν κάποια έδρα έχει όλες τις ακμές σωστά προσανατολισμένες (θέσεις 1, 3, 5, 7 με χρώμα ίδιο με το κέντρο). Αυτό υποδεικνύει μερικώς λυμένη κατάσταση.
+
+\subsection{Προσαρμοστική Επιλογή Στρατηγικής}
+\label{subsec:adaptive-strategy}
+
+Η μέθοδος \filepath{__call__()} της κλάσης \texttt{CompositeHeuristic} (γραμμές 158--194) υλοποιεί την προσαρμοστική επιλογή στρατηγικής:
+
+\begin{algorithm}[H]
+\caption{Προσαρμοστική Επιλογή Ευρετικής Στρατηγικής}
+\label{alg:adaptive-selection}
+\begin{algorithmic}[1]
+\Require Κατάσταση κύβου $s$
+\Ensure Εκτίμηση απόστασης $h(s)$
+\State $\text{entropy} \gets \texttt{calculate\_entropy}(s)$
+\State $\text{has\_layer} \gets \texttt{has\_oriented\_layer}(s)$
+\If{$\text{entropy} < 0.3$ \textbf{or} $\text{has\_layer}$}
+    \State \Return $\max(\text{manhattan\_corner}, \text{manhattan\_edge})$
+\ElsIf{$\text{entropy} > 0.7$}
+    \If{pattern\_db\_available}
+        \State \Return $\max(\text{corner\_db}, \text{edge\_db})$
+    \Else
+        \State \Return $\texttt{enhanced\_manhattan}(s)$
+    \EndIf
+\Else
+    \State \Return $\max(\text{hamming}, \text{manhattan}, \text{enhanced})$
+\EndIf
+\end{algorithmic}
+\end{algorithm}
+
+\begin{table}[htbp]
+\centering
+\caption{Επιλογή στρατηγικής βάσει εύρους εντροπίας}
+\label{tab:strategy-selection}
+\small
+\begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{2.6cm} >{\RaggedRight\arraybackslash}p{2.8cm} >{\RaggedRight\arraybackslash}p{2.8cm} Y}
+\toprule
+\textbf{Εύρος Εντροπίας} & \textbf{Χαρακτηρισμός} & \textbf{Στρατηγική} & \textbf{Αιτιολόγηση} \\
+\midrule
+$[0, 0.3)$ & Κοντά στη λύση & Manhattan & Ταχύτητα και επαρκής ακρίβεια \\
+$[0.3, 0.7]$ & Μεσαίο βάθος & Μέγιστο ευρετικών & Ισορροπία ακρίβειας και κόστους \\
+$(0.7, 1.0]$ & Βαθύ ανακάτεμα & Pattern DBs & Μέγιστη διαθέσιμη ακρίβεια \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Ο συνδυασμός με χρήση του μέγιστου ($\max$) επιλέχθηκε ως συντηρητική πρακτική
+στρατηγική, επειδή αποφεύγει επιθετικές αθροίσεις ή σταθμισμένους μέσους όρους
+που θα μεγάλωναν ακόμη περισσότερο τον κίνδυνο υπερεκτίμησης.
+
+%----------------------------------------------------------------------------
+\section{Βελτιωμένη Απόσταση Manhattan}
+\label{sec:enhanced-manhattan}
+
+Η βελτιωμένη απόσταση Manhattan αποτελεί επέκταση της κλασικής ευρετικής που
+ενσωματώνει πληροφορίες προσανατολισμού. Η υλοποίηση βρίσκεται στη μέθοδο
+\filepath{_enhanced_manhattan()} (γραμμές 266--305).
+
+\subsection{Ποινές Προσανατολισμού}
+\label{subsec:orientation-penalties}
+
+Η κλασική απόσταση Manhattan αγνοεί τον προσανατολισμό των κομματιών. Η βελτιωμένη έκδοση προσθέτει συντηρητικές ποινές:
+
+\begin{equation}
+\label{eq:enhanced-corner}
+d_{\text{corner}} = \sum_{i=0}^{7} \left( \mathbb{1}[\pi_c(i) \neq i] + 0.5 \cdot \mathbb{1}[o_c(i) \neq 0] \right)
+\end{equation}
+
+\begin{equation}
+\label{eq:enhanced-edge}
+d_{\text{edge}} = \sum_{j=0}^{11} \left( \mathbb{1}[\pi_e(j) \neq j] + 0.5 \cdot \mathbb{1}[o_e(j) \neq 0] \right)
+\end{equation}
+
+όπου $o_c(i) \in \{0, 1, 2\}$ είναι ο προσανατολισμός της γωνίας $i$ και
+$o_e(j) \in \{0, 1\}$ ο προσανατολισμός της ακμής $j$. Η ποινή $+0.5$ για κάθε
+λανθασμένο προσανατολισμό εισάγει πρόσθετη πληροφορία στην εκτίμηση, αλλά δεν
+χρησιμοποιείται στην εργασία ως formal proof lower bound.
+
+\subsection{Τελική Εκτίμηση}
+\label{subsec:enhanced-final}
+
+Η τελική εκτίμηση υπολογίζεται με διαίρεση δια 4:
+
+\begin{equation}
+\label{eq:enhanced-final}
+h_{\text{enhanced}}(s) = \max\left( \frac{d_{\text{corner}}}{4}, \frac{d_{\text{edge}}}{4} \right)
+\end{equation}
+
+Η διαίρεση δια 4 κρατά την κλίμακα της εκτίμησης σε λογικά επίπεδα, καθώς κάθε
+κίνηση επηρεάζει ακριβώς 4 γωνίες ή 4 ακμές. Η βελτιωμένη Manhattan έχει
+πρακτικό ενδιαφέρον ως richer estimate με χαμηλό υπολογιστικό κόστος
+$O(1)$ ανά αξιολόγηση.
+
+%----------------------------------------------------------------------------
+\section{Εμπειρική Σημείωση}
+\label{sec:heuristics-evaluation}
+
+Οι heuristics αυτού του κεφαλαίου δεν αποτελούν το κύριο experimental endpoint
+της διατριβής. Η ποσοτική, publishable σύγκριση πραγματοποιείται στο
+Κεφάλαιο~\ref{ch:evaluation} στο επίπεδο των ολοκληρωμένων solvers και όχι στο
+επίπεδο μεμονωμένων heuristic estimates. Για τον λόγο αυτό, δεν διατυπώνονται
+εδώ ανεξάρτητοι αριθμητικοί ισχυρισμοί περί 15--25\% μείωσης κόμβων ή ακριβών
+μικρομετρικών timing, εφόσον τέτοιο αυτόνομο artifact δεν χρησιμοποιήθηκε ως
+πρωτεύον αποτέλεσμα της εργασίας.
+
+Παρόλα αυτά, η πρακτική αξία των heuristics παραμένει σαφής. Οι simple,
+Hamming, Manhattan και enhanced Manhattan συναρτήσεις παρέχουν progressively
+πλουσιότερες εκτιμήσεις με ελάχιστο υπολογιστικό κόστος, ενώ η composite
+heuristic λειτουργεί ως προσαρμοστικό διερευνητικό layer που επιλέγει
+διαφορετική στρατηγική ανάλογα με την κατάσταση του κύβου.
+
+%----------------------------------------------------------------------------
+\section{Σύνοψη και Συνεισφορά}
+\label{sec:heuristics-summary}
+
+Το παρόν κεφάλαιο παρουσίασε μια ολοκληρωμένη μελέτη των ευρετικών συναρτήσεων για την επίλυση του κύβου του Rubik.
+
+\subsection{Κύρια Ευρήματα}
+
+\begin{itemize}
+    \item Η admissibility παραμένει θεμελιώδης θεωρητική απαίτηση για ακριβή optimal search, αλλά δεν ικανοποιείται αυτόματα από κάθε ελαφριά heuristic.
+    \item Οι simple, Hamming, Manhattan και enhanced Manhattan συναρτήσεις είναι χρήσιμες ως χαμηλού κόστους estimates και εργαλεία ανάλυσης.
+    \item Η composite heuristic εκφράζει μια προσαρμοστική στρατηγική επιλογής estimate, χρήσιμη κυρίως για διερευνητικό heuristic experimentation.
+    \item Τα Pattern Databases παραμένουν η σωστή θεωρητική βάση για τις ισχυρότερες lower-bound εκτιμήσεις, με σημαντικό όμως κόστος αποθήκευσης.
+\end{itemize}
+
+\subsection{Διερευνητική Συνεισφορά}
+
+Μία δευτερεύουσα, διερευνητική συνεισφορά αυτού του κεφαλαίου είναι η οργάνωση μιας
+\textbf{προσαρμοστικής σύνθετης ευρετικής} ως διερευνητικού μηχανισμού που
+επιλέγει δυναμικά στρατηγική εκτίμησης βάσει της εντροπίας της κατάστασης του
+κύβου:
+
+\begin{enumerate}
+    \item Χρησιμοποιεί ανάλυση εντροπίας για τον χαρακτηρισμό της κατάστασης (κοντά στη λύση, βαθιά ανακατεμένη, ενδιάμεση)
+    \item χρησιμοποιεί συνδυασμό $\max()$ ως συντηρητική πρακτική στρατηγική
+    \item οργανώνει καθαρά διαφορετικά heuristic regimes μέσα σε ενιαία διεπαφή
+    \item προσφέρει επαναχρησιμοποιήσιμο πλαίσιο για μελλοντικό heuristic experimentation
+\end{enumerate}
+
+\subsection{Μετάβαση στο Κεφάλαιο 7}
+
+Στο επόμενο κεφάλαιο θα παρουσιαστεί η συνολική αξιολόγηση όλων των αλγορίθμων που υλοποιήθηκαν, συγκρίνοντας τον εξωτερικό exact backend του Korf με τους αλγορίθμους Thistlethwaite και Kociemba σε ένα ενοποιημένο πλαίσιο πειραμάτων.

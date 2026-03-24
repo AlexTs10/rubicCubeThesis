@@ -156,7 +156,7 @@ def demo_composite_heuristic():
     print("  - Deep scrambles: Uses enhanced heuristics or pattern DBs")
     print("  - Mid-range: Balanced combination\n")
 
-    heuristic = create_heuristic('composite')
+    heuristic = create_heuristic('composite', use_pattern_db=True)
     solver = IDAStarSolver(heuristic=heuristic, max_depth=15, timeout=30.0)
 
     start_time = time.time()

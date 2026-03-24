@@ -114,14 +114,14 @@ def main():
     # Export results
     print_header("STEP 5: Export Results")
 
-    comparison.export_results('results/phase8_quick_test.json')
-    comparison.export_summary_table('results/phase8_summary.md', format='markdown')
-    comparison.export_summary_table('results/phase8_summary.tex', format='latex')
+    comparison.export_results('results/reports/phase8_quick_test.json')
+    comparison.export_summary_table('results/reports/phase8_summary.md', format='markdown')
+    comparison.export_summary_table('results/reports/phase8_summary.tex', format='latex')
 
     print("\nResults exported:")
-    print("  ✓ JSON data:      results/phase8_quick_test.json")
-    print("  ✓ Markdown table: results/phase8_summary.md")
-    print("  ✓ LaTeX table:    results/phase8_summary.tex")
+    print("  ✓ JSON data:      results/reports/phase8_quick_test.json")
+    print("  ✓ Markdown table: results/reports/phase8_summary.md")
+    print("  ✓ LaTeX table:    results/reports/phase8_summary.tex")
 
     # Final summary
     print_header("Summary")

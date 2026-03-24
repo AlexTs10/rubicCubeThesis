@@ -35,16 +35,37 @@ def print_header(console=None):
     if console:
         console.print(Panel.fit(
             "[bold cyan]⚖️  Algorithm Comparison Tool[/bold cyan]\n"
-            "[yellow]Compare Thistlethwaite vs Kociemba vs Korf IDA*[/yellow]\n"
+            "[yellow]Compare pure Thistlethwaite vs Kociemba vs Korf[/yellow]\n"
             "[dim]Phase 9: Demos & UI | Alex Toska[/dim]",
             border_style="cyan"
         ))
     else:
         print("\n" + "=" * 70)
         print("  ⚖️  Algorithm Comparison Tool")
-        print("  Compare Thistlethwaite vs Kociemba vs Korf IDA*")
+        print("  Compare pure Thistlethwaite vs Kociemba vs Korf")
         print("  Phase 9: Demos & UI | Alex Toska")
         print("=" * 70 + "\n")
+
+
+def backend_label(algo_result):
+    """Return a concise backend label."""
+    labels = {
+        "thistlethwaite_native": "native pure",
+        "kociemba_internal": "internal two-phase",
+        "kociemba_native": "native two-phase",
+        "optimal_external": "external optimal",
+        "heuristic_ida_star": "heuristic fallback",
+    }
+    return labels.get(algo_result.backend or "", algo_result.backend or "n/a")
+
+
+def optimality_label(algo_result):
+    """Return a concise optimality label."""
+    if algo_result.optimal_guaranteed is True:
+        return "exact when solved"
+    if algo_result.optimal_guaranteed is False:
+        return "not guaranteed"
+    return "unknown"
 
 
 def print_comparison_table(result, console=None):
@@ -59,12 +80,14 @@ def print_comparison_table(result, console=None):
         table.add_column("Time (s)", justify="right", width=10)
         table.add_column("Memory (MB)", justify="right", width=12)
         table.add_column("Nodes", justify="right", width=12)
+        table.add_column("Backend", width=18)
+        table.add_column("Optimality", width=16)
 
         # Add rows
         algorithms = [
             ("Thistlethwaite", result.thistlethwaite, "blue"),
             ("Kociemba", result.kociemba, "green"),
-            ("Korf IDA*", result.korf, "magenta")
+            ("Korf", result.korf, "magenta")
         ]
 
         for name, r, color in algorithms:
@@ -75,7 +98,9 @@ def print_comparison_table(result, console=None):
                     str(r.solution_length),
                     f"{r.time_seconds:.3f}",
                     f"{r.memory_mb:.2f}",
-                    str(r.nodes_explored) if r.nodes_explored else "N/A"
+                    str(r.nodes_explored) if r.nodes_explored else "N/A",
+                    backend_label(r),
+                    optimality_label(r),
                 )
             else:
                 table.add_row(
@@ -84,7 +109,9 @@ def print_comparison_table(result, console=None):
                     "-",
                     f"{r.time_seconds:.3f}",
                     f"{r.memory_mb:.2f}",
-                    "-"
+                    "-",
+                    backend_label(r),
+                    optimality_label(r),
                 )
 
         console.print("\n")
@@ -92,25 +119,34 @@ def print_comparison_table(result, console=None):
 
     else:
         # Plain text table
-        print("\n" + "=" * 90)
-        print(f"{'Algorithm':<20} {'Status':<10} {'Moves':<10} {'Time (s)':<12} {'Memory (MB)':<15} {'Nodes':<12}")
-        print("=" * 90)
+        print("\n" + "=" * 132)
+        print(
+            f"{'Algorithm':<20} {'Status':<10} {'Moves':<10} {'Time (s)':<12} "
+            f"{'Memory (MB)':<15} {'Nodes':<12} {'Backend':<18} {'Optimality':<16}"
+        )
+        print("=" * 132)
 
         algorithms = [
             ("Thistlethwaite", result.thistlethwaite),
             ("Kociemba", result.kociemba),
-            ("Korf IDA*", result.korf)
+            ("Korf", result.korf)
         ]
 
         for name, r in algorithms:
             if r.solved:
-                print(f"{name:<20} {'✓':<10} {r.solution_length:<10} {r.time_seconds:<12.3f} "
-                      f"{r.memory_mb:<15.2f} {r.nodes_explored if r.nodes_explored else 'N/A':<12}")
+                print(
+                    f"{name:<20} {'✓':<10} {r.solution_length:<10} {r.time_seconds:<12.3f} "
+                    f"{r.memory_mb:<15.2f} {r.nodes_explored if r.nodes_explored else 'N/A':<12} "
+                    f"{backend_label(r):<18} {optimality_label(r):<16}"
+                )
             else:
-                print(f"{name:<20} {'✗':<10} {'-':<10} {r.time_seconds:<12.3f} "
-                      f"{r.memory_mb:<15.2f} {'-':<12}")
+                print(
+                    f"{name:<20} {'✗':<10} {'-':<10} {r.time_seconds:<12.3f} "
+                    f"{r.memory_mb:<15.2f} {'-':<12} "
+                    f"{backend_label(r):<18} {optimality_label(r):<16}"
+                )
 
-        print("=" * 90 + "\n")
+        print("=" * 132 + "\n")
 
 
 def print_winners(result, console=None):
@@ -121,7 +157,7 @@ def print_winners(result, console=None):
     if result.kociemba.solved:
         solved_results.append(("Kociemba", result.kociemba))
     if result.korf.solved:
-        solved_results.append(("Korf IDA*", result.korf))
+        solved_results.append(("Korf", result.korf))
 
     if not solved_results:
         if console:
@@ -198,8 +234,7 @@ def main():
         print("Creating scramble...")
 
     cube = RubikCube()
-    cube.scramble(moves=args.depth, seed=args.seed)
-    scramble_moves = getattr(cube, '_scramble_moves', [])
+    scramble_moves = cube.scramble(moves=args.depth, seed=args.seed)
 
     if console:
         console.print(f"[green]✓ Scramble created:[/green] {' '.join(scramble_moves)}\n")
@@ -233,6 +268,7 @@ def main():
         print("Running comparison...\n")
 
     result = comparison.compare_on_scramble(cube, scramble_id=0)
+    comparison.results = [result]
 
     # Display results
     print_comparison_table(result, console)
@@ -247,7 +283,7 @@ def main():
     for name, algo_result in [
         ("Thistlethwaite", result.thistlethwaite),
         ("Kociemba", result.kociemba),
-        ("Korf IDA*", result.korf)
+        ("Korf", result.korf)
     ]:
         if algo_result.solved and algo_result.solution_moves:
             if console:
@@ -256,6 +292,19 @@ def main():
             else:
                 print(f"{name} ({algo_result.solution_length} moves):")
                 print(f"  {' '.join(algo_result.solution_moves)}\n")
+
+    if console:
+        console.print(
+            "\n[dim]Methodology note:[/dim] "
+            "[dim]Thistlethwaite is pure on this tool. Kociemba is the best overall practical compromise. "
+            "Korf is exact when the external optimal backend solves within the timeout.[/dim]"
+        )
+    else:
+        print(
+            "\nMethodology note: Thistlethwaite is pure on this tool. "
+            "Kociemba is the best overall practical compromise. "
+            "Korf is exact when the external optimal backend solves within the timeout."
+        )
 
     # Export if requested
     if args.export:
