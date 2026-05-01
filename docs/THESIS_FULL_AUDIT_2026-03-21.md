@@ -2,7 +2,7 @@
 
 Date: 2026-03-21
 
-Workspace: `/Users/alextoska/Desktop/rubicCubeThesis`
+Workspace: repository root
 
 Scope:
 - thesis manuscript source
@@ -38,7 +38,7 @@ However, the repository and the thesis are not cleanly submission-ready. The mai
 Verified successfully:
 - `python scripts/thesis_workflow.py build --mode auto --clean`
 - `tectonic main.tex` from `thesis/`
-- `npm install && npm run build` from `webapp/`
+- `npm ci && npm run build` from `webapp/`
 
 Notes:
 - the thesis workflow build currently succeeds
@@ -476,7 +476,7 @@ python -m pytest tests/integration -q
 python -m pytest tests/unit -q
 python -m pytest tests/unit/test_algorithm_comparison.py -q
 python -m pytest tests/test_facelet_cubie_conversion.py -q
-npm install
+npm ci
 npm run build
 python scripts/benchmarks/analyze_thesis_data.py
 python scripts/benchmarks/generate_latex_tables.py

@@ -1,6 +1,6 @@
 # Thesis LaTeX Project
 
-This directory contains the thesis manuscript and its build assets. The manuscript is complete and buildable with the current Tectonic path. The remaining work is review, formatting polish, and final PDF verification.
+This directory contains the thesis manuscript and its build assets. The manuscript is complete and buildable with the current XeLaTeX-compatible workflow or the tested Tectonic path. The remaining work is review, formatting polish, and final PDF verification.
 
 ## Structure
 
@@ -51,7 +51,7 @@ make clean
 make view
 ```
 
-`build --mode auto` prefers a local `tectonic` build, then falls back to a local `pdflatex` + bibliography toolchain that matches [`main.tex`](/Users/alextoska/Desktop/rubicCubeThesis/thesis/main.tex), and finally to Docker. If Docker is installed but not running on macOS, start it with:
+`build --mode auto` prefers `latexmk -xelatex` when available, then a manual `xelatex` + bibliography pass sequence, then the tested local `tectonic` path, and finally Docker. Do not use `pdflatex` for this manuscript because Greek/Unicode listing content requires a Unicode-capable engine. If Docker is installed but not running on macOS, start it with:
 
 ```bash
 open -a Docker
@@ -67,13 +67,19 @@ tectonic --keep-intermediates --keep-logs --reruns 0 --pass tex main.tex
 tectonic --keep-intermediates --keep-logs --reruns 0 --pass tex main.tex
 ```
 
-If you are using a classic TeX toolchain instead of `tectonic`, follow the current bibliography configuration in [`main.tex`](/Users/alextoska/Desktop/rubicCubeThesis/thesis/main.tex):
+If you are using a classic TeX toolchain instead of `tectonic`, build with XeLaTeX:
 
 ```bash
-pdflatex main
+latexmk -xelatex main.tex
+```
+
+Or run the passes manually:
+
+```bash
+xelatex -interaction=nonstopmode -halt-on-error main.tex
 bibtex main
-pdflatex main
-pdflatex main
+xelatex -interaction=nonstopmode -halt-on-error main.tex
+xelatex -interaction=nonstopmode -halt-on-error main.tex
 ```
 
 ## Workflow Commands

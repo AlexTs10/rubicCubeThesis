@@ -69,10 +69,11 @@
     \{U, U', U2, D, D', D2, F, F', F2, B, B', B2, L, L', L2, R, R', R2\}
 \end{equation}
 
-Οι κινήσεις $F$, $F'$, $B$, $B'$, $L$, $L'$, $R$, $R'$ αλλάζουν τον
-προσανατολισμό ακμών, επειδή είναι στροφές 90° εκτός του άξονα U/D. Αντίθετα,
-οι διπλές κινήσεις ($X2$) και οι U/D στροφές τον διατηρούν
-\cite{thistlethwaite1981,kociemba_twophase_details}.
+Στη cubie convention που χρησιμοποιεί το artifact, οι κινήσεις $F$, $F'$,
+$B$, $B'$ αλλάζουν τον προσανατολισμό ακμών. Οι στροφές $U$, $D$, $L$ και
+$R$, όπως και όλες οι διπλές κινήσεις ($X2$), τον διατηρούν. Αυτό συμφωνεί
+με την υλοποίηση του \filepath{src/kociemba/cubie.py} και με το βοηθητικό
+\filepath{src/thistlethwaite/moves.py}.
 
 \subsection{Στόχος}
 
@@ -204,12 +205,26 @@
 \section{Κατασκευή Pattern Databases}
 \label{sec:thistlethwaite_pdb}
 
-\subsection{Μέθοδος BFS}
+\subsection{Θεωρητικά και Υλοποιητικά Tables}
 
-Στην παρούσα υλοποίηση, κάθε φάση χρησιμοποιεί \textbf{Pattern Database} (PDB)
-που κατασκευάζεται με αναζήτηση κατά πλάτος (BFS) από τη λυμένη κατάσταση.
-Η διαδικασία ακολουθεί τη γενική μεθοδολογία των pattern databases
-\cite{culberson1998pattern}:
+Στη θεωρητική περιγραφή του Thistlethwaite, κάθε φάση αντιστοιχεί σε μετάβαση
+μεταξύ υποομάδων. Οι αριθμοί του Πίνακα~\ref{tab:thistlethwaite_phases}
+περιγράφουν αυτούς τους θεωρητικούς χώρους/quotients και όχι απαραίτητα ένα
+μοναδικό αρχείο lookup table ανά φάση.
+
+Στην παρούσα υλοποίηση η εικόνα είναι πιο συγκεκριμένη:
+\begin{itemize}
+    \item Οι Φάσεις 0 και 1 χρησιμοποιούν άμεσα coordinate pruning tables που
+    κατασκευάζονται με BFS από τη λυμένη κατάσταση.
+    \item Η Φάση 3 απαριθμεί ακριβώς το half-turn subgroup $G_3$ σε
+    \texttt{(corner\_perm, edge\_perm, slice\_perm)} χώρο.
+    \item Η Φάση 2 χρησιμοποιεί distance-to-$G_3$ projection tables για corner,
+    edge και slice permutations, αντί για τον παλαιότερο απλό tetrad-only
+    πίνακα.
+\end{itemize}
+
+Η βασική διαδικασία BFS για τα άμεσα pruning tables ακολουθεί τη γενική
+μεθοδολογία των pattern databases \cite{culberson1998pattern}:
 
 \begin{algorithm}[H]
 \caption{Κατασκευή Pattern Database}
@@ -229,25 +244,28 @@
 \end{algorithmic}
 \end{algorithm}
 
-\subsection{Προδιαγραφές Βάσεων Δεδομένων}
+\subsection{Πίνακες της Υλοποίησης}
 
 \begin{table}[h]
 \centering
-\caption{Μεγέθη Pattern Databases ανά φάση}
+\caption{Πραγματικοί pruning/distance πίνακες που χρησιμοποιεί η υλοποίηση}
 \label{tab:pdb_sizes}
-\begin{tabular}{clrrr}
+\begin{tabularx}{\textwidth}{clrlY}
 \toprule
-\textbf{Φάση} & \textbf{Συντεταγμένη} & \textbf{Μέγεθος} & \textbf{Μέγ. Βάθος} & \textbf{Μνήμη} \\
+\textbf{Φάση} & \textbf{Πίνακας} & \textbf{Μέγεθος} & \textbf{Τύπος} & \textbf{Ρόλος} \\
 \midrule
-0 & Προσ. ακμών & 2.048 & 7 & $\sim$2 KB \\
-1 & Γωνίες $\times$ E-slice & 1.082.565 & 10 & $\sim$1 MB \\
-2 & Τετράδες & 29.400 & 13 & $\sim$29 KB \\
-3 & Μετάθεση γωνιών & 40.320 & 15 & $\sim$40 KB \\
+0 & Edge orientation & 2.048 & \texttt{uint8} & Απόσταση προς $G_1$ \\
+1 & Corner orientation $\times$ E-slice & 1.082.565 & \texttt{uint8} & Απόσταση προς $G_2$ \\
+2 & Corner/edge/slice προς $G_3$ & 40.320 + 40.320 + 24 & \texttt{uint8} & Projection distances προς το exact $G_3$ goal set \\
+3 & Exact half-turn subgroup $G_3$ & 663.552 & dict & Ακριβής απόσταση μέχρι τη λύση με μόνο half turns \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \end{table}
 
-Τα PDBs αποθηκεύονται σε αρχεία για επαναχρησιμοποίηση. Η αρχική κατασκευή απαιτεί λίγα δευτερόλεπτα.
+Τα tables αποθηκεύονται σε αρχεία για επαναχρησιμοποίηση. Η κρίσιμη διαφορά από
+την απλουστευμένη περιγραφή είναι ότι οι ύστερες φάσεις δεν βασίζονται πλέον σε
+έναν stale tetrad/corner-only πίνακα, αλλά σε exact distance-to-subgroup
+μηχανισμό που συνδέεται με το πραγματικό half-turn subgroup.
 
 
 \section{Αναζήτηση IDA* ανά Φάση}

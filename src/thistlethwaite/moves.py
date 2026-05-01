@@ -106,8 +106,8 @@ def affects_edge_orientation(move: str) -> bool:
     """
     Check if a move affects edge orientation.
 
-    Only F, F', B, B', L, L', R, R' affect edge orientation.
-    U, U', U2, D, D', D2 and all double moves preserve orientation.
+    Only F, F', B, B' affect edge orientation in this cubie convention.
+    U, D, L, R turns and all double moves preserve orientation.
 
     Args:
         move: Move string
@@ -120,10 +120,6 @@ def affects_edge_orientation(move: str) -> bool:
 
     # F, B quarter turns affect orientation
     if base in ['F', 'B']:
-        return modifier != '2'
-
-    # L, R quarter turns affect orientation
-    if base in ['L', 'R']:
         return modifier != '2'
 
     return False

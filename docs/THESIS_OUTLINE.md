@@ -1,4 +1,4 @@
-# Thesis Outline: Αλγόριθμοι Βέλτιστης Επίλυσης για τον Κύβο του Rubik
+# Thesis Outline: Αλγόριθμοι Επίλυσης και Βέλτιστης Αναζήτησης για τον Κύβο του Rubik
 
 > Historical planning outline. Some fallback, admissibility, and benchmark-number notes below predate the March 2026 verification pass and should not be cited as final thesis truth.
 

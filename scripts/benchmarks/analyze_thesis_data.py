@@ -34,7 +34,7 @@ def normalize_results(payload):
             for algorithm_key, label in (
                 ("thistlethwaite", "Thistlethwaite"),
                 ("kociemba", "Kociemba"),
-                ("korf", "Korf_IDA*"),
+                ("korf", "External exact backend"),
             ):
                 normalized.append(
                     {
@@ -55,9 +55,14 @@ def normalize_results(payload):
                 result = row.get(algorithm_key)
                 if not result:
                     continue
+                algorithm_label = (
+                    "External exact backend"
+                    if algorithm_key == "korf"
+                    else result.get("algorithm", algorithm_key.title())
+                )
                 normalized.append(
                     {
-                        "algorithm": result.get("algorithm", algorithm_key.title()),
+                        "algorithm": algorithm_label,
                         "success": result.get("solved", False),
                         "solution_length": result.get("solution_length"),
                         "time_seconds": result.get("time_seconds"),
@@ -91,7 +96,7 @@ def analyze_data(json_file: Path | list[Path]):
     print("STATISTICAL ANALYSIS")
     print("="*60)
 
-    for algo in ["Thistlethwaite", "Kociemba", "Korf_IDA*"]:
+    for algo in ["Thistlethwaite", "Kociemba", "External exact backend"]:
         print(f"\n{algo} Algorithm:")
         print("-" * 40)
 

@@ -33,7 +33,7 @@ def normalize_results(payload):
             for algorithm_key, label in (
                 ("thistlethwaite", "Thistlethwaite"),
                 ("kociemba", "Kociemba"),
-                ("korf", "Korf_IDA*"),
+                ("korf", "External exact backend"),
             ):
                 normalized.append(
                     {
@@ -52,9 +52,14 @@ def normalize_results(payload):
                 result = row.get(algorithm_key)
                 if not result:
                     continue
+                algorithm_label = (
+                    "External exact backend"
+                    if algorithm_key == "korf"
+                    else result.get("algorithm", algorithm_key.title())
+                )
                 normalized.append(
                     {
-                        "algorithm": result.get("algorithm", algorithm_key.title()),
+                        "algorithm": algorithm_label,
                         "success": result.get("solved", False),
                         "solution_length": result.get("solution_length"),
                         "time_seconds": result.get("time_seconds"),
@@ -92,7 +97,7 @@ def generate_latex_table(json_file: Path | list[Path]):
     print(r"\textbf{Algorithm} & \textbf{Avg Moves} & \textbf{Avg Time (s)} & \textbf{Success Rate} & \textbf{Range (moves)} \\")
     print(r"\hline")
 
-    for algo in ["Thistlethwaite", "Kociemba", "Korf_IDA*"]:
+    for algo in ["Thistlethwaite", "Kociemba", "External exact backend"]:
         successful = [r for r in results if r["algorithm"] == algo and r["success"]]
         total = len([r for r in results if r["algorithm"] == algo])
 

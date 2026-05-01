@@ -62,6 +62,11 @@ class VisualizationGenerator:
             'Kociemba': '#e74c3c',        # Red
             'Korf_IDA*': '#2ecc71'        # Green
         }
+        self.display_labels = {
+            'Thistlethwaite': 'Thistlethwaite',
+            'Kociemba': 'Kociemba',
+            'Korf_IDA*': 'External exact backend',
+        }
 
     def _load_results(self) -> Dict:
         """Load results from JSON file."""
@@ -180,7 +185,7 @@ class VisualizationGenerator:
             lengths = self.algorithm_data[algo_name]['solution_lengths']
             if lengths:
                 data_to_plot.append(lengths)
-                labels.append(algo_name)
+                labels.append(self.display_labels[algo_name])
                 colors_list.append(self.colors[algo_name])
 
         if not data_to_plot:
@@ -216,7 +221,7 @@ class VisualizationGenerator:
         for algo_name in ['Thistlethwaite', 'Kociemba', 'Korf_IDA*']:
             time_data = self.algorithm_data[algo_name]['times']
             if time_data:
-                algorithms.append(algo_name)
+                algorithms.append(self.display_labels[algo_name])
                 times.append(np.mean(time_data))
                 colors_list.append(self.colors[algo_name])
 
@@ -257,7 +262,7 @@ class VisualizationGenerator:
         for algo_name in ['Thistlethwaite', 'Kociemba', 'Korf_IDA*']:
             memory_data = self.algorithm_data[algo_name]['memories']
             if memory_data:
-                algorithms.append(algo_name)
+                algorithms.append(self.display_labels[algo_name])
                 memories.append(np.mean(memory_data))
                 colors_list.append(self.colors[algo_name])
 
@@ -301,7 +306,7 @@ class VisualizationGenerator:
             solved_count = len(self.algorithm_data[algo_name]['solution_lengths'])
             success_rate = (solved_count / total_tests) * 100 if total_tests > 0 else 0
 
-            algorithms.append(algo_name)
+            algorithms.append(self.display_labels[algo_name])
             success_rates.append(success_rate)
             colors_list.append(self.colors[algo_name])
 
@@ -335,7 +340,8 @@ class VisualizationGenerator:
         for algo_name in ['Thistlethwaite', 'Kociemba', 'Korf_IDA*']:
             lengths = self.algorithm_data[algo_name]['solution_lengths']
             if lengths:
-                ax.hist(lengths, bins=20, alpha=0.5, label=algo_name,
+                ax.hist(lengths, bins=20, alpha=0.5,
+                       label=self.display_labels[algo_name],
                        color=self.colors[algo_name], edgecolor='black')
 
         ax.set_xlabel('Solution Length (moves)')
@@ -361,7 +367,7 @@ class VisualizationGenerator:
             nodes = self.algorithm_data[algo_name]['nodes']
             if nodes:
                 data_to_plot.append(nodes)
-                labels.append(algo_name)
+                labels.append(self.display_labels[algo_name])
                 colors_list.append(self.colors[algo_name])
 
         if not data_to_plot:
@@ -405,7 +411,8 @@ class VisualizationGenerator:
                 avg_lengths = [np.mean(depths_data[d]) for d in depths]
 
                 ax.plot(depths, avg_lengths, marker='o', linewidth=2,
-                       label=algo_name, color=self.colors[algo_name], markersize=8)
+                       label=self.display_labels[algo_name],
+                       color=self.colors[algo_name], markersize=8)
 
         ax.set_xlabel('Scramble Depth (moves)')
         ax.set_ylabel('Average Solution Length (moves)')

@@ -1,6 +1,6 @@
 % ============================================================================
 % ΔΙΠΛΩΜΑΤΙΚΗ ΕΡΓΑΣΙΑ - ΠΑΝΕΠΙΣΤΗΜΙΟ ΠΑΤΡΩΝ
-% Αλγόριθμοι Βέλτιστης Επίλυσης για τον Κύβο του Rubik
+% Αλγόριθμοι Επίλυσης και Βέλτιστης Αναζήτησης για τον Κύβο του Rubik
 % ============================================================================
 
 \documentclass[12pt,a4paper,oneside]{book}
@@ -11,39 +11,55 @@
 \usepackage{iftex}
 \ifPDFTeX
     \usepackage[utf8]{inputenc}
-    \usepackage[greek,english]{babel}
+    \usepackage[english,greek]{babel}
     \usepackage{alphabeta}
 \else
-    \usepackage[greek,english]{babel}
+    \usepackage[english,greek]{babel}
     \usepackage{fontspec}
     \babelfont{rm}[
         Path=fonts/,
         Ligatures=TeX,
         Language=Default,
-        UprightFont={Times New Roman.ttf},
-        ItalicFont={Times New Roman Italic.ttf},
-        BoldFont={Times New Roman Bold.ttf},
-        BoldItalicFont={Times New Roman Bold Italic.ttf}
-    ]{Times New Roman}
+        UprightFont={STIXGeneral.otf},
+        ItalicFont={STIXGeneralItalic.otf},
+        BoldFont={STIXGeneralBol.otf},
+        BoldItalicFont={STIXGeneralBolIta.otf}
+    ]{STIXGeneral}
     \babelfont{sf}[
         Path=fonts/,
         Ligatures=TeX,
         Language=Default,
-        UprightFont={Arial.ttf},
-        ItalicFont={Arial Italic.ttf},
-        BoldFont={Arial Bold.ttf},
-        BoldItalicFont={Arial Bold Italic.ttf}
-    ]{Arial}
-    \setmonofont[
+        UprightFont={STIXGeneral.otf},
+        ItalicFont={STIXGeneralItalic.otf},
+        BoldFont={STIXGeneralBol.otf},
+        BoldItalicFont={STIXGeneralBolIta.otf}
+    ]{STIXGeneral}
+    \newfontfamily\listingfont[
         Path=fonts/,
+        Ligatures=TeX,
         Scale=MatchLowercase,
         Language=Default,
-        UprightFont={Courier New.ttf},
-        ItalicFont={Courier New Italic.ttf},
-        BoldFont={Courier New Bold.ttf},
-        BoldItalicFont={Courier New Bold Italic.ttf}
-    ]{Courier New}
+        UprightFont={DejaVuSansMono.ttf},
+        ItalicFont={DejaVuSansMono-Oblique.ttf},
+        BoldFont={DejaVuSansMono-Bold.ttf},
+        BoldItalicFont={DejaVuSansMono-BoldOblique.ttf}
+    ]{DejaVuSansMono}
 \fi
+
+\ifPDFTeX
+    \newcommand{\listingfont}{\ttfamily}
+\fi
+
+\addto\captionsgreek{%
+  \renewcommand{\contentsname}{Περιεχόμενα}%
+  \renewcommand{\listfigurename}{Κατάλογος Σχημάτων}%
+  \renewcommand{\listtablename}{Κατάλογος Πινάκων}%
+  \renewcommand{\chaptername}{Κεφάλαιο}%
+  \renewcommand{\appendixname}{Παράρτημα}%
+  \renewcommand{\bibname}{Βιβλιογραφία}%
+  \renewcommand{\figurename}{Σχήμα}%
+  \renewcommand{\tablename}{Πίνακας}%
+}
 
 % Math
 \usepackage{amsmath,amssymb,amsthm}
@@ -69,6 +85,8 @@
 \usepackage{silence}
 \WarningFilter{latexfont}{Font shape}
 \WarningFilter{latexfont}{Some font shapes were not available}
+\renewcommand{\lstlistingname}{Κώδικας}
+\renewcommand{\lstlistlistingname}{Κατάλογος Κώδικα}
 
 % Page layout
 \usepackage[left=3.5cm,right=2.5cm,top=2.5cm,bottom=2.5cm]{geometry}
@@ -111,7 +129,7 @@
     keywordstyle=\color{magenta},
     numberstyle=\tiny\color{codegray},
     stringstyle=\color{codepurple},
-    basicstyle=\ttfamily\footnotesize,
+    basicstyle=\listingfont\footnotesize,
     breakatwhitespace=false,
     breaklines=true,
     captionpos=b,
@@ -137,7 +155,7 @@
 % ============================================================================
 % DOCUMENT INFO
 % ============================================================================
-\title{Αλγόριθμοι Βέλτιστης Επίλυσης για τον Κύβο του Rubik}
+\title{Αλγόριθμοι Επίλυσης και Βέλτιστης Αναζήτησης για τον Κύβο του Rubik}
 \author{Αλέξανδρος Τόσκας}
 \date{2026}
 
@@ -145,6 +163,7 @@
 % BEGIN DOCUMENT
 % ============================================================================
 \begin{document}
+\selectlanguage{greek}
 
 % ----------------------------------------------------------------------------
 % FRONT MATTER
@@ -178,15 +197,27 @@
 \input{chapters/09_conclusions}
 
 % ----------------------------------------------------------------------------
-% BACK MATTER
+% APPENDICES AND BACK MATTER
 % ----------------------------------------------------------------------------
+\appendix
+\renewcommand{\thechapter}{%
+  \ifcase\value{chapter}%
+  \or Α%
+  \or Β%
+  \or Γ%
+  \or Δ%
+  \or Ε%
+  \else\arabic{chapter}%
+  \fi%
+}
+\renewcommand{\thesection}{\thechapter.\arabic{section}}
+\renewcommand{\thesubsection}{\thesection.\arabic{subsection}}
+\input{chapters/appendix_a}
+\input{chapters/appendix_b}
+
 \backmatter
 \addcontentsline{toc}{chapter}{Βιβλιογραφία}
 \bibliographystyle{IEEEtran}
 \bibliography{references}
-
-\appendix
-\input{chapters/appendix_a}
-\input{chapters/appendix_b}
 
 \end{document}

@@ -267,7 +267,7 @@ streamlit run ui/app.py
 
 ```bash
 cd webapp
-npm install
+npm ci
 npm run build
 npm run dev
 ```

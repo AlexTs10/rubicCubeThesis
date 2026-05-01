@@ -83,10 +83,8 @@ def check_required_packages() -> bool:
         ('pytest', 'pytest'),
         ('matplotlib', 'matplotlib'),
         ('pandas', 'pandas'),
-        ('RubikOptimal', 'spec:optimal'),
-    ]
-    optional_packages = [
         ('kociemba', 'kociemba'),
+        ('RubikOptimal', 'spec:optimal'),
     ]
 
     all_installed = True
@@ -109,15 +107,6 @@ def check_required_packages() -> bool:
             print_error(f"{package_name:20s} NOT INSTALLED")
             all_installed = False
 
-    print("\nOptional acceleration backends:")
-    for package_name, import_name in optional_packages:
-        try:
-            module = importlib.import_module(import_name)
-            version = getattr(module, '__version__', 'unknown')
-            print_success(f"{package_name:20s} {version}")
-        except ImportError:
-            print_warning(f"{package_name:20s} NOT INSTALLED (internal fallback will be used)")
-
     if all_installed:
         print(f"\n{Colors.GREEN}All required packages are installed{Colors.RESET}")
     else:
@@ -132,6 +121,23 @@ def check_project_structure() -> bool:
 
     project_root = Path(__file__).parent
 
+    generated_dirs = [
+        'data',
+        'data/kociemba',
+        'data/kociemba/move_tables',
+        'data/kociemba/pruning_tables',
+        'data/move_tables',
+        'data/pattern_databases',
+        'data/pattern_databases/native_exact',
+        'data/pruning_tables',
+    ]
+
+    print("Ensuring generated cache directories:")
+    for dir_path in generated_dirs:
+        full_path = project_root / dir_path
+        full_path.mkdir(parents=True, exist_ok=True)
+        print_success(f"{dir_path:40s}")
+
     required_dirs = [
         'src',
         'src/cube',
@@ -145,8 +151,6 @@ def check_project_structure() -> bool:
         'demos',
         'docs',
         'docs/notes',
-        'data',
-        'data/pattern_databases',
         'papers',
         'thesis',
         'results',

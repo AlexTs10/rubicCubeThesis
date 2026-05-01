@@ -58,7 +58,7 @@ rubicCubeThesis/
 
 - 2-phase IDA* approach
 - best overall practical performance in this repository
-- optional native `kociemba` backend is used when available for faster short-timeout solves
+- native `kociemba` backend is required for the full thesis test/benchmark environment
 
 ### Korf / IDA*
 
@@ -75,7 +75,7 @@ Importing `src.korf` does not load the exact solver backend. The optional `Rubik
 
 ## Thesis Workflow
 
-The repo includes a lightweight workflow driver in [scripts/thesis_workflow.py](/Users/alextoska/Desktop/rubicCubeThesis/scripts/thesis_workflow.py):
+The repo includes a lightweight workflow driver in [`scripts/thesis_workflow.py`](scripts/thesis_workflow.py):
 
 - `status`: chapter coverage, citations, benchmark assets, and codebase stats
 - `validate`: lightweight readiness checks
@@ -84,17 +84,17 @@ The repo includes a lightweight workflow driver in [scripts/thesis_workflow.py](
 
 Useful files:
 
-- [agent_workflow/generated/status.md](/Users/alextoska/Desktop/rubicCubeThesis/agent_workflow/generated/status.md)
-- [agent_workflow/generated/validation.md](/Users/alextoska/Desktop/rubicCubeThesis/agent_workflow/generated/validation.md)
-- [thesis/README.md](/Users/alextoska/Desktop/rubicCubeThesis/thesis/README.md)
+- [`agent_workflow/generated/status.md`](agent_workflow/generated/status.md)
+- [`agent_workflow/generated/validation.md`](agent_workflow/generated/validation.md)
+- [`thesis/README.md`](thesis/README.md)
 
 ## Current Verification Snapshot
 
 - `python -m pytest tests --collect-only -q` reports `285 tests collected`
 - `python -m pytest tests -q` reports `284 passed, 1 skipped`
 - `python verify_setup.py` passes with `7/7` checks
-- `npm run build` succeeds under `webapp/`
-- a direct `tectonic --pass tex main.tex` compile pass succeeds under `thesis/`
+- `cd webapp && npm ci && npm run build` succeeds from a clean dependency install
+- `python scripts/thesis_workflow.py build --mode auto` rebuilds `thesis/main.pdf` with XeLaTeX-compatible tooling or Tectonic
 - the manuscript chapters and appendices are present in `thesis/chapters/`
 
 ## Next.js Preview
@@ -103,7 +103,7 @@ From the repository root:
 
 ```bash
 cd webapp
-npm install
+npm ci
 npm run build
 npm run dev
 ```
@@ -114,10 +114,10 @@ Use this only for the synthetic demo frontend. The authoritative execution path 
 
 Main manuscript entrypoint:
 
-- [thesis/main.tex](/Users/alextoska/Desktop/rubicCubeThesis/thesis/main.tex)
+- [`thesis/main.tex`](thesis/main.tex)
 
 Important supporting files:
 
-- [thesis/references.bib](/Users/alextoska/Desktop/rubicCubeThesis/thesis/references.bib)
-- [docs/CODE_TO_THESIS_MAPPING.md](/Users/alextoska/Desktop/rubicCubeThesis/docs/CODE_TO_THESIS_MAPPING.md)
-- [docs/demos_and_ui.md](/Users/alextoska/Desktop/rubicCubeThesis/docs/demos_and_ui.md)
+- [`thesis/references.bib`](thesis/references.bib)
+- [`docs/CODE_TO_THESIS_MAPPING.md`](docs/CODE_TO_THESIS_MAPPING.md)
+- [`docs/demos_and_ui.md`](docs/demos_and_ui.md)

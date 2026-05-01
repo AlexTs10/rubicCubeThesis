@@ -192,7 +192,7 @@ def parse_args() -> argparse.Namespace:
         "--mode",
         choices=("auto", "local", "docker"),
         default="auto",
-        help="Build locally with tectonic or the configured pdflatex bibliography toolchain, inside Docker, or pick automatically.",
+        help="Build locally with XeLaTeX-compatible tooling or Tectonic, inside Docker, or pick automatically.",
     )
     build_parser.add_argument(
         "--image",
@@ -479,10 +479,15 @@ def summarize_benchmarks() -> dict[str, Any]:
 def toolchain_status() -> dict[str, Any]:
     """Detect local tooling required for a full thesis build."""
     backend = bibliography_backend()
+    latexmk_available = shutil.which("latexmk") is not None
+    xelatex_available = shutil.which("xelatex") is not None
     tectonic_available = shutil.which("tectonic") is not None
     bibliography_tool_available = shutil.which(backend) is not None
-    local_tex_ready = (tectonic_available and (backend != "biber" or bibliography_tool_available)) or (
-        shutil.which("pdflatex") is not None and bibliography_tool_available
+    xelatex_ready = xelatex_available and bibliography_tool_available
+    local_tex_ready = (
+        (latexmk_available and xelatex_ready)
+        or xelatex_ready
+        or (tectonic_available and (backend != "biber" or bibliography_tool_available))
     )
     docker_cli = shutil.which("docker") is not None
     docker_daemon = False
@@ -498,7 +503,8 @@ def toolchain_status() -> dict[str, Any]:
         )
     return {
         "bibliography_backend": backend,
-        "pdflatex": shutil.which("pdflatex") is not None,
+        "latexmk": latexmk_available,
+        "xelatex": xelatex_available,
         "bibliography_tool": bibliography_tool_available,
         "tectonic": tectonic_available,
         "local_tex_ready": local_tex_ready,
@@ -596,7 +602,8 @@ def format_status_markdown(data: dict[str, Any]) -> str:
             )
 
     tool_lines = [
-        f"- `pdflatex`: {'available' if data['toolchain']['pdflatex'] else 'missing'}",
+        f"- `latexmk`: {'available' if data['toolchain']['latexmk'] else 'missing'}",
+        f"- `xelatex`: {'available' if data['toolchain']['xelatex'] else 'missing'}",
         f"- `{backend}`: {'available' if data['toolchain']['bibliography_tool'] else 'missing'}",
         f"- `tectonic`: {'available' if data['toolchain']['tectonic'] else 'missing'}",
         f"- `docker` CLI: {'available' if data['toolchain']['docker_cli'] else 'missing'}",
@@ -666,7 +673,7 @@ def format_status_markdown(data: dict[str, Any]) -> str:
         sections.append(
             f"- Generate packets for: {', '.join(sorted(key for key, cfg in WORKFLOW_CONFIG.items() if cfg.chapter_file.name in data['remaining_targets']))}"
         )
-    elif data["toolchain"]["tectonic"] or (data["toolchain"]["pdflatex"] and data["toolchain"]["bibliography_tool"]):
+    elif data["toolchain"]["local_tex_ready"]:
         sections.append("- Run `python scripts/thesis_workflow.py build --mode auto` to verify or rebuild the final PDF.")
     elif data["toolchain"]["docker_daemon"]:
         sections.append("- Run `python scripts/thesis_workflow.py build --mode docker` to verify or rebuild the final PDF in Docker.")
@@ -867,14 +874,12 @@ def format_validation_markdown(data: dict[str, Any]) -> str:
     """Render a lightweight validation report."""
     issues = []
     backend = data["toolchain"]["bibliography_backend"]
-    local_tex_ready = data["toolchain"]["tectonic"] or (
-        data["toolchain"]["pdflatex"] and data["toolchain"]["bibliography_tool"]
-    )
+    local_tex_ready = data["toolchain"]["local_tex_ready"]
     docker_ready = data["toolchain"]["docker_daemon"]
 
     if not local_tex_ready and not docker_ready:
         issues.append(
-            f"No thesis build path is ready. Install `tectonic`, or install `pdflatex` and `{backend}`, or start Docker Desktop and use Docker mode."
+            f"No thesis build path is ready. Install `latexmk` + `xelatex` + `{backend}`, install `tectonic`, or start Docker Desktop and use Docker mode."
         )
     elif not local_tex_ready and docker_ready:
         issues.append("Local TeX tooling is missing, but Docker mode can still build the final thesis PDF.")
@@ -892,7 +897,8 @@ def format_validation_markdown(data: dict[str, Any]) -> str:
         "# Thesis Workflow Validation",
         "",
         "## Checks",
-        f"- Local `pdflatex`: {'pass' if data['toolchain']['pdflatex'] else 'fail'}",
+        f"- Local `latexmk`: {'pass' if data['toolchain']['latexmk'] else 'fail'}",
+        f"- Local `xelatex`: {'pass' if data['toolchain']['xelatex'] else 'fail'}",
         f"- Local `{backend}`: {'pass' if data['toolchain']['bibliography_tool'] else 'fail'}",
         f"- Local `tectonic`: {'pass' if data['toolchain']['tectonic'] else 'fail'}",
         f"- Docker CLI available: {'pass' if data['toolchain']['docker_cli'] else 'fail'}",
@@ -994,12 +1000,13 @@ def build_with_tectonic(backend: str, bibliography_tool: bool) -> None:
         return
     if backend == "bibtex":
         # Tectonic can run its bundled BibTeX engine via `--pass bibtex_first`,
-        # which avoids the noisy auto-rerun loop from the default mode.
+        # while the normal TeX pass is still needed at the end so the PDF is
+        # regenerated after references and citations have settled.
         run_build_command(tectonic_tex_pass, THESIS_DIR)
         run_build_command(tectonic_bibtex_pass, THESIS_DIR)
-        run_build_command(tectonic_tex_pass, THESIS_DIR)
-        run_build_command(tectonic_tex_pass, THESIS_DIR)
-        run_build_command(tectonic_tex_pass, THESIS_DIR)
+        run_build_command(tectonic_manual_pass, THESIS_DIR)
+        run_build_command(tectonic_manual_pass, THESIS_DIR)
+        run_build_command(tectonic_manual_pass, THESIS_DIR)
         return
     if bibliography_tool:
         run_build_command(tectonic_manual_pass, THESIS_DIR)
@@ -1028,19 +1035,24 @@ def build_thesis(mode: str, image: str, clean: bool) -> None:
             mode = "docker"
         else:
             raise SystemExit(
-                f"No usable build path found. Install `tectonic`, or install `pdflatex` and `{backend}`, or start Docker Desktop and retry."
+                f"No usable build path found. Install `latexmk` + `xelatex` + `{backend}`, install `tectonic`, or start Docker Desktop and retry."
             )
 
     if mode == "local":
-        if tools["tectonic"]:
-            build_with_tectonic(backend, tools["bibliography_tool"])
-        elif tools["pdflatex"] and tools["bibliography_tool"]:
-            run_build_command(["pdflatex", "-interaction=nonstopmode", "main.tex"], THESIS_DIR)
+        if tools["latexmk"] and tools["xelatex"]:
+            run_build_command(
+                ["latexmk", "-xelatex", "-interaction=nonstopmode", "-file-line-error", "main.tex"],
+                THESIS_DIR,
+            )
+        elif tools["xelatex"] and tools["bibliography_tool"]:
+            run_build_command(["xelatex", "-interaction=nonstopmode", "-halt-on-error", "main.tex"], THESIS_DIR)
             run_build_command([backend, "main"], THESIS_DIR)
-            run_build_command(["pdflatex", "-interaction=nonstopmode", "main.tex"], THESIS_DIR)
-            run_build_command(["pdflatex", "-interaction=nonstopmode", "main.tex"], THESIS_DIR)
+            run_build_command(["xelatex", "-interaction=nonstopmode", "-halt-on-error", "main.tex"], THESIS_DIR)
+            run_build_command(["xelatex", "-interaction=nonstopmode", "-halt-on-error", "main.tex"], THESIS_DIR)
+        elif tools["tectonic"]:
+            build_with_tectonic(backend, tools["bibliography_tool"])
         else:
-            raise SystemExit(f"Local build requires `tectonic` or a `pdflatex` + `{backend}` toolchain on PATH.")
+            raise SystemExit(f"Local build requires `latexmk` + `xelatex`, manual `xelatex` + `{backend}`, or `tectonic` on PATH.")
     elif mode == "docker":
         if not tools["docker_cli"]:
             raise SystemExit("Docker mode requires the `docker` CLI.")
@@ -1057,7 +1069,7 @@ def build_thesis(mode: str, image: str, clean: bool) -> None:
                 "/workspace/thesis",
                 image,
                 "latexmk",
-                "-pdf",
+                "-xelatex",
                 "-interaction=nonstopmode",
                 "-file-line-error",
                 "main.tex",

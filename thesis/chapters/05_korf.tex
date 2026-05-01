@@ -458,12 +458,12 @@ T(d) \propto b^d \approx 13.5^d
 \subsection{Πρακτικοί Περιορισμοί}
 
 Τα διορθωμένα πειραματικά αποτελέσματα του Κεφαλαίου~\ref{ch:evaluation}
-δείχνουν την ακόλουθη συμπεριφορά για την exact benchmark διαδρομή του Korf
+δείχνουν την ακόλουθη συμπεριφορά για την εξωτερική exact benchmark διαδρομή
 με εξαναγκασμένο timeout 120\,s:
 
 \begin{table}[htbp]
 \centering
-\caption{Korf Exact Backend: Επιτυχία ανά Βάθος Ανακατέματος}
+\caption{Εξωτερικός exact backend: Επιτυχία ανά Βάθος Ανακατέματος}
 \label{tab:korf_performance}
 \begin{tabular}{|c|c|c|c|}
 \hline
@@ -487,7 +487,7 @@ scrambles βάθους 20.
 \subsection{Κύρια Ευρήματα}
 
 \begin{enumerate}
-    \item Ο Korf εγγυάται \textbf{βέλτιστες λύσεις} όταν επιτυγχάνει
+    \item Το Korf-style exact framework εγγυάται \textbf{βέλτιστες λύσεις} όταν η αναζήτηση ολοκληρώνεται
     \item Η external exact διαδρομή είναι πλήρως πρακτική έως βάθος 15 στο benchmark corpus
     \item Σε βάθος 20 παραμένει ισχυρή, αλλά όχι καθολικά επιτυχής υπό fixed timeout
     \item Τα Pattern Databases παρέχουν τις ισχυρότερες ευρετικές
@@ -514,7 +514,7 @@ scrambles βάθους 20.
 \hline
 Thistlethwaite & Όχι & 1.24s μ.ό. & 23.62 μ.ό. & 100\% \\
 Kociemba & Σχεδόν & 4.62s μ.ό. & 14.33 μ.ό. & 100\% \\
-Korf & Ναι, όταν λύνει & 2.66s μ.ό.* & 9.12 μ.ό.* & 97\% \\
+Εξωτερικός exact backend & Ναι, όταν λύνει & 2.66s μ.ό.* & 9.12 μ.ό.* & 97\% \\
 \hline
 \end{tabular}
 \end{table}

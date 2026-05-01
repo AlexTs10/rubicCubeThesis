@@ -168,6 +168,6 @@ See `BIBLIOGRAPHY_INDEX.md` for:
 **Collection assembled:** November 7, 2025
 **Total resources:** 58 (51 PDFs + 7 support files)
 **Ready for:** Bachelor's thesis in Electrical & Computer Engineering
-**Topic:** Optimal Solution Algorithms for Rubik's Cube
+**Topic:** Solving Algorithms and Optimal Search for Rubik's Cube
 
 **Questions?** Check BIBLIOGRAPHY_INDEX.md or contact thesis advisor.
