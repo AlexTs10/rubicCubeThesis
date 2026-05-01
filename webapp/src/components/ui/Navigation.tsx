@@ -54,7 +54,7 @@ export default function Navigation() {
 
           {/* GitHub Link */}
           <a
-            href="https://github.com"
+            href="https://github.com/AlexTs10/rubicCubeThesis"
             target="_blank"
             rel="noopener noreferrer"
             className="hidden md:flex items-center gap-2 text-slate-400 hover:text-white transition-colors"

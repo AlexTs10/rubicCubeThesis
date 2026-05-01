@@ -41,21 +41,21 @@ function backendInfo(algorithm: Algorithm): Pick<SolveResult, 'backend' | 'optim
   switch (algorithm) {
     case 'thistlethwaite':
       return {
-        backend: 'synthetic demo backend',
-        optimality: 'not guaranteed',
-        notes: 'Demo output is derived from the scramble, not live solver telemetry.',
+        backend: 'synthetic scramble-inverse preview',
+        optimality: 'not evaluated in preview',
+        notes: 'Preview uses the inverse scramble to exercise the UI. It mirrors the pure Thistlethwaite benchmark profile but is not live solver telemetry.',
       };
     case 'kociemba':
       return {
-        backend: 'synthetic demo backend',
-        optimality: 'near-optimal',
-        notes: 'Demo output is derived from the scramble, not live solver telemetry.',
+        backend: 'synthetic scramble-inverse preview',
+        optimality: 'not evaluated in preview',
+        notes: 'Preview uses the inverse scramble to exercise the UI. It mirrors the Kociemba benchmark profile but is not actual two-phase solver output.',
       };
     case 'korf':
       return {
-        backend: 'synthetic demo backend',
-        optimality: 'exact when solved',
-        notes: 'Demo output is derived from the scramble, not live solver telemetry.',
+        backend: 'synthetic scramble-inverse preview',
+        optimality: 'not evaluated in preview',
+        notes: 'Preview uses the inverse scramble to exercise the UI. It mirrors the external exact-backend benchmark profile but does not compute an optimal solution.',
       };
   }
 }
@@ -171,8 +171,8 @@ export async function solveCube(
           notes: metadata.notes,
           demoOnly: true,
           error: algorithm === 'korf'
-            ? 'Timeout exceeded on a hard exact-search case'
-            : 'Timeout exceeded',
+            ? 'Synthetic preview timed out on a hard exact-search scenario'
+            : 'Synthetic preview exceeded the selected timeout',
         });
       }, Math.min(timeout, 1000)); // Cap actual wait to 1s for demo
       return;
@@ -227,6 +227,7 @@ export async function compareAlgorithms(
     korf: 60000,
   }
 ): Promise<SolveResult[]> {
+  // This comparison intentionally reuses the synthetic preview pipeline rather than live solver execution.
   const state = applyMoves({ ...SOLVED_STATE }, scramble);
 
   const results = await Promise.all([

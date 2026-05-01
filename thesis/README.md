@@ -64,7 +64,7 @@ tectonic --keep-intermediates --keep-logs --reruns 0 --pass tex main.tex
 tectonic --keep-intermediates --keep-logs --reruns 0 --pass bibtex_first main.tex
 tectonic --keep-intermediates --keep-logs --reruns 0 --pass tex main.tex
 tectonic --keep-intermediates --keep-logs --reruns 0 --pass tex main.tex
-tectonic --keep-intermediates --keep-logs --reruns 0 --pass bibtex_first main.tex
+tectonic --keep-intermediates --keep-logs --reruns 0 --pass tex main.tex
 ```
 
 If you are using a classic TeX toolchain instead of `tectonic`, follow the current bibliography configuration in [`main.tex`](/Users/alextoska/Desktop/rubicCubeThesis/thesis/main.tex):

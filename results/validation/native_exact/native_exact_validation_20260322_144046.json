@@ -5,7 +5,24 @@
     "timeout": 20.0,
     "heuristic_cache_dir": "data/pattern_databases/native_exact",
     "corner_db_path": "data/pattern_databases/corner_db.pkl",
-    "disable_corner_db": false
+    "disable_corner_db": false,
+    "corpus_generation": {
+      "exhaustive_depth": 3,
+      "oracle_depths": [
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "oracle_samples_per_depth": 2,
+      "seed": 42,
+      "preset": "canonical_3513_case_depth12",
+      "exhaustive_cases": 3501,
+      "oracle_cases": 12,
+      "total_cases": 3513
+    }
   },
   "summary": {
     "total_cases": 3513,

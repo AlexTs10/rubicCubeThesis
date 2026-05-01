@@ -200,7 +200,7 @@ streamlit run ui/app.py --server.port 8502
 **Problem:** Korf solver timeout
 - Increase timeout in sidebar
 - Reduce scramble depth to 10-12
-- Use "max depth" setting
+- Use the "max depth" setting only if the UI is running the internal heuristic Korf fallback; when the external exact backend is available, timeout is the active control
 
 ### CLI Issues
 
@@ -317,7 +317,7 @@ for move in ["R", "U", "R'", "U'", "F2"]:
 ### Performance Tuning
 
 For faster demos:
-- Use Thistlethwaite (fastest)
+- Use Thistlethwaite for the most predictable quick live demo flow
 - Reduce scramble depth
 - Increase timeout if needed
 
@@ -342,7 +342,7 @@ python demos/phase9/benchmark_demo.py --n-scrambles 50 --export benchmark.md
 A: Web UI comparison mode - it's visual, interactive, and comprehensive.
 
 **Q: How do I make demos faster?**
-A: Use Thistlethwaite for the fastest pure solver demos, or Kociemba for the best overall practical compromise on the canonical benchmark set.
+A: Use Thistlethwaite for the most predictable quick pure-solver demos, or Kociemba for the best overall practical compromise on the canonical benchmark set.
 
 **Q: Can I use these demos offline?**
 A: Yes, all demos work offline after installing dependencies.

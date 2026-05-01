@@ -115,7 +115,8 @@ class DistanceEstimator:
                 self.edge1_db = create_edge_database(
                     edge_group=1,
                     load_if_exists=True,
-                    save_path=edge1_path
+                    save_path=edge1_path,
+                    generate_if_missing=False,
                 )
                 print("✓ Edge1 database loaded")
             except Exception as e:
@@ -124,7 +125,8 @@ class DistanceEstimator:
                     self.edge1_db = create_edge_database(
                         edge_group=1,
                         load_if_exists=False,
-                        save_path=edge1_path
+                        save_path=edge1_path,
+                        generate_if_missing=True,
                     )
                 else:
                     print(f"✗ Failed to load edge1 database: {e}")
@@ -133,7 +135,8 @@ class DistanceEstimator:
                 self.edge2_db = create_edge_database(
                     edge_group=2,
                     load_if_exists=True,
-                    save_path=edge2_path
+                    save_path=edge2_path,
+                    generate_if_missing=False,
                 )
                 print("✓ Edge2 database loaded")
             except Exception as e:
@@ -142,7 +145,8 @@ class DistanceEstimator:
                     self.edge2_db = create_edge_database(
                         edge_group=2,
                         load_if_exists=False,
-                        save_path=edge2_path
+                        save_path=edge2_path,
+                        generate_if_missing=True,
                     )
                 else:
                     print(f"✗ Failed to load edge2 database: {e}")

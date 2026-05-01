@@ -1,33 +1,29 @@
 """
 Edge Pattern Databases
 
-This module implements pattern databases for edge pieces of the Rubik's Cube.
-Since a full 12-edge database would require ~500GB of memory, we split the
-edges into two separate 7-edge databases.
+This module implements Korf-style pattern databases for tracked edge groups.
+For a 6-edge group we must encode:
 
-State Space per 7-edge database:
-- Choose 7 edges from 12: C(12, 7) = 792 ways
-- Permutation of 7 edges: 7! = 5,040 states
-- Orientation of 7 edges: 2^7 = 128 states
-- However, we only track edges within the chosen subset
-- For a specific 7-edge subset: 7! × 2^7 = 645,120 states
+- which 6 of the 12 edge positions contain the tracked pieces: C(12, 6) = 924
+- the permutation of the tracked pieces within those positions: 6! = 720
+- the orientations of the tracked pieces: 2^6 = 64
 
-For simplicity and following Korf's approach, we use:
-- Edge Group 1: First 6 edges (UR, UF, UL, UB, DR, DF)
-- Edge Group 2: Last 6 edges (DL, DB, FR, FL, BL, BR)
+That yields 924 * 720 * 64 = 42,577,920 states per 6-edge database.
 
-This gives us two databases of approximately equal size, each storing
-distances for 6 edges, totaling about 244 MB each.
-
-References:
-- Korf (1997): Uses 6-6 split for edges
-- Stack Overflow: Explains why 12-edge DB is too large
+The previous abstraction only ranked the tracked pieces relative to one another,
+which collapsed distinct states whenever the same tracked edges occupied
+different positions on the cube. It also read orientations from home positions
+instead of from the tracked pieces' current positions. Both behaviors are
+invalid for an admissible edge pattern database.
 """
 
 import numpy as np
-from typing import List, Set
+from typing import List
 from ..kociemba.cubie import CubieCube, ALL_MOVES
 from ..kociemba.coord import (
+    binomial,
+    combination_to_rank,
+    rank_to_combination,
     permutation_to_rank,
     rank_to_permutation,
     factorial
@@ -35,20 +31,19 @@ from ..kociemba.coord import (
 from .pattern_database import PatternDatabase, bfs_generate_pattern_database
 
 
-def edge_orientation_to_coord(edge_orient: np.ndarray, edge_subset: List[int]) -> int:
+def edge_orientation_to_coord(tracked_orient: np.ndarray) -> int:
     """
-    Convert edge orientations to a coordinate.
+    Convert tracked edge orientations to a coordinate.
 
     Args:
-        edge_orient: Array of edge orientations (0 or 1)
-        edge_subset: List of edge indices to consider
+        tracked_orient: Orientations for tracked edges ordered by tracked position
 
     Returns:
-        Orientation coordinate (0 to 2^n - 1 where n = len(edge_subset))
+        Orientation coordinate (0 to 2^n - 1)
     """
     coord = 0
-    for edge_idx in edge_subset[:-1]:  # Last edge determined by parity
-        coord = coord * 2 + int(edge_orient[edge_idx])
+    for orient in tracked_orient:
+        coord = coord * 2 + int(orient)
     return coord
 
 
@@ -64,40 +59,51 @@ def coord_to_edge_orientation(coord: int, n_edges: int) -> np.ndarray:
         Array of orientations
     """
     orient = np.zeros(n_edges, dtype=np.int8)
-    total = 0
 
-    for i in range(n_edges - 1, 0, -1):
+    for i in range(n_edges - 1, -1, -1):
         orient[i] = coord % 2
-        total += orient[i]
         coord //= 2
-
-    # First edge determined by parity
-    orient[0] = total % 2
 
     return orient
 
 
-def normalize_edge_permutation(edge_perm: np.ndarray, edge_subset: List[int]) -> np.ndarray:
+def project_tracked_edges(
+    cubie: CubieCube,
+    edge_subset: List[int],
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
-    Normalize edge permutation for a subset of edges.
+    Project a cube state onto a tracked edge subset.
 
-    This maps the actual edge indices to 0..n-1 for ranking.
+    The projection encodes:
+    - which positions contain tracked edges
+    - which tracked edge is in each tracked position
+    - the orientation of the tracked edge in each tracked position
 
     Args:
-        edge_perm: Full edge permutation array
-        edge_subset: List of edge indices to consider
+        cubie: Cubie cube state
+        edge_subset: Tracked edge piece ids
 
     Returns:
-        Normalized permutation (values 0 to n-1)
+        Tuple of (positions mask, normalized tracked permutation, tracked orientations)
     """
-    # Extract subset
-    subset_perm = []
-    for i in range(12):
-        if edge_perm[i] in edge_subset:
-            # Map to 0..n-1
-            subset_perm.append(edge_subset.index(edge_perm[i]))
+    subset_lookup = {edge: idx for idx, edge in enumerate(edge_subset)}
+    tracked_positions = np.zeros(12, dtype=np.int8)
+    tracked_perm = []
+    tracked_orient = []
 
-    return np.array(subset_perm, dtype=np.int8)
+    for position, piece in enumerate(cubie.edge_perm):
+        normalized_piece = subset_lookup.get(int(piece))
+        if normalized_piece is None:
+            continue
+        tracked_positions[position] = 1
+        tracked_perm.append(normalized_piece)
+        tracked_orient.append(int(cubie.edge_orient[position]))
+
+    return (
+        tracked_positions,
+        np.array(tracked_perm, dtype=np.int8),
+        np.array(tracked_orient, dtype=np.int8),
+    )
 
 
 class EdgePatternDatabase(PatternDatabase):
@@ -117,11 +123,17 @@ class EdgePatternDatabase(PatternDatabase):
             name: Name for this database (e.g., "edge1", "edge2")
         """
         self.edge_subset = sorted(edge_subset)
-        n_edges = len(edge_subset)
+        self.n_edges = len(self.edge_subset)
+        self.position_states = binomial(12, self.n_edges)
+        self.permutation_states = factorial(self.n_edges)
+        # Tracked-edge orientations are independent; untracked edges absorb global parity.
+        self.orientation_states = 2 ** self.n_edges
 
-        # Size: n! × 2^(n-1) for n edges
-        # We use n-1 for orientation due to parity constraint
-        size = factorial(n_edges) * (2 ** (n_edges - 1))
+        size = (
+            self.position_states *
+            self.permutation_states *
+            self.orientation_states
+        )
 
         super().__init__(name, size)
 
@@ -135,17 +147,19 @@ class EdgePatternDatabase(PatternDatabase):
         Returns:
             Edge pattern index for this subset
         """
-        # Get normalized permutation for our subset
-        normalized_perm = normalize_edge_permutation(cubie.edge_perm, self.edge_subset)
+        tracked_positions, normalized_perm, tracked_orient = project_tracked_edges(
+            cubie,
+            self.edge_subset,
+        )
+        position_rank = combination_to_rank(tracked_positions, self.n_edges)
         perm_rank = permutation_to_rank(normalized_perm)
+        orient_coord = edge_orientation_to_coord(tracked_orient)
 
-        # Get orientation coordinate
-        n_edges = len(self.edge_subset)
-        orient_coord = edge_orientation_to_coord(cubie.edge_orient, self.edge_subset)
-
-        # Combine: each permutation has 2^(n-1) orientation variants
-        orient_size = 2 ** (n_edges - 1)
-        index = perm_rank * orient_size + orient_coord
+        index = (
+            (position_rank * self.permutation_states + perm_rank) *
+            self.orientation_states +
+            orient_coord
+        )
 
         return index
 
@@ -157,7 +171,7 @@ class EdgePatternDatabase(PatternDatabase):
             cubie: Cubie cube state
 
         Returns:
-            Minimum number of moves to solve these edges (0-15)
+            Minimum number of moves to solve these edges
         """
         index = self.edge_index(cubie)
         return self.get_distance(index)
@@ -208,39 +222,32 @@ class EdgePatternDatabase(PatternDatabase):
         Returns:
             Cubie cube with the specified edge configuration
         """
-        n_edges = len(self.edge_subset)
-        orient_size = 2 ** (n_edges - 1)
-
-        # Extract permutation and orientation
-        perm_rank = index // orient_size
-        orient_coord = index % orient_size
+        orient_coord = index % self.orientation_states
+        index //= self.orientation_states
+        perm_rank = index % self.permutation_states
+        position_rank = index // self.permutation_states
 
         # Create cubie state
         cubie = CubieCube()
+        normalized_perm = rank_to_permutation(perm_rank, self.n_edges)
+        tracked_positions = rank_to_combination(position_rank, 12, self.n_edges)
+        tracked_orient = coord_to_edge_orientation(orient_coord, self.n_edges)
 
-        # Set permutation
-        normalized_perm = rank_to_permutation(perm_rank, n_edges)
-
-        # Map back to actual edge indices
         actual_perm = [0] * 12
         other_edges = [e for e in range(12) if e not in self.edge_subset]
-        subset_pos = 0
+        tracked_pos = 0
         other_pos = 0
 
-        for i in range(12):
-            if i in self.edge_subset:
-                actual_perm[i] = self.edge_subset[normalized_perm[subset_pos]]
-                subset_pos += 1
+        for position in range(12):
+            if tracked_positions[position]:
+                actual_perm[position] = self.edge_subset[int(normalized_perm[tracked_pos])]
+                cubie.edge_orient[position] = tracked_orient[tracked_pos]
+                tracked_pos += 1
             else:
-                actual_perm[i] = other_edges[other_pos]
+                actual_perm[position] = other_edges[other_pos]
                 other_pos += 1
 
         cubie.edge_perm = np.array(actual_perm, dtype=np.int8)
-
-        # Set orientation
-        orient = coord_to_edge_orientation(orient_coord, n_edges)
-        for i, edge_idx in enumerate(self.edge_subset):
-            cubie.edge_orient[edge_idx] = orient[i]
 
         return cubie
 
@@ -276,7 +283,11 @@ EDGE_GROUP_2 = [6, 7, 8, 9, 10, 11]  # DL, DB, FR, FL, BL, BR
 def create_edge_database(
     edge_group: int,
     load_if_exists: bool = True,
-    save_path: str = None
+    save_path: str = None,
+    *,
+    generate_if_missing: bool = True,
+    require_complete: bool = True,
+    verbose: bool = True,
 ) -> EdgePatternDatabase:
     """
     Create or load an edge pattern database.
@@ -285,6 +296,9 @@ def create_edge_database(
         edge_group: Which edge group (1 or 2)
         load_if_exists: If True and save_path exists, load from disk
         save_path: Path to save/load the database
+        generate_if_missing: Whether to build the database when it is not cached
+        require_complete: Whether loading should reject incomplete databases
+        verbose: Whether to print progress messages
 
     Returns:
         Edge pattern database
@@ -307,23 +321,35 @@ def create_edge_database(
 
     # Try to load if it exists
     if load_if_exists and os.path.exists(save_path):
-        print(f"Loading {name} database from {save_path}...")
+        if verbose:
+            print(f"Loading {name} database from {save_path}...")
         db = PatternDatabase.load(save_path)
-        # Convert to EdgePatternDatabase
         edge_db = EdgePatternDatabase(edge_subset, name)
         edge_db.copy_storage_from(db)
-        print("  Loaded successfully!")
+        if require_complete and not edge_db.is_complete():
+            raise ValueError(
+                f"Edge database at {save_path} is incomplete "
+                f"({edge_db.initialized_count():,}/{edge_db.size:,} states)"
+            )
+        if verbose:
+            print("  Loaded successfully!")
         return edge_db
 
+    if not generate_if_missing:
+        raise FileNotFoundError(f"Edge database not found: {save_path}")
+
     # Generate new database
-    print(f"Generating new {name} database...")
+    if verbose:
+        print(f"Generating new {name} database...")
     edge_db = EdgePatternDatabase(edge_subset, name)
-    edge_db.generate(verbose=True)
+    edge_db.generate(verbose=verbose)
 
     # Save to disk
     if save_path:
-        print(f"Saving to {save_path}...")
+        if verbose:
+            print(f"Saving to {save_path}...")
         edge_db.save(save_path)
-        print("  Saved successfully!")
+        if verbose:
+            print("  Saved successfully!")
 
     return edge_db

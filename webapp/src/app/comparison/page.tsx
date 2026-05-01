@@ -88,7 +88,7 @@ export default function ComparisonPage() {
 
     if (format === 'json') {
       content = JSON.stringify({
-        source: 'synthetic-demo',
+        source: 'synthetic-preview',
         demoOnly: true,
         scramble: scrambleMoves,
         results: results.map(r => ({
@@ -105,7 +105,7 @@ export default function ComparisonPage() {
         })),
         timestamp: new Date().toISOString(),
       }, null, 2);
-      filename = 'comparison_results.json';
+      filename = 'comparison_preview_results.json';
       mimeType = 'application/json';
     } else {
       const headers = ['Algorithm', 'Solved', 'Moves', 'Time (ms)', 'Memory (MB)', 'Nodes', 'Demo Only'];
@@ -119,7 +119,7 @@ export default function ComparisonPage() {
         r.demoOnly ? 'Yes' : 'No',
       ]);
       content = [headers, ...rows].map(row => row.join(',')).join('\n');
-      filename = 'comparison_results.csv';
+      filename = 'comparison_preview_results.csv';
       mimeType = 'text/csv';
     }
 
@@ -140,15 +140,15 @@ export default function ComparisonPage() {
         <h1 className="text-3xl font-bold mb-2">
           <span className="gradient-text">Algorithm Comparison</span>
         </h1>
-        <p className="text-slate-400">Preview all three algorithms side-by-side on the same scramble</p>
+        <p className="text-slate-400">Preview all three benchmark profiles side-by-side on the same scramble</p>
         <p className="text-sm text-slate-500 mt-2">
-          Demo data follows the corrected benchmark profile, but the Next.js output is synthetic preview data rather than authoritative benchmark telemetry.
+          Demo data follows the corrected benchmark profile, but this page does not run the repository solvers. The outputs are synthetic previews.
         </p>
         <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-100">
-          This web comparison view uses benchmark-shaped preview data. The returned move
-          sequences are synthetic and derived from the scramble, so the page should not be cited
-          as benchmark evidence. The authoritative thesis benchmark is produced by the Python
-          evaluation pipeline under <code>results/benchmarks/thesis/</code>.
+          This web comparison view uses synthetic preview data. Each move sequence is the inverse
+          scramble rather than a live solver result, so the page should not be cited as benchmark
+          evidence. The authoritative thesis benchmark is produced by the Python evaluation
+          pipeline under <code>results/benchmarks/thesis/</code>.
         </div>
       </div>
 
@@ -199,7 +199,7 @@ export default function ComparisonPage() {
             size="lg"
             icon={<Play className="w-5 h-5" />}
           >
-            {running ? 'Running...' : 'Run Comparison'}
+            {running ? 'Generating...' : 'Run Preview Comparison'}
           </Button>
 
           <Button
@@ -319,7 +319,7 @@ export default function ComparisonPage() {
                             <div className="pt-2 border-t border-slate-700/50 text-xs text-slate-400">
                               <div>Backend: {result.backend || '-'}</div>
                               <div>Optimality: {result.optimality || '-'}</div>
-                              {result.demoOnly && <div>Source: synthetic demo preview</div>}
+                              {result.demoOnly && <div>Source: synthetic scramble-inverse preview</div>}
                             </div>
                           )}
                         </div>
@@ -439,9 +439,9 @@ export default function ComparisonPage() {
 
               {/* Solutions */}
               <Card>
-                <h2 className="text-lg font-bold mb-4">Solution Sequences</h2>
+                <h2 className="text-lg font-bold mb-4">Preview Sequences</h2>
                 <p className="mb-4 text-sm text-slate-400">
-                  The sequences below are synthetic preview outputs derived from the scramble. Use the thesis benchmark artifacts for citation or comparison.
+                  The sequences below are synthetic preview outputs derived by inverting the scramble. Use the thesis benchmark artifacts for citation or comparison.
                 </p>
                 <div className="space-y-4">
                   {results.filter(r => r.solved).map((result) => (
@@ -467,9 +467,9 @@ export default function ComparisonPage() {
           {results.length === 0 && !running && (
             <Card className="text-center py-12">
               <div className="text-4xl mb-4">🧩</div>
-              <h3 className="text-xl font-bold mb-2">Ready to Compare</h3>
+              <h3 className="text-xl font-bold mb-2">Ready to Compare Previews</h3>
               <p className="text-slate-400">
-                Configure your settings and click "Run Comparison" to test all three algorithms
+                Configure your settings and click "Run Preview Comparison" to inspect all three benchmark profiles
               </p>
             </Card>
           )}

@@ -410,6 +410,11 @@ class CompositeHeuristic:
         loaded = PatternDatabase.load(str(cache_path))
         edge_db = EdgePatternDatabase(edge_subset, name)
         edge_db.copy_storage_from(loaded)
+        if not edge_db.is_complete():
+            raise ValueError(
+                f"Edge database at {cache_path} is incomplete "
+                f"({edge_db.initialized_count():,}/{edge_db.size:,} states)"
+            )
         return edge_db
 
     def get_statistics(self) -> Dict[str, object]:

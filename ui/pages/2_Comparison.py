@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from src.cube.rubik_cube import RubikCube
 from src.evaluation.algorithm_comparison import AlgorithmComparison
+from src.korf.optimal_solver import OPTIMAL_AVAILABLE
 
 # Import UI components
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -82,7 +83,19 @@ st.sidebar.subheader("Timeout Settings")
 thistle_timeout = st.sidebar.slider("Thistlethwaite (s)", 5, 60, 30)
 kociemba_timeout = st.sidebar.slider("Kociemba (s)", 10, 120, 60)
 korf_timeout = st.sidebar.slider("Korf Exact / IDA* (s)", 30, 300, 120)
-korf_max_depth = st.sidebar.slider("Korf Max Depth", 10, 25, 20)
+korf_max_depth = 20
+if OPTIMAL_AVAILABLE:
+    st.sidebar.slider(
+        "Korf Max Depth (fallback only)",
+        10,
+        25,
+        korf_max_depth,
+        disabled=True,
+        help="Only used when the internal heuristic Korf fallback is active.",
+    )
+    st.sidebar.caption("External exact backend detected. Timeout is active; max depth is ignored in this configuration.")
+else:
+    korf_max_depth = st.sidebar.slider("Korf Max Depth", 10, 25, 20)
 
 # Comparison button
 if st.sidebar.button("🚀 Run Comparison", type="primary", use_container_width=True):
@@ -179,7 +192,7 @@ if st.session_state.comparison_results:
         st.markdown("### 🟣 Korf")
         r = result.korf
         st.caption(
-            "External optimal backend when available; exact on solved cases, "
+            "External optimal backend when available; fast on many shallow/mid-depth solved cases, "
             "but hard depth-20 scrambles can still time out."
         )
         if r.solved:
@@ -362,6 +375,7 @@ with st.expander("❓ Help & Tips"):
     - Start with shallow scrambles (7-10 moves) to get quick results
     - Use the same seed to reproduce exact comparisons
     - Thistlethwaite on this page is pure and does not fall back to Kociemba
+    - The Korf max-depth control matters only when the comparison falls back to the internal heuristic IDA* path
     - In the thesis benchmark, Korf timed out on 3 of 25 depth-20 scrambles with a 120s limit
     - If Korf fails here, check the backend column in the results table before drawing conclusions
     """)

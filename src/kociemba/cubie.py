@@ -114,6 +114,79 @@ class CubieCube:
                     self.edge_orient.tobytes()))
 
 
+def _permutation_parity(perm: np.ndarray) -> int:
+    """Return permutation parity (0 even, 1 odd)."""
+    visited = np.zeros(len(perm), dtype=bool)
+    parity = 0
+
+    for start in range(len(perm)):
+        if visited[start]:
+            continue
+
+        cycle_len = 0
+        idx = start
+        while not visited[idx]:
+            visited[idx] = True
+            idx = int(perm[idx])
+            cycle_len += 1
+
+        if cycle_len > 0:
+            parity ^= (cycle_len - 1) & 1
+
+    return parity
+
+
+def _validate_facelet_palette(facelet_cube: RubikCube) -> None:
+    """Validate basic sticker-level invariants before cubie extraction."""
+    state = np.asarray(facelet_cube.state)
+    if state.shape != (len(Face), 9):
+        raise ValueError(
+            f"Invalid cube state: expected shape {(len(Face), 9)}, got {state.shape}"
+        )
+
+    unique_colors, counts = np.unique(state, return_counts=True)
+    expected_colors = np.arange(len(Face))
+    if not np.array_equal(unique_colors, expected_colors) or not np.all(counts == 9):
+        raise ValueError(
+            "Invalid cube state: expected exactly 9 stickers of each face color"
+        )
+
+    for face in Face:
+        center_color = int(state[face.value, 4])
+        if center_color != face.value:
+            raise ValueError(
+                f"Invalid cube state: {face.name} center must remain {face.value}"
+            )
+
+
+def _validate_cubie_state(cubie: CubieCube) -> None:
+    """Validate global cubie invariants for a physically reachable cube."""
+    if not np.array_equal(np.sort(cubie.corner_perm), np.arange(8)):
+        raise ValueError(
+            "Invalid cube state: corner permutation must contain each corner exactly once"
+        )
+
+    if not np.array_equal(np.sort(cubie.edge_perm), np.arange(12)):
+        raise ValueError(
+            "Invalid cube state: edge permutation must contain each edge exactly once"
+        )
+
+    if int(np.sum(cubie.corner_orient)) % 3 != 0:
+        raise ValueError(
+            "Invalid cube state: corner orientation sum must be divisible by 3"
+        )
+
+    if int(np.sum(cubie.edge_orient)) % 2 != 0:
+        raise ValueError(
+            "Invalid cube state: edge orientation sum must be even"
+        )
+
+    if _permutation_parity(cubie.corner_perm) != _permutation_parity(cubie.edge_perm):
+        raise ValueError(
+            "Invalid cube state: corner and edge permutation parity must match"
+        )
+
+
 # Move definitions as cubie transformations
 # Each move is defined by how it permutes and orients corners and edges
 
@@ -238,6 +311,8 @@ def from_facelet_cube(facelet_cube: RubikCube) -> CubieCube:
     Returns:
         Cubie representation
     """
+    _validate_facelet_palette(facelet_cube)
+
     cubie = CubieCube()
 
     # Extract corner pieces from facelets
@@ -348,6 +423,8 @@ def from_facelet_cube(facelet_cube: RubikCube) -> CubieCube:
             raise ValueError(
                 f"Invalid cube state: no matching edge for colors {colors} at position {pos}"
             )
+
+    _validate_cubie_state(cubie)
 
     return cubie
 

@@ -10,8 +10,10 @@ G0 (all states) → G1 → G2 → G3 → G4 (solved)
 Each phase restricts the allowed moves while maintaining previous invariants.
 
 This implementation can optionally enable a Kociemba rescue fallback for
-interactive/demo usage. Pure Thistlethwaite evaluation should keep that
-fallback disabled.
+interactive/demo usage. Benchmark-grade pure Thistlethwaite evaluation keeps
+that fallback disabled and leaves pattern databases enabled. Disabling pattern
+databases switches the solver into a lighter best-effort mode for demos/tests
+rather than the fully corrected evaluation path.
 """
 
 from typing import List, Optional, Tuple
@@ -25,10 +27,12 @@ from .ida_star import IDAStarSearch
 
 class ThistlethwaiteSolver:
     """
-    Complete Thistlethwaite algorithm solver.
+    Thistlethwaite algorithm solver.
 
-    Solves the Rubik's Cube in 4 phases with guaranteed solution length
-    of at most 52 moves (typically 30-45 moves).
+    With pattern databases enabled, this is the corrected four-phase solver used
+    by the thesis benchmark path. With pattern databases disabled, the solver
+    falls back to lightweight admissible heuristics that are useful for demos
+    and tests but are not treated as the authoritative evaluation-grade path.
     """
 
     def __init__(
@@ -41,7 +45,9 @@ class ThistlethwaiteSolver:
         Initialize Thistlethwaite solver.
 
         Args:
-            use_pattern_databases: Whether to use pattern databases for IDA* heuristic
+            use_pattern_databases: Whether to use the benchmark-grade pattern
+                database path. Disabling this enables a lighter best-effort
+                heuristic mode for demos/tests.
             cache_dir: Directory to cache pattern databases
             enable_kociemba_fallback: Whether to fall back to Kociemba if a
                 Thistlethwaite phase fails. This is useful for interactive
@@ -398,7 +404,8 @@ def solve_cube(
 
     Args:
         cube: Cube to solve
-        use_pattern_databases: Whether to use pattern databases
+        use_pattern_databases: Whether to use the benchmark-grade pattern
+            database path
         verbose: Whether to print progress
         enable_kociemba_fallback: Whether to allow Kociemba rescue fallback
 

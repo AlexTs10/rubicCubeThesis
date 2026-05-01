@@ -150,6 +150,28 @@ class TestScrambling:
         assert cube1._scramble_seed == 123
         assert cube2._scramble_seed == 123
 
+    def test_scramble_does_not_mutate_global_numpy_rng(self):
+        """Test that scramble uses an isolated RNG even when seeded."""
+        np.random.seed(2024)
+        expected = np.random.random(5)
+
+        np.random.seed(2024)
+        RubikCube().scramble(moves=10, seed=123)
+        actual = np.random.random(5)
+
+        np.testing.assert_allclose(actual, expected)
+
+    def test_scramble_without_seed_does_not_consume_global_numpy_rng(self):
+        """Test that unseeded scramble also leaves NumPy's global RNG untouched."""
+        np.random.seed(2025)
+        expected = np.random.random(5)
+
+        np.random.seed(2025)
+        RubikCube().scramble(moves=10)
+        actual = np.random.random(5)
+
+        np.testing.assert_allclose(actual, expected)
+
 
 class TestMoveValidation:
     """Test move validation and error handling."""

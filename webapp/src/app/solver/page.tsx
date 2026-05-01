@@ -128,14 +128,15 @@ export default function SolverPage() {
         <h1 className="text-3xl font-bold mb-2">
           <span className="gradient-text">Single Solver</span>
         </h1>
-        <p className="text-slate-400">Preview individual algorithms on scrambled cubes</p>
+        <p className="text-slate-400">Preview individual algorithm benchmark profiles on scrambled cubes</p>
         <p className="text-sm text-slate-500 mt-2">
-          Demo behavior mirrors the corrected thesis results, but the Next.js output is synthetic preview data rather than an authoritative solver backend.
+          This page mirrors the corrected thesis benchmark profile, but it does not execute the repository solvers. Every result here is synthetic preview data.
         </p>
         <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-100">
-          This Next.js page replays benchmark-shaped demo data. The returned move list is
-          synthetic and derived from the scramble, so it should not be cited as benchmark
-          evidence. For authoritative live solver execution, use the Streamlit UI in <code>ui/</code>.
+          This Next.js page generates a valid preview sequence by inverting the scramble. It is
+          useful for UI demos only and should not be cited as benchmark evidence, solver
+          telemetry, or an optimality claim. For authoritative live solver execution, use the
+          Streamlit UI in <code>ui/</code>.
         </div>
       </div>
 
@@ -270,18 +271,18 @@ export default function SolverPage() {
               size="lg"
               icon={<Play className="w-5 h-5" />}
             >
-              {solving ? 'Solving...' : `Solve with ${ALGORITHMS[selectedAlgorithm].name}`}
+              {solving ? 'Generating preview...' : `Preview ${ALGORITHMS[selectedAlgorithm].name}`}
             </Button>
           </Card>
 
           {/* Solution Results */}
           {solveResult && (
             <Card>
-              <h2 className="text-lg font-bold mb-4">Solution Results</h2>
+              <h2 className="text-lg font-bold mb-4">Preview Results</h2>
 
               {solveResult.demoOnly && (
                 <div className="mb-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-100">
-                  Synthetic preview only. The solution below is generated locally from the scramble and is not thesis evidence.
+                  Synthetic preview only. The sequence below is the inverse scramble used to exercise the UI and is not thesis evidence.
                 </div>
               )}
 
@@ -402,7 +403,7 @@ export default function SolverPage() {
                 </>
               ) : (
                 <div className="text-center py-8">
-                  <div className="text-red-400 text-lg mb-2">❌ Solve Failed</div>
+                  <div className="text-red-400 text-lg mb-2">❌ Preview Failed</div>
                   <p className="text-slate-400">{solveResult.error || 'Unknown error'}</p>
                 </div>
               )}

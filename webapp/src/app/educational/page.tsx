@@ -74,7 +74,7 @@ export default function EducationalPage() {
         </h1>
         <p className="text-slate-400">Learn how each algorithm works</p>
         <div className="mt-4 rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-sm text-amber-100">
-          This educational page mixes explanatory content with synthetic preview data. Use the thesis artifacts for citation or benchmark claims.
+          This educational page mixes explanatory content with synthetic preview context. Use the thesis artifacts for citation, benchmark claims, and live solver outputs.
         </div>
       </div>
 

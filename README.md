@@ -15,7 +15,7 @@ This repository contains the implementation, evaluation, and thesis manuscript f
 
 Generated artifacts such as `thesis/main.pdf`, benchmark outputs under `results/benchmarks/thesis/`, and workflow outputs under `agent_workflow/generated/` are not the source of truth. The source of truth lives in `src/`, `tests/`, `scripts/`, `docs/`, and `thesis/`.
 
-The Next.js frontend under `webapp/` is a synthetic preview layer for demos and presentations. Use the Python benchmark artifacts and thesis sources when you need authoritative results.
+The Next.js frontend under `webapp/` is a synthetic preview layer for demos and presentations. Its move sequences are generated preview outputs rather than live solver telemetry, so use the Python benchmark artifacts and thesis sources when you need authoritative results.
 
 ## Where To Start
 
@@ -52,7 +52,7 @@ rubicCubeThesis/
 
 - 4-phase group-theoretic reduction
 - strong educational value and clear subgroup structure
-- slower and longer solutions than Kociemba on the benchmark set
+- lower average solve time than Kociemba on the current thesis benchmark corpus, but clearly longer solutions
 
 ### Kociemba
 
@@ -90,11 +90,25 @@ Useful files:
 
 ## Current Verification Snapshot
 
-- `python -m pytest tests --collect-only -q` reports `269 tests collected`
-- `python -m pytest tests -q` reports `268 passed, 1 skipped`
-- `verify_setup.py` passes in this environment (`7/7` checks; nested full suite completed in `512.03s`)
-- the thesis builds locally with `tectonic`
+- `python -m pytest tests --collect-only -q` reports `285 tests collected`
+- `python -m pytest tests -q` reports `284 passed, 1 skipped`
+- `python verify_setup.py` passes with `7/7` checks
+- `npm run build` succeeds under `webapp/`
+- a direct `tectonic --pass tex main.tex` compile pass succeeds under `thesis/`
 - the manuscript chapters and appendices are present in `thesis/chapters/`
+
+## Next.js Preview
+
+From the repository root:
+
+```bash
+cd webapp
+npm install
+npm run build
+npm run dev
+```
+
+Use this only for the synthetic demo frontend. The authoritative execution path remains the Streamlit UI in `ui/` and the Python benchmark pipeline.
 
 ## Thesis Sources
 

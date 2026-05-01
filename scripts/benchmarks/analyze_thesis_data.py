@@ -1,13 +1,26 @@
 #!/usr/bin/env python3
 """Analyze benchmark data for thesis."""
 
-import json
+from __future__ import annotations
+
 import sys
 from pathlib import Path
+
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_DATA_DIR = ROOT / "results" / "benchmarks" / "thesis"
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from scripts.benchmarks.artifact_utils import (
+    DEFAULT_BENCHMARK_DIR,
+    find_default_benchmark_sources,
+    load_normalized_benchmark_payload,
+    resolve_benchmark_sources,
+)
+
+
+DEFAULT_DATA_DIR = DEFAULT_BENCHMARK_DIR
 
 def normalize_results(payload):
     """Normalize multiple benchmark JSON shapes into a flat result list."""
@@ -56,25 +69,23 @@ def normalize_results(payload):
     raise ValueError("Unsupported benchmark file format")
 
 
+def find_default_data_files() -> list[Path]:
+    """Find the canonical benchmark source set for analysis."""
+    return find_default_benchmark_sources(DEFAULT_DATA_DIR)
+
+
 def find_default_data_file() -> Path | None:
-    """Find the best available benchmark file for analysis."""
-    candidates = [
-        DEFAULT_DATA_DIR / "thesis_results_combined.json",
-        *sorted(DEFAULT_DATA_DIR.glob("thesis_data_complete_*.json"), reverse=True),
-        *sorted(DEFAULT_DATA_DIR.glob("thesis_data_*.json"), reverse=True),
-        *sorted(DEFAULT_DATA_DIR.glob("thesis_bench_d*.json")),
-    ]
-    for candidate in candidates:
-        if candidate.exists():
-            return candidate
-    return None
+    """Return the first canonical benchmark source for backward compatibility."""
+    files = find_default_data_files()
+    return files[0] if files else None
 
 
-def analyze_data(json_file: Path):
+def analyze_data(json_file: Path | list[Path]):
     """Generate statistical analysis."""
-
-    with open(json_file) as f:
-        results = normalize_results(json.load(f))
+    json_files = json_file if isinstance(json_file, list) else [json_file]
+    results = []
+    for path in json_files:
+        results.extend(normalize_results(load_normalized_benchmark_payload(path)))
 
     print("="*60)
     print("STATISTICAL ANALYSIS")
@@ -120,11 +131,14 @@ def analyze_data(json_file: Path):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        json_file = find_default_data_file()
-        if json_file is None:
+        json_files = find_default_data_files()
+        if not json_files:
             print("No benchmark data files found!")
             sys.exit(1)
     else:
-        json_file = Path(sys.argv[1])
+        json_files = resolve_benchmark_sources(Path(sys.argv[1]))
+        if not json_files:
+            print(f"No benchmark data files found for {sys.argv[1]}!")
+            sys.exit(1)
 
-    analyze_data(json_file)
+    analyze_data(json_files)

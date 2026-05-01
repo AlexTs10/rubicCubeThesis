@@ -1,6 +1,7 @@
 # PHASE 9: DEMOS & UI - IMPLEMENTATION SUMMARY
 
 > Historical phase report. For the corrected publishable state, use `results/benchmarks/thesis/`, `thesis/chapters/07_evaluation.tex`, and the current runtime code under `ui/`, `demos/`, and `webapp/`.
+> The Streamlit UI is the live Python execution path. The Next.js app under `webapp/` is a synthetic preview frontend and should not be cited as solver telemetry.
 
 **Author**: Alex Toska, University of Patras
 **Phase**: 9 (Demos & UI Visualization)
@@ -262,6 +263,15 @@ pip install -r requirements.txt
 streamlit run ui/app.py
 ```
 
+### Quick Start: Next.js Preview
+
+```bash
+cd webapp
+npm install
+npm run build
+npm run dev
+```
+
 ### Quick Start: CLI Comparison
 
 ```bash
@@ -368,7 +378,7 @@ jupyter lab notebooks/
 ## 📝 Known Limitations
 
 1. **Jupyter Notebooks**: The notebooks are documentation and analysis aids, not the authoritative benchmark artifacts.
-2. **Korf Performance**: May timeout on hard scrambles without adjustment.
+2. **Korf Performance**: May timeout on hard scrambles without adjustment; any "max depth" control only applies when the UI falls back to the internal heuristic IDA* path.
 3. **Web UI Responsiveness**: Long-running solves can block UI (no async yet).
 4. **Video Export**: Not implemented (optional feature).
 5. **F1/F2/F3 Shortcuts**: Not implemented in web UI (keyboard shortcuts planned).
@@ -407,7 +417,7 @@ jupyter lab notebooks/
 
 ### References
 
-1. Thistlethwaite, M. (1981). "52-move algorithm for Rubik's Cube"
+1. Thistlethwaite, M. (1981). "A Forty-Five Move Solution for Rubik's Cube"
 2. Kociemba, H. (1992). "Close to God's Algorithm"
 3. Korf, R. (1997). "Finding Optimal Solutions to Rubik's Cube Using Pattern Databases"
 4. Rokicki et al. (2010). "God's Number is 20"

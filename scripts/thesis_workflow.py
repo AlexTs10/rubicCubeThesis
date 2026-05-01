@@ -9,12 +9,21 @@ import re
 import shutil
 import statistics
 import subprocess
+import sys
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 
 ROOT = Path(__file__).resolve().parent.parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from scripts.benchmarks.artifact_utils import (
+    load_normalized_benchmark_payload,
+    resolve_benchmark_sources,
+)
+
 THESIS_DIR = ROOT / "thesis"
 CHAPTERS_DIR = THESIS_DIR / "chapters"
 SPECS_DIR = THESIS_DIR / "specs"
@@ -361,6 +370,7 @@ def codebase_stats() -> dict[str, Any]:
         ROOT / "src" / "kociemba",
         ROOT / "src" / "korf",
         ROOT / "src" / "evaluation",
+        ROOT / "src" / "utils",
     ]
     modules = []
     for module_dir in module_dirs:
@@ -389,10 +399,10 @@ def codebase_stats() -> dict[str, Any]:
 
 def load_benchmark_results() -> tuple[list[Path], list[dict[str, Any]]]:
     """Load all benchmark JSON files produced for the thesis evaluation."""
-    bench_files = sorted(BENCHMARK_DIR.glob("thesis_bench_d*.json"))
+    bench_files = resolve_benchmark_sources(BENCHMARK_DIR)
     records: list[dict[str, Any]] = []
     for bench_file in bench_files:
-        payload = json.loads(read_text(bench_file))
+        payload = load_normalized_benchmark_payload(bench_file)
         for result in payload.get("results", []):
             result["_source_file"] = relative(bench_file)
             records.append(result)
@@ -989,7 +999,7 @@ def build_with_tectonic(backend: str, bibliography_tool: bool) -> None:
         run_build_command(tectonic_bibtex_pass, THESIS_DIR)
         run_build_command(tectonic_tex_pass, THESIS_DIR)
         run_build_command(tectonic_tex_pass, THESIS_DIR)
-        run_build_command(tectonic_bibtex_pass, THESIS_DIR)
+        run_build_command(tectonic_tex_pass, THESIS_DIR)
         return
     if bibliography_tool:
         run_build_command(tectonic_manual_pass, THESIS_DIR)

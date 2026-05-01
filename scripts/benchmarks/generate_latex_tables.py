@@ -1,12 +1,26 @@
 #!/usr/bin/env python3
 """Generate LaTeX tables for thesis."""
 
-import json
+from __future__ import annotations
+
+import sys
 from pathlib import Path
+
 import numpy as np
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_DATA_DIR = ROOT / "results" / "benchmarks" / "thesis"
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from scripts.benchmarks.artifact_utils import (
+    DEFAULT_BENCHMARK_DIR,
+    find_default_benchmark_sources,
+    load_normalized_benchmark_payload,
+    resolve_benchmark_sources,
+)
+
+
+DEFAULT_DATA_DIR = DEFAULT_BENCHMARK_DIR
 
 def normalize_results(payload):
     """Normalize multiple benchmark JSON shapes into flat algorithm rows."""
@@ -51,25 +65,23 @@ def normalize_results(payload):
     raise ValueError("Unsupported benchmark file format")
 
 
+def find_default_data_files() -> list[Path]:
+    """Find the canonical benchmark source set for table generation."""
+    return find_default_benchmark_sources(DEFAULT_DATA_DIR)
+
+
 def find_default_data_file() -> Path | None:
-    """Find the best available benchmark file for table generation."""
-    candidates = [
-        DEFAULT_DATA_DIR / "thesis_results_combined.json",
-        *sorted(DEFAULT_DATA_DIR.glob("thesis_data_complete_*.json"), reverse=True),
-        *sorted(DEFAULT_DATA_DIR.glob("thesis_data_*.json"), reverse=True),
-        *sorted(DEFAULT_DATA_DIR.glob("thesis_bench_d*.json")),
-    ]
-    for candidate in candidates:
-        if candidate.exists():
-            return candidate
-    return None
+    """Return the first canonical benchmark source for backward compatibility."""
+    files = find_default_data_files()
+    return files[0] if files else None
 
 
-def generate_latex_table(json_file: Path):
+def generate_latex_table(json_file: Path | list[Path]):
     """Generate LaTeX comparison table."""
-
-    with open(json_file) as f:
-        results = normalize_results(json.load(f))
+    json_files = json_file if isinstance(json_file, list) else [json_file]
+    results = []
+    for path in json_files:
+        results.extend(normalize_results(load_normalized_benchmark_payload(path)))
 
     print(r"\begin{table}[h]")
     print(r"\centering")
@@ -101,8 +113,15 @@ def generate_latex_table(json_file: Path):
     print(r"\end{table}")
 
 if __name__ == "__main__":
-    default_file = find_default_data_file()
-    if default_file:
-        generate_latex_table(default_file)
+    if len(sys.argv) < 2:
+        default_files = find_default_data_files()
+        if default_files:
+            generate_latex_table(default_files)
+        else:
+            print("No data files found!")
     else:
-        print("No data files found!")
+        json_files = resolve_benchmark_sources(Path(sys.argv[1]))
+        if json_files:
+            generate_latex_table(json_files)
+        else:
+            print(f"No data files found for {sys.argv[1]}!")

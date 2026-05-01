@@ -266,8 +266,7 @@ class RubikCube:
         Returns:
             List of moves applied
         """
-        if seed is not None:
-            np.random.seed(seed)
+        rng = np.random.Generator(np.random.PCG64(seed))
 
         all_moves = ['U', 'U\'', 'U2', 'D', 'D\'', 'D2',
                      'F', 'F\'', 'F2', 'B', 'B\'', 'B2',
@@ -275,7 +274,7 @@ class RubikCube:
 
         scramble_sequence = []
         for _ in range(moves):
-            move = np.random.choice(all_moves)
+            move = str(rng.choice(all_moves))
             scramble_sequence.append(move)
             self.apply_move(move)
 

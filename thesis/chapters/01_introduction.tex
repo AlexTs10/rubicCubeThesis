@@ -71,13 +71,13 @@
 Η εργασία δεν περιορίζεται σε βιβλιογραφική επισκόπηση, αλλά συνδυάζει θεωρητική ανάλυση, υλοποίηση και πειραματική αξιολόγηση. Οι κύριες συνεισφορές της είναι:
 
 \begin{itemize}
-    \item Ενοποίηση τριών γραμμών επίλυσης σε κοινό πλαίσιο Python, με 40 αρχεία Python και 12{,}929 γραμμές κώδικα στον κατάλογο \filepath{src/}: πλήρεις εγγενείς υλοποιήσεις Thistlethwaite και Kociemba, καθώς και εγγενή exact solver διαδρομή για τον Korf σε επίπεδο cubie με admissible heuristics και native corner pattern database support, διατηρώντας παράλληλα εξωτερικό exact backend για τη βαθύτερη benchmark διαδρομή.
+    \item Ενοποίηση τριών γραμμών επίλυσης σε κοινό πλαίσιο Python, με 40 αρχεία Python και 13{,}033 γραμμές κώδικα στον κατάλογο \filepath{src/}: πλήρεις εγγενείς υλοποιήσεις Thistlethwaite και Kociemba, καθώς και εγγενή exact solver διαδρομή για τον Korf σε επίπεδο cubie με admissible heuristics και native corner pattern database support, διατηρώντας παράλληλα εξωτερικό exact backend για τη βαθύτερη benchmark διαδρομή.
 
     \item Υλοποίηση εγγενούς API βέλτιστης απόστασης και validation harness για τη native exact διαδρομή, με εξαντλητικό έλεγχο έως βάθος 3 και αναπαραγώγιμο corpus 3.513 περιπτώσεων, στο οποίο το native corner pattern database support μειώνει τις αποτυχίες υπό όριο 20\,s από 3 σε 1 και επιτρέπει την ολοκλήρωση sampled depth-9 περιπτώσεων που η μικρότερη heuristic δεν επιλύει.
 
     \item Ανάπτυξη \textbf{σύνθετης ευρετικής} (composite heuristic) ως διερευνητικού, προσαρμοστικού μηχανισμού εκτίμησης.
 
-    \item Πειραματική σύγκριση των αλγορίθμων με 269 συλλεγόμενα tests και επίσημα benchmark data.
+    \item Πειραματική σύγκριση των αλγορίθμων με 285 συλλεγόμενα tests και επίσημα benchmark data.
 
     \item Διαδραστικές διεπαφές για επίδειξη και πειραματισμό (Next.js demo frontend, Streamlit live UI).
 

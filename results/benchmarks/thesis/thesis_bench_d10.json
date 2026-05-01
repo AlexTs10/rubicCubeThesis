@@ -17,7 +17,9 @@
     "korf_pattern_db_status": "provided by external optimal backend",
     "solver_instances_reused_per_batch": true,
     "benchmark_warm_start": false,
-    "timing_methodology": "Solver instances are reused across scrambles within a batch. Thistlethwaite and Kociemba still lazy-load heavy tables inside their first timed solve call, so one-off initialization cost is amortized but not strictly excluded from solve_time_seconds."
+    "timing_methodology": "Solver instances are reused across scrambles within a batch. Thistlethwaite and Kociemba still lazy-load heavy tables inside their first timed solve call, so one-off initialization cost is amortized but not strictly excluded from solve_time_seconds.",
+    "scramble_depth_semantics": "scramble_depth records the requested scramble length; verified_scramble_depth is populated only when the exact distance is known from the optimal Korf backend.",
+    "verified_scramble_depth_available": true
   },
   "results": [
     {
@@ -68,7 +70,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -94,7 +99,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -115,8 +123,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 6,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 6,
+      "scramble_depth_is_verified": true
     },
     {
       "scramble_id": 1,
@@ -180,7 +194,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -206,7 +223,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -231,8 +251,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 10,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 10,
+      "scramble_depth_is_verified": true
     },
     {
       "scramble_id": 2,
@@ -292,7 +318,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -324,7 +353,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -348,8 +380,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 9,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 9,
+      "scramble_depth_is_verified": true
     },
     {
       "scramble_id": 3,
@@ -413,7 +451,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -435,7 +476,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -456,8 +500,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 6,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 6,
+      "scramble_depth_is_verified": true
     },
     {
       "scramble_id": 4,
@@ -519,7 +569,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -543,7 +596,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -567,8 +623,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 9,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 9,
+      "scramble_depth_is_verified": true
     },
     {
       "scramble_id": 5,
@@ -622,7 +684,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -646,7 +711,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -669,8 +737,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 8,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 8,
+      "scramble_depth_is_verified": true
     },
     {
       "scramble_id": 6,
@@ -714,7 +788,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -742,7 +819,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -764,8 +844,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 7,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 7,
+      "scramble_depth_is_verified": true
     },
     {
       "scramble_id": 7,
@@ -819,7 +905,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -840,7 +929,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -861,8 +953,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 6,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 6,
+      "scramble_depth_is_verified": true
     },
     {
       "scramble_id": 8,
@@ -916,7 +1014,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -941,7 +1042,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -965,8 +1069,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 9,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 9,
+      "scramble_depth_is_verified": true
     },
     {
       "scramble_id": 9,
@@ -1027,7 +1137,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -1051,7 +1164,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -1074,8 +1190,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 8,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 8,
+      "scramble_depth_is_verified": true
     },
     {
       "scramble_id": 10,
@@ -1121,7 +1243,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -1145,7 +1270,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -1168,8 +1296,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 8,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 8,
+      "scramble_depth_is_verified": true
     },
     {
       "scramble_id": 11,
@@ -1231,7 +1365,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -1254,7 +1391,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -1276,8 +1416,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 7,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 7,
+      "scramble_depth_is_verified": true
     },
     {
       "scramble_id": 12,
@@ -1329,7 +1475,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -1352,7 +1501,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -1374,8 +1526,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 7,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 7,
+      "scramble_depth_is_verified": true
     },
     {
       "scramble_id": 13,
@@ -1431,7 +1589,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -1463,7 +1624,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -1488,8 +1652,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 10,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 10,
+      "scramble_depth_is_verified": true
     },
     {
       "scramble_id": 14,
@@ -1536,7 +1706,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -1565,7 +1738,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -1584,8 +1760,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 4,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 4,
+      "scramble_depth_is_verified": true
     },
     {
       "scramble_id": 15,
@@ -1649,7 +1831,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -1674,7 +1859,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -1698,8 +1886,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 9,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 9,
+      "scramble_depth_is_verified": true
     },
     {
       "scramble_id": 16,
@@ -1754,7 +1948,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -1775,7 +1972,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -1796,8 +1996,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 6,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 6,
+      "scramble_depth_is_verified": true
     },
     {
       "scramble_id": 17,
@@ -1845,7 +2051,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -1867,7 +2076,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -1889,8 +2101,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 7,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 7,
+      "scramble_depth_is_verified": true
     },
     {
       "scramble_id": 18,
@@ -1949,7 +2167,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -1980,7 +2201,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -2004,8 +2228,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 9,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 9,
+      "scramble_depth_is_verified": true
     },
     {
       "scramble_id": 19,
@@ -2065,7 +2295,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -2086,7 +2319,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -2107,8 +2343,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 6,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 6,
+      "scramble_depth_is_verified": true
     },
     {
       "scramble_id": 20,
@@ -2171,7 +2413,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -2193,7 +2438,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -2215,8 +2463,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 7,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 7,
+      "scramble_depth_is_verified": true
     },
     {
       "scramble_id": 21,
@@ -2255,7 +2509,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -2277,7 +2534,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -2299,8 +2559,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 7,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 7,
+      "scramble_depth_is_verified": true
     },
     {
       "scramble_id": 22,
@@ -2362,7 +2628,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -2383,7 +2652,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -2403,8 +2675,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 5,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 5,
+      "scramble_depth_is_verified": true
     },
     {
       "scramble_id": 23,
@@ -2462,7 +2740,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -2482,7 +2763,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -2502,8 +2786,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 5,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 5,
+      "scramble_depth_is_verified": true
     },
     {
       "scramble_id": 24,
@@ -2561,7 +2851,10 @@
         ],
         "used_fallback": false,
         "backend": "thistlethwaite_native",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "kociemba": {
         "algorithm": "Kociemba",
@@ -2596,7 +2889,10 @@
         ],
         "used_fallback": null,
         "backend": "kociemba_internal",
-        "optimal_guaranteed": false
+        "optimal_guaranteed": false,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": null,
+        "scramble_depth_is_verified": false
       },
       "korf": {
         "algorithm": "Korf_IDA*",
@@ -2621,8 +2917,14 @@
         ],
         "used_fallback": null,
         "backend": "optimal_external",
-        "optimal_guaranteed": true
-      }
+        "optimal_guaranteed": true,
+        "requested_scramble_length": 10,
+        "verified_scramble_depth": 10,
+        "scramble_depth_is_verified": true
+      },
+      "requested_scramble_length": 10,
+      "verified_scramble_depth": 10,
+      "scramble_depth_is_verified": true
     }
   ]
 }

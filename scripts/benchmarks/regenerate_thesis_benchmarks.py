@@ -11,11 +11,15 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[2]
-DEFAULT_SOURCE = ROOT / "results" / "benchmarks" / "thesis" / "thesis_results_combined.json"
 DEFAULT_OUTPUT_DIR = ROOT / "results" / "benchmarks" / "thesis"
 
 sys.path.insert(0, str(ROOT))
 
+from scripts.benchmarks.artifact_utils import (
+    COMBINED_BENCHMARK_NAME,
+    DEPTH_BENCHMARK_GLOB,
+    normalize_benchmark_payload,
+)
 from src.cube.rubik_cube import RubikCube
 from src.evaluation.algorithm_comparison import AlgorithmComparison
 
@@ -28,8 +32,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--source",
         type=Path,
-        default=DEFAULT_SOURCE,
-        help="Combined thesis benchmark JSON used as the scramble source.",
+        default=DEFAULT_OUTPUT_DIR,
+        help=(
+            "Benchmark JSON file or thesis benchmark directory used as the scramble source. "
+            "Directories resolve to the canonical combined artifact when present."
+        ),
     )
     parser.add_argument(
         "--output-dir",
@@ -72,17 +79,32 @@ def parse_args() -> argparse.Namespace:
 
 def load_scramble_set(source: Path) -> dict[int, list[dict[str, object]]]:
     """Load the stored scramble set grouped by scramble depth."""
-    payload = json.loads(source.read_text())
     grouped: dict[int, list[dict[str, object]]] = {}
+    seen_scrambles: set[tuple[int, int]] = set()
 
-    for row in payload["results"]:
-        depth = int(row["scramble_depth"])
-        grouped.setdefault(depth, []).append(
-            {
-                "scramble_id": int(row["scramble_id"]),
-                "scramble_moves": list(row["scramble_moves"]),
-            }
-        )
+    if source.is_dir():
+        combined = source / COMBINED_BENCHMARK_NAME
+        source_paths = [combined] if combined.exists() else sorted(source.glob(DEPTH_BENCHMARK_GLOB))
+    else:
+        source_paths = [source]
+
+    for source_path in source_paths:
+        payload = normalize_benchmark_payload(json.loads(source_path.read_text(encoding="utf-8")))
+        if not isinstance(payload, dict) or "results" not in payload:
+            raise ValueError(f"Unsupported scramble source: {source_path}")
+        for row in payload.get("results", []):
+            depth = int(row["scramble_depth"])
+            scramble_id = int(row["scramble_id"])
+            key = (depth, scramble_id)
+            if key in seen_scrambles:
+                continue
+            seen_scrambles.add(key)
+            grouped.setdefault(depth, []).append(
+                {
+                    "scramble_id": scramble_id,
+                    "scramble_moves": list(row["scramble_moves"]),
+                }
+            )
 
     return {depth: sorted(rows, key=lambda item: item["scramble_id"]) for depth, rows in grouped.items()}
 
@@ -122,24 +144,28 @@ def write_combined_results(
 ) -> Path:
     """Write the combined thesis benchmark artifact."""
     combined_path = output_dir / "thesis_results_combined.json"
-    depths = sorted(depth_payloads)
+    normalized_depth_payloads = {
+        depth: normalize_benchmark_payload(payload) for depth, payload in depth_payloads.items()
+    }
+    depths = sorted(normalized_depth_payloads)
 
     combined = {
         "metadata": {
             "timestamp": datetime.now().isoformat(),
             "description": "Combined benchmark results across multiple depths",
             "depths": depths,
-            "total_scrambles_per_depth": len(depth_payloads[depths[0]]["results"]) if depths else 0,
+            "total_scrambles_per_depth": len(normalized_depth_payloads[depths[0]]["results"]) if depths else 0,
         },
         "results": [],
     }
 
     if depths:
-        first_depth_meta = depth_payloads[depths[0]]["metadata"]
+        first_depth_meta = normalized_depth_payloads[depths[0]]["metadata"]
         for key, value in first_depth_meta.items():
             if key.startswith("korf_") or key in {
                 "solver_instances_reused_per_batch",
                 "benchmark_warm_start",
+                "thistlethwaite_timeout",
                 "kociemba_timeout",
                 "kociemba_timeout_soft",
                 "kociemba_timeout_grace",
@@ -151,10 +177,11 @@ def write_combined_results(
                 combined["metadata"][key] = value
 
     for depth in depths:
-        combined["metadata"][f"depth_{depth}"] = depth_payloads[depth]["metadata"]
-        combined["results"].extend(depth_payloads[depth]["results"])
+        combined["metadata"][f"depth_{depth}"] = normalized_depth_payloads[depth]["metadata"]
+        combined["results"].extend(normalized_depth_payloads[depth]["results"])
 
-    combined_path.write_text(json.dumps(combined, indent=2))
+    combined = normalize_benchmark_payload(combined)
+    combined_path.write_text(json.dumps(combined, indent=2), encoding="utf-8")
     return combined_path
 
 

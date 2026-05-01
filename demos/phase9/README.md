@@ -64,7 +64,7 @@ python demos/phase9/algorithm_comparison_cli.py [OPTIONS]
 - `--thistle-timeout T`: Thistlethwaite timeout in seconds (default: 30)
 - `--kociemba-timeout T`: Kociemba timeout in seconds (default: 60)
 - `--korf-timeout T`: Korf timeout in seconds (default: 120)
-- `--korf-max-depth D`: Korf max search depth (default: 20)
+- `--korf-max-depth D`: Korf fallback max search depth (default: 20; ignored when the external exact backend is active)
 - `--export FILE`: Export results to JSON or Markdown
 
 **Example:**
@@ -148,7 +148,7 @@ python demos/phase9/benchmark_demo.py --n-scrambles 20 --export benchmark.json
 ## Dependencies
 
 ### Required
-- Python 3.8+
+- Python 3.10+
 - NumPy
 - Project source code (`src/` directory)
 
@@ -215,7 +215,7 @@ python demos/phase9/interactive_solver.py
 ### Korf timeouts
 - Increase `--korf-timeout` (try 300 for 5 minutes)
 - Reduce scramble depth (try 10-12 moves)
-- Reduce `--korf-max-depth` if you don't need optimality
+- Reduce `--korf-max-depth` only when you are using the internal heuristic fallback rather than the external exact backend
 
 ### Rich library not found
 The demos work without `rich`, but output is less pretty:

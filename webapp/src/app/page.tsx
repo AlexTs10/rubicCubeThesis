@@ -30,7 +30,7 @@ export default function DashboardPage() {
           Bachelor's Thesis Project - University of Patras
         </p>
         <p className="text-slate-500 mt-2">
-          Comparing pure Thistlethwaite, Kociemba, and Korf through a synthetic frontend preview aligned with the thesis benchmark
+          Comparing pure Thistlethwaite, Kociemba, and Korf through a synthetic frontend preview aligned with the thesis benchmark profile
         </p>
       </div>
 
@@ -186,7 +186,7 @@ export default function DashboardPage() {
                   <span className="text-yellow-400">⚡ Thistlethwaite</span>
                 </td>
                 <td className="py-3 px-4 text-slate-300">1981</td>
-                <td className="py-3 px-4 text-green-400">Fast, predictable</td>
+                <td className="py-3 px-4 text-green-400">Lowest average time in corpus</td>
                 <td className="py-3 px-4 text-slate-300">Longer</td>
                 <td className="py-3 px-4 text-slate-400">Pure 4-phase group theory</td>
               </tr>
@@ -204,7 +204,7 @@ export default function DashboardPage() {
                   <span className="text-purple-400">🐢 Korf IDA*</span>
                 </td>
                 <td className="py-3 px-4 text-slate-300">1997</td>
-                <td className="py-3 px-4 text-red-400">Variable, timeout-sensitive</td>
+                <td className="py-3 px-4 text-red-400">Depth-sensitive, timeout-sensitive at 20</td>
                 <td className="py-3 px-4 text-slate-300">Optimal when solved</td>
                 <td className="py-3 px-4 text-slate-400">Exact backend + pattern databases</td>
               </tr>

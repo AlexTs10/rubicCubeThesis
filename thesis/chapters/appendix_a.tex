@@ -5,7 +5,7 @@
 
 Για την εκτέλεση του project απαιτείται:
 \begin{itemize}
-    \item Python 3.8 ή νεότερο
+    \item Python 3.10 ή νεότερο
     \item \texttt{pip} για εγκατάσταση εξαρτήσεων
     \item βασικές βιβλιοθήκες επιστημονικού Python stack:
     \texttt{numpy}, \texttt{scipy}, \texttt{pandas}, \texttt{matplotlib}
@@ -68,7 +68,10 @@ streamlit run ui/app.py
 \subsection{Next.js Web Application}
 
 \begin{lstlisting}
-cd webapp && npm install && npm run dev
+cd webapp
+npm install
+npm run build
+npm run dev
 \end{lstlisting}
 
 Η εφαρμογή Next.js λειτουργεί ως presentation/demo frontend και όχι ως authoritative live διεπαφή εκτέλεσης των Python solvers. Παρέχει σελίδες για:

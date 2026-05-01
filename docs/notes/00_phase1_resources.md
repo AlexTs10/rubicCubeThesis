@@ -290,7 +290,7 @@ python verify_setup.py
 ```
 
 **Expected**: All 7 checks should pass
-1. ✓ Python Version (>= 3.8)
+1. ✓ Python Version (>= 3.10)
 2. ✓ Required Packages
 3. ✓ Project Structure
 4. ✓ Core Functionality

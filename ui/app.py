@@ -4,7 +4,7 @@ Rubik's Cube Solver - Interactive Web UI
 Main Streamlit application for demonstrating and comparing three solving algorithms:
 - Thistlethwaite's Algorithm (pure 4-phase solver, longer solutions)
 - Kociemba's Algorithm (best overall practical compromise)
-- Korf's IDA* (exact when solved, timeout-sensitive on hard cases)
+- Korf's IDA* (exact on completed runs, timeout-sensitive on hard cases)
 
 Author: Alex Toska, University of Patras
 Phase: 9 (Demos & UI Visualization)
@@ -91,9 +91,9 @@ def main():
 
     | Algorithm | Speed Profile | Solution Length | Optimality | Memory |
     |-----------|---------------|-----------------|------------|--------|
-    | **Thistlethwaite** | ⚡ Fast, predictable | Longer than the others | Not optimal | 💾 Low |
+    | **Thistlethwaite** | ⚡ Lowest average time in the thesis corpus | Longer than the others | Not optimal | 💾 Low |
     | **Kociemba** | 🚀 Best practical trade-off | Near-optimal | Not guaranteed | 💾 Moderate |
-    | **Korf IDA*** | 🐢 Variable, timeout-sensitive | Shortest when solved | Exact when solved | 💾 Highest |
+    | **Korf IDA*** | 🐢 Fast on many shallow/mid-depth cases, but timeout-sensitive | Shortest when solved | Exact when solved | 💾 Highest |
 
     ### 🎮 Getting Started
 
@@ -106,27 +106,27 @@ def main():
     with col1:
         st.markdown("""
         <div class="metric-card">
-            <h3>⚡ Fastest</h3>
+            <h3>⚡ Lowest Avg Time</h3>
             <p><strong>Thistlethwaite</strong></p>
-            <p>Best for quick demos</p>
+            <p>Canonical benchmark average: 1.24s</p>
         </div>
         """, unsafe_allow_html=True)
 
     with col2:
         st.markdown("""
         <div class="metric-card">
-            <h3>🎯 Most Efficient</h3>
+            <h3>🎯 Best Balance</h3>
             <p><strong>Kociemba</strong></p>
-            <p>Best moves/time balance</p>
+            <p>100/100 solved with 14.33 moves on average</p>
         </div>
         """, unsafe_allow_html=True)
 
     with col3:
         st.markdown("""
         <div class="metric-card">
-            <h3>✨ Most Optimal</h3>
+            <h3>✨ Exact Baseline</h3>
             <p><strong>Korf IDA*</strong></p>
-            <p>Exact on completed runs</p>
+            <p>97/100 solved, shortest completed solutions</p>
         </div>
         """, unsafe_allow_html=True)
 
@@ -147,7 +147,7 @@ def main():
     with st.expander("🔧 Technical Details"):
         st.markdown("""
         **Implementation Details:**
-        - Language: Python 3.8+
+        - Language: Python 3.10+
         - UI Framework: Streamlit
         - Visualization: matplotlib (3D), seaborn (charts)
         - Testing Framework: Comprehensive Phase 8 evaluation

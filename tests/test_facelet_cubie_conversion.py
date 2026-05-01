@@ -1,7 +1,8 @@
+import pytest
 import numpy as np
 
 from src.cube.rubik_cube import RubikCube
-from src.kociemba.cubie import from_facelet_cube, to_facelet_cube
+from src.kociemba.cubie import CubieCube, from_facelet_cube, to_facelet_cube
 from src.kociemba.coord import (
     get_corner_orientation,
     get_edge_orientation,
@@ -43,3 +44,27 @@ def test_coordinate_consistency_after_roundtrip():
     assert get_corner_orientation(rebuilt_cubie) == 137
     assert get_edge_orientation(rebuilt_cubie) == 923
     assert get_udslice(rebuilt_cubie) == 271
+
+
+def test_from_facelet_cube_rejects_single_twisted_corner():
+    cubie = CubieCube()
+    cubie.corner_orient[0] = 1
+
+    with pytest.raises(ValueError, match="corner orientation sum must be divisible by 3"):
+        from_facelet_cube(to_facelet_cube(cubie))
+
+
+def test_from_facelet_cube_rejects_single_flipped_edge():
+    cubie = CubieCube()
+    cubie.edge_orient[0] = 1
+
+    with pytest.raises(ValueError, match="edge orientation sum must be even"):
+        from_facelet_cube(to_facelet_cube(cubie))
+
+
+def test_from_facelet_cube_rejects_permutation_parity_mismatch():
+    cubie = CubieCube()
+    cubie.edge_perm[[0, 1]] = cubie.edge_perm[[1, 0]]
+
+    with pytest.raises(ValueError, match="permutation parity must match"):
+        from_facelet_cube(to_facelet_cube(cubie))

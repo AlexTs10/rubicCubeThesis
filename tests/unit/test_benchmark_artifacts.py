@@ -1,7 +1,9 @@
 """Unit tests for benchmark artifact generation contracts."""
 
 import json
+from pathlib import Path
 
+import scripts.benchmarks.artifact_utils as artifact_utils
 import scripts.benchmarks.regenerate_thesis_benchmarks as benchmark_regen
 import scripts.verification.native_exact_validation as native_validation
 
@@ -36,6 +38,96 @@ def test_write_combined_results_preserves_korf_provenance(tmp_path):
     assert combined["metadata"]["korf_pattern_db_loaded"] is True
     assert combined["metadata"]["korf_pattern_db_status"] == "provided by external optimal backend"
     assert "scramble_depth_semantics" in combined["metadata"]
+
+
+def test_write_combined_results_backfills_current_export_schema(tmp_path):
+    """Combined artifacts should normalize older depth shards to the current exporter schema."""
+    depth_payloads = {
+        5: {
+            "metadata": {
+                "timestamp": "2026-03-20T21:08:41.058167",
+                "total_scrambles": 1,
+                "korf_backend": "optimal_external",
+                "korf_guarantees_optimal": True,
+            },
+            "results": [
+                {
+                    "scramble_id": 7,
+                    "scramble_depth": 5,
+                    "scramble_moves": ["F", "L2", "B'", "F'", "F"],
+                    "timestamp": "2026-03-20T21:08:30.321949",
+                    "thistlethwaite": {
+                        "algorithm": "Thistlethwaite",
+                        "scramble_depth": 5,
+                        "solved": True,
+                        "solution_length": 10,
+                        "time_seconds": 0.1,
+                        "memory_mb": 1.0,
+                        "nodes_explored": None,
+                        "reason_failed": None,
+                        "solution_moves": [],
+                        "used_fallback": False,
+                        "backend": "thistlethwaite_native",
+                        "optimal_guaranteed": False,
+                    },
+                    "kociemba": {
+                        "algorithm": "Kociemba",
+                        "scramble_depth": 5,
+                        "solved": True,
+                        "solution_length": 8,
+                        "time_seconds": 0.01,
+                        "memory_mb": 1.0,
+                        "nodes_explored": None,
+                        "reason_failed": None,
+                        "solution_moves": [],
+                        "used_fallback": None,
+                        "backend": "kociemba_internal",
+                        "optimal_guaranteed": False,
+                    },
+                    "korf": {
+                        "algorithm": "Korf_IDA*",
+                        "scramble_depth": 5,
+                        "solved": True,
+                        "solution_length": 3,
+                        "time_seconds": 0.001,
+                        "memory_mb": 1.0,
+                        "nodes_explored": 33,
+                        "reason_failed": None,
+                        "solution_moves": ["B", "L2", "F'"],
+                        "used_fallback": None,
+                        "backend": "optimal_external",
+                        "optimal_guaranteed": True,
+                    },
+                }
+            ],
+        }
+    }
+
+    combined_path = benchmark_regen.write_combined_results(tmp_path, depth_payloads)
+    combined = json.loads(combined_path.read_text())
+    row = combined["results"][0]
+
+    assert combined["metadata"]["verified_scramble_depth_available"] is True
+    assert combined["metadata"]["depth_5"]["verified_scramble_depth_available"] is True
+    assert row["requested_scramble_length"] == 5
+    assert row["verified_scramble_depth"] == 3
+    assert row["scramble_depth_is_verified"] is True
+    assert row["korf"]["requested_scramble_length"] == 5
+    assert row["korf"]["verified_scramble_depth"] == 3
+    assert row["korf"]["scramble_depth_is_verified"] is True
+    assert row["thistlethwaite"]["verified_scramble_depth"] is None
+    assert row["kociemba"]["scramble_depth_is_verified"] is False
+
+
+def test_committed_thesis_benchmark_artifacts_match_current_schema():
+    """Checked-in thesis benchmark artifacts should already match the normalizer output."""
+    thesis_benchmark_dir = Path(__file__).resolve().parents[2] / "results" / "benchmarks" / "thesis"
+
+    for artifact_path in sorted(thesis_benchmark_dir.glob("thesis_bench_d*.json")) + [
+        thesis_benchmark_dir / "thesis_results_combined.json"
+    ]:
+        payload = json.loads(artifact_path.read_text(encoding="utf-8"))
+        assert payload == artifact_utils.normalize_benchmark_payload(payload)
 
 
 def test_native_exact_validation_records_corpus_generation(tmp_path, monkeypatch):
@@ -94,3 +186,36 @@ def test_native_exact_validation_records_corpus_generation(tmp_path, monkeypatch
     assert report["summary"]["total_cases"] == 1
     assert report["summary"]["successful_cases"] == 1
     assert report["summary"]["failure_count"] == 0
+
+
+def test_canonical_validation_reports_record_corpus_generation():
+    """The canonical validation report pair should include the full corpus recipe."""
+    validation_dir = Path(__file__).resolve().parents[2] / "results" / "validation" / "native_exact"
+    manifest = json.loads((validation_dir / "MANIFEST.json").read_text(encoding="utf-8"))
+    preset = native_validation.CANONICAL_PRESET
+    exhaustive_cases = len(native_validation.generate_exhaustive_corpus(preset["exhaustive_depth"]))
+    oracle_cases = len(
+        native_validation.generate_random_corpus(
+            depths=preset["oracle_depths"],
+            samples_per_depth=preset["oracle_samples_per_depth"],
+            seed=preset["seed"],
+        )
+    )
+    expected_corpus_generation = native_validation.build_corpus_generation(
+        exhaustive_depth=preset["exhaustive_depth"],
+        oracle_depths=preset["oracle_depths"],
+        oracle_samples_per_depth=preset["oracle_samples_per_depth"],
+        seed=preset["seed"],
+        preset=native_validation.CANONICAL_PRESET_NAME,
+    )
+    expected_corpus_generation.update(
+        {
+            "exhaustive_cases": exhaustive_cases,
+            "oracle_cases": oracle_cases,
+            "total_cases": exhaustive_cases + oracle_cases,
+        }
+    )
+
+    for report_info in manifest["canonical_reports"].values():
+        report = json.loads((validation_dir / report_info["file"]).read_text(encoding="utf-8"))
+        assert report["config"]["corpus_generation"] == expected_corpus_generation

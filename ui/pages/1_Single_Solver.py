@@ -198,15 +198,27 @@ with col2:
         """)
         timeout = st.slider("Timeout (seconds)", 10, 120, 60)
     else:  # Korf IDA*
-        st.info("""
-        **Korf's IDA* (1997)**
-        - Exact optimal solver path when backend is available
-        - Extremely fast on shallow/mid-depth scrambles
-        - Can still time out on hard depth-20 cases
-        - Highest memory cost of the three solvers
-        """)
-        timeout = st.slider("Timeout (seconds)", 30, 300, 120)
-        max_depth = st.slider("Max Search Depth", 10, 25, 20)
+        if OPTIMAL_AVAILABLE:
+            st.info("""
+            **Korf's IDA* (1997)**
+            - External exact backend is active on this page
+            - Very fast on many shallow/mid-depth benchmark cases, but not a predictable default
+            - Can still time out on hard depth-20 cases
+            - Highest memory cost of the three solvers
+            """)
+            timeout = st.slider("Timeout (seconds)", 30, 300, 120)
+            max_depth = 20
+            st.caption("Max search depth is inactive while the external exact backend is available; timeout is the active control.")
+        else:
+            st.info("""
+            **Korf's IDA* (1997)**
+            - Internal heuristic IDA* fallback is active on this page
+            - Useful for exploratory experiments, but not the canonical exact benchmark path
+            - Can time out on harder scrambles and is not treated as generally admissible
+            - Highest memory cost of the three solvers
+            """)
+            timeout = st.slider("Timeout (seconds)", 30, 300, 120)
+            max_depth = st.slider("Max Search Depth", 10, 25, 20)
 
     # Solve button
     if st.button("🚀 Solve Cube", type="primary", use_container_width=True):
