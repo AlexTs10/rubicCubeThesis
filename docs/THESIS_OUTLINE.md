@@ -240,8 +240,8 @@ src/kociemba/solver.py - Main solver
 
 **5.2.2 Edge Pattern Databases**
 - Γιατί χωρίζουμε τις ακμές (12! × 2¹² πολύ μεγάλο)
-- 7-edge databases
-- Disjoint property: γιατί μπορούμε να αθροίσουμε τις heuristics
+- δύο default 6-edge databases στο τρέχον artifact
+- γιατί τα lightweight/native edge components δεν πρέπει να παρουσιαστούν ως πλήρες classical edge-PDB stack αν δεν υπάρχει πλήρης cache
 
 **Κώδικας αναφοράς:**
 ```
@@ -260,19 +260,21 @@ src/korf/edge_database.py     - Edge DB
 ```
 src/korf/a_star.py           - IDA* implementation
 src/korf/heuristics.py       - Heuristic functions
-src/korf/optimal_solver.py   - Main optimal solver
+src/korf/optimal_solver.py   - External exact backend wrapper for final benchmark numbers
+src/korf/native_exact_solver.py - Repository-native exact API and distance recognizer
 ```
 
 ### 5.4 Αποτελέσματα (2-3 σελ.)
 **Τι να γράψεις:**
-- Όλες οι λύσεις ≤20 κινήσεις (επιβεβαίωση God's Number)
-- Μέσο μήκος λύσης (~17.8 κινήσεις)
-- Χρόνος επίλυσης (variable, seconds to minutes)
+- Korf exact backend solved 97/100 final benchmark scrambles; 3 depth-20 cases timed out
+- Μέσο μήκος λύσης 9.12 κινήσεις on completed Korf benchmark runs
+- Χρόνος επίλυσης 2.66s average on completed Korf benchmark runs, with timeout sensitivity on hard cases
 - Trade-off: χρόνος vs optimality
 
 **Δεδομένα από:**
 ```
-figures/fig1_solution_length_boxplot.png
+results/benchmarks/thesis/thesis_results_combined.json
+tests/unit/test_native_exact_solver.py
 tests/unit/test_a_star_solvers.py
 ```
 
@@ -345,9 +347,11 @@ docs/DISTANCE_ESTIMATOR_README.md
 **Πίνακας σύγκρισης:**
 | Αλγόριθμος | Μέσο Μήκος | Μέσος Χρόνος | Μνήμη | Βέλτιστος; |
 |------------|------------|--------------|-------|------------|
-| Thistlethwaite | 40-45 | <2s | ~2MB | Όχι |
-| Kociemba | <19 | <5s | ~80MB | Σχεδόν |
-| Korf/IDA* | ~17.8 | variable | ~500MB | Ναι |
+| Thistlethwaite | 23.62 | 1.24s | see final JSON | Όχι |
+| Kociemba | 14.33 | 4.62s | see final JSON | Όχι, near-optimal/practical |
+| Korf/IDA* | 9.12 on completed runs | 2.66s on completed runs | see final JSON | Ναι, only when the external exact backend completes before timeout |
+
+Use `results/benchmarks/thesis/thesis_results_combined.json` for final benchmark values. The Korf row is based on the recorded external `optimal_external` backend and solved 97/100 benchmark scrambles; do not present timeout cases as solved or treat the exploratory composite heuristic as generally admissible.
 
 **Γραφήματα από:**
 ```
@@ -400,7 +404,8 @@ ui/      - Streamlit application
 
 ### 8.3 Testing (1 σελ.)
 **Τι να γράψεις:**
-- 203 unit tests, 100% pass rate
+- `python -m pytest tests --collect-only -q` currently reports `285 tests collected`
+- `python -m pytest tests -q` is the supported full-suite command for the current docs snapshot
 - Test coverage per module
 - Integration tests
 

@@ -24,6 +24,8 @@ results/
 
 These files are the benchmark artifacts referenced in Chapter 7 and Appendix A.
 
+`thesis_results_combined.json` is the final combined benchmark artifact. It contains 100 rows across requested scramble depths 5, 10, 15, and 20, with 25 scrambles per requested depth. Its metadata records `korf_backend: "optimal_external"`, `korf_guarantees_optimal: true`, and enforced Korf timeout handling. The per-depth files are the shards used to build that combined artifact.
+
 ## Validation
 
 `results/validation/native_exact/` contains time-stamped native exact solver validation reports produced during the Path A / native-exact verification work.
@@ -38,3 +40,4 @@ Use `results/validation/native_exact/MANIFEST.json` and `results/validation/nati
 - Benchmark regeneration scripts live in `scripts/benchmarks/`.
 - Validation scripts live in `scripts/verification/`.
 - Keep thesis benchmark artifacts and validation reports separate; they support different claims.
+- There is no top-level `TESTING_REPORT.md` in the current checkout; use the repo README verification snapshot and fresh command output instead of stale copied reports.

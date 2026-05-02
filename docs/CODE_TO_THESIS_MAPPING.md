@@ -70,6 +70,8 @@ def is_phase1_solved(coord_cube):
 | Topic | File | What to Reference |
 |-------|------|-------------------|
 | Exact benchmark solver | `src/korf/optimal_solver.py` | `KorfOptimalSolver` |
+| Native exact solver | `src/korf/native_exact_solver.py` | `NativeExactSolver`, `solve_exact_native()`, `optimal_distance_native()` |
+| Native admissible heuristic | `src/korf/native_coordinate_heuristic.py` | `NativeCoordinateHeuristic` |
 | Internal heuristic search | `src/korf/a_star.py` | `IDAStarSolver` |
 | Pattern database base | `src/korf/pattern_database.py` | `PatternDatabase` class |
 | Corner database | `src/korf/corner_database.py` | `CornerDatabase` |
@@ -82,12 +84,18 @@ def is_phase1_solved(coord_cube):
 # Exact benchmark claims use the external optimal backend.
 solver = KorfOptimalSolver()
 
+# Native exact claims use the repository-native API and validation corpus.
+distance = optimal_distance_native(cube)
+
 # Internal lightweight heuristics remain useful for experiments,
 # but are not the basis for exact optimality claims.
 ```
 
 **Test data:**
-- `tests/unit/test_a_star_solvers.py` - 19 test cases
+- `tests/unit/test_a_star_solvers.py`
+- `tests/unit/test_native_exact_solver.py`
+- `tests/unit/test_native_coordinate_heuristic.py`
+- `tests/integration/test_native_exact_oracle_agreement.py`
 
 ---
 
@@ -125,6 +133,8 @@ class CompositeHeuristic:
 |------|------|
 | Combined JSON results | `results/benchmarks/thesis/thesis_results_combined.json` |
 | Per-depth JSON results | `results/benchmarks/thesis/thesis_bench_d5.json` etc. |
+| Native exact validation manifest | `results/validation/native_exact/MANIFEST.json` |
+| Native exact validation reports | `results/validation/native_exact/native_exact_validation_*.json` |
 
 ### Figures (ready to use)
 | Figure | File | Use For |
@@ -143,6 +153,7 @@ class CompositeHeuristic:
 | Regenerate thesis benchmark set | `scripts/benchmarks/regenerate_thesis_benchmarks.py` |
 | LaTeX tables | `scripts/benchmarks/generate_latex_tables.py` |
 | Analysis | `scripts/benchmarks/analyze_thesis_data.py` |
+| Native exact validation | `scripts/verification/native_exact_validation.py` |
 
 ---
 
@@ -167,11 +178,19 @@ src/
 ├── korf/                 # Ch. 5-6 - Korf & Heuristics
 │   ├── a_star.py
 │   ├── pattern_database.py
+│   ├── native_exact_solver.py
+│   ├── native_coordinate_heuristic.py
 │   ├── composite_heuristic.py
 │   └── distance_estimator.py
 └── evaluation/           # Ch. 7 - Evaluation
     └── algorithm_comparison.py
 ```
+
+Current codebase counts from this checkout:
+
+- `src/`: 40 Python files, excluding `__pycache__`
+- `tests/`: 22 Python files, excluding `__pycache__`
+- full test collection: `285 tests collected` with `python -m pytest tests --collect-only -q`
 
 ### Web Applications
 | App | Location | Technology |
@@ -182,12 +201,14 @@ src/
 ### Test Suite
 | Module | Tests | File |
 |--------|-------|------|
-| Thistlethwaite | 35 | `tests/unit/test_thistlethwaite.py` |
-| Kociemba | 25 | `tests/unit/test_kociemba.py` |
-| A* Solvers | 19 | `tests/unit/test_a_star_solvers.py` |
-| Heuristics | 25 | `tests/unit/test_composite_heuristic.py` |
-| Distance | 21 | `tests/unit/test_distance_estimator.py` |
-| Integration | 13 | `tests/integration/test_workflows.py` |
+| Thistlethwaite | covered | `tests/unit/test_thistlethwaite.py` |
+| Kociemba | covered | `tests/unit/test_kociemba.py` |
+| A* solvers | covered | `tests/unit/test_a_star_solvers.py` |
+| Native exact solver | covered | `tests/unit/test_native_exact_solver.py` |
+| Native coordinate heuristic | covered | `tests/unit/test_native_coordinate_heuristic.py` |
+| Heuristics | covered | `tests/unit/test_composite_heuristic.py` |
+| Distance estimator | covered | `tests/unit/test_distance_estimator.py` |
+| Integration workflows | covered | `tests/integration/test_workflows.py` |
 
 ---
 

@@ -8,10 +8,10 @@
 αντίθεση με τους αλγορίθμους Thistlethwaite και Kociemba που παράγουν λύσεις
 πολυφασικές ή near-optimal, ο αλγόριθμος Korf εγγυάται ότι η λύση που βρίσκει
 είναι η συντομότερη δυνατή. Στο λογισμικό artifact της παρούσας εργασίας
-υπάρχουν πλέον δύο συμπληρωματικές exact διαδρομές για τον Korf:
+υπάρχουν πλέον δύο συμπληρωματικές διαδρομές για exact solving:
 \begin{itemize}
-    \item μια \textbf{εγγενής native διαδρομή} με cubie-level IDA* στο \filepath{src/korf/native_exact_solver.py}, admissible coordinate heuristics στο \filepath{src/korf/native_coordinate_heuristic.py} και exact move-distance API,
-    \item και η \textbf{εξωτερική benchmark διαδρομή} μέσω του \emph{external exact backend} \texttt{RubiksCube-OptimalSolver} \cite{kociemba_rubiks_optimal}, που ενσωματώνεται από το \filepath{src/korf/optimal_solver.py} και παραμένει η reference λύση για βαθύτερα benchmarks.
+    \item μια \textbf{εγγενής διαδρομή} με cubie-level IDA* στο \filepath{src/korf/native_exact_solver.py}, admissible coordinate heuristics στο \filepath{src/korf/native_coordinate_heuristic.py}, προαιρετική φόρτωση πλήρους native corner PDB όταν υπάρχει complete cache, και exact move-distance API,
+    \item και η \textbf{εξωτερική benchmark διαδρομή} μέσω του \emph{external exact backend} \texttt{RubiksCube-OptimalSolver} \cite{kociemba_rubiks_optimal}, που ενσωματώνεται από το \filepath{src/korf/optimal_solver.py} και παραμένει η reference διαδρομή για βαθύτερα, time-limited benchmarks.
 \end{itemize}
 
 \section{Επισκόπηση του Αλγορίθμου}
@@ -66,7 +66,7 @@ h(n) \leq h^*(n) \quad \forall n
     \item cubie-level state representation,
     \item native IDA* με deterministic move ordering και canonical pruning,
     \item admissible lower bounds από μικρούς exact coordinate tables (corner orientation, edge orientation, UD-slice και corner permutation),
-    \item native corner pattern database υποδομή 88,179,840 καταστάσεων με exact-safe byte storage,
+    \item native corner pattern database υποδομή 88,179,840 καταστάσεων με exact-safe byte storage και complete-cache guard,
     \item exact API \texttt{solve\_exact\_native()}, \texttt{solve\_optimal\_native()} και \texttt{optimal\_distance\_native()}.
 \end{itemize}
 
@@ -85,7 +85,7 @@ edge-dominated κατάσταση βάθους 8, όπου οι γωνίες β�
 ελάχιστη απόσταση για την επίλυση υποσυνόλων του κύβου
 \cite{culberson1998pattern,korf1997finding}. Στην ενότητα αυτή περιγράφεται το
 \emph{θεωρητικό} Korf framework. Η native exact υλοποίηση του artifact
-χρησιμοποιεί πλέον native corner PDB support σε συνδυασμό με μικρότερους
+μπορεί να χρησιμοποιήσει native corner PDB support σε συνδυασμό με μικρότερους
 admissible coordinate tables, αλλά όχι ακόμη πλήρη corner/edge PDB stack ίδιου
 μεγέθους με την κλασική βιβλιογραφική διατύπωση.
 
@@ -186,7 +186,8 @@ Edge 2 & 42.6M & ~42.6 MB & ~20 MB \\
 Στην τρέχουσα native exact διαδρομή του artifact, όμως, η προεπιλογή είναι
 \textbf{exact-safe byte storage}. Ο λόγος είναι πρακτικός αλλά κρίσιμος: η
 τιμή απόστασης 15 δεν πρέπει να συγχέεται με sentinel για
-``uninitialized'' καταστάσεις.
+``uninitialized'' καταστάσεις, ούτε να γίνεται clamp σε μεγαλύτερες
+αποστάσεις.
 
 \begin{itemize}
     \item \textbf{Native default:} 1 byte ανά exact distance με ρητό sentinel 255,

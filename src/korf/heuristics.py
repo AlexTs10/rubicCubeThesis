@@ -97,8 +97,8 @@ def manhattan_distance_corner(cubie: CubieCube) -> float:
     """
     Manhattan distance for corner pieces.
 
-    Computes the minimum number of moves each corner needs to reach
-    its home position (ignoring other pieces), then sums these values.
+    Counts simple corner position/orientation mismatches and normalizes the
+    total as a rough distance signal.
 
     The sum is normalized by 4 because a face turn moves four corners.
 
@@ -108,7 +108,7 @@ def manhattan_distance_corner(cubie: CubieCube) -> float:
     Returns:
         Corner Manhattan distance estimate
     """
-    # Precomputed: minimum moves for each corner to reach each position
+    # Approximate position weights for each corner-to-position pair.
     # This is a simplified approximation - actual values would require
     # computing shortest paths in the corner subgroup
 
@@ -118,13 +118,11 @@ def manhattan_distance_corner(cubie: CubieCube) -> float:
         current_corner = cubie.corner_perm[i]
         current_orient = cubie.corner_orient[i]
 
-        # If corner is in wrong position, it needs at least 1 move
+        # If corner is in wrong position, add a position mismatch.
         if current_corner != i:
             total_distance += 1
 
-        # If corner is twisted, it needs at least 1 move
-        # (Actually, a corner can only be fixed with its position,
-        # so we don't double count)
+        # If corner is twisted, add an orientation mismatch.
         if current_orient != 0:
             total_distance += 1
 
@@ -136,8 +134,8 @@ def manhattan_distance_edge(cubie: CubieCube) -> float:
     """
     Manhattan distance for edge pieces.
 
-    Computes the minimum number of moves each edge needs to reach
-    its home position (ignoring other pieces), then sums these values.
+    Counts simple edge position/orientation mismatches and normalizes the
+    total as a rough distance signal.
 
     The sum is normalized by 4 because a face turn moves four edges.
 
@@ -204,8 +202,7 @@ def improved_manhattan_distance(cubie: CubieCube) -> float:
     Returns:
         Improved Manhattan distance estimate
     """
-    # Corner position distances (minimum face turns to move between positions)
-    # This is a simplified 6x6 symmetric matrix
+    # Approximate corner position weights.
     corner_distances = {
         (0, 0): 0, (0, 1): 1, (0, 2): 2, (0, 3): 1, (0, 4): 1, (0, 5): 2, (0, 6): 3, (0, 7): 2,
         (1, 1): 0, (1, 2): 1, (1, 3): 2, (1, 4): 2, (1, 5): 1, (1, 6): 2, (1, 7): 3,
@@ -218,7 +215,7 @@ def improved_manhattan_distance(cubie: CubieCube) -> float:
     }
 
     def get_corner_dist(from_pos: int, to_pos: int) -> int:
-        """Get minimum distance between two corner positions."""
+        """Get the approximate weight between two corner positions."""
         key = tuple(sorted([from_pos, to_pos]))
         return corner_distances.get(key, 2)  # Default to 2 if not in table
 

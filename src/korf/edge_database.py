@@ -1,14 +1,14 @@
 """
 Edge Pattern Databases
 
-This module implements Korf-style pattern databases for tracked edge groups.
-For a 6-edge group we must encode:
+This module implements pattern databases for tracked edge groups. The default
+edge groups in this repository each track 6 edges, so each database encodes:
 
 - which 6 of the 12 edge positions contain the tracked pieces: C(12, 6) = 924
 - the permutation of the tracked pieces within those positions: 6! = 720
 - the orientations of the tracked pieces: 2^6 = 64
 
-That yields 924 * 720 * 64 = 42,577,920 states per 6-edge database.
+That yields 924 * 720 * 64 = 42,577,920 states per default 6-edge database.
 
 The previous abstraction only ranked the tracked pieces relative to one another,
 which collapsed distinct states whenever the same tracked edges occupied
@@ -275,7 +275,7 @@ class EdgePatternDatabase(PatternDatabase):
         return self.edge_index(cubie)
 
 
-# Standard edge splits (Korf's approach)
+# Default two-way split: two 6-edge databases.
 EDGE_GROUP_1 = [0, 1, 2, 3, 4, 5]  # UR, UF, UL, UB, DR, DF
 EDGE_GROUP_2 = [6, 7, 8, 9, 10, 11]  # DL, DB, FR, FL, BL, BR
 

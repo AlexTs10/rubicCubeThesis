@@ -87,8 +87,8 @@
 τρέχουσα μορφή του artifact, τα Korf-related pattern databases χρησιμοποιούν
 ως προεπιλογή \emph{exact-safe byte storage} με ρητό sentinel για μη
 αρχικοποιημένες τιμές, ενώ legacy nibble-packed αρχεία φορτώνονται μόνο όταν
-μπορούν να μετατραπούν χωρίς αμφισημία. Η επιλογή αυτή θυσιάζει λίγη μνήμη
-υπέρ της αξιοπιστίας της exact διαδρομής.
+μπορούν να μετατραπούν χωρίς αμφισημία και χωρίς πιθανές τιμές απόστασης 15.
+Η επιλογή αυτή θυσιάζει λίγη μνήμη υπέρ της αξιοπιστίας της exact διαδρομής.
 
 \subsection{Factory Pattern για Heuristics}
 
@@ -158,7 +158,7 @@
     \item corner και edge ειδικεύσεις,
     \item εγγενή exact solver σε cubie-level IDA*,
     \item admissible coordinate heuristic με exact μικρούς πίνακες για corner orientation, edge orientation, UD-slice position και corner permutation,
-    \item native corner pattern database infrastructure 88,179,840 καταστάσεων με ειδικευμένο frontier-based generator,
+    \item native corner pattern database infrastructure 88,179,840 καταστάσεων με ειδικευμένο frontier-based generator και απαίτηση complete cache πριν χρησιμοποιηθεί ως heuristic,
     \item heuristics χαμηλού κόστους για διερευνητικά πειράματα,
     \item A* και IDA* solvers,
     \item καθυστερημένη (lazy) ενσωμάτωση με εξωτερικό backend βέλτιστης επίλυσης για την ακριβή διαδρομή benchmark,
@@ -178,7 +178,7 @@
 μιας διπλωματικής εργασίας σε Python. Για τον λόγο αυτό, το artifact πλέον
 συνδυάζει δύο ακριβείς διαδρομές με διαφορετικό ρόλο:
 \begin{itemize}
-    \item μια \emph{εγγενή} native exact διαδρομή (\filepath{src/korf/native_exact_solver.py}) με admissible coordinate heuristics (\filepath{src/korf/native_coordinate_heuristic.py}), native corner PDB support (\filepath{src/korf/corner_database.py}) και exact move-distance API,
+    \item μια \emph{εγγενή} exact διαδρομή (\filepath{src/korf/native_exact_solver.py}) με admissible coordinate heuristics (\filepath{src/korf/native_coordinate_heuristic.py}), προαιρετικό native corner PDB support (\filepath{src/korf/corner_database.py}) μόνο όταν υπάρχει πλήρης cache, και exact move-distance API,
     \item και έναν \emph{εξωτερικό} ήδη επαληθευμένο optimal backend για τα βαθύτερα benchmark αποτελέσματα και για oracle cross-checks.
 \end{itemize}
 Η native διαδρομή έχει επικυρωθεί εξαντλητικά σε 3.501 μοναδικές καταστάσεις

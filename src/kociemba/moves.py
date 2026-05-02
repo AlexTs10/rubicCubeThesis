@@ -30,7 +30,7 @@ ALL_MOVE_NAMES = ['U', 'U2', "U'", 'D', 'D2', "D'",
 # Phase 1 moves: all 18 moves
 PHASE1_MOVES = ALL_MOVE_NAMES
 
-# Phase 2 moves: only half-turns of F, B and quarter-turns of U, D, R, L
+# Phase 2 moves: U/D quarter turns and half turns, plus R/L/F/B half turns.
 PHASE2_MOVES = ['U', 'U2', "U'", 'D', 'D2', "D'",
                 'R2', 'L2', 'F2', 'B2']
 

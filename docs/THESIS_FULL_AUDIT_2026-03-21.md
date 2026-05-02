@@ -4,6 +4,8 @@ Date: 2026-03-21
 
 Workspace: repository root
 
+Update note, 2026-05-02: this file is a historical audit log. Some findings below have since been partially or fully addressed. Current documentation checks in this checkout found `40` Python files under `src/` and `285 tests collected` with `python -m pytest tests --collect-only -q`; use the repo README and fresh command output for final verification instead of treating this March 21 snapshot as current truth.
+
 Scope:
 - thesis manuscript source
 - canonical benchmark data
@@ -75,7 +77,7 @@ Verified:
 - `python -m pytest tests/integration -q` -> `13 passed`
 - `python -m pytest tests/test_facelet_cubie_conversion.py -q` -> `3 passed`
 - `python -m pytest tests/unit/test_algorithm_comparison.py -q` -> `4 passed`
-- `python -m pytest tests --collect-only -q` -> `269 tests collected`
+- `python -m pytest tests --collect-only -q` -> historical result was `269 tests collected`; current 2026-05-02 result is `285 tests collected`
 
 Important caveats:
 - bare `pytest -q` from repo root is not reliable
@@ -230,14 +232,16 @@ Details:
 #### 5a. Source file counts and LOC are stale
 
 - `thesis/chapters/08_implementation.tex:10` says `src/` contains `36` Python files
-- current repo count is `37`
+- March 21 audit count was `37`
+- current 2026-05-02 repo count is `40` Python files under `src/`, excluding `__pycache__`
 
-Current module LOC measured during audit:
-- `src/cube`: `1493`
-- `src/thistlethwaite`: `2108`
-- `src/kociemba`: `2112`
-- `src/korf`: `3754`
-- `src/evaluation`: `2089`
+Current module LOC measured on 2026-05-02:
+- `src/cube`: `1553`
+- `src/thistlethwaite`: `2111`
+- `src/kociemba`: `2310`
+- `src/korf`: `4868`
+- `src/evaluation`: `2169`
+- `src/` total: `13042`
 
 Thesis table currently says:
 - `cube 1470`
@@ -251,13 +255,16 @@ Thesis table currently says:
 - `thesis/chapters/08_implementation.tex:204` used to lag the current test count
 - `thesis/chapters/00_abstract_en.tex:31` used to lag the current test count
 - `thesis/chapters/00_abstract_gr.tex` also used to lag the current test count
-- actual current collection:
+- March 21 audit collection:
   - `python -m pytest tests --collect-only -q` -> `269 tests collected`
+- current 2026-05-02 collection:
+  - `python -m pytest tests --collect-only -q` -> `285 tests collected`
 
 #### 5c. Code-size claim is stale
 
 - `thesis/chapters/01_introduction.tex:69` says “approximately 8,000 lines of code”
-- current `src/` total measured during audit: `11,587` lines
+- March 21 `src/` total measured during audit: `11,587` lines
+- current 2026-05-02 `src/` total measured during documentation patch: `13,042` lines
 
 Impact:
 - these inaccuracies reduce credibility even where the core thesis argument is correct

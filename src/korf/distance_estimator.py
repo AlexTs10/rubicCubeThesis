@@ -3,11 +3,12 @@ Distance Estimator for Rubik's Cube
 
 This module provides a comprehensive distance estimation system that combines:
 1. Pattern databases (corners and edges)
-2. Multiple heuristic functions
-3. Optimal combining strategies
+2. Multiple lightweight heuristic functions
+3. Simple combining strategies
 
 The main estimator uses max(corner_db, edge1_db, edge2_db) as the primary
-estimate, which provides an admissible lower bound on the actual distance.
+pattern-database estimate when complete databases are loaded. Lightweight
+fallback heuristics are practical estimates and are not treated as proofs.
 
 Usage:
     estimator = DistanceEstimator()
@@ -202,7 +203,8 @@ class DistanceEstimator:
             method: Estimation method ('pattern_db', 'manhattan', 'hamming', 'simple')
 
         Returns:
-            Distance estimate (lower bound on actual distance)
+            Distance estimate. Pattern-database results are lower bounds when
+            complete databases are loaded; lightweight heuristics are rough estimates.
         """
         if cube.is_solved():
             return 0.0

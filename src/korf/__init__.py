@@ -1,15 +1,15 @@
 """
 Korf's Pattern Database Distance Estimator + A* Algorithms
 
-This module implements pattern database-based distance estimation for Rubik's Cube,
-following Richard Korf's approach from his 1997 paper "Finding Optimal Solutions
-to Rubik's Cube Using Pattern Databases".
+This module implements pattern-database-backed and lightweight distance
+estimation utilities for Rubik's Cube, following parts of Richard Korf's
+pattern database approach from his 1997 paper.
 
 Main Components:
 - Pattern Databases: Precomputed distances for corner and edge subsets
-- Heuristic Functions: Manhattan, Hamming, simple, and novel composite heuristics
-- Distance Estimator: Combines databases and heuristics for accurate estimates
-- A* and IDA* Solvers: Optimal solving algorithms with heuristics
+- Heuristic Functions: Manhattan, Hamming, simple, and composite estimates
+- Distance Estimator: Combines databases and lightweight heuristics
+- A* and IDA* Solvers: Search algorithms with configurable heuristics
 - Solver Comparison: Framework for comparing A* vs IDA* performance
 
 Usage Example:

@@ -15,6 +15,8 @@ This repository contains the implementation, evaluation, and thesis manuscript f
 
 Generated artifacts such as `thesis/main.pdf`, benchmark outputs under `results/benchmarks/thesis/`, and workflow outputs under `agent_workflow/generated/` are not the source of truth. The source of truth lives in `src/`, `tests/`, `scripts/`, `docs/`, and `thesis/`.
 
+For final thesis benchmark claims, use the checked-in benchmark artifacts under `results/benchmarks/thesis/` and the thesis text in `thesis/chapters/07_evaluation.tex`. Do not cite ad hoc demo output or legacy benchmark scripts as final results.
+
 The Next.js frontend under `webapp/` is a synthetic preview layer for demos and presentations. Its move sequences are generated preview outputs rather than live solver telemetry, so use the Python benchmark artifacts and thesis sources when you need authoritative results.
 
 ## Where To Start
@@ -64,6 +66,7 @@ rubicCubeThesis/
 
 - exact benchmark path provided by `KorfOptimalSolver` when `RubikOptimal` is installed
 - strongest optimality guarantees in the repository, but only on completed runs within the configured timeout
+- native exact search support is implemented separately in `src/korf/native_exact_solver.py` and validated on the native-exact corpus; the canonical 100-scramble thesis benchmark still records the external optimal backend
 - the internal Python heuristic/composite path is retained for exploratory experiments and is not presented as generally admissible
 - the exact `KorfOptimalSolver` wrapper is imported lazily
 - the first exact-optimal solve may generate large backend tables and is much faster under PyPy
@@ -72,6 +75,10 @@ rubicCubeThesis/
 The benchmark/evaluation path now uses the external exact backend with enforced timeouts. In the corrected thesis benchmark, it solved 97/100 scrambles overall and timed out on 3 of 25 depth-20 cases.
 
 Importing `src.korf` does not load the exact solver backend. The optional `RubikOptimal` package is only imported when `KorfOptimalSolver` is instantiated or `solve_optimal()` is called.
+
+### Optional Exact Backend
+
+`RubikOptimal>=1.1.0` is listed in `requirements.txt` for the full thesis benchmark environment. On this machine, the installed distribution is `RubikOptimal 1.1.0`, importable as `optimal`, with package metadata pointing to Herbert Kociemba's `RubiksCube-OptimalSolver` repository. The installed wheel includes a `LICENSE` file, but the PyPI metadata does not expose a `License` field, so do not invent a license label in thesis-facing documentation; inspect the package or upstream repository if a formal license statement is needed.
 
 ## Thesis Workflow
 
@@ -96,6 +103,8 @@ Useful files:
 - `cd webapp && npm ci && npm run build` succeeds from a clean dependency install
 - `python scripts/thesis_workflow.py build --mode auto` rebuilds `thesis/main.pdf` with XeLaTeX-compatible tooling or Tectonic
 - the manuscript chapters and appendices are present in `thesis/chapters/`
+
+There is no active top-level `TESTING_REPORT.md` in this checkout. Treat any older testing report copied from another branch or artifact bundle as historical unless it is regenerated from the commands above.
 
 ## Next.js Preview
 

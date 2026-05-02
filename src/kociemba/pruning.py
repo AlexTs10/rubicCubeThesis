@@ -1,9 +1,9 @@
 """
 Pruning Tables for Kociemba's Two-Phase Algorithm
 
-Pruning tables store the minimum number of moves needed to reach the goal
-from each coordinate state. They are generated using BFS and provide
-admissible heuristics for IDA* search.
+Pruning tables store BFS-derived lower bounds for the number of moves needed
+to reach the goal from each coordinate state. Generation may be capped by
+`max_depth`; states not reached before the cutoff are assigned that cutoff.
 
 To keep memory usage reasonable (~80MB instead of ~400GB), we use:
 - Phase 1: Two tables combining pairs of coordinates
@@ -60,7 +60,7 @@ class PruningTables:
 
         Args:
             force_regenerate: If True, regenerate tables even if cached
-            max_depth: Maximum depth for BFS (typically 12 for Phase 1, 15 for Phase 2)
+            max_depth: Maximum BFS depth before unreached entries are set to the cutoff
         """
         if self._loaded and not force_regenerate:
             return
@@ -125,7 +125,7 @@ class PruningTables:
         """
         Generate pruning table for Corner Orient + Edge Orient.
 
-        Uses BFS to find minimum distance to goal (0, 0).
+        Uses BFS from goal (0, 0) up to the configured depth cutoff.
         """
         # Initialize table with -1 (unvisited)
         table = np.full((2187, 2048), -1, dtype=np.int8)
@@ -151,7 +151,7 @@ class PruningTables:
                     table[new_co, new_eo] = depth + 1
                     queue.append((new_co, new_eo, depth + 1))
 
-        # Fill remaining unvisited states with max_depth
+        # Fill states beyond the cutoff with the cutoff lower bound.
         table[table == -1] = max_depth
 
         return table
@@ -160,7 +160,7 @@ class PruningTables:
         """
         Generate pruning table for Edge Orient + UD-Slice.
 
-        Uses BFS to find minimum distance to goal (0, 0).
+        Uses BFS from goal (0, 0) up to the configured depth cutoff.
         """
         # Initialize table with -1 (unvisited)
         table = np.full((2048, 495), -1, dtype=np.int8)
@@ -186,7 +186,7 @@ class PruningTables:
                     table[new_eo, new_slice] = depth + 1
                     queue.append((new_eo, new_slice, depth + 1))
 
-        # Fill remaining unvisited states with max_depth
+        # Fill states beyond the cutoff with the cutoff lower bound.
         table[table == -1] = max_depth
 
         return table
@@ -206,7 +206,7 @@ class PruningTables:
             max_depth: Maximum depth for BFS
 
         Returns:
-            Pruning table
+            Pruning table with exact depths up to the cutoff and cutoff values beyond it
         """
         # Initialize table with -1 (unvisited)
         table = np.full(num_states, -1, dtype=np.int8)
@@ -241,7 +241,7 @@ class PruningTables:
                     table[new_coord] = depth + 1
                     queue.append((new_coord, depth + 1))
 
-        # Fill remaining unvisited states with max_depth
+        # Fill states beyond the cutoff with the cutoff lower bound.
         table[table == -1] = max_depth
 
         return table
@@ -253,7 +253,7 @@ class PruningTables:
         udslice: int
     ) -> int:
         """
-        Get Phase 1 heuristic (minimum moves to reach G1).
+        Get Phase 1 lower-bound estimate to reach G1.
 
         Uses maximum of two table lookups.
 
@@ -263,7 +263,7 @@ class PruningTables:
             udslice: UD-slice coordinate
 
         Returns:
-            Estimated minimum moves to G1
+            Lower-bound move estimate to G1
         """
         if not self._loaded:
             raise RuntimeError("Pruning tables not loaded. Call load() first.")
@@ -280,7 +280,7 @@ class PruningTables:
         udslice_perm: int
     ) -> int:
         """
-        Get Phase 2 heuristic (minimum moves to solved state).
+        Get Phase 2 lower-bound estimate to the solved state.
 
         Uses maximum of three table lookups.
 
@@ -290,7 +290,7 @@ class PruningTables:
             udslice_perm: UD-slice permutation coordinate
 
         Returns:
-            Estimated minimum moves to solved state
+            Lower-bound move estimate to solved state
         """
         if not self._loaded:
             raise RuntimeError("Pruning tables not loaded. Call load() first.")

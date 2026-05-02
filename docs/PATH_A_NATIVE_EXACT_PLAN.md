@@ -1,8 +1,10 @@
 # Path A Native Exact Solver Plan
 
 Date: 2026-03-22
-Status: Execution plan
+Status: Historical execution plan with current-state notes
 Scope: Build a native exact Rubik's Cube solver path inside this repository and use it to support an exact move-distance recognizer, without relying on the current external optimal-solver wrapper for the final claim.
+
+Current-state note: this document began as a pre-implementation plan. The repository now contains a native exact solver path in `src/korf/native_exact_solver.py`, native admissible coordinate heuristics in `src/korf/native_coordinate_heuristic.py`, focused tests under `tests/unit/test_native_exact_solver.py` and `tests/unit/test_native_coordinate_heuristic.py`, oracle agreement coverage in `tests/integration/test_native_exact_oracle_agreement.py`, and validation artifacts under `results/validation/native_exact/`. Keep the plan below as historical scope control, not as proof that the current checkout still lacks those files.
 
 ## 1. Objective
 
@@ -49,7 +51,7 @@ If this is not held constant, every comparison with the current results becomes 
 
 ## 4. Current Ground Truth
 
-The repository does not contain a native exact solver today.
+At the time this plan was written, the repository did not contain a native exact solver. In the current checkout, the native exact path exists, but the final thesis benchmark corpus at `results/benchmarks/thesis/thesis_results_combined.json` still records the external `optimal_external` backend for the 100-scramble Korf benchmark numbers.
 
 ### 4.1 What is reusable
 
@@ -57,6 +59,8 @@ The repository does not contain a native exact solver today.
 - `src/kociemba/coord.py` provides ranking/unranking helpers and corner coordinates.
 - `src/korf/corner_database.py` is the strongest solver-grade component in the current Korf area.
 - `src/korf/pattern_database.py` provides reusable storage and BFS infrastructure conceptually.
+- `src/korf/native_exact_solver.py` provides the repository-native exact solver API.
+- `src/korf/native_coordinate_heuristic.py` provides native admissible coordinate lower bounds.
 - `src/korf/a_star.py` contains reusable pruning ideas, but not a usable exact engine.
 - `src/korf/optimal_solver.py` is useful only as a development-time oracle for cross-checking.
 
@@ -160,7 +164,7 @@ Tasks:
 - Record the current non-native status of `src/korf/optimal_solver.py`.
 - Freeze the metric contract: all 18 face turns cost 1.
 - Decide naming for the new native modules so they cannot be confused with the wrapper.
-- Decide whether the final exact API lives under `src/korf/native_exact.py` or a new `src/korf/native_exact/` package.
+- Historical naming decision: the current native exact API lives in `src/korf/native_exact_solver.py`.
 
 Exit condition:
 
@@ -309,7 +313,7 @@ Tasks:
 
 Exit condition:
 
-- The repository contains a native exact distance API with explicit semantics.
+- The repository contains a native exact distance API with explicit semantics. In the current checkout, this API is in `src/korf/native_exact_solver.py`.
 
 ## Phase 8: Benchmark and tractability analysis
 
@@ -341,7 +345,7 @@ Tasks:
 
 Exit condition:
 
-- The repo exposes a native exact path unambiguously.
+- The repo exposes a native exact path unambiguously. Current public exports are documented in `src/korf/__init__.py`.
 
 ## Phase 10: Thesis reconciliation
 
@@ -531,7 +535,7 @@ The next implementation slice should be narrow and disciplined:
 
 1. Fix the pattern database storage ambiguity.
 2. Add exact-safe tests for storage.
-3. Create a new cubie-based native exact solver module skeleton.
+3. Create a new cubie-based native exact solver module skeleton. Current implementation: `src/korf/native_exact_solver.py`.
 4. Integrate a corner-only admissible lower bound.
 5. Add shallow exactness tests.
 

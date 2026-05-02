@@ -13,7 +13,7 @@ Algorithm Overview:
 2. Phase 2 (G1 -> Solved): Solve within the restricted G1 group
    - Max 18 moves theoretically
    - Search space: 39,038,976,000 states before pruning
-   - Uses only half-turns of F, B and quarter-turns of U, D, R, L
+   - Uses only U, U2, U', D, D2, D', R2, L2, F2, and B2
 
 Total: Max 30 moves theoretically, typically <19 moves in practice
 """
@@ -593,7 +593,7 @@ class KociembaSolver:
         """
         Solve Phase 2: G1 -> Solved using IDA*.
 
-        Only uses Phase 2 moves (U, D, R2, L2, F2, B2 and variants).
+        Only uses PHASE2_MOVES: U, U2, U', D, D2, D', R2, L2, F2, and B2.
 
         Args:
             cubie: Current cubie state (must be in G1)
