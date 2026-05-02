@@ -114,6 +114,46 @@ python scripts/thesis_workflow.py packets --remaining
 python scripts/thesis_workflow.py validate
 \end{lstlisting}
 
+\section{Στιγμιότυπο Αναπαραγωγιμότητας}
+\label{sec:reproducibility_snapshot}
+
+Για τη συγκεκριμένη έκδοση της διπλωματικής, τα παρακάτω στοιχεία αποτυπώνουν την ακριβή κατάσταση κώδικα, εξαρτήσεων και benchmark artifacts. Όλες οι αναφορές αριθμητικών αποτελεσμάτων στα Κεφάλαια \ref{ch:evaluation} και \ref{ch:implementation} αντιστοιχούν σε αυτό το snapshot.
+
+\begin{table}[htbp]
+\centering
+\caption{Στοιχεία αναπαραγωγιμότητας της διπλωματικής}
+\label{tab:reproducibility_snapshot}
+\begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{4.4cm} Y}
+\toprule
+\textbf{Πεδίο} & \textbf{Τιμή} \\
+\midrule
+Αποθετήριο & \texttt{AlexTs10/rubicCubeThesis} \\
+Branch & \texttt{main} \\
+Commit hash & \texttt{9c8be37} \\
+Python & 3.12.2 \\
+Πλατφόρμα & Apple M3, 16~GB RAM, macOS 26.2 \\
+Test suite & 285 collected, 284 passed, 1 skipped \\
+\filepath{verify\_setup.py} & 7/7 checks passed \\
+Benchmark timestamp & 2026-03-24T01:28:24 \\
+Benchmark corpus & 100 scrambles (25 ανά βάθος 5/10/15/20) \\
+Kociemba backend & \texttt{kociemba\_internal} (100/100, χωρίς fallback) \\
+Thistlethwaite backend & \texttt{thistlethwaite\_native} (100/100) \\
+Korf benchmark backend & \texttt{optimal\_external} \\
+Εξωτερικός optimal backend & \texttt{RubikOptimal 1.1.0} (\texttt{hkociemba/RubiksCube-OptimalSolver}) \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Τα αρχεία αλήθειας του snapshot είναι:
+\begin{itemize}
+    \item \filepath{results/benchmarks/thesis/thesis\_results\_combined.json}
+    \item \filepath{results/benchmarks/thesis/thesis\_bench\_d5.json},
+    \filepath{thesis\_bench\_d10.json},
+    \filepath{thesis\_bench\_d15.json},
+    \filepath{thesis\_bench\_d20.json}
+    \item \filepath{thesis/main.tex} και τα κεφάλαια στο \filepath{thesis/chapters/}.
+\end{itemize}
+
 \section{Σημειώσεις}
 
 \begin{itemize}
