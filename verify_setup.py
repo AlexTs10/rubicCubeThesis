@@ -12,16 +12,73 @@ This script verifies that the development environment is correctly set up:
 
 import sys
 import os
+import argparse
 import importlib
 import importlib.util
 import subprocess
 from pathlib import Path
+from typing import Dict, Iterable, Tuple
 
 
 # The full repository suite includes exact-solver validation and can run much
 # longer on colder caches or nested subprocess execution than it does in an
 # already-warmed interactive shell.
+FAST_TEST_TIMEOUT_SECONDS = 300
 FULL_TEST_TIMEOUT_SECONDS = 1800
+
+
+GENERATED_CACHE_DIRS = [
+    'data',
+    'data/kociemba',
+    'data/kociemba/move_tables',
+    'data/kociemba/pruning_tables',
+    'data/move_tables',
+    'data/pattern_databases',
+    'data/pattern_databases/native_exact',
+    'data/pruning_tables',
+]
+
+PACKAGE_IMPORTS: Dict[str, str] = {
+    "RubikOptimal": "spec:optimal",
+    "pillow": "PIL",
+    "black": "black",
+    "dataclasses-json": "dataclasses_json",
+    "imageio": "imageio",
+    "ipywidgets": "ipywidgets",
+    "jupyter": "jupyter",
+    "jupyterlab": "jupyterlab",
+    "kociemba": "kociemba",
+    "line-profiler": "line_profiler",
+    "matplotlib": "matplotlib",
+    "memory-profiler": "memory_profiler",
+    "mypy": "mypy",
+    "numpy": "numpy",
+    "pandas": "pandas",
+    "plotly": "plotly",
+    "psutil": "psutil",
+    "pylint": "pylint",
+    "pytest": "pytest",
+    "pytest-benchmark": "pytest_benchmark",
+    "pytest-cov": "pytest_cov",
+    "rich": "rich",
+    "scipy": "scipy",
+    "seaborn": "seaborn",
+    "streamlit": "streamlit",
+}
+
+
+def iter_requirements(requirements_path: Path) -> Iterable[Tuple[str, str]]:
+    """Yield package names and import targets from requirements.txt."""
+    for raw_line in requirements_path.read_text().splitlines():
+        line = raw_line.split("#", 1)[0].strip()
+        if not line:
+            continue
+        package_name = line
+        for separator in ("==", ">=", "<=", "~=", ">", "<"):
+            if separator in package_name:
+                package_name = package_name.split(separator, 1)[0].strip()
+                break
+        yield package_name, PACKAGE_IMPORTS.get(package_name, package_name.replace("-", "_"))
 
 
 class Colors:
@@ -77,15 +134,8 @@ def check_required_packages() -> bool:
     """Check if all required packages are installed."""
     print_section("2. Required Packages Check")
 
-    required_packages = [
-        ('numpy', 'numpy'),
-        ('scipy', 'scipy'),
-        ('pytest', 'pytest'),
-        ('matplotlib', 'matplotlib'),
-        ('pandas', 'pandas'),
-        ('kociemba', 'kociemba'),
-        ('RubikOptimal', 'spec:optimal'),
-    ]
+    requirements_path = Path(__file__).parent / "requirements.txt"
+    required_packages = list(iter_requirements(requirements_path))
 
     all_installed = True
 
@@ -115,28 +165,26 @@ def check_required_packages() -> bool:
     return all_installed
 
 
-def check_project_structure() -> bool:
+def check_project_structure(create_cache_dirs: bool = False) -> bool:
     """Check if project structure is correct."""
     print_section("3. Project Structure Check")
 
     project_root = Path(__file__).parent
 
-    generated_dirs = [
-        'data',
-        'data/kociemba',
-        'data/kociemba/move_tables',
-        'data/kociemba/pruning_tables',
-        'data/move_tables',
-        'data/pattern_databases',
-        'data/pattern_databases/native_exact',
-        'data/pruning_tables',
-    ]
-
-    print("Ensuring generated cache directories:")
-    for dir_path in generated_dirs:
-        full_path = project_root / dir_path
-        full_path.mkdir(parents=True, exist_ok=True)
-        print_success(f"{dir_path:40s}")
+    if create_cache_dirs:
+        print("Ensuring generated cache directories:")
+        for dir_path in GENERATED_CACHE_DIRS:
+            full_path = project_root / dir_path
+            full_path.mkdir(parents=True, exist_ok=True)
+            print_success(f"{dir_path:40s}")
+    else:
+        print("Checking generated cache directories without creating them:")
+        for dir_path in GENERATED_CACHE_DIRS:
+            full_path = project_root / dir_path
+            if full_path.exists() and full_path.is_dir():
+                print_success(f"{dir_path:40s}")
+            else:
+                print_warning(f"{dir_path:40s} MISSING (generated; use --create-cache-dirs)")
 
     required_dirs = [
         'src',
@@ -277,7 +325,7 @@ def check_core_functionality() -> bool:
         return False
 
 
-def check_tests() -> bool:
+def check_tests(full: bool = False) -> bool:
     """Check if the supported test suite can run."""
     print_section("5. Test Suite Check")
 
@@ -289,20 +337,29 @@ def check_tests() -> bool:
         return False
 
     try:
-        print(
-            f"Running supported test command: python -m pytest tests -q "
-            f"(timeout: {FULL_TEST_TIMEOUT_SECONDS}s)"
-        )
+        if full:
+            command = [sys.executable, '-m', 'pytest', 'tests', '-q']
+            timeout = FULL_TEST_TIMEOUT_SECONDS
+            label = "full test suite"
+        else:
+            command = [
+                sys.executable, '-m', 'pytest', 'tests', '-q',
+                '-m', 'not slow and not external and not cache_building',
+            ]
+            timeout = FAST_TEST_TIMEOUT_SECONDS
+            label = "fast supported test profile"
+
+        print(f"Running {label}: {' '.join(command)} (timeout: {timeout}s)")
         result = subprocess.run(
-            [sys.executable, '-m', 'pytest', 'tests', '-q'],
+            command,
             cwd=str(project_root),
             capture_output=True,
             text=True,
-            timeout=FULL_TEST_TIMEOUT_SECONDS
+            timeout=timeout
         )
 
         if result.returncode == 0:
-            print_success("Full test suite passed")
+            print_success(f"{label.capitalize()} passed")
             output_lines = result.stdout.split('\n')
             for line in output_lines:
                 if 'passed' in line.lower() or 'collected' in line.lower():
@@ -316,7 +373,7 @@ def check_tests() -> bool:
             return False
 
     except subprocess.TimeoutExpired:
-        print_error(f"Full test suite timed out after {FULL_TEST_TIMEOUT_SECONDS}s")
+        print_error(f"Test profile timed out after {timeout}s")
         return False
     except Exception as e:
         print_error(f"Error running tests: {str(e)}")
@@ -390,6 +447,19 @@ def check_documentation() -> bool:
 
 def main():
     """Run all verification checks."""
+    parser = argparse.ArgumentParser(description="Verify the Rubik's Cube thesis checkout.")
+    parser.add_argument(
+        "--full",
+        action="store_true",
+        help="run the full pytest suite, including slow/cache-building tests",
+    )
+    parser.add_argument(
+        "--create-cache-dirs",
+        action="store_true",
+        help="create generated cache directories instead of only checking their presence",
+    )
+    args = parser.parse_args()
+
     print(f"{Colors.BOLD}{'=' * 60}{Colors.RESET}")
     print(f"{Colors.BOLD}Rubik's Cube Thesis - Setup Verification{Colors.RESET}")
     print(f"{Colors.BOLD}{'=' * 60}{Colors.RESET}")
@@ -397,9 +467,9 @@ def main():
     checks = [
         ("Python Version", check_python_version),
         ("Required Packages", check_required_packages),
-        ("Project Structure", check_project_structure),
+        ("Project Structure", lambda: check_project_structure(create_cache_dirs=args.create_cache_dirs)),
         ("Core Functionality", check_core_functionality),
-        ("Test Suite", check_tests),
+        ("Test Suite", lambda: check_tests(full=args.full)),
         ("Demo Script", check_demo),
         ("Documentation", check_documentation),
     ]

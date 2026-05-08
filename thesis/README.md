@@ -107,7 +107,8 @@ python scripts/thesis_workflow.py packets --remaining
 - [x] Manuscript chapters complete
 - [x] Appendices complete
 - [x] Benchmark figures and JSON inputs present
-- [x] Workflow validation reports no open workflow targets
+- [x] Workflow status has no open workflow targets
+- [ ] Re-run workflow validation on the final build machine
 - [ ] Abstracts and front matter final review
 - [ ] Final proofreading and formatting pass
 - [ ] Final PDF inspection

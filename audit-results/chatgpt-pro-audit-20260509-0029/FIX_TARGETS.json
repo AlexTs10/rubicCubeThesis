@@ -1,0 +1,530 @@
+[
+  {
+    "severity": "Critical",
+    "category": "Critical blockers",
+    "file": "README.md; tests/unit/test_corner_database.py; src/korf/corner_database.py",
+    "location": "README.md:26-31,100-101; tests/unit/test_corner_database.py:8-19; src/korf/corner_database.py:191-197,339-371",
+    "issue": "The documented full pytest command is not reproducible from the clean ZIP. Collection reports 291 tests rather than 285, and the full suite did not complete within 600 seconds while stalling in corner database tests.",
+    "exact_fix": "Mark heavy cache-building tests as slow/external, provide lightweight fixtures for unit tests, and update README/thesis counts only after a clean successful run.",
+    "verification_steps": [
+      "Run python -m pytest tests --collect-only -q and confirm documented count matches.",
+      "Run python -m pytest -m \"not slow and not external\" tests -q from a clean extraction.",
+      "Run the full suite only under the documented full-test profile."
+    ]
+  },
+  {
+    "severity": "Critical",
+    "category": "Critical blockers",
+    "file": "webapp/package.json; README.md",
+    "location": "webapp/package.json:1; README.md:103,113-117",
+    "issue": "npm ci fails because React 19 conflicts with framer-motion 10.x peer dependencies, while README claims the clean webapp install/build succeeds.",
+    "exact_fix": "Use dependency versions with compatible peer ranges, then regenerate package-lock.json. Do not rely on --legacy-peer-deps for the documented path.",
+    "verification_steps": [
+      "Run cd webapp && npm ci from a clean extraction.",
+      "Run npm run build.",
+      "Update README only after both commands pass."
+    ]
+  },
+  {
+    "severity": "Critical",
+    "category": "Critical blockers",
+    "file": "results/benchmarks/thesis/thesis_results_combined.json; src/evaluation/algorithm_comparison.py; scripts/benchmarks/regenerate_thesis_benchmarks.py",
+    "location": "thesis_results_combined.json:120-128; algorithm_comparison.py:555-573; regenerate_thesis_benchmarks.py:80-109,124-129",
+    "issue": "Current code claims no consecutive same-face scramble generation, but official benchmark artifacts contain adjacent same-face moves and the regeneration script replays the old corpus.",
+    "exact_fix": "Regenerate thesis benchmark artifacts with the current generator or clearly label the existing artifact as legacy redundant-scramble data. Add scramble_generation metadata to the combined artifact.",
+    "verification_steps": [
+      "Parse all scramble_moves and assert no adjacent same-face moves if claiming non-redundant generation.",
+      "Confirm thesis_results_combined.json contains scramble_generation metadata.",
+      "Rebuild Chapter 7 tables from the regenerated artifact."
+    ]
+  },
+  {
+    "severity": "Critical",
+    "category": "Critical blockers",
+    "file": "agent_workflow/generated/validation.md; thesis/README.md; README.md",
+    "location": "validation.md:4-16; thesis/README.md:107-110; README.md:104",
+    "issue": "Checked-in workflow validation says a thesis build path is ready and no blocking issues exist, but actual validation/build commands in the extracted ZIP reported no usable build path in this audit environment.",
+    "exact_fix": "Regenerate validation output from the current environment or remove generated validation artifacts as authoritative evidence. Provide a pinned, reproducible TeX/Tectonic/Docker build path.",
+    "verification_steps": [
+      "Run python scripts/thesis_workflow.py validate --output agent_workflow/generated/validation.md.",
+      "Run python scripts/thesis_workflow.py build --mode auto.",
+      "Confirm the generated validation file matches the actual command outcome."
+    ]
+  },
+  {
+    "severity": "Critical",
+    "category": "Critical blockers",
+    "file": "src/korf/distance_estimator.py; src/korf/corner_database.py",
+    "location": "src/korf/distance_estimator.py:97-110,329-344; src/korf/corner_database.py:266-327",
+    "issue": "create_estimator(load_databases=True, generate_if_missing=False) can still generate a full corner pattern database because the flag is not passed to create_corner_database.",
+    "exact_fix": "Pass generate_if_missing=generate_if_missing and require_complete=True to create_corner_database in the corner DB load path.",
+    "verification_steps": [
+      "Remove the corner DB cache.",
+      "Run create_estimator(load_databases=True, generate_if_missing=False).",
+      "Confirm it raises FileNotFoundError quickly and does not generate."
+    ]
+  },
+  {
+    "severity": "Critical",
+    "category": "Critical blockers",
+    "file": "src/thistlethwaite/tables.py",
+    "location": "src/thistlethwaite/tables.py:133-147,600-622",
+    "issue": "Unknown pattern database sentinel values are converted to zero heuristic values.",
+    "exact_fix": "Raise on sentinel 255 by default and require explicit completeness metadata before benchmark use.",
+    "verification_steps": [
+      "Create or corrupt a table entry to 255.",
+      "Call lookup and lookup_phase2.",
+      "Confirm they fail loudly rather than returning zero."
+    ]
+  },
+  {
+    "severity": "High",
+    "category": "Thesis writing issues",
+    "file": "thesis/chapters/01_introduction.tex; thesis/chapters/08_implementation.tex; thesis/chapters/appendix_a.tex",
+    "location": "01_introduction.tex:74,80; 08_implementation.tex:20-30,221-225; appendix_a.tex:135",
+    "issue": "Thesis claims stale code-line and test-count statistics.",
+    "exact_fix": "Regenerate or remove hard-coded metric claims; update them only after a clean verified run.",
+    "verification_steps": [
+      "Run source/test counting commands.",
+      "Run pytest collection and full documented test profile.",
+      "Update thesis numbers and appendix metadata."
+    ]
+  },
+  {
+    "severity": "High",
+    "category": "Thesis writing issues",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "07_evaluation.tex:88,123-126,204-209,264,270-281,338-339",
+    "issue": "Chapter 7 still uses depth wording for requested scramble length groups.",
+    "exact_fix": "Replace ambiguous depth wording with requested scramble length unless referring to verified optimal distance.",
+    "verification_steps": [
+      "Search for βάθος, βάθη, and depth in Chapter 7.",
+      "Confirm every occurrence is either corrected or explicitly tied to verified optimal distance."
+    ]
+  },
+  {
+    "severity": "High",
+    "category": "Thesis writing issues",
+    "file": "thesis/chapters/03_thistlethwaite.tex; src/thistlethwaite/moves.py; src/kociemba/cubie.py",
+    "location": "03_thistlethwaite.tex:105; src/thistlethwaite/moves.py:128-144; src/kociemba/cubie.py:217-235,242-260",
+    "issue": "Thistlethwaite corner-orientation explanation/helper says only F/B quarter turns affect corner orientation, but R/L turns also twist corners in the actual cubie model.",
+    "exact_fix": "Rewrite the explanation and helper docstring to match the implementation convention, or remove the stale helper.",
+    "verification_steps": [
+      "Apply R and L to a solved cubie and verify corner_orient changes.",
+      "Confirm thesis and helper comments describe that behavior accurately."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Thesis writing issues",
+    "file": "thesis/chapters/06_heuristics.tex; src/korf/composite_heuristic.py",
+    "location": "06_heuristics.tex:286-289; src/korf/composite_heuristic.py:1-21",
+    "issue": "Composite heuristic source docstring makes stronger improvement/innovation claims than the thesis evidence supports.",
+    "exact_fix": "Downgrade wording to exploratory heuristic or add an ablation experiment proving the improvement.",
+    "verification_steps": [
+      "Run an ablation benchmark comparing composite against simpler heuristics.",
+      "Update thesis and docstring with evidence-backed wording."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Thesis writing issues",
+    "file": "thesis/chapters/06_heuristics.tex",
+    "location": "06_heuristics.tex:294-325",
+    "issue": "The thesis cites fixed source-line ranges for code definitions that have shifted.",
+    "exact_fix": "Reference function/class names and commit hash, or auto-generate snippets and line references.",
+    "verification_steps": [
+      "Run a source-snippet verification script.",
+      "Confirm cited ranges match actual source definitions."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Thesis writing issues",
+    "file": "Multiple thesis chapters",
+    "location": "Examples: thesis/chapters/07_evaluation.tex:20-42; thesis/chapters/05_korf.tex; thesis/chapters/06_heuristics.tex",
+    "issue": "Academic prose mixes many English technical terms without a glossary or stable first-use definitions.",
+    "exact_fix": "Add a glossary and standardize first-use definitions for backend, timeout, benchmark, solver, oracle, fallback, exact, corpus, and heuristic.",
+    "verification_steps": [
+      "Run a terminology pass across all chapters.",
+      "Confirm every recurring English term is either defined or consistently translated."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Thesis writing issues",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "07_evaluation.tex:320-323",
+    "issue": "The evaluation language is stronger than supported by 100 scrambles without uncertainty estimates.",
+    "exact_fix": "Use more cautious wording or add repeated runs and confidence intervals.",
+    "verification_steps": [
+      "Add bootstrap confidence intervals to tables.",
+      "Update discussion language to reflect uncertainty."
+    ]
+  },
+  {
+    "severity": "High",
+    "category": "Technical/code issues",
+    "file": "src/kociemba/moves.py",
+    "location": "src/kociemba/moves.py:76-105",
+    "issue": "Move table cache lacks format/version/shape/move-order metadata.",
+    "exact_fix": "Store and validate format_version, move_order, table shapes, dtypes, and code/schema hash.",
+    "verification_steps": [
+      "Create a cache with mismatched metadata.",
+      "Confirm MoveTables.load rejects it."
+    ]
+  },
+  {
+    "severity": "High",
+    "category": "Technical/code issues",
+    "file": "src/evaluation/algorithm_comparison.py; src/korf/optimal_solver.py",
+    "location": "algorithm_comparison.py:196-203; optimal_solver.py:105,195-223,286-296,377-390",
+    "issue": "Korf timeout metadata and node-stat parsing are inconsistent across signal and subprocess timeout paths.",
+    "exact_fix": "Expose accurate timeout_enforced metadata and capture backend stdout in subprocess mode if node stats are reported.",
+    "verification_steps": [
+      "Mock a no-SIGALRM environment.",
+      "Run a timed solve and inspect exported metadata and node stats."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Technical/code issues",
+    "file": "src/cube/rubik_cube.py",
+    "location": "src/cube/rubik_cube.py:327-329",
+    "issue": "RubikCube hashes mutable state.",
+    "exact_fix": "Remove __hash__ or make hashed cube state immutable; provide state_key() for search keys.",
+    "verification_steps": [
+      "Add a test ensuring RubikCube is unhashable or immutable after hashing."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Technical/code issues",
+    "file": "src/cube/moves.py",
+    "location": "src/cube/moves.py:129-133",
+    "issue": "count_to_move is annotated as returning str but returns None for zero rotations.",
+    "exact_fix": "Change return type to Optional[str] or return an empty string and filter explicitly.",
+    "verification_steps": [
+      "Run mypy or pyright and confirm no return-type error remains."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Technical/code issues",
+    "file": "src/thistlethwaite/moves.py",
+    "location": "src/thistlethwaite/moves.py:128-144,184-193",
+    "issue": "Stale helper functions and comments simplify orientation/subgroup semantics.",
+    "exact_fix": "Remove or rewrite helpers to delegate to verified cubie-coordinate logic.",
+    "verification_steps": [
+      "Search for helper usage.",
+      "Add tests comparing helper outputs with actual cubie coordinate transitions."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Technical/code issues",
+    "file": "src/korf/composite_heuristic.py",
+    "location": "src/korf/composite_heuristic.py:51-65 and has_oriented_layer method",
+    "issue": "has_oriented_layer name/documentation implies cubie edge orientation but checks face-edge color matches.",
+    "exact_fix": "Rename the method or implement a true cubie orientation check.",
+    "verification_steps": [
+      "Add tests distinguishing cubie edge orientation from face-edge color matching."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Technical/code issues",
+    "file": "src/evaluation/algorithm_comparison.py",
+    "location": "src/evaluation/algorithm_comparison.py:166",
+    "issue": "Memory metrics use process RSS deltas with reused solver instances and caches.",
+    "exact_fix": "Measure each solver in an isolated subprocess and report peak RSS.",
+    "verification_steps": [
+      "Run the same benchmark with subprocess peak memory measurement.",
+      "Compare with old RSS-delta values."
+    ]
+  },
+  {
+    "severity": "High",
+    "category": "Research/experimental issues",
+    "file": "results/benchmarks/thesis/thesis_results_combined.json; thesis/chapters/07_evaluation.tex",
+    "location": "thesis_results_combined.json:120-128; 07_evaluation.tex:75-82",
+    "issue": "Official corpus uses redundant/canceling scramble sequences, making requested length a weak difficulty axis.",
+    "exact_fix": "Add canonical/no-adjacent-same-face and verified-distance-stratified benchmark corpora.",
+    "verification_steps": [
+      "Generate a new corpus with requested length, reduced length, and verified optimal distance fields.",
+      "Recompute all Chapter 7 tables and figures."
+    ]
+  },
+  {
+    "severity": "High",
+    "category": "Research/experimental issues",
+    "file": "src/evaluation/algorithm_comparison.py; scripts/benchmarks/analyze_thesis_data.py",
+    "location": "algorithm_comparison.py:712-748; analyze_thesis_data.py normalization and summary logic",
+    "issue": "Exact-backend statistics are success-conditioned and do not treat timeouts as censored/all-attempt observations.",
+    "exact_fix": "Report completed-only and timeout-inclusive metrics separately.",
+    "verification_steps": [
+      "Add timeout count and timeout-inclusive mean time to generated analysis tables."
+    ]
+  },
+  {
+    "severity": "High",
+    "category": "Research/experimental issues",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "Chapter 7 methodology/results sections",
+    "issue": "No confidence intervals, repeated runs, or statistical tests are reported.",
+    "exact_fix": "Add bootstrap confidence intervals and repeated-seed experiments where feasible.",
+    "verification_steps": [
+      "Regenerate tables with 95% CIs.",
+      "Update conclusion claims to match uncertainty."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Research/experimental issues",
+    "file": "thesis/chapters/07_evaluation.tex; src/evaluation/algorithm_comparison.py",
+    "location": "07_evaluation.tex:20-33; algorithm_comparison.py:739-745",
+    "issue": "Timing mixes lazy initialization cost with warm solve cost.",
+    "exact_fix": "Separate initialization time from warmed solve time.",
+    "verification_steps": [
+      "Run cold-start and warmed benchmark profiles.",
+      "Report both separately in Chapter 7."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Research/experimental issues",
+    "file": "scripts/benchmarks/regenerate_thesis_benchmarks.py",
+    "location": "regenerate_thesis_benchmarks.py:32-45,80-109,124-129",
+    "issue": "Benchmark regeneration defaults can overwrite canonical artifacts and only replay old scrambles.",
+    "exact_fix": "Default output to a timestamped rerun directory and create a separate new-corpus generator.",
+    "verification_steps": [
+      "Run script with no arguments and confirm results/benchmarks/thesis is not overwritten."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Research/experimental issues",
+    "file": "thesis/chapters/06_heuristics.tex; src/korf/composite_heuristic.py",
+    "location": "06_heuristics.tex:286-289; composite_heuristic.py:8-21",
+    "issue": "Composite heuristic lacks committed ablation evidence.",
+    "exact_fix": "Add a dedicated ablation benchmark or label it as exploratory only.",
+    "verification_steps": [
+      "Run identical-state comparisons for composite, weighted, Hamming, Manhattan, and PDB-backed variants."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Citation/reference issues",
+    "file": "thesis/references.bib",
+    "location": "thesis/references.bib:95-100",
+    "issue": "Bandelow reference is incorrectly typed as an article with publisher in journal field.",
+    "exact_fix": "Correct to @book with publisher metadata.",
+    "verification_steps": [
+      "Build bibliography and inspect rendered Bandelow entry."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Citation/reference issues",
+    "file": "thesis/references.bib",
+    "location": "thesis/references.bib:199-210",
+    "issue": "Wikipedia entries are included as bibliography sources.",
+    "exact_fix": "Replace with primary/official sources or remove if unused.",
+    "verification_steps": [
+      "Inspect rendered bibliography and ensure thesis-critical claims do not cite Wikipedia."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Citation/reference issues",
+    "file": "thesis/references.bib",
+    "location": "thesis/references.bib:506-510,528-534,537-542",
+    "issue": "Some references use incomplete author fields with 'and others'.",
+    "exact_fix": "Replace with complete author metadata or style-approved truncation.",
+    "verification_steps": [
+      "Search references.bib for 'and others' and resolve every occurrence."
+    ]
+  },
+  {
+    "severity": "High",
+    "category": "Citation/reference issues",
+    "file": "thesis/references.bib; results/benchmarks/thesis/thesis_results_combined.json",
+    "location": "references.bib:191-196; benchmark metadata top-level object",
+    "issue": "External exact backend citation and benchmark metadata lack exact commit/hash/license provenance.",
+    "exact_fix": "Record backend version, distribution metadata, upstream commit/tag, license status, and artifact hash.",
+    "verification_steps": [
+      "Inspect exported benchmark metadata and thesis appendix for exact backend provenance."
+    ]
+  },
+  {
+    "severity": "Low",
+    "category": "Citation/reference issues",
+    "file": "thesis/references.bib",
+    "location": "Multiple @misc entries with urldate fields",
+    "issue": "urldate may not render under the selected IEEEtran bibliography style.",
+    "exact_fix": "Use note = {Accessed: YYYY-MM-DD} or verify .bbl rendering.",
+    "verification_steps": [
+      "Build thesis and inspect rendered bibliography access dates."
+    ]
+  },
+  {
+    "severity": "High",
+    "category": "Reproducibility/setup issues",
+    "file": "requirements.txt",
+    "location": "requirements.txt:1-42",
+    "issue": "Python dependencies are specified only as lower bounds, with no Python lockfile.",
+    "exact_fix": "Add a pinned lockfile or constraints file with exact versions and hashes.",
+    "verification_steps": [
+      "Create a fresh environment from the lockfile.",
+      "Run setup, tests, thesis validation, and benchmarks."
+    ]
+  },
+  {
+    "severity": "High",
+    "category": "Reproducibility/setup issues",
+    "file": "pytest.ini",
+    "location": "pytest.ini:1-3",
+    "issue": "No pytest markers or timeout policy exist for slow/external/cache-building tests.",
+    "exact_fix": "Add slow/external/cache_building markers and document fast/full test profiles.",
+    "verification_steps": [
+      "Run pytest -m \"not slow and not external\" tests -q.",
+      "Run slow tests separately under a documented timeout."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Reproducibility/setup issues",
+    "file": "verify_setup.py",
+    "location": "verify_setup.py:80-88",
+    "issue": "verify_setup.py checks only a subset of requirements.txt.",
+    "exact_fix": "Check dependencies by mode or parse requirements.txt.",
+    "verification_steps": [
+      "Remove a non-checked dependency and confirm the appropriate verification mode fails."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Reproducibility/setup issues",
+    "file": "verify_setup.py",
+    "location": "verify_setup.py:124-139",
+    "issue": "verify_setup.py mutates the checkout by creating cache directories.",
+    "exact_fix": "Make verification read-only by default and move directory creation behind an explicit flag.",
+    "verification_steps": [
+      "Run verify_setup.py on a clean extraction and confirm no new directories are created unless requested."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Reproducibility/setup issues",
+    "file": "verify_setup.py",
+    "location": "verify_setup.py:291-302",
+    "issue": "verify_setup.py uses the full pytest suite as a supported check even though the current clean full suite is impractical.",
+    "exact_fix": "Default to a fast test profile and reserve full heavy checks for --full.",
+    "verification_steps": [
+      "Run python verify_setup.py and confirm it completes within a documented time budget."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Reproducibility/setup issues",
+    "file": "agent_workflow/generated/status.md",
+    "location": "agent_workflow/generated/status.md:50-69",
+    "issue": "Generated status file has stale toolchain and code-count data.",
+    "exact_fix": "Regenerate status after fixes or stop treating generated status as current evidence.",
+    "verification_steps": [
+      "Run python scripts/thesis_workflow.py status --output agent_workflow/generated/status.md.",
+      "Confirm counts and toolchain entries match the actual environment."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Reproducibility/setup issues",
+    "file": "agent_workflow/generated/validation.md",
+    "location": "agent_workflow/generated/validation.md:4-16",
+    "issue": "Generated validation file claims no blocking issues despite actual validation failure in the audit environment.",
+    "exact_fix": "Regenerate validation or make the file environment-specific and dated.",
+    "verification_steps": [
+      "Run python scripts/thesis_workflow.py validate --output agent_workflow/generated/validation.md.",
+      "Confirm the file reflects actual build-path status."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Submission polish issues",
+    "file": "Top-level ZIP contents",
+    "location": "Top-level extracted filenames with mojibake Greek text",
+    "issue": "Some top-level PDF/DOC filenames are mojibake/corrupted after extraction.",
+    "exact_fix": "Rename to UTF-8-safe names or ASCII names and remove nonessential duplicate documents.",
+    "verification_steps": [
+      "Extract the ZIP on Linux, macOS, and Windows.",
+      "Confirm filenames render correctly."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Submission polish issues",
+    "file": "docs/CODE_TO_THESIS_MAPPING.md",
+    "location": "CODE_TO_THESIS_MAPPING.md:15-17,32-35,191-193",
+    "issue": "Code-to-thesis mapping lists stale/nonexistent functions and stale test counts.",
+    "exact_fix": "Update the mapping to actual source symbols and counts; add a symbol-checking script.",
+    "verification_steps": [
+      "Run a script that verifies every documented symbol exists in the referenced file."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Submission polish issues",
+    "file": "tests/unit/test_kociemba.py",
+    "location": "tests/unit/test_kociemba.py:252-255",
+    "issue": "test_heuristic_admissibility is a pass placeholder.",
+    "exact_fix": "Replace with real admissibility checks or remove the placeholder.",
+    "verification_steps": [
+      "Ensure the test has assertions and fails when a heuristic overestimates shallow exact distance."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Submission polish issues",
+    "file": "tests/unit/test_thistlethwaite.py",
+    "location": "tests/unit/test_thistlethwaite.py:64-95",
+    "issue": "Orientation tests use vacuous >= 0 assertions.",
+    "exact_fix": "Assert exact expected coordinates or compare against the trusted cubie model.",
+    "verification_steps": [
+      "Mutate coordinate extraction and confirm tests fail."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Submission polish issues",
+    "file": "tests/unit/test_thistlethwaite.py",
+    "location": "tests/unit/test_thistlethwaite.py:462-492",
+    "issue": "Phase-invariant test comments do not match actual assertions.",
+    "exact_fix": "Add assertions for each phase invariant after applying that phase's moves.",
+    "verification_steps": [
+      "Introduce an intentional phase invariant violation and confirm the test catches it."
+    ]
+  },
+  {
+    "severity": "Low",
+    "category": "Submission polish issues",
+    "file": "webapp/package.json",
+    "location": "webapp/package.json:1",
+    "issue": "package.json is minified into a single line.",
+    "exact_fix": "Pretty-print package.json with stable formatting.",
+    "verification_steps": [
+      "Run jq . webapp/package.json and preserve valid JSON.",
+      "Run npm ci after dependency fixes."
+    ]
+  },
+  {
+    "severity": "Low",
+    "category": "Submission polish issues",
+    "file": "thesis/chapters/08_implementation.tex",
+    "location": "08_implementation.tex:20-30,221-225",
+    "issue": "Static code/test metrics are hard-coded and stale.",
+    "exact_fix": "Generate metrics from a script or move them into a dated reproducibility appendix.",
+    "verification_steps": [
+      "Run the metric generator and confirm thesis values match current source."
+    ]
+  }
+]

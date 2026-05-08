@@ -70,13 +70,12 @@ class TestCubeCoordinates:
         coords = CubeCoordinates(cube)
         assert coords.get_edge_orientation_coord() == 0
 
-        # F move should change edge orientation
+        # F move flips edges in this cubie convention.
         cube2 = RubikCube()
         cube2.apply_move('F')
         coords2 = CubeCoordinates(cube2)
-        # F move flips some edges, so coordinate should be non-zero
-        # (exact value depends on implementation)
-        assert coords2.get_edge_orientation_coord() >= 0
+        assert coords2.get_edge_orientation_coord() == get_edge_orientation(from_facelet_cube(cube2))
+        assert coords2.get_edge_orientation_coord() != 0
 
     def test_corner_orientation_after_move(self):
         """Test corner orientation coordinate after moves."""
@@ -87,12 +86,12 @@ class TestCubeCoordinates:
         coords = CubeCoordinates(cube)
         assert coords.get_corner_orientation_coord() == 0
 
-        # F move should change corner orientation
+        # R and F quarter turns twist corners in the trusted cubie convention.
         cube2 = RubikCube()
-        cube2.apply_move('F')
+        cube2.apply_move('R')
         coords2 = CubeCoordinates(cube2)
-        # Coordinate may or may not be 0 depending on which corners are twisted
-        assert coords2.get_corner_orientation_coord() >= 0
+        assert coords2.get_corner_orientation_coord() == get_corner_orientation(from_facelet_cube(cube2))
+        assert coords2.get_corner_orientation_coord() != 0
 
     def test_coordinates_match_cubie_model_after_f_turn(self):
         """Thistlethwaite coordinates must agree with the trusted cubie model."""
@@ -478,14 +477,21 @@ class TestThistlethwaiteSolver:
         # Phase 0: Orient edges
         test_cube.apply_moves(phase_moves[0])
         coords = CubeCoordinates(test_cube)
-        # After phase 0, edges should be oriented (coord = 0)
-        # (Note: This test may fail due to coordinate extraction complexity)
+        assert coords.get_edge_orientation_coord() == 0
 
         # Phase 1: Orient corners
         test_cube.apply_moves(phase_moves[1])
+        coords = CubeCoordinates(test_cube)
+        assert coords.get_edge_orientation_coord() == 0
+        assert coords.get_corner_orientation_coord() == 0
+        assert coords.get_e_slice_coord() == 0
 
         # Phase 2: Tetrads
         test_cube.apply_moves(phase_moves[2])
+        coords = CubeCoordinates(test_cube)
+        assert coords.get_edge_orientation_coord() == 0
+        assert coords.get_corner_orientation_coord() == 0
+        assert coords.get_e_slice_coord() == 0
 
         # Phase 3: Solve
         test_cube.apply_moves(phase_moves[3])

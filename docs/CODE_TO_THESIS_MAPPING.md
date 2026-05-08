@@ -12,8 +12,8 @@ Quick reference: what code to cite for each thesis section.
 | Topic | File | Key Functions/Classes |
 |-------|------|----------------------|
 | Facelet model | `src/cube/rubik_cube.py` | `RubikCube`, `Face`, `Color` |
-| Move application | `src/cube/moves.py` | `apply_move()`, `inverse_move()` |
-| Singmaster notation | `src/cube/moves.py` | `parse_moves()`, `format_moves()` |
+| Move application | `src/cube/rubik_cube.py` / `src/cube/moves.py` | `RubikCube.apply_move()`, `RubikCube.apply_moves()`, `inverse_move()` |
+| Singmaster notation | `src/cube/moves.py` | `parse_move_sequence()`, `format_move_sequence()` |
 | Cubie model | `src/kociemba/cubie.py` | `CubieCube`, `Corner`, `Edge` |
 
 ### Search Algorithms
@@ -30,9 +30,9 @@ Quick reference: what code to cite for each thesis section.
 | Topic | File | What to Reference |
 |-------|------|-------------------|
 | Main solver | `src/thistlethwaite/solver.py` | `ThistlethwaiteSolver` class |
-| Phase definitions | `src/thistlethwaite/solver.py` | `PHASE_MOVES` dictionary |
-| Coordinates | `src/thistlethwaite/coordinates.py` | `edge_orientation()`, `corner_orientation()` |
-| IDA* search | `src/thistlethwaite/ida_star.py` | `ida_star_search()` |
+| Phase definitions | `src/thistlethwaite/moves.py` | `PHASE_0_MOVES`, `PHASE_1_MOVES`, `PHASE_2_MOVES`, `PHASE_3_MOVES`, `ALL_PHASE_MOVES` |
+| Coordinates | `src/thistlethwaite/coordinates.py` | `CubeCoordinates.get_edge_orientation_coord()`, `CubeCoordinates.get_corner_orientation_coord()`, `CubeCoordinates.get_e_slice_coord()` |
+| IDA* search | `src/thistlethwaite/ida_star.py` | `IDAStarSearch.search()` |
 | Pattern tables | `src/thistlethwaite/tables.py` | Table generation functions |
 
 **Test data:**
@@ -74,8 +74,8 @@ def is_phase1_solved(coord_cube):
 | Native admissible heuristic | `src/korf/native_coordinate_heuristic.py` | `NativeCoordinateHeuristic` |
 | Internal heuristic search | `src/korf/a_star.py` | `IDAStarSolver` |
 | Pattern database base | `src/korf/pattern_database.py` | `PatternDatabase` class |
-| Corner database | `src/korf/corner_database.py` | `CornerDatabase` |
-| Edge database | `src/korf/edge_database.py` | `EdgeDatabase` |
+| Corner database | `src/korf/corner_database.py` | `CornerPatternDatabase` |
+| Edge database | `src/korf/edge_database.py` | `EdgePatternDatabase` |
 | Heuristic functions | `src/korf/heuristics.py` | Exploratory / low-cost heuristics |
 | Composite heuristic | `src/korf/composite_heuristic.py` | Exploratory composite path |
 
@@ -189,8 +189,9 @@ src/
 Current codebase counts from this checkout:
 
 - `src/`: 40 Python files, excluding `__pycache__`
-- `tests/`: 22 Python files, excluding `__pycache__`
-- full test collection: `285 tests collected` with `python -m pytest tests --collect-only -q`
+- `tests/`: 25 Python files, excluding `__pycache__`
+- full test collection: `291 tests collected` with `python -m pytest tests --collect-only -q`
+- default fast profile: `288/291 tests collected (3 deselected)` because `pytest.ini` excludes cache-building tests unless explicitly selected
 
 ### Web Applications
 | App | Location | Technology |

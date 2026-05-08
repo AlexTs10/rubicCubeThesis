@@ -1,24 +1,24 @@
 """
-Composite Heuristic for Rubik's Cube - Research Contribution
+Composite Heuristic for Rubik's Cube - Exploratory Path
 
 This module implements a composite heuristic that combines multiple inexpensive
 estimates. It is useful for practical search experiments, but the composite
 path is not treated as a formal admissible lower bound in this repository.
 
-Key Innovation:
+Exploratory strategy:
 The composite heuristic uses dynamic weighting based on cube state characteristics:
 1. Early scramble detection (high entropy) → emphasize pattern databases
 2. Near-solved states (low entropy) → emphasize Manhattan distance
 3. Mid-range states → balanced combination
 
-This adaptive approach improves search efficiency across different
-scramble depths and configurations.
+This adaptive approach is kept for practical experiments; the committed thesis
+benchmark does not treat it as a proven improvement without a separate ablation.
 
 Research Justification:
 - Korf (1997) showed pattern databases are strongest for deep scrambles
 - Manhattan distance is computationally cheaper for shallow states
-- Combining them adaptively can reduce node expansions in the practical IDA*
-  fallback path
+- Combining them adaptively is a plausible experimental strategy for the
+  practical IDA* fallback path
 
 Pattern-database mode is optional: when cached Korf tables are available,
 they are used directly; otherwise the heuristic falls back to the cheaper

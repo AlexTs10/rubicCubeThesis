@@ -181,22 +181,24 @@ class TestCopyAndEquality:
         assert cube2 == cube3
         assert cube1 == cube3
 
-    def test_hash_consistency(self):
-        """Test that equal cubes have equal hashes."""
+    def test_state_key_consistency(self):
+        """Test that equal cubes have equal immutable state keys."""
         cube1 = RubikCube()
         cube2 = RubikCube()
 
-        assert hash(cube1) == hash(cube2)
+        assert cube1.state_key() == cube2.state_key()
+        with pytest.raises(TypeError):
+            hash(cube1)
 
-    def test_hash_after_same_scramble(self):
-        """Test hash after same scramble sequence."""
+    def test_state_key_after_same_scramble(self):
+        """Test state key after same scramble sequence."""
         cube1 = RubikCube()
         cube1.scramble(moves=10, seed=42)
 
         cube2 = RubikCube()
         cube2.scramble(moves=10, seed=42)
 
-        assert hash(cube1) == hash(cube2)
+        assert cube1.state_key() == cube2.state_key()
 
 
 class TestEdgeCases:

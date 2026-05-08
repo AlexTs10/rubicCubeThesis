@@ -12,6 +12,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_OUTPUT_DIR = ROOT / "results" / "benchmarks" / "thesis"
+DEFAULT_RERUN_ROOT = ROOT / "results" / "benchmarks" / "reruns"
 
 sys.path.insert(0, str(ROOT))
 
@@ -41,8 +42,16 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--output-dir",
         type=Path,
-        default=DEFAULT_OUTPUT_DIR,
-        help="Directory where thesis_bench_d*.json and thesis_results_combined.json will be written.",
+        default=None,
+        help=(
+            "Directory where thesis_bench_d*.json and thesis_results_combined.json will be written. "
+            "Defaults to a timestamped directory under results/benchmarks/reruns/."
+        ),
+    )
+    parser.add_argument(
+        "--overwrite-canonical",
+        action="store_true",
+        help="Write into results/benchmarks/thesis instead of a timestamped rerun directory.",
     )
     parser.add_argument(
         "--thistlethwaite-timeout",
@@ -191,6 +200,19 @@ def main() -> None:
 
     if not args.source.exists():
         raise FileNotFoundError(f"Scramble source not found: {args.source}")
+
+    if args.output_dir is None:
+        if args.overwrite_canonical:
+            args.output_dir = DEFAULT_OUTPUT_DIR
+        else:
+            timestamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+            args.output_dir = DEFAULT_RERUN_ROOT / timestamp
+
+    if args.output_dir.resolve() == DEFAULT_OUTPUT_DIR.resolve() and not args.overwrite_canonical:
+        raise ValueError(
+            "Refusing to overwrite canonical thesis benchmark artifacts. "
+            "Pass --overwrite-canonical explicitly or choose --output-dir."
+        )
 
     scramble_set = load_scramble_set(args.source)
     if not scramble_set:

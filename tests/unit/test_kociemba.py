@@ -250,9 +250,38 @@ class TestPruningTables:
         assert h == 0  # Solved state should have heuristic 0
 
     def test_heuristic_admissibility(self):
-        """Test that heuristic never overestimates (admissibility)."""
-        # This is tested implicitly by solver correctness
-        pass
+        """Pruning heuristics must not overestimate solved or one-move states."""
+        tables = get_pruning_tables()
+        tables.load(max_depth=8)
+
+        solved = CubieCube()
+        solved_coord = CoordCube(solved)
+        assert tables.get_phase1_heuristic(
+            solved_coord.corner_orient,
+            solved_coord.edge_orient,
+            solved_coord.udslice,
+        ) == 0
+        assert tables.get_phase2_heuristic(
+            solved_coord.corner_perm,
+            solved_coord.edge_perm,
+            solved_coord.udslice_perm,
+        ) == 0
+
+        for move in ["U2", "R2", "F2"]:
+            cubie = apply_move_to_cubie(CubieCube(), move)
+            coord = CoordCube(cubie)
+            phase1_h = tables.get_phase1_heuristic(
+                coord.corner_orient,
+                coord.edge_orient,
+                coord.udslice,
+            )
+            phase2_h = tables.get_phase2_heuristic(
+                coord.corner_perm,
+                coord.edge_perm,
+                coord.udslice_perm,
+            )
+            assert phase1_h <= 1
+            assert phase2_h <= 1
 
 
 class TestKociembaSolver:

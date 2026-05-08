@@ -98,7 +98,9 @@ class DistanceEstimator:
             try:
                 self.corner_db = create_corner_database(
                     load_if_exists=True,
-                    save_path=corner_path
+                    save_path=corner_path,
+                    generate_if_missing=generate_if_missing,
+                    require_complete=True,
                 )
                 print("✓ Corner database loaded")
             except Exception as e:
@@ -106,7 +108,9 @@ class DistanceEstimator:
                     print(f"! Corner database not found, generating...")
                     self.corner_db = create_corner_database(
                         load_if_exists=False,
-                        save_path=corner_path
+                        save_path=corner_path,
+                        generate_if_missing=True,
+                        require_complete=True,
                     )
                 else:
                     print(f"✗ Failed to load corner database: {e}")

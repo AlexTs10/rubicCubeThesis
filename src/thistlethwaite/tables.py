@@ -21,6 +21,9 @@ from ..kociemba.moves import (
 )
 
 
+UNKNOWN_DISTANCE = 255
+
+
 class PatternDatabase:
     """
     Pattern database for storing pre-computed distances to goal.
@@ -52,8 +55,8 @@ class PatternDatabase:
         self.moves = moves
         self.cache_dir = cache_dir
 
-        # Initialize table with "unknown" (255 = max value for uint8)
-        self.table = np.full(size, 255, dtype=np.uint8)
+        # Initialize table with "unknown" (255 = max value for uint8).
+        self.table = np.full(size, UNKNOWN_DISTANCE, dtype=np.uint8)
 
         # Cache file path
         os.makedirs(cache_dir, exist_ok=True)
@@ -143,8 +146,12 @@ class PatternDatabase:
         coord = self.get_coord(cube)
         value = self.table[coord]
 
-        # Return 0 for unknown states (shouldn't happen with full generation)
-        return 0 if value == 255 else int(value)
+        if value == UNKNOWN_DISTANCE:
+            raise ValueError(
+                f"Pattern database '{self.name}' has no distance for coordinate {coord}; "
+                "regenerate a complete table before using it as a heuristic."
+            )
+        return int(value)
 
 
 class ThistlethwaitePatternDatabases:
@@ -618,7 +625,11 @@ class ThistlethwaitePatternDatabases:
         )
 
         distances = [corner_distance, edge_distance, slice_distance]
-        distances = [0 if distance == 255 else distance for distance in distances]
+        if any(distance == UNKNOWN_DISTANCE for distance in distances):
+            raise ValueError(
+                "Phase 2 exact heuristic table contains an unknown distance. "
+                "Regenerate complete phase-2 tables before benchmark use."
+            )
         return max(distances)
 
     def lookup_phase3_distance(self, cube: RubikCube) -> Optional[int]:

@@ -5,6 +5,9 @@ import pytest
 from src.korf.corner_database import CornerPatternDatabase, create_corner_database
 
 
+pytestmark = pytest.mark.cache_building
+
+
 def test_corner_database_partial_generation_is_marked_incomplete(tmp_path):
     save_path = tmp_path / "corner_partial.pkl"
     cache_dir = tmp_path / "corner_cache"

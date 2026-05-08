@@ -5,7 +5,7 @@ This module provides utilities for working with move sequences,
 including parsing, formatting, and optimizing move sequences.
 """
 
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 
 # All basic moves in Singmaster notation
@@ -126,7 +126,7 @@ def simplify_moves(moves: List[str]) -> List[str]:
         else:
             raise ValueError(f"Invalid move: {move}")
 
-    def count_to_move(face: str, count: int) -> str:
+    def count_to_move(face: str, count: int) -> Optional[str]:
         """Convert (face, count) to move string."""
         count = count % 4  # Normalize to 0-3
         if count == 0:

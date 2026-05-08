@@ -31,6 +31,8 @@ python scripts/thesis_workflow.py validate --output agent_workflow/generated/val
 python scripts/thesis_workflow.py build --mode auto
 ```
 
+The default pytest/verification profile is intentionally the fast reproducibility profile. It excludes tests marked `slow`, `external`, or `cache_building`; run those markers explicitly only when validating generated caches or external backends.
+
 The compiled thesis PDF is written to `thesis/main.pdf`.
 
 ## Repo Layout
@@ -97,11 +99,11 @@ Useful files:
 
 ## Current Verification Snapshot
 
-- `python -m pytest tests --collect-only -q` reports `285 tests collected`
-- `python -m pytest tests -q` reports `284 passed, 1 skipped`
-- `python verify_setup.py` passes with `7/7` checks
+- `python -m pytest tests --collect-only -q` reports `291 tests collected`; the default fast profile selects `288` tests and deselects `3` cache-building tests
+- `python -m pytest tests -q` reports `287 passed, 1 skipped, 3 deselected` in the supported fast profile; full cache-building tests are opt-in with explicit markers
+- `python verify_setup.py` runs the same fast test profile by default; use `--full` only for heavyweight local validation
 - `cd webapp && npm ci && npm run build` succeeds from a clean dependency install
-- `python scripts/thesis_workflow.py build --mode auto` rebuilds `thesis/main.pdf` with XeLaTeX-compatible tooling or Tectonic
+- `python scripts/thesis_workflow.py build --mode auto` rebuilds `thesis/main.pdf` when a supported local TeX/Tectonic/Docker build path is available
 - the manuscript chapters and appendices are present in `thesis/chapters/`
 
 There is no active top-level `TESTING_REPORT.md` in this checkout. Treat any older testing report copied from another branch or artifact bundle as historical unless it is regenerated from the commands above.

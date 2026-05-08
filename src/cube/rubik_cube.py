@@ -324,6 +324,8 @@ class RubikCube:
             return False
         return np.array_equal(self.state, other.state)
 
-    def __hash__(self) -> int:
-        """Hash the cube state for use in sets and dictionaries."""
-        return hash(self.state.tobytes())
+    __hash__ = None
+
+    def state_key(self) -> bytes:
+        """Return an immutable key for search dictionaries and visited sets."""
+        return self.state.tobytes()

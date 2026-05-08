@@ -113,7 +113,10 @@
       "verified_scramble_depth_available": true
     },
     "scramble_depth_semantics": "scramble_depth records the requested scramble length; verified_scramble_depth is populated only when the exact distance is known from the optimal Korf backend.",
-    "verified_scramble_depth_available": true
+    "verified_scramble_depth_available": true,
+    "scramble_generation": "legacy_random_all_moves_redundant_allowed",
+    "scramble_corpus_status": "Legacy canonical thesis corpus generated before no-consecutive-same-face scramble generation was added. Scramble depth fields are requested lengths; some sequences contain adjacent same-face moves and cancellations.",
+    "current_generator_for_new_runs": "random_no_consecutive_same_face_moves"
   },
   "results": [
     {

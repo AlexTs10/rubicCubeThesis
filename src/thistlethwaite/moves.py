@@ -22,7 +22,8 @@ PHASE_0_MOVES: List[str] = [
 # Phase 1 (G1 → G2): Corner Orientation + E-slice Edges
 # Goal: Orient all corners + place E-slice edges in E-slice
 # Allowed moves: Remove F, F', B, B' (keep F2, B2)
-# Reasoning: F and B quarter-turns change corner orientation
+# Reasoning: This implementation's phase convention preserves G1 edge
+# orientation while allowing R/L quarter-turns until Phase 2.
 PHASE_1_MOVES: List[str] = [
     'U', 'U\'', 'U2',
     'D', 'D\'', 'D2',
@@ -129,7 +130,9 @@ def affects_corner_orientation(move: str) -> bool:
     """
     Check if a move affects corner orientation.
 
-    Only F, F', B, B' affect corner orientation.
+    In the trusted cubie-coordinate model used by this repository, F/B/R/L
+    quarter turns affect corner orientation. U/D turns and all double turns
+    preserve corner orientation.
 
     Args:
         move: Move string
@@ -140,8 +143,7 @@ def affects_corner_orientation(move: str) -> bool:
     base = move[0]
     modifier = move[1:] if len(move) > 1 else ''
 
-    # Only F, B quarter turns affect corner orientation
-    return base in ['F', 'B'] and modifier != '2'
+    return base in ['F', 'B', 'R', 'L'] and modifier != '2'
 
 
 def affects_edge_slicing(move: str) -> bool:
