@@ -14,7 +14,8 @@ Phase 2 Coordinates (G1 -> Solved):
 6. UD-Slice Permutation (0-23): 4! = 24 states
 
 Total Phase 1 space: 2187 * 2048 * 495 = 2,217,093,120 states
-Total Phase 2 space: 40320 * 40320 * 24 = 19,508,428,800 states
+Total Phase 2 space: 40320 * 40320 * 24 / 2 = 19,508,428,800 states
+The division by two enforces matching corner/edge permutation parity.
 """
 
 import numpy as np

@@ -255,13 +255,21 @@ class RubikCube:
         moves = sequence.strip().split()
         self.apply_moves(moves)
 
-    def scramble(self, moves: int = 20, seed: Optional[int] = None) -> List[str]:
+    def scramble(
+        self,
+        moves: int = 20,
+        seed: Optional[int] = None,
+        allow_redundant: bool = True,
+    ) -> List[str]:
         """
         Scramble the cube with random moves.
 
         Args:
             moves: Number of random moves to apply
             seed: Optional random seed for reproducibility
+            allow_redundant: If False, avoid consecutive moves on the same
+                face so generated benchmark scrambles do not contain immediate
+                cancellations such as F F' or same-face collapses.
 
         Returns:
             List of moves applied
@@ -273,10 +281,15 @@ class RubikCube:
                      'L', 'L\'', 'L2', 'R', 'R\'', 'R2']
 
         scramble_sequence = []
+        previous_face = None
         for _ in range(moves):
-            move = str(rng.choice(all_moves))
+            candidate_moves = all_moves
+            if not allow_redundant and previous_face is not None:
+                candidate_moves = [move for move in all_moves if move[0] != previous_face]
+            move = str(rng.choice(candidate_moves))
             scramble_sequence.append(move)
             self.apply_move(move)
+            previous_face = move[0]
 
         # Persist the latest scramble metadata for interactive tooling.
         self._scramble_moves = scramble_sequence.copy()

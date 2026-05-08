@@ -185,6 +185,30 @@ class TestPhaseMoveSets:
         assert not is_move_allowed('U', 3)
         assert is_move_allowed('U2', 3)
 
+    def test_phase_move_sets_preserve_previous_invariants(self):
+        """Later phase move sets must preserve invariants solved by earlier phases."""
+        for move in PHASE_1_MOVES:
+            cube = RubikCube()
+            cube.apply_move(move)
+            cubie = from_facelet_cube(cube)
+            assert get_edge_orientation(cubie) == 0
+
+        for move in PHASE_2_MOVES:
+            cube = RubikCube()
+            cube.apply_move(move)
+            cubie = from_facelet_cube(cube)
+            assert get_edge_orientation(cubie) == 0
+            assert get_corner_orientation(cubie) == 0
+            assert get_udslice(cubie) == 0
+
+        for move in PHASE_3_MOVES:
+            cube = RubikCube()
+            cube.apply_move(move)
+            cubie = from_facelet_cube(cube)
+            assert get_edge_orientation(cubie) == 0
+            assert get_corner_orientation(cubie) == 0
+            assert get_udslice(cubie) == 0
+
 
 class TestIDAStarSearch:
     """Test IDA* search algorithm."""

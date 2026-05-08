@@ -172,6 +172,13 @@ class TestScrambling:
 
         np.testing.assert_allclose(actual, expected)
 
+    def test_scramble_can_avoid_consecutive_same_face_moves(self):
+        """Canonical benchmark scrambles should avoid immediate same-face collapses."""
+        moves = RubikCube().scramble(moves=50, seed=123, allow_redundant=False)
+
+        for previous, current in zip(moves, moves[1:]):
+            assert previous[0] != current[0]
+
 
 class TestMoveValidation:
     """Test move validation and error handling."""

@@ -557,6 +557,7 @@ class AlgorithmComparison:
         print("=" * 70)
         print(f"Scrambles:       {n_scrambles}")
         print(f"Requested length: {scramble_depth}")
+        print("Generation:      no consecutive same-face moves")
         print(f"Random seed:     {seed}")
         print("=" * 70)
         print()
@@ -565,7 +566,11 @@ class AlgorithmComparison:
             # Generate scramble
             cube = RubikCube()
             scramble_seed = seed + i if seed is not None else None
-            scramble = cube.scramble(moves=scramble_depth, seed=scramble_seed)
+            scramble = cube.scramble(
+                moves=scramble_depth,
+                seed=scramble_seed,
+                allow_redundant=False,
+            )
 
             # Run comparison
             result = self.compare_on_scramble(cube, scramble_id=i)
@@ -712,6 +717,7 @@ class AlgorithmComparison:
                     "verified_scramble_depth is populated only when the exact "
                     "distance is known from the optimal Korf backend."
                 ),
+                'scramble_generation': "random_no_consecutive_same_face_moves",
                 'verified_scramble_depth_available': any(
                     r.verified_scramble_depth is not None for r in self.results
                 ),

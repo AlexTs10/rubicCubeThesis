@@ -9,7 +9,7 @@ import numpy as np
 import pickle
 from src.cube.rubik_cube import RubikCube
 from src.kociemba.cubie import CubieCube, from_facelet_cube
-from src.korf.pattern_database import PatternDatabase
+from src.korf.pattern_database import PatternDatabase, bfs_generate_pattern_database
 from src.korf.corner_database import corner_index, CORNER_DB_SIZE
 from src.korf.heuristics import (
     simple_heuristic,
@@ -142,6 +142,35 @@ class TestPatternDatabase:
 
         with pytest.raises(ValueError, match="ambiguous distance 15"):
             PatternDatabase.load(str(path))
+
+    def test_bfs_generation_fails_loudly_on_transition_errors(self):
+        """Pattern database generation must not hide move/index failures."""
+        db = PatternDatabase("tiny", 2)
+
+        def failing_move(index, move):
+            raise RuntimeError("broken transition")
+
+        with pytest.raises(RuntimeError, match="broken transition"):
+            bfs_generate_pattern_database(
+                db=db,
+                index_func=lambda state: state,
+                move_func=failing_move,
+                solved_index=0,
+                moves=["U"],
+            )
+
+    def test_bfs_generation_rejects_incomplete_database(self):
+        """A declared complete database should not serialize partial coverage."""
+        db = PatternDatabase("tiny", 2)
+
+        with pytest.raises(RuntimeError, match="1/2 states"):
+            bfs_generate_pattern_database(
+                db=db,
+                index_func=lambda state: state,
+                move_func=lambda index, move: index,
+                solved_index=0,
+                moves=["U"],
+            )
 
 
 class TestCornerDatabase:

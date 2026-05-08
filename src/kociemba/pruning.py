@@ -41,6 +41,12 @@ class PruningTables:
             cache_dir: Directory to cache precomputed tables
         """
         self.cache_dir = cache_dir
+        cache_parent = os.path.dirname(os.path.normpath(cache_dir))
+        self.move_table_cache_dir = (
+            os.path.join(cache_parent, "move_tables")
+            if os.path.basename(os.path.normpath(cache_dir)) == "pruning_tables"
+            else "data/move_tables"
+        )
 
         # Phase 1 pruning tables
         self.phase1_co_eo = None  # Corner Orient + Edge Orient [2187 * 2048]
@@ -52,6 +58,7 @@ class PruningTables:
         self.phase2_sp = None  # UD-Slice Permutation [24]
 
         self._loaded = False
+        self.max_depth = None
         self.move_tables = None
 
     def load(self, force_regenerate: bool = False, max_depth: int = 15) -> None:
@@ -66,7 +73,7 @@ class PruningTables:
             return
 
         # Load move tables first
-        self.move_tables = get_move_tables()
+        self.move_tables = get_move_tables(self.move_table_cache_dir)
         self.move_tables.load()
 
         cache_file = os.path.join(self.cache_dir, "pruning_tables.pkl")
@@ -80,10 +87,33 @@ class PruningTables:
                 self.phase2_cp = data['phase2_cp']
                 self.phase2_ep = data['phase2_ep']
                 self.phase2_sp = data['phase2_sp']
+                cache_max_depth = data.get('max_depth')
+                if cache_max_depth is None:
+                    observed_max = max(
+                        int(np.max(self.phase1_co_eo)),
+                        int(np.max(self.phase1_eo_slice)),
+                        int(np.max(self.phase2_cp)),
+                        int(np.max(self.phase2_ep)),
+                        int(np.max(self.phase2_sp)),
+                    )
+                    if observed_max > max_depth:
+                        raise ValueError(
+                            "Cached pruning tables do not include max_depth metadata "
+                            f"and contain cutoff values above requested max_depth={max_depth}. "
+                            "Regenerate the cache."
+                        )
+                    cache_max_depth = max_depth
+                elif cache_max_depth != max_depth:
+                    raise ValueError(
+                        f"Cached pruning tables were generated with max_depth={cache_max_depth}; "
+                        f"requested max_depth={max_depth}. Regenerate the cache."
+                    )
+                self.max_depth = cache_max_depth
             print("Pruning tables loaded successfully!")
         else:
             print("Generating pruning tables (this may take several minutes)...")
             self._generate_tables(max_depth)
+            self.max_depth = max_depth
             print("Pruning tables generated!")
 
             # Save to cache
@@ -91,6 +121,8 @@ class PruningTables:
             print(f"Saving pruning tables to {cache_file}...")
             with open(cache_file, 'wb') as f:
                 pickle.dump({
+                    'format_version': 1,
+                    'max_depth': max_depth,
                     'phase1_co_eo': self.phase1_co_eo,
                     'phase1_eo_slice': self.phase1_eo_slice,
                     'phase2_cp': self.phase2_cp,
@@ -302,8 +334,8 @@ class PruningTables:
         return max(h1, h2, h3)
 
 
-# Global pruning tables instance
-_pruning_tables = None
+# Global pruning table instances, keyed by cache directory.
+_pruning_tables_by_cache_dir = {}
 
 
 def get_pruning_tables(cache_dir: str = "data/pruning_tables") -> PruningTables:
@@ -316,7 +348,7 @@ def get_pruning_tables(cache_dir: str = "data/pruning_tables") -> PruningTables:
     Returns:
         PruningTables instance
     """
-    global _pruning_tables
-    if _pruning_tables is None:
-        _pruning_tables = PruningTables(cache_dir)
-    return _pruning_tables
+    cache_key = os.path.abspath(cache_dir)
+    if cache_key not in _pruning_tables_by_cache_dir:
+        _pruning_tables_by_cache_dir[cache_key] = PruningTables(cache_dir)
+    return _pruning_tables_by_cache_dir[cache_key]

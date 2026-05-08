@@ -295,7 +295,8 @@ def bfs_generate_pattern_database(
     index_func,
     move_func,
     solved_index: int = 0,
-    moves: Optional[List[str]] = None
+    moves: Optional[List[str]] = None,
+    require_complete: bool = True,
 ) -> None:
     """
     Generate a pattern database using breadth-first search.
@@ -309,6 +310,8 @@ def bfs_generate_pattern_database(
         move_func: Function that takes (state, move) and returns new state
         solved_index: Index of the solved state (default: 0)
         moves: List of moves to use (if None, uses all 18 basic moves)
+        require_complete: If True, fail when generation does not cover every
+            state in the declared database.
     """
     if moves is None:
         moves = [
@@ -334,31 +337,33 @@ def bfs_generate_pattern_database(
         if states_processed % 100000 == 0:
             print(f"  Processed {states_processed:,} states, depth {depth}, queue size {len(queue):,}")
 
-        # Try all moves
+        # Try all moves. Generation must fail loudly on unexpected transition
+        # errors; silently skipping exceptions can corrupt a pattern database.
         for move in moves:
-            try:
-                # Apply move to get new state
-                new_state_idx = move_func(state_idx, move)
+            # Apply move to get new state.
+            new_state_idx = move_func(state_idx, move)
 
-                # Skip if already visited
-                if new_state_idx in visited:
-                    continue
-
-                # Mark as visited and set distance
-                visited.add(new_state_idx)
-                new_depth = depth + 1
-                db.set_distance(new_state_idx, new_depth)
-
-                # Track statistics
-                if new_depth > db.max_depth:
-                    db.max_depth = new_depth
-                db.states_at_depth[new_depth] = db.states_at_depth.get(new_depth, 0) + 1
-
-                # Add to queue
-                queue.append((new_state_idx, new_depth))
-
-            except Exception as e:
-                # Skip invalid states
+            # Skip if already visited.
+            if new_state_idx in visited:
                 continue
+
+            # Mark as visited and set distance.
+            visited.add(new_state_idx)
+            new_depth = depth + 1
+            db.set_distance(new_state_idx, new_depth)
+
+            # Track statistics.
+            if new_depth > db.max_depth:
+                db.max_depth = new_depth
+            db.states_at_depth[new_depth] = db.states_at_depth.get(new_depth, 0) + 1
+
+            # Add to queue.
+            queue.append((new_state_idx, new_depth))
+
+    if require_complete and not db.is_complete():
+        raise RuntimeError(
+            f"Pattern database generation for {db.name!r} reached "
+            f"{db.initialized_count():,}/{db.size:,} states"
+        )
 
     print(f"  Generation complete: {states_processed:,} states, max depth {db.max_depth}")

@@ -25,6 +25,7 @@ References:
 """
 
 import io
+import multiprocessing
 import re
 import signal
 import time
@@ -62,6 +63,20 @@ def _load_backend_module():
 OPTIMAL_AVAILABLE = _backend_available()
 
 from ..cube.rubik_cube import RubikCube, Face
+
+
+def _optimal_backend_worker(cube_string: str, conn) -> None:
+    """Run the optional optimal backend in a subprocess for portable timeouts."""
+    try:
+        backend = _load_backend_module()
+        if backend is None:
+            conn.send(("error", "RubikOptimal backend is not installed"))
+            return
+        conn.send(("ok", backend.solve(cube_string)))
+    except Exception as exc:  # pragma: no cover - defensive child-process path
+        conn.send(("error", repr(exc)))
+    finally:
+        conn.close()
 
 
 class KorfOptimalSolver:
@@ -158,11 +173,13 @@ class KorfOptimalSolver:
         moves = []
 
         for token in tokens:
-            if len(token) < 2:
-                continue
+            if len(token) != 2:
+                raise ValueError(f"Invalid backend move token: {token!r}")
 
             face = token[0]  # U, R, F, D, L, or B
             rotation = token[1]  # 1, 2, or 3
+            if face not in {'U', 'R', 'F', 'D', 'L', 'B'}:
+                raise ValueError(f"Invalid backend move face: {token!r}")
 
             if rotation == '1':
                 moves.append(face)
@@ -170,8 +187,40 @@ class KorfOptimalSolver:
                 moves.append(face + '2')
             elif rotation == '3':
                 moves.append(face + "'")
+            else:
+                raise ValueError(f"Invalid backend move rotation: {token!r}")
 
         return moves
+
+    def _solve_backend_with_process_timeout(self, cube_string: str, timeout: float) -> str:
+        """Invoke the real backend in a subprocess and enforce a wall-clock timeout."""
+        ctx = multiprocessing.get_context("spawn")
+        parent_conn, child_conn = ctx.Pipe(duplex=False)
+        process = ctx.Process(
+            target=_optimal_backend_worker,
+            args=(cube_string, child_conn),
+            daemon=True,
+        )
+        process.start()
+        child_conn.close()
+
+        try:
+            if parent_conn.poll(timeout):
+                status, payload = parent_conn.recv()
+            else:
+                process.terminate()
+                process.join(timeout=1.0)
+                if process.is_alive():
+                    process.kill()
+                    process.join(timeout=1.0)
+                raise TimeoutError("Korf optimal solver exceeded timeout")
+        finally:
+            parent_conn.close()
+
+        process.join(timeout=1.0)
+        if status == "ok":
+            return payload
+        raise RuntimeError(payload)
 
     def solve(
         self,
@@ -238,6 +287,8 @@ class KorfOptimalSolver:
                 finally:
                     signal.setitimer(signal.ITIMER_REAL, 0.0)
                     signal.signal(signal.SIGALRM, previous_handler)
+            elif timeout is not None:
+                solution_str = self._solve_backend_with_process_timeout(cube_string, timeout)
             else:
                 solution_str = _invoke_backend()
 
@@ -270,8 +321,22 @@ class KorfOptimalSolver:
                 'optimal': True,
                 'raw_solution': solution_str,
                 'timed_out': False,
+                'verified': False,
                 **backend_stats,
             }
+
+            # Verify every backend result before exposing it through the public API.
+            test_cube = cube.copy()
+            test_cube.apply_moves(solution)
+            if not test_cube.is_solved():
+                stats['optimal'] = False
+                stats['error'] = 'Backend solution did not solve the cube'
+                self.last_stats = stats.copy()
+                if verbose:
+                    print("  WARNING: backend solution does not solve the cube")
+                return None
+
+            stats['verified'] = True
             self.last_stats = stats.copy()
 
             if verbose:
@@ -281,13 +346,7 @@ class KorfOptimalSolver:
                 print(f"  Time: {solve_time:.2f} seconds")
                 print(f"  Raw output: {solution_str}")
 
-                # Verify solution
-                test_cube = cube.copy()
-                test_cube.apply_moves(solution)
-                if test_cube.is_solved():
-                    print(f"  ✓ Solution verified!")
-                else:
-                    print(f"  ⚠️  WARNING: Solution does not solve the cube!")
+                print(f"  ✓ Solution verified!")
 
             return (solution, stats)
 

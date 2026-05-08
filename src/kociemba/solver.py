@@ -12,7 +12,7 @@ Algorithm Overview:
 
 2. Phase 2 (G1 -> Solved): Solve within the restricted G1 group
    - Max 18 moves theoretically
-   - Search space: 39,038,976,000 states before pruning
+   - Search space: 19,508,428,800 parity-valid states before pruning
    - Uses only U, U2, U', D, D2, D', R2, L2, F2, and B2
 
 Total: Max 30 moves theoretically, typically <19 moves in practice
@@ -616,7 +616,6 @@ class KociembaSolver:
 
         # IDA* search
         start_time = time.time()
-        phase2_nodes = 0
 
         for depth in range(max_depth + 1):
             if self._timed_out(start_time, timeout):
@@ -627,11 +626,11 @@ class KociembaSolver:
             if verbose:
                 print(f"Searching depth {depth}...", end=" ")
 
+            nodes_before = self.nodes_explored
             result = self._phase2_ida_search(
                 cp, ep, sp, depth, [], None, start_time, timeout
             )
-
-            phase2_nodes = self.nodes_explored - phase2_nodes
+            phase2_nodes = self.nodes_explored - nodes_before
 
             if result is not None:
                 if verbose:

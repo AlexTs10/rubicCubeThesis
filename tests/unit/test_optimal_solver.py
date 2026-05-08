@@ -38,6 +38,20 @@ class _SlowBackend:
         return "U3 (1f*)"
 
 
+class _MalformedBackend:
+    """Fake backend that returns a token the wrapper must reject."""
+
+    def solve(self, cubestring):
+        return "UX (1f*)"
+
+
+class _WrongSolutionBackend:
+    """Fake backend that returns a syntactically valid but incorrect solution."""
+
+    def solve(self, cubestring):
+        return "U1 (1f*)"
+
+
 def test_optimal_solver_parses_backend_node_counts():
     """The wrapper should recover node counts from the backend logs."""
     cube = RubikCube()
@@ -49,6 +63,32 @@ def test_optimal_solver_parses_backend_node_counts():
     assert solution == ["U'"]
     assert stats["nodes_explored"] == 300
     assert solver.get_statistics()["nodes_explored"] == 300
+    assert stats["verified"] is True
+
+
+def test_optimal_solver_rejects_malformed_backend_output_quietly():
+    """Malformed backend output should fail closed even when verbose=False."""
+    cube = RubikCube()
+    cube.apply_move("U")
+
+    solver = _build_solver(_MalformedBackend())
+    result = solver.solve(cube, verbose=False)
+
+    assert result is None
+    assert "Invalid backend move rotation" in solver.last_stats["error"]
+
+
+def test_optimal_solver_rejects_non_solving_backend_output_quietly():
+    """A parsed solution is not returned unless it actually solves the cube."""
+    cube = RubikCube()
+    cube.apply_move("U")
+
+    solver = _build_solver(_WrongSolutionBackend())
+    result = solver.solve(cube, verbose=False)
+
+    assert result is None
+    assert solver.last_stats["verified"] is False
+    assert solver.last_stats["optimal"] is False
 
 
 @pytest.mark.skipif(

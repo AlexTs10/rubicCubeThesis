@@ -246,8 +246,8 @@ class MoveTables:
         )
 
 
-# Global move tables instance
-_move_tables = None
+# Global move tables instances, keyed by cache directory.
+_move_tables_by_cache_dir = {}
 
 
 def get_move_tables(cache_dir: str = "data/move_tables") -> MoveTables:
@@ -260,7 +260,7 @@ def get_move_tables(cache_dir: str = "data/move_tables") -> MoveTables:
     Returns:
         MoveTables instance
     """
-    global _move_tables
-    if _move_tables is None:
-        _move_tables = MoveTables(cache_dir)
-    return _move_tables
+    cache_key = os.path.abspath(cache_dir)
+    if cache_key not in _move_tables_by_cache_dir:
+        _move_tables_by_cache_dir[cache_key] = MoveTables(cache_dir)
+    return _move_tables_by_cache_dir[cache_key]

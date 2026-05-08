@@ -163,14 +163,39 @@ R & Στροφή δεξιάς έδρας 90° δεξιόστροφα \\
     G = G_0 \supset G_1 \supset G_2 \supset G_3 \supset G_4 = \{I\}
 \end{equation}
 
-όπου:
+όπου, για την παρούσα υλοποίηση και τη σύμβαση cubie που χρησιμοποιεί
+το \filepath{src/thistlethwaite/moves.py}:
 \begin{itemize}
     \item $G_0 = G$ = πλήρης ομάδα (όλες οι 18 κινήσεις)
-    \item $G_1 = \langle U, D, F, B, L2, R2 \rangle$ = ακμές σωστά προσανατολισμένες
-    \item $G_2 = \langle U, D, F2, B2, L2, R2 \rangle$ = γωνίες σωστά προσανατολισμένες, M-slice ακμές στο M-slice
-    \item $G_3 = \langle U2, D2, F2, B2, L2, R2 \rangle$ = τετράδες σωστές, ισοτιμία σωστή
+    \item $G_1$: ακμές σωστά προσανατολισμένες
+    \item $G_2$: γωνίες σωστά προσανατολισμένες και E-slice ακμές στο E-slice
+    \item $G_3$: τετράδες/edge slices και ισοτιμία συμβατές με το half-turn subgroup
     \item $G_4 = \{I\}$ = λυμένος κύβος
 \end{itemize}
+
+Οι επιτρεπόμενες κινήσεις κάθε μετάβασης είναι:
+
+\begin{table}[h]
+\centering
+\scriptsize
+\caption{Σύνολα κινήσεων της υλοποίησης Thistlethwaite}
+\label{tab:thistlethwaite_impl_moves_background}
+\begin{tabularx}{\textwidth}{l>{\RaggedRight\arraybackslash}X>{\RaggedRight\arraybackslash}p{3.1cm}}
+\toprule
+\textbf{Μετάβαση} & \textbf{Σύνολο κινήσεων} & \textbf{Στόχος} \\
+\midrule
+$G_0 \to G_1$ & $U,U',U2,D,D',D2,F,F',F2,B,B',B2,L,L',L2,R,R',R2$ & Προσανατολισμός ακμών \\
+$G_1 \to G_2$ & $U,U',U2,D,D',D2,F2,B2,L,L',L2,R,R',R2$ & Προσανατολισμός γωνιών και E-slice \\
+$G_2 \to G_3$ & $U,U',U2,D,D',D2,F2,B2,L2,R2$ & Τετράδες, slices και ισοτιμία \\
+$G_3 \to G_4$ & $U2,D2,F2,B2,L2,R2$ & Τελική επίλυση \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Η κλασική βιβλιογραφική παρουσίαση συχνά γράφει την αλυσίδα με
+γεννήτορες υποομάδων, όμως εδώ οι γεννήτορες αποφεύγονται στο Κεφάλαιο 2
+ώστε να μην συγχέονται με τα ακριβή \emph{allowed move sets} που υλοποιούνται
+στον κώδικα και αναλύονται στο Κεφάλαιο~\ref{ch:thistlethwaite}.
 
 \begin{table}[h]
 \centering
