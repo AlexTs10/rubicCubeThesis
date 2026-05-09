@@ -241,6 +241,14 @@ def validate_corpus(
     minimal_heuristic: bool = False,
     require_corner_db: bool = False,
 ) -> Dict:
+    oracle_required_cases = sum(1 for case in corpus if case.use_oracle)
+    if oracle_required_cases and not use_oracle:
+        raise ValueError(
+            f"{oracle_required_cases} oracle-dependent validation cases require "
+            "the external optimal oracle. Install the RubikOptimal backend or "
+            "run --preset source-zip for the source-contained smoke check."
+        )
+
     if require_corner_db:
         if disable_corner_db:
             raise ValueError("--disable-corner-db cannot be combined with a preset that requires it.")

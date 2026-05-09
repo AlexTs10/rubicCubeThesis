@@ -129,7 +129,11 @@ artifact του thesis benchmark. Για την αποφυγή υπερ-ερμη
 Πίνακα~\ref{tab:eval_robust_summary}. Το artifact δεν περιέχει επαναλήψεις
 ανά scramble, confidence intervals ή χωριστές cold/warm χρονομετρήσεις· οι
 μετρήσεις χρόνου είναι single-run, batch-amortized παρατηρήσεις για το
-συγκεκριμένο περιβάλλον.
+συγκεκριμένο περιβάλλον. Επίσης, το αρχικό JSON artifact δεν αποθηκεύει πλήρες
+snapshot πακέτων, kernel/process metadata ή digest του εξωτερικού backend· η
+προέλευση τεκμηριώνεται από τα πεδία backend/provenance που υπάρχουν στο
+artifact και από τις οδηγίες reproducibility του αποθετηρίου, όχι από πλήρες
+runtime lock της αρχικής εκτέλεσης.
 
 \begin{table}[htbp]
 \centering

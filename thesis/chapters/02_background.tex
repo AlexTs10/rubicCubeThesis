@@ -281,17 +281,28 @@ $G_4$ & 1 & 663,552 \\
 \begin{algorithm}[H]
 \caption{Αλγόριθμος A*}
 \begin{algorithmic}[1]
-\State Αρχικοποίηση: OPEN $\gets \{s_0\}$, CLOSED $\gets \emptyset$
+\State Αρχικοποίηση: OPEN $\gets \{s_0\}$, best\_g[$s_0$] $\gets 0$, CLOSED $\gets \emptyset$
 \While{OPEN $\neq \emptyset$}
     \State $n \gets$ κόμβος με ελάχιστο $f(n)$ στο OPEN
+    \If{$g(n) \neq$ best\_g[$n$]}
+        \State \textbf{continue} \Comment{stale heap entry}
+    \EndIf
+    \If{$n \in$ CLOSED και CLOSED[$n$] $\leq g(n)$}
+        \State \textbf{continue}
+    \EndIf
+    \State CLOSED[$n$] $\gets g(n)$
     \If{$n$ είναι στόχος}
         \State \Return διαδρομή προς $n$
     \EndIf
-    \State Μετακίνηση $n$ από OPEN σε CLOSED
     \For{κάθε διάδοχο $n'$ του $n$}
-        \If{$n' \notin$ CLOSED}
-            \State Υπολόγισε $f(n') = g(n') + h(n')$
-            \State Πρόσθεσε $n'$ στο OPEN
+        \State $g' \gets g(n) + c(n,n')$
+        \If{$n' \notin$ best\_g ή $g' <$ best\_g[$n'$]}
+            \State best\_g[$n'$] $\gets g'$
+            \If{$n' \in$ CLOSED και $g' <$ CLOSED[$n'$]}
+                \State αφαίρεσε το $n'$ από CLOSED \Comment{reopen}
+            \EndIf
+            \State Υπολόγισε $f(n') = g' + h(n')$
+            \State Πρόσθεσε/ενημέρωσε $n'$ στο OPEN
         \EndIf
     \EndFor
 \EndWhile
@@ -302,7 +313,7 @@ $G_4$ & 1 & 663,552 \\
 \begin{equation}
     h(n) \leq h^*(n), \quad \forall n
 \end{equation}
-όπου $h^*(n)$ είναι το πραγματικό ελάχιστο κόστος από $n$ στον στόχο. Με παραδεκτή ευρετική, ο A* εγγυάται βέλτιστη λύση.
+όπου $h^*(n)$ είναι το πραγματικό ελάχιστο κόστος από $n$ στον στόχο. Με παραδεκτή ευρετική, ο A* εγγυάται βέλτιστη λύση όταν η υλοποίηση είναι graph-search safe: διατηρεί την καλύτερη γνωστή τιμή $g$ ανά κατάσταση, αγνοεί stale entries του OPEN και ξανανοίγει καταστάσεις που είχαν κλείσει με χειρότερο κόστος. Αν η υλοποίηση δεν υποστηρίζει reopening, τότε απαιτείται ισχυρότερη υπόθεση συνέπειας (consistency) της ευρετικής.
 
 \textbf{Πρόβλημα μνήμης}: Ο A* διατηρεί τα σύνολα OPEN και CLOSED στη μνήμη, που αυξάνονται εκθετικά. Για τον κύβο του Rubik με branching factor $\approx 15$ και βάθος λύσης $\approx 18$:
 \begin{equation}
@@ -393,12 +404,12 @@ $G_4$ & 1 & 663,552 \\
 
 \textbf{Παραδεκτότητα}: Τα PDBs είναι εγγενώς παραδεκτά ευρετικά, αφού δίνουν την ακριβή απόσταση για ένα υποπρόβλημα -- η λύση του πλήρους κύβου απαιτεί τουλάχιστον τόσες κινήσεις όσες χρειάζεται το υποσύνολο.
 
-\textbf{Συνδυασμός PDBs}: Αν δύο PDBs καλύπτουν \textit{διαζευγμένα} (disjoint) υποσύνολα του κύβου, οι εκτιμήσεις τους μπορούν να αθροιστούν διατηρώντας την παραδεκτότητα \cite{korf2002disjoint}:
+\textbf{Συνδυασμός PDBs}: Το μέγιστο παραδεκτών PDB ευρετικών είναι πάντα ασφαλής παραδεκτή ευρετική, επειδή καμία επιμέρους εκτίμηση δεν υπερβαίνει το πραγματικό κόστος. Αθροιστικός συνδυασμός επιτρέπεται μόνο με πρόσθετες προϋποθέσεις, όπως operator-disjoint abstractions ή τεκμηριωμένο cost partitioning, ώστε μία πραγματική κίνηση να μη χρεώνεται πολλαπλές φορές \cite{korf2002disjoint}:
 \begin{equation}
     h_{combined}(n) = h_{PDB1}(n) + h_{PDB2}(n)
 \end{equation}
 
-Για μη-διαζευγμένα PDBs, χρησιμοποιείται το μέγιστο:
+Χωρίς αυτές τις προϋποθέσεις, χρησιμοποιείται το μέγιστο:
 \begin{equation}
     h_{combined}(n) = \max(h_{PDB1}(n), h_{PDB2}(n))
 \end{equation}

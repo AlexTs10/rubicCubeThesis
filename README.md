@@ -98,7 +98,7 @@ repository-root/
 
 - 2-phase IDA* approach
 - best overall practical performance in this repository
-- native `kociemba` backend is required for the full thesis test/benchmark environment
+- optional PyPI/native-extension `kociemba` backend is required for the full thesis test/benchmark environment; this is distinct from repository-native solver code
 
 ### Korf / IDA*
 

@@ -26,7 +26,8 @@ Usage:
 Performance notes:
 - Solution length is near-optimal in practice
 - Solve time is highly scramble- and cache-dependent
-- The current repo snapshot stores about 8.7 MB of cached Kociemba tables on disk
+- Generated Kociemba tables are cached under data/kociemba/ after local runs;
+  source audit archives intentionally omit those generated cache files
 """
 
 from .solver import KociembaSolver, solve_cube

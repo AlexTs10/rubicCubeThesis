@@ -328,7 +328,7 @@ $F$, $F'$, $B$, $B'$, $R$, $R'$, $L$, $L'$ αλλάζουν τον προσαν�
 
 \begin{itemize}
     \item \textbf{Corpus συμπεριφορά}: Στο τελικό benchmark corpus έλυσε 100/100 περιπτώσεις. Η υλοποίηση είναι ντετερμινιστική για σταθερές παραμέτρους, αλλά επειδή χρησιμοποιεί διαμορφωμένα phase depths και χρονικά όρια, μπορεί να αποτύχει ή να χρησιμοποιήσει fallback σε εκτός-corpus περιπτώσεις.
-    \item \textbf{Μνήμη}: Χαμηλές απαιτήσεις ($\sim$1.2 MB για όλα τα PDBs)
+    \item \textbf{Μνήμη}: Οι συμπαγείς \texttt{uint8} coordinate tables είναι μικροί, αλλά το συνολικό runtime footprint δεν περιορίζεται σε αυτούς: η υλοποίηση κρατά και Python dictionaries για το exact $G_3$ half-turn subgroup, move tables και solver state. Επομένως τα MB των serialized tables δεν πρέπει να διαβάζονται ως πλήρης RSS μέτρηση της διεργασίας.
     \item \textbf{Χρόνος}: Μέτριος (τυπικά 1-5 δευτερόλεπτα)
 \end{itemize}
 

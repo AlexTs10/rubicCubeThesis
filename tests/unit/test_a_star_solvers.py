@@ -167,6 +167,23 @@ class TestAStarSolver:
         assert stats['nodes_explored'] > 0
         assert stats['nodes_generated'] >= stats['nodes_explored']
 
+    def test_admissible_a_star_reports_reopen_safe_graph_search(self):
+        """Admissible A* guarantees depend on reopen-safe graph-search handling."""
+        cube = RubikCube()
+        cube.apply_move('U')
+
+        solver = AStarSolver(
+            heuristic=lambda _cube: 0,
+            max_depth=5,
+            heuristic_is_admissible=True,
+        )
+        solution = solver.solve(cube)
+        stats = solver.get_statistics()
+
+        assert solution is not None
+        assert stats["optimality_guarantee"] is True
+        assert stats["reopens_improved_states"] is True
+
     def test_redundant_move_pruning(self):
         """Test that redundant moves are pruned."""
         cube = RubikCube()

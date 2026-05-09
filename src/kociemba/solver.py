@@ -40,11 +40,11 @@ except ImportError:  # pragma: no cover - optional dependency
 
 
 class _NativeKociembaTimeout(RuntimeError):
-    """Raised when the optional native backend exceeds its budget."""
+    """Raised when the optional PyPI/native-extension backend exceeds its budget."""
 
 
 def _native_kociemba_worker(cube_string: str, max_depth: int, conn) -> None:
-    """Run the optional native backend in a child process."""
+    """Run the optional PyPI/native-extension backend in a child process."""
     try:
         if native_kociemba is None:
             conn.send(("error", "native kociemba backend is not installed"))
@@ -142,7 +142,7 @@ class KociembaSolver:
 
     @contextmanager
     def _native_timeout_guard(self, timeout: float):
-        """Enforce a wall-clock budget for the optional native backend."""
+        """Enforce a wall-clock budget for the optional PyPI/native-extension backend."""
         if timeout <= 0:
             raise _NativeKociembaTimeout()
 
@@ -216,7 +216,7 @@ class KociembaSolver:
         """
         Recover a plausible phase split from a full move sequence.
 
-        The native `kociemba` package returns only the combined solution.
+        The optional PyPI/native-extension `kociemba` package returns only the combined solution.
         We scan for the earliest prefix that reaches G1 and whose suffix
         consists only of valid Phase 2 moves.
         """
@@ -247,7 +247,7 @@ class KociembaSolver:
         timeout: float,
         verbose: bool
     ) -> Optional[Tuple[List[str], List[str], List[str]]]:
-        """Solve via the optional native `kociemba` package."""
+        """Solve via the optional PyPI/native-extension `kociemba` package."""
         if native_kociemba is None:
             return None
 

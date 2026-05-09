@@ -222,6 +222,11 @@ def main() -> None:
             "Refusing to overwrite canonical thesis benchmark artifacts. "
             "Pass --overwrite-canonical explicitly or choose --output-dir."
         )
+    if args.overwrite_canonical and args.korf_backend != "optimal":
+        raise ValueError(
+            "Canonical benchmark overwrite requires --korf-backend optimal so "
+            "the Korf column cannot silently fall back to the heuristic path."
+        )
 
     scramble_set = load_scramble_set(args.source)
     if not scramble_set:
@@ -237,6 +242,12 @@ def main() -> None:
         korf_backend=args.korf_backend,
         kociemba_backend=args.kociemba_backend,
     )
+    if args.overwrite_canonical and comparison.korf_backend != "optimal_external":
+        raise RuntimeError(
+            "Refusing to overwrite canonical thesis benchmarks because the "
+            f"resolved Korf backend is {comparison.korf_backend!r}, not "
+            "'optimal_external'."
+        )
 
     depth_payloads: dict[int, dict[str, object]] = {}
 

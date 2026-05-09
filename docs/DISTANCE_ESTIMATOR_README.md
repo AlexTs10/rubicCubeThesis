@@ -14,14 +14,14 @@ Pattern databases store exact minimum distances for subsets of the cube:
 
 - **Corner Database**: Tracks all 8 corners (position + orientation)
   - State space: 8! × 3^7 = 88,179,840 states
-  - Memory: ~44 MB (using nibble compression)
+  - Memory: roughly 88 MB with the current exact-safe byte-per-entry storage, plus Python/runtime overhead
   - Maximum depth: ~11-12 moves
 
 - **Edge Databases** (Two 6-edge groups):
   - Edge Group 1: UR, UF, UL, UB, DR, DF
   - Edge Group 2: DL, DB, FR, FL, BL, BR
   - State space per group: ~645,120 states
-  - Memory: ~0.3 MB each
+  - Memory: roughly 0.65 MB each with byte-per-entry storage
 
 **Why split edges?** A full 12-edge database would require ~500GB of memory, making it impractical. Following Korf's approach, we split edges into two independent groups.
 
@@ -29,24 +29,26 @@ Pattern databases store exact minimum distances for subsets of the cube:
 
 The system implements three classic heuristics:
 
-- **Manhattan Distance**: Sum of individual piece distances, divided by 4 for admissibility
-  - Most accurate heuristic without pattern databases
+- **Manhattan Distance**: exploratory geometric estimate used for demos/ranking
+  - Useful baseline without pattern databases
   - Considers geometric distance on the cube
 
-- **Hamming Distance**: Count of misplaced pieces, divided by 8
+- **Hamming Distance**: exploratory count of misplaced pieces, divided by a coarse factor
   - Simple and fast
   - Counts pieces in wrong positions/orientations
 
-- **Simple Heuristic**: Face-based color matching, divided by 8
+- **Simple Heuristic**: exploratory face-based color matching, divided by a coarse factor
   - Basic approach
   - Higher scores for more similar faces
+
+These lightweight estimates are not used as blanket optimality guarantees. Admissibility claims in the thesis are reserved for validated exact-safe PDB/native-coordinate heuristics under the documented combination rule, or for the external exact backend when it completes.
 
 ### 3. Combined Distance Estimation
 
 The final estimate uses: **max(corner_db, edge1_db, edge2_db)**
 
 This strategy:
-- Maintains admissibility (never overestimates)
+- Maintains admissibility only when each component estimate is itself a proven lower bound
 - Provides the tightest lower bound
 - Is proven effective in Korf's original work
 
@@ -148,10 +150,10 @@ evaluator.compare_methods(dataset)
 
 ### Memory Usage
 
-- Corner DB: 44 MB
-- Edge1 DB: 0.3 MB
-- Edge2 DB: 0.3 MB
-- **Total: ~45 MB**
+- Corner DB: roughly 88 MB with byte-per-entry exact-safe storage, before Python/runtime overhead
+- Edge1 DB: roughly 0.65 MB
+- Edge2 DB: roughly 0.65 MB
+- **Total generated cache footprint**: roughly 90 MB for these arrays before serialization/runtime overhead
 
 ### Generation Time
 
@@ -173,12 +175,9 @@ def corner_index(cubie: CubieCube) -> int:
     return perm * 2187 + orient  # Combined index
 ```
 
-### 2. Nibble Compression
+### 2. Exact-Safe Storage
 
-Distances are stored in 4 bits (nibbles) instead of bytes:
-- Supports distances 0-15
-- 2x memory savings
-- Sufficient for Rubik's Cube (God's number = 20)
+The current pattern-database infrastructure stores distances as one byte per entry and reserves `255` as the uninitialized sentinel. Older repository notes and legacy payloads used packed nibbles, but that representation is ambiguous for exact-solver use because value `15` can be both a real distance and an uninitialized marker. The loader only accepts legacy nibble payloads when metadata proves that conversion is safe.
 
 ### 3. BFS Generation
 
@@ -204,14 +203,14 @@ def bfs_generate_pattern_database(db, index_func, move_func, solved_index):
 
 A heuristic h(n) is admissible if: **h(n) ≤ h*(n)** (never overestimates)
 
-Our implementations ensure admissibility by:
-- Dividing sum heuristics by pieces affected per move (4 or 8)
-- Using max() for combining pattern databases
-- Pattern databases are inherently admissible (exact distances for subsets)
+This repository treats admissibility conservatively:
+- Exact-safe pattern databases and native coordinate tables can provide lower bounds when their abstraction and storage semantics are validated.
+- `max()` preserves admissibility across admissible component heuristics.
+- Lightweight Manhattan, Hamming, and simple face-matching estimates are exploratory baselines, not thesis-grade optimality proofs.
 
 ### Why max() for Combining Databases?
 
-Given independent pattern databases for disjoint piece sets:
+Given admissible pattern database estimates:
 - h(n) = max(h₁(n), h₂(n), h₃(n)) is admissible
 - h(n) ≤ h*(n) because solving any subset ≤ solving the whole cube
 - max() gives the tightest bound among the databases
@@ -243,12 +242,12 @@ python demos/distance_estimator_demo.py --generate-dbs
 ```
 
 Test coverage:
-- ✓ Pattern database infrastructure (nibble packing, indexing)
+- ✓ Pattern database infrastructure (exact-safe storage, legacy nibble conversion checks, indexing)
 - ✓ Corner database indexing
 - ✓ Edge database indexing
 - ✓ All heuristic functions
 - ✓ Distance estimator integration
-- ✓ Admissibility verification
+- ✓ Conservative lower-bound verification for exact-safe components
 - ✓ Consistency checks
 
 ## Validation Results
@@ -311,7 +310,7 @@ Potential improvements for future work:
    - Faster database creation
 
 5. **Compressed Pattern Databases**
-   - Further compression beyond nibbles
+   - Exact-safe compression schemes with unambiguous sentinel handling
    - Trade computation for memory
 
 ## License

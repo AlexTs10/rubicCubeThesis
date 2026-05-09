@@ -75,7 +75,7 @@ At the time this plan was written, the repository did not contain a native exact
 
 ### 4.3 Known correctness risk already identified
 
-`src/korf/pattern_database.py` currently uses nibble value `15` both as a valid stored distance and as the implicit "uninitialized" sentinel via `is_initialized()`. That ambiguity is not acceptable in an exact solver pipeline unless the represented abstraction can be proven never to reach distance 15. The current code does not prove that.
+Resolved current-state note: `src/korf/pattern_database.py` originally used nibble value `15` both as a valid stored distance and as the implicit "uninitialized" sentinel via `is_initialized()`. That ambiguity was not acceptable in an exact solver pipeline unless the represented abstraction could be proven never to reach distance 15. The current implementation uses exact-safe byte storage with `255` as the sentinel, and only loads legacy nibble payloads when metadata proves conversion is safe.
 
 ## 5. Non-Negotiable Acceptance Criteria
 

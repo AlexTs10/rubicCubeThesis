@@ -18,7 +18,8 @@ This implements Herbert Kociemba's famous **two-phase algorithm** for solving th
 
 ### Phase 2: G₁ → Solved
 - **Goal**: Solve within the G₁ subgroup
-- **Search Space**: 39,038,976,000 states (about 3.9 × 10^10)
+- **Raw Coordinate Combinations**: 40,320 × 40,320 × 24 = 39,016,857,600
+- **Parity-Valid Phase-2 States**: 19,508,428,800
 - **Coordinates**:
   - Corner Permutation (8! = 40,320 states)
   - Edge Permutation (8! = 40,320 states)
@@ -29,7 +30,7 @@ This implements Herbert Kociemba's famous **two-phase algorithm** for solving th
 ### Current Thesis Benchmark Profile
 - **Average Moves**: 14.33 moves across the canonical 100-scramble thesis corpus
 - **Solve Time**: 4.62 seconds average across that corpus
-- **On-Disk Cached Tables**: about 8.7 MB in the current repo (`data/kociemba/`)
+- **On-Disk Cached Tables**: generated locally under `data/kociemba/` after first build/run; generated caches are intentionally omitted from the source audit ZIP.
 
 ## Implementation Structure
 
@@ -87,7 +88,7 @@ Precomputed tables for O(1) coordinate updates:
 - Phase 1: [2187 × 18], [2048 × 18], [495 × 18]
 - Phase 2: [40320 × 10], [40320 × 10], [24 × 10]
 
-Generated once and cached to disk.
+Generated once and cached to disk under `data/kociemba/` when the solver is run locally.
 
 ### 4. Pruning Tables (`pruning.py`)
 
@@ -95,7 +96,7 @@ Pattern databases providing IDA* heuristics:
 - **Phase 1**: Corner Orient × Edge Orient, Edge Orient × UD-Slice
 - **Phase 2**: Individual tables for CP, EP, UDSP
 
-Generated using BFS and cached to disk. In the current repo snapshot, the cached move/pruning tables under `data/kociemba/` occupy about 8.7 MB on disk.
+Generated using capped BFS and cached to disk. The source ZIP ships the generator code and cache-directory documentation, not the generated `data/kociemba/` cache files.
 
 ### 5. Solver (`solver.py`)
 

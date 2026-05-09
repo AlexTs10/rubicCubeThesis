@@ -9,7 +9,7 @@ This is compared against IDA* to demonstrate memory vs time tradeoffs.
 
 Key Implementation Details:
 - Uses heapq for efficient priority queue (min-heap)
-- Maintains open and closed sets for state management
+- Maintains best-known g scores and reopens states when a better path is found
 - Supports multiple heuristics, with explicit admissibility metadata
 - Tracks performance metrics (nodes explored, memory usage)
 
@@ -21,7 +21,7 @@ References:
 
 import heapq
 import time
-from typing import List, Callable, Optional, Dict, Any, Set, Tuple
+from typing import List, Callable, Optional, Dict, Any, Tuple
 from dataclasses import dataclass, field
 from ..cube.rubik_cube import RubikCube
 
@@ -141,10 +141,15 @@ class AStarSolver:
         open_set: List[SearchNode] = [start_node]
         heapq.heapify(open_set)
 
-        # Closed set: states already explored
-        closed_set: Set[bytes] = set()
+        start_hash = start_node.cube_state.state.tobytes()
 
-        # State lookup for path reconstruction
+        # best_g/open-set entries make this graph-search A* safe for
+        # admissible but inconsistent heuristics. Duplicate heap entries are
+        # allowed and discarded when they are stale.
+        best_g: Dict[bytes, int] = {start_hash: 0}
+        closed_g: Dict[bytes, int] = {}
+
+        # State lookup for path reconstruction / debugging.
         state_lookup: Dict[bytes, SearchNode] = {}
 
         while open_set:
@@ -153,7 +158,7 @@ class AStarSolver:
                 return None
 
             # Check memory limit (approximate)
-            if len(open_set) + len(closed_set) > self.memory_limit_mb * 100:
+            if len(open_set) + len(closed_g) > self.memory_limit_mb * 100:
                 # Approximate: 100 states per MB (conservative estimate)
                 return None
 
@@ -163,17 +168,21 @@ class AStarSolver:
 
             # Update metrics
             self.max_open_size = max(self.max_open_size, len(open_set))
-            self.max_closed_size = max(self.max_closed_size, len(closed_set))
+            self.max_closed_size = max(self.max_closed_size, len(closed_g))
 
             # Get state hash
             state_hash = current.cube_state.state.tobytes()
 
-            # Skip if already explored
-            if state_hash in closed_set:
+            # Skip stale heap entries that were superseded by a better path.
+            if current.g_value != best_g.get(state_hash, float("inf")):
                 continue
 
-            # Add to closed set
-            closed_set.add(state_hash)
+            # Skip states already closed at an equal or lower path cost.
+            if closed_g.get(state_hash, float("inf")) <= current.g_value:
+                continue
+
+            # Close the state at the best g found so far.
+            closed_g[state_hash] = current.g_value
             state_lookup[state_hash] = current
 
             # Goal test
@@ -197,14 +206,16 @@ class AStarSolver:
                 successor_cube.apply_move(move)
                 successor_hash = successor_cube.state.tobytes()
 
-                # Skip if already explored
-                if successor_hash in closed_set:
-                    continue
-
                 # Calculate costs
                 g_successor = current.g_value + 1
+                if closed_g.get(successor_hash, float("inf")) <= g_successor:
+                    continue
+                if g_successor >= best_g.get(successor_hash, float("inf")):
+                    continue
+
                 h_successor = self.heuristic(successor_cube)
                 f_successor = g_successor + h_successor
+                best_g[successor_hash] = g_successor
 
                 # Create successor node
                 successor_node = SearchNode(
@@ -275,6 +286,7 @@ class AStarSolver:
             'estimated_memory_mb': (self.max_open_size + self.max_closed_size) / 100.0,
             'heuristic_is_admissible': self.heuristic_is_admissible,
             'optimality_guarantee': self.heuristic_is_admissible,
+            'reopens_improved_states': True,
         }
 
 
