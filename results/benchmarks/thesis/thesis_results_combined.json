@@ -133,6 +133,15 @@
         "scipy": "1.17.1",
         "pandas": "3.0.2"
       },
+      "external_exact_backend": {
+        "distribution": "RubikOptimal",
+        "version": "1.1.0",
+        "import_name": "optimal",
+        "metadata_home_page": "https://github.com/hkociemba/RubiksCube-OptimalSolver",
+        "installed_license_file_sha256": "53927bd0b739d38c87a0a82236fd9b070c2dfff11c0c119be50372005d5047ad",
+        "license_metadata_field": null,
+        "note": "Backend package metadata was inspected post hoc on the archive machine; the original benchmark run did not record a wheel hash or upstream commit hash."
+      },
       "reproducibility_manifest_sha256": "b680fa72d060f073e8d88cfdb6bf2222da3fa69e2599c5fd3fb2841a82224a9e"
     }
   },

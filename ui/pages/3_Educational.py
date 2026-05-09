@@ -398,7 +398,7 @@ with tab4:
         **Benchmark path used in the thesis:**
         - External exact optimal backend
         - Enforced 120-second timeout
-        - Exact on completed runs, but 3/25 depth-20 benchmark cases timed out
+        - Exact on completed runs, but 3/25 requested scramble length 20 benchmark cases timed out
         """)
 
     st.markdown("---")
@@ -418,7 +418,7 @@ with tab4:
     with col2:
         st.markdown("""
         **Cons:**
-        - 🐢 Variable speed with visible timeout risk on hard depth-20 cases
+        - 🐢 Variable speed with visible timeout risk on hard requested scramble length 20 cases
         - 💾 Highest memory demand among the three compared solvers
         - 🔬 Overkill for casual solving
         - 💻 Exact backend setup is heavier than the other two algorithms

@@ -201,7 +201,7 @@ These are the measured averages from the canonical 100-scramble thesis corpus, n
 | 15    | 2.029s avg, 25/25 solved | 8.163s avg, 25/25 solved | 0.424s avg, 25/25 solved |
 | 20    | 1.821s avg, 25/25 solved | 9.749s avg, 25/25 solved | 11.229s avg on solved cases, 22/25 solved |
 
-For live demos, depth 10 remains the safest default. Korf is still timeout-sensitive at depth 20, so treat it as an exact-search showcase rather than a predictable default.
+For live demos, depth 10 remains the safest default. Korf is still timeout-sensitive at requested scramble length 20, so treat it as an exact-search showcase rather than a predictable default.
 
 ## Troubleshooting
 

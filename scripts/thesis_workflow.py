@@ -29,7 +29,6 @@ from scripts.benchmarks.artifact_utils import (
 
 THESIS_DIR = ROOT / "thesis"
 CHAPTERS_DIR = THESIS_DIR / "chapters"
-SPECS_DIR = THESIS_DIR / "specs"
 WORKFLOW_DIR = ROOT / "agent_workflow"
 GENERATED_DIR = WORKFLOW_DIR / "generated"
 MAPPING_FILE = ROOT / "docs" / "CODE_TO_THESIS_MAPPING.md"
@@ -60,7 +59,7 @@ WORKFLOW_CONFIG: dict[str, ChapterConfig] = {
         key="07_evaluation",
         title="Chapter 07: Evaluation",
         chapter_file=CHAPTERS_DIR / "07_evaluation.tex",
-        spec_file=SPECS_DIR / "ch07_evaluation_spec.md",
+        spec_file=None,
         supporting_files=(
             ROOT / "src" / "evaluation" / "algorithm_comparison.py",
             ROOT / "scripts" / "benchmarks" / "generate_thesis_data.py",
@@ -84,7 +83,7 @@ WORKFLOW_CONFIG: dict[str, ChapterConfig] = {
         key="08_implementation",
         title="Chapter 08: Implementation",
         chapter_file=CHAPTERS_DIR / "08_implementation.tex",
-        spec_file=SPECS_DIR / "ch08_implementation_spec.md",
+        spec_file=None,
         supporting_files=(
             ROOT / "README.md",
             MAPPING_FILE,
@@ -110,7 +109,7 @@ WORKFLOW_CONFIG: dict[str, ChapterConfig] = {
         key="09_conclusions",
         title="Chapter 09: Conclusions",
         chapter_file=CHAPTERS_DIR / "09_conclusions.tex",
-        spec_file=SPECS_DIR / "ch09_conclusions_spec.md",
+        spec_file=None,
         supporting_files=(
             ROOT / "README.md",
             MAPPING_FILE,
@@ -1053,7 +1052,7 @@ def build_thesis(mode: str, image: str, clean: bool) -> None:
             )
 
     if mode == "local":
-        if tools["latexmk"] and tools["xelatex"]:
+        if tools["latexmk"] and tools["xelatex"] and tools["bibliography_tool"]:
             run_build_command(
                 ["latexmk", "-xelatex", "-interaction=nonstopmode", "-file-line-error", "main.tex"],
                 THESIS_DIR,
@@ -1066,7 +1065,10 @@ def build_thesis(mode: str, image: str, clean: bool) -> None:
         elif tools["tectonic"]:
             build_with_tectonic(backend, tools["bibliography_tool"])
         else:
-            raise SystemExit(f"Local build requires `latexmk` + `xelatex`, manual `xelatex` + `{backend}`, or `tectonic` on PATH.")
+            raise SystemExit(
+                f"Local build requires `latexmk` + `xelatex` + `{backend}`, manual `xelatex` + `{backend}`, "
+                f"or `tectonic` on PATH. Run `python scripts/thesis_workflow.py status` for detected tools."
+            )
     elif mode == "docker":
         if not tools["docker_cli"]:
             raise SystemExit("Docker mode requires the `docker` CLI.")

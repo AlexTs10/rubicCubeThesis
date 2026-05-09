@@ -10,18 +10,65 @@ readme = "README.md"
 requires-python = ">=3.12,<3.15"
 dependencies = [
   "dataclasses-json",
-  "kociemba",
+  "numpy",
+  "scipy",
+]
+
+[project.optional-dependencies]
+native = [
+  "kociemba>=1.2.1",
+]
+external-exact = [
+  "RubikOptimal>=1.1.0",
+]
+benchmark = [
   "matplotlib",
   "memory-profiler",
-  "numpy",
+  "pandas",
+  "psutil",
+  "seaborn",
+]
+ui = [
+  "plotly",
+  "streamlit",
+]
+test = [
+  "pytest",
+  "pytest-benchmark",
+  "pytest-cov",
+]
+dev = [
+  "black",
+  "mypy",
+  "pylint",
+]
+notebooks = [
+  "imageio",
+  "ipywidgets",
+  "jupyter",
+  "jupyterlab",
+  "pillow",
+  "rich",
+]
+thesis = [
+  "kociemba>=1.2.1",
+  "RubikOptimal>=1.1.0",
+  "matplotlib",
+  "memory-profiler",
   "pandas",
   "plotly",
   "psutil",
   "pytest",
-  "RubikOptimal",
-  "scipy",
+  "pytest-benchmark",
+  "pytest-cov",
   "seaborn",
   "streamlit",
+  "imageio",
+  "ipywidgets",
+  "jupyter",
+  "jupyterlab",
+  "pillow",
+  "rich",
 ]
 
 [tool.setuptools.packages.find]

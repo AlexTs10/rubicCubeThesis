@@ -24,6 +24,7 @@
   "reproducibility": {
     "preset": "canonical_3513_case_depth12",
     "command": "python scripts/verification/native_exact_validation.py --preset canonical --output-dir results/validation/native_exact",
+    "source_zip_reproducibility": "The canonical preset requires data/pattern_databases/corner_db.pkl, which is intentionally omitted from source ZIPs. Use --preset source-zip for a cache-free smoke check; use the canonical preset only after generating or supplying the full corner cache.",
     "corpus_generation": {
       "exhaustive_depth": 3,
       "oracle_depths": [

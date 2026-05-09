@@ -45,6 +45,11 @@ are pinned for the preview app with `.nvmrc` and `webapp/package.json`
 (`packageManager`). Use `requirements.txt` only when you need a flexible
 dependency range for local development.
 
+The editable package keeps only core solver dependencies in base
+`pyproject.toml`. Optional extras separate heavier stacks:
+`.[native]`, `.[external-exact]`, `.[benchmark]`, `.[ui]`, `.[test]`,
+`.[notebooks]`, `.[dev]`, and `.[thesis]` for the full thesis environment.
+
 The default pytest/verification profile is intentionally the fast reproducibility profile. It excludes tests marked `slow`, `external`, or `cache_building`; run those markers explicitly only when validating generated caches or external backends. Generated workflow snapshots may be written under `agent_workflow/generated/` during local work, but that directory is intentionally excluded from source audit ZIPs.
 
 The thesis build workflow now has a source-defined Docker fallback. If local
@@ -103,13 +108,13 @@ rubicCubeThesis/
 - the first exact-optimal solve may generate large backend tables and is much faster under PyPy
 - computationally expensive, so benchmark tractability is lower than the other solvers
 
-The benchmark/evaluation path now uses the external exact backend with enforced timeouts. In the corrected thesis benchmark, it solved 97/100 scrambles overall and timed out on 3 of 25 depth-20 cases.
+The benchmark/evaluation path now uses the external exact backend with enforced timeouts. In the corrected thesis benchmark, it solved 97/100 scrambles overall and timed out on 3 of 25 cases at requested scramble length 20.
 
 Importing `src.korf` does not load the exact solver backend. The optional `RubikOptimal` package is only imported when `KorfOptimalSolver` is instantiated or `solve_optimal()` is called.
 
 ### Optional Exact Backend
 
-`RubikOptimal>=1.1.0` is listed in `requirements.txt` for the full thesis benchmark environment. On this machine, the installed distribution is `RubikOptimal 1.1.0`, importable as `optimal`, with package metadata pointing to Herbert Kociemba's `RubiksCube-OptimalSolver` repository. The installed wheel includes a `LICENSE` file, but the PyPI metadata does not expose a `License` field, so do not invent a license label in thesis-facing documentation; inspect the package or upstream repository if a formal license statement is needed.
+`RubikOptimal>=1.1.0` is listed in `requirements.txt` for the full thesis benchmark environment and under the `external-exact` project extra. On this machine, the installed distribution is `RubikOptimal 1.1.0`, importable as `optimal`, with package metadata pointing to Herbert Kociemba's `RubiksCube-OptimalSolver` repository. The installed wheel includes `RubikOptimal-1.1.0.dist-info/LICENSE` with SHA-256 `53927bd0b739d38c87a0a82236fd9b070c2dfff11c0c119be50372005d5047ad`, but the PyPI metadata does not expose a `License` field, so do not invent a license label in thesis-facing documentation; inspect the package or upstream repository if a formal license statement is needed.
 
 ## Thesis Workflow
 
@@ -140,7 +145,7 @@ the commands below in a clean Python 3.12 environment for the current machine.
 
 - `python -m pytest tests --collect-only -q` reports the collected test count for the current checkout; the default fast profile excludes `slow`, `external`, and `cache_building`
 - `python -m pytest tests -q` runs the supported fast profile; heavyweight solver-quality, external-backend, and cache-generation checks are opt-in marker profiles
-- `python verify_setup.py` runs the same fast test profile by default; use `--full` only for heavyweight local validation
+- `python verify_setup.py` runs the Python setup profile and fast tests by default; use `--full` for heavyweight Python tests and `--all-artifacts` when local TeX/Docker plus webapp dependencies are available
 - `cd webapp && npm ci && npm run build` succeeds from a clean dependency install
 - `python scripts/thesis_workflow.py build --mode auto` rebuilds `thesis/main.pdf` with local TeX/Tectonic when available, or with the repo-local Docker image from `docker/thesis.Dockerfile` when Docker is running
 - the manuscript chapters and appendices are present in `thesis/chapters/`

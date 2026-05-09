@@ -266,7 +266,7 @@ src/korf/native_exact_solver.py - Repository-native exact API and distance recog
 
 ### 5.4 Αποτελέσματα (2-3 σελ.)
 **Τι να γράψεις:**
-- Korf exact backend solved 97/100 final benchmark scrambles; 3 depth-20 cases timed out
+- Korf exact backend solved 97/100 final benchmark scrambles; 3 requested scramble length 20 cases timed out
 - Μέσο μήκος λύσης 9.12 κινήσεις on completed Korf benchmark runs
 - Χρόνος επίλυσης 2.66s average on completed Korf benchmark runs, with timeout sensitivity on hard cases
 - Trade-off: χρόνος vs optimality

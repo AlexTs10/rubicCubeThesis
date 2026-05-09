@@ -27,7 +27,6 @@ thesis/
 │   ├── appendix_a.tex        # Complete
 │   └── appendix_b.tex        # Complete
 ├── figures/                  # Benchmark figures copied from ../figures/
-└── specs/                    # Chapter-specific writing specs
 ```
 
 ## Build Paths

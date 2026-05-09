@@ -211,7 +211,7 @@ with col2:
             **Korf's IDA* (1997)**
             - External exact backend is active on this page
             - Very fast on many shallow/mid-depth benchmark cases, but not a predictable default
-            - Can still time out on hard depth-20 cases
+            - Can still time out on hard requested scramble length 20 cases
             - Highest memory cost of the three solvers
             """)
             timeout = st.slider("Timeout (seconds)", 30, 300, 120)

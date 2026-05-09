@@ -245,7 +245,7 @@ Current codebase counts from this checkout:
 Corrected thesis benchmark (100 scrambles, depths 5/10/15/20):
 - Thistlethwaite: 100/100 solved, avg 23.62 moves, avg 1.24s
 - Kociemba: 100/100 solved, avg 14.33 moves, avg 4.62s
-- Korf exact backend: 97/100 solved, avg 9.12 moves on completed runs, 3 depth-20 timeouts
+- Korf exact backend: 97/100 solved, avg 9.12 moves on completed runs, 3 requested scramble length 20 timeouts
 
 Important wording:
 - Thistlethwaite benchmark path is pure (no fallback)

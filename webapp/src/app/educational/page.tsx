@@ -510,7 +510,7 @@ export default function EducationalPage() {
                 <h4 className="text-red-400 font-medium mb-2">❌ Disadvantages</h4>
                 <ul className="space-y-2 text-sm text-slate-300">
                   <li>• Slow for difficult scrambles</li>
-                  <li>• Hard depth-20 cases can time out under a fixed budget</li>
+                  <li>• Hard requested scramble length 20 cases can time out under a fixed budget</li>
                   <li>• Large pattern database storage</li>
                   <li>• Long preprocessing time</li>
                   <li>• Variable execution time</li>

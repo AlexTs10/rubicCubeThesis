@@ -327,6 +327,7 @@ class TestKociembaSolver:
         assert result is None
         assert solver.last_backend_used == "internal_verification_failed"
 
+    @pytest.mark.cache_building
     def test_solve_solved_cube(self):
         """Test solving an already solved cube."""
         cube = RubikCube()
@@ -335,6 +336,7 @@ class TestKociembaSolver:
         assert solution is not None
         assert len(solution) == 0
 
+    @pytest.mark.cache_building
     def test_solve_single_move(self):
         """Test solving a cube scrambled with a single move."""
         cube = RubikCube()
@@ -351,6 +353,7 @@ class TestKociembaSolver:
         test_cube.apply_moves(solution)
         assert test_cube.is_solved()
 
+    @pytest.mark.cache_building
     def test_solve_few_moves(self):
         """Test solving a cube with a few moves."""
         cube = RubikCube()
@@ -367,6 +370,7 @@ class TestKociembaSolver:
         test_cube.apply_moves(solution)
         assert test_cube.is_solved()
 
+    @pytest.mark.cache_building
     def test_solve_scrambled_cube(self):
         """Test solving a randomly scrambled cube."""
         cube = RubikCube()
@@ -389,6 +393,23 @@ class TestKociembaSolver:
         test_cube.apply_moves(scramble)
         test_cube.apply_moves(solution)
         assert test_cube.is_solved()
+
+    def test_solve_cube_reuses_default_solver(self, monkeypatch):
+        """The convenience API should not rebuild solver tables on every call."""
+
+        class FakeSolver:
+            calls = 0
+
+            def solve(self, cube, max_phase1_depth, max_phase2_depth, timeout, verbose):
+                self.calls += 1
+                return ([], [], [])
+
+        fake_solver = FakeSolver()
+        monkeypatch.setattr(solver_module, "_DEFAULT_SOLVER", fake_solver)
+
+        assert solve_cube(RubikCube(), verbose=False) == []
+        assert solve_cube(RubikCube(), verbose=False) == []
+        assert fake_solver.calls == 2
 
     @pytest.mark.slow
     def test_solver_performance(self):
@@ -444,6 +465,7 @@ class TestKociembaSolver:
 class TestIntegration:
     """Integration tests."""
 
+    @pytest.mark.cache_building
     def test_phase1_reaches_g1(self):
         """Test that Phase 1 actually reaches G1."""
         cube = RubikCube()

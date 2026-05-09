@@ -239,7 +239,7 @@ Available in:
 | 15 moves       | 25/25 solved, 2.029s avg | 25/25 solved, 8.163s avg | 25/25 solved, 0.424s avg |
 | 20 moves       | 25/25 solved, 1.821s avg | 25/25 solved, 9.749s avg | 22/25 solved, 11.229s avg* |
 
-\*Successful runs only; 3 of 25 depth-20 Korf cases hit the 120-second timeout.
+\*Successful runs only; 3 of 25 requested scramble length 20 Korf cases hit the 120-second timeout.
 
 ### Integration with Phase 8
 

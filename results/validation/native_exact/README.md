@@ -22,6 +22,13 @@ The `canonical` preset expands to the exact corpus recipe used for the thesis cl
 - seed `42`
 - native corner database enabled
 
+This canonical command is not fully reproducible from the source ZIP alone,
+because the source ZIP intentionally omits the generated full
+`data/pattern_databases/corner_db.pkl` cache. From a source-only ZIP, use
+`--preset source-zip` as an executable smoke check of the validation path. The
+canonical preset should fail with a prerequisite message unless the full corner
+cache has been generated or supplied as a separate artifact.
+
 New reports written by the script preserve the corpus recipe in `config.corpus_generation`, so the exact corpus can be reconstructed from the JSON alone.
 
 The key comparison pair is:
@@ -53,6 +60,8 @@ These reports remain useful for chronology and exploratory validation, but the t
 - The checked-in JSON artifacts are preserved as canonical evidence.
 - If you regenerate the reports with the canonical preset, the output schema includes `config.corpus_generation` with the full corpus recipe.
 - The bare script invocation now defaults to the canonical thesis preset.
+- Source-ZIP reviewers should expect `--preset source-zip` to pass without large
+  generated caches and `--preset canonical` to require `corner_db.pkl`.
 
 ## Legacy Reports
 

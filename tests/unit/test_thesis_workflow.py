@@ -3,6 +3,8 @@
 import json
 from pathlib import Path
 
+import pytest
+
 import scripts.thesis_workflow as thesis_workflow
 
 
@@ -118,3 +120,30 @@ def test_load_benchmark_results_falls_back_to_all_depth_shards(tmp_path, monkeyp
         "results/benchmarks/thesis/thesis_bench_d5.json",
         "results/benchmarks/thesis/thesis_bench_d10.json",
     ]
+
+
+def test_local_build_requires_bibliography_tool_before_latexmk(monkeypatch):
+    """Local latexmk mode should fail early when the bibliography backend is absent."""
+    commands = []
+
+    monkeypatch.setattr(
+        thesis_workflow,
+        "toolchain_status",
+        lambda: {
+            "bibliography_backend": "bibtex",
+            "latexmk": True,
+            "xelatex": True,
+            "bibliography_tool": False,
+            "tectonic": False,
+            "local_tex_ready": False,
+            "docker_cli": False,
+            "docker_daemon": False,
+        },
+    )
+    monkeypatch.setattr(thesis_workflow, "run_build_command", lambda *args, **kwargs: commands.append(args))
+
+    with pytest.raises(SystemExit) as excinfo:
+        thesis_workflow.build_thesis(mode="local", image=thesis_workflow.DOCKER_IMAGE, clean=False)
+
+    assert "bibtex" in str(excinfo.value)
+    assert commands == []

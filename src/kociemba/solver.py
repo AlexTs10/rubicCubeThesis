@@ -423,7 +423,11 @@ class KociembaSolver:
             print("PHASE 2: G1 → Solved")
             print("-"*70)
 
-        remaining_time = max(0.1, timeout - phase1_time)
+        remaining_time = timeout - (time.time() - solve_start_time)
+        if remaining_time <= 0:
+            if verbose:
+                print("Timeout before Phase 2 search")
+            return None
         phase2_solution = self._solve_phase2(
             cubie, max_phase2_depth, remaining_time, verbose
         )
@@ -737,6 +741,17 @@ class KociembaSolver:
         return None
 
 
+_DEFAULT_SOLVER: Optional[KociembaSolver] = None
+
+
+def get_default_solver() -> KociembaSolver:
+    """Return the reusable default solver used by the convenience API."""
+    global _DEFAULT_SOLVER
+    if _DEFAULT_SOLVER is None:
+        _DEFAULT_SOLVER = KociembaSolver()
+    return _DEFAULT_SOLVER
+
+
 def solve_cube(
     cube: RubikCube,
     max_phase1_depth: int = 12,
@@ -757,7 +772,7 @@ def solve_cube(
     Returns:
         List of moves to solve the cube, or None if failed
     """
-    solver = KociembaSolver()
+    solver = get_default_solver()
     result = solver.solve(cube, max_phase1_depth, max_phase2_depth, timeout, verbose)
 
     if result is None:

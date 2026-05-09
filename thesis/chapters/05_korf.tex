@@ -263,19 +263,26 @@ h_{PDB}(s) = \max(h_{corner}(s), h_{edge1}(s), h_{edge2}(s))
 
 \begin{table}[htbp]
 \centering
+\footnotesize
 \caption{Σύγκριση Ακρίβειας Ευρετικών}
 \label{tab:heuristic_comparison}
-\begin{tabular}{|l|c|c|c|}
-\hline
+\begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{3.0cm}ccc}
+\toprule
 \textbf{Ευρετική} & \textbf{Ακρίβεια} & \textbf{Ταχύτητα} & \textbf{Μνήμη} \\
-\hline
+\midrule
 Simple & Χαμηλή & Πολύ υψηλή & 0 \\
 Hamming & Χαμηλή & Υψηλή & 0 \\
 Manhattan & Μέτρια & Υψηλή & 0 \\
-Pattern DB & Υψηλή & Μέτρια & ~44 MB \\
-\hline
-\end{tabular}
+Corner PDB only & Υψηλή για γωνίες & Μέτρια & περίπου 44 MB compressed \\
+Πλήρες corner/edge PDB stack & Υψηλή & Μέτρια--χαμηλή & πολλαπλάσια του corner-only cache \\
+\bottomrule
+\end{tabularx}
 \end{table}
+
+Η τιμή περίπου 44 MB αφορά μόνο τη συμπιεσμένη native corner database. Η
+θεωρητική ευρετική της Εξίσωσης~\ref{eq:pdb_heuristic} απαιτεί ξεχωριστές βάσεις
+για γωνίες και δύο ομάδες ακμών, άρα δεν πρέπει να αποδίδεται ο ίδιος αριθμός
+μνήμης στο πλήρες corner/edge stack.
 
 %----------------------------------------------------------------------------
 \section{Υλοποίηση IDA*}
@@ -465,11 +472,11 @@ T(d) \propto b^d \approx 13.5^d
 
 \begin{table}[htbp]
 \centering
-\caption{Εξωτερικός exact backend: Επιτυχία ανά Βάθος Ανακατέματος}
+\caption{Εξωτερικός exact backend: Επιτυχία ανά ζητούμενο μήκος scramble}
 \label{tab:korf_performance}
 \begin{tabular}{|c|c|c|c|}
 \hline
-\textbf{Βάθος} & \textbf{Επιτυχία} & \textbf{Μέσος Χρόνος} & \textbf{Κόμβοι} \\
+\textbf{Ζητούμενο μήκος} & \textbf{Επιτυχία} & \textbf{Μέσος Χρόνος} & \textbf{Κόμβοι} \\
 \hline
 5 & 25/25 (100\%) & 0.001s & 55 \\
 10 & 25/25 (100\%) & 0.002s & 148 \\
@@ -479,9 +486,9 @@ T(d) \propto b^d \approx 13.5^d
 \end{tabular}
 \end{table}
 
-\textbf{Σημείωση:} Οι τιμές χρόνου και κόμβων για βάθος 20 είναι μέσοι όροι των
+\textbf{Σημείωση:} Οι τιμές χρόνου και κόμβων για ζητούμενο μήκος 20 είναι μέσοι όροι των
 επιτυχημένων λύσεων. Στο σύνολο του benchmark παρατηρήθηκαν 3 timeouts σε 25
-scrambles βάθους 20.
+scrambles ζητούμενου μήκους 20.
 
 %----------------------------------------------------------------------------
 \section{Σύνοψη και Αξιολόγηση}
@@ -490,8 +497,8 @@ scrambles βάθους 20.
 
 \begin{enumerate}
     \item Το Korf-style exact framework εγγυάται \textbf{βέλτιστες λύσεις} όταν η αναζήτηση ολοκληρώνεται
-    \item Η external exact διαδρομή είναι πλήρως πρακτική έως βάθος 15 στο benchmark corpus
-    \item Σε βάθος 20 παραμένει ισχυρή, αλλά όχι καθολικά επιτυχής υπό fixed timeout
+    \item Η external exact διαδρομή είναι πλήρως πρακτική έως ζητούμενο μήκος 15 στο benchmark corpus
+    \item Σε ζητούμενο μήκος 20 παραμένει ισχυρή, αλλά όχι καθολικά επιτυχής υπό fixed timeout
     \item Τα Pattern Databases παρέχουν τις ισχυρότερες ευρετικές
     \item Πολύτιμος για επαλήθευση και θεωρητική ανάλυση
 \end{enumerate}

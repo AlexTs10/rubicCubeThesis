@@ -13,7 +13,7 @@ Produce a concise evidence note with:
 
 ## Constraints
 
-- Use local repo material first: `papers/`, `thesis/specs/`, benchmark JSON files, code, and generated figures.
+- Use local repo material first: `papers/`, benchmark JSON files, code, and generated figures. Historical chapter specs were removed because they had drifted from the manuscript.
 - Do not draft the whole chapter.
 - Do not invent missing quantitative results.
 - Flag conflicts between the packet, current code, and existing chapter text.

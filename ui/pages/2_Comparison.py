@@ -201,7 +201,7 @@ if st.session_state.comparison_results:
         r = result.korf
         st.caption(
             "External optimal backend when available; fast on many shallow/mid-depth solved cases, "
-            "but hard depth-20 scrambles can still time out."
+            "but hard requested scramble length 20 scrambles can still time out."
         )
         if r.solved:
             st.success("✅ Solved")
@@ -371,7 +371,7 @@ with st.expander("❓ Help & Tips"):
     2. **Set timeouts**: Adjust based on your patience level
        - Thistlethwaite: Pure 4-phase solver; usually fast, but solutions are long
        - Kociemba: Best overall practical compromise in the thesis benchmark
-       - Korf: Exact on solved cases with the external backend, but depth-20 cases can still time out
+       - Korf: Exact on solved cases with the external backend, but requested scramble length 20 cases can still time out
     3. **Run comparison**: Click "Run Comparison" and wait
     4. **Analyze results**: Compare metrics and solution quality
 
@@ -388,7 +388,7 @@ with st.expander("❓ Help & Tips"):
     - Use the same seed to reproduce exact comparisons
     - Thistlethwaite on this page is pure and does not fall back to Kociemba
     - The Korf max-depth control matters only when the comparison falls back to the internal heuristic IDA* path
-    - In the thesis benchmark, Korf timed out on 3 of 25 depth-20 scrambles with a 120s limit
+    - In the thesis benchmark, Korf timed out on 3 of 25 requested scramble length 20 scrambles with a 120s limit
     - If Korf fails here, check the backend column in the results table before drawing conclusions
     """)
 

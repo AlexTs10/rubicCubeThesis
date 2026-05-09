@@ -28,6 +28,8 @@ FAST_TEST_TIMEOUT_SECONDS = 120
 FULL_TEST_TIMEOUT_SECONDS = 1800
 DEMO_TIMEOUT_SECONDS = 60
 NOTEBOOK_TIMEOUT_SECONDS = 30
+THESIS_ARTIFACT_TIMEOUT_SECONDS = 300
+WEBAPP_ARTIFACT_TIMEOUT_SECONDS = 300
 
 
 GENERATED_CACHE_DIRS = [
@@ -495,6 +497,77 @@ def check_notebooks() -> bool:
     return False
 
 
+def check_thesis_artifact_build() -> bool:
+    """Run thesis workflow validation and automatic thesis build."""
+    print_section("9. Thesis Artifact Check")
+
+    project_root = Path(__file__).parent
+    commands = [
+        [sys.executable, 'scripts/thesis_workflow.py', 'validate'],
+        [sys.executable, 'scripts/thesis_workflow.py', 'build', '--mode', 'auto'],
+    ]
+
+    for command in commands:
+        print(f"Running: {' '.join(command)}")
+        try:
+            result = subprocess.run(
+                command,
+                cwd=str(project_root),
+                capture_output=True,
+                text=True,
+                timeout=THESIS_ARTIFACT_TIMEOUT_SECONDS,
+            )
+        except subprocess.TimeoutExpired:
+            print_error(f"Command timed out after {THESIS_ARTIFACT_TIMEOUT_SECONDS}s: {' '.join(command)}")
+            return False
+
+        if result.returncode != 0:
+            print_error(f"Command failed: {' '.join(command)}")
+            print(result.stdout)
+            print(result.stderr)
+            return False
+
+    print_success("Thesis validation/build commands passed")
+    return True
+
+
+def check_webapp_artifacts() -> bool:
+    """Run preview webapp tests and production build."""
+    print_section("10. Webapp Artifact Check")
+
+    project_root = Path(__file__).parent
+    webapp_dir = project_root / 'webapp'
+    if not webapp_dir.exists():
+        print_warning("webapp directory not found; skipping")
+        return True
+    if not (webapp_dir / 'node_modules').exists():
+        print_error("webapp/node_modules is absent. Run `cd webapp && npm ci` before --all-artifacts.")
+        return False
+
+    for command in (['npm', 'test'], ['npm', 'run', 'build']):
+        print(f"Running: {' '.join(command)}")
+        try:
+            result = subprocess.run(
+                command,
+                cwd=str(webapp_dir),
+                capture_output=True,
+                text=True,
+                timeout=WEBAPP_ARTIFACT_TIMEOUT_SECONDS,
+            )
+        except subprocess.TimeoutExpired:
+            print_error(f"Command timed out after {WEBAPP_ARTIFACT_TIMEOUT_SECONDS}s: {' '.join(command)}")
+            return False
+
+        if result.returncode != 0:
+            print_error(f"Command failed: {' '.join(command)}")
+            print(result.stdout)
+            print(result.stderr)
+            return False
+
+    print_success("Webapp test/build commands passed")
+    return True
+
+
 def main():
     """Run all verification checks."""
     parser = argparse.ArgumentParser(description="Verify the Rubik's Cube thesis checkout.")
@@ -518,6 +591,11 @@ def main():
         action="store_true",
         help="also run the lightweight notebook JSON/metadata smoke check",
     )
+    parser.add_argument(
+        "--all-artifacts",
+        action="store_true",
+        help="also verify thesis artifact build and preview webapp test/build; requires local TeX/Docker and webapp dependencies",
+    )
     args = parser.parse_args()
     project_root = Path(__file__).parent
     requirements_path = Path(args.requirements)
@@ -539,6 +617,13 @@ def main():
     ]
     if args.notebooks:
         checks.append(("Notebook Smoke", check_notebooks))
+    if args.all_artifacts:
+        checks.extend(
+            [
+                ("Thesis Artifact", check_thesis_artifact_build),
+                ("Webapp Artifact", check_webapp_artifacts),
+            ]
+        )
 
     results = {}
 
@@ -564,7 +649,13 @@ def main():
     print(f"\n{Colors.BOLD}Overall: {passed}/{total} checks passed{Colors.RESET}")
 
     if passed == total:
-        print(f"\n{Colors.GREEN}{Colors.BOLD}✓ Setup is complete! Ready to start development.{Colors.RESET}")
+        if args.all_artifacts:
+            print(f"\n{Colors.GREEN}{Colors.BOLD}✓ Full repository artifact verification passed.{Colors.RESET}")
+        else:
+            print(
+                f"\n{Colors.GREEN}{Colors.BOLD}✓ Python setup profile passed. "
+                f"Run --all-artifacts to verify thesis and webapp builds.{Colors.RESET}"
+            )
         return 0
     else:
         print(f"\n{Colors.YELLOW}{Colors.BOLD}⚠ Some checks failed. Please review the output above.{Colors.RESET}")

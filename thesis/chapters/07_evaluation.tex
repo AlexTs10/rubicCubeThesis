@@ -159,7 +159,7 @@ Kociemba επιλύουν επιτυχώς \emph{όλα} τα 100 scrambles το
 παραμένει επίσης πλήρως επιτυχής μέχρι ζητούμενο μήκος 15, αλλά στο ζητούμενο μήκος 20 εμφανίζει
 τρεις πραγματικές timeout αποτυχίες εντός του ορίου των 120 s, με τελικό
 ποσοστό επιτυχίας 88\%. Το εύρημα αυτό συνάδει με τη θεωρητική εκθετική αύξηση του
-κόστους του IDA* σε βαθύτερες καταστάσεις \cite{korf2001timecomplexity,demaine2018npcomplete}.
+κόστους του IDA* στα συγκεκριμένα generated cases \cite{korf2001timecomplexity}. Το αποτέλεσμα NP-completeness για γενικευμένες εκδοχές του κύβου αφορά το ευρύτερο θεωρητικό πλαίσιο και δεν χρησιμοποιείται εδώ ως άμεση εξήγηση των fixed 3x3 timings \cite{demaine2018npcomplete}.
 
 \begin{table}[htbp]
 \centering
@@ -206,7 +206,7 @@ corpus και όχι ως καθαρή μέτρηση steady-state latency.
 \label{tab:eval_lengths}
 \begin{tabular}{lccc}
 \toprule
-\textbf{Βάθος} & \textbf{Thistlethwaite} & \textbf{Kociemba} & \textbf{Εξωτερικός exact backend} \\
+\textbf{Ζητούμενο μήκος} & \textbf{Thistlethwaite} & \textbf{Kociemba} & \textbf{Εξωτερικός exact backend} \\
 \midrule
 5  & 8.76  & 5.60  & 3.96  \\
 10 & 24.84 & 9.92  & 7.40  \\
@@ -337,7 +337,7 @@ baseline αυτή μετράται μέσω του εξωτερικού backend
 χρυσό πρότυπο για τη μελέτη optimal search. Τα δεδομένα δείχνουν ότι η
 βελτιστότητα είναι απολύτως εφικτή σε μεγάλο τμήμα του benchmark, αλλά στο
 ζητούμενο μήκος 20 συνοδεύεται από πολύ υψηλό κόστος μνήμης και εκατομμύρια επεκτάσεις
-κόμβων \cite{demaine2018npcomplete}.
+κόμβων στο συγκεκριμένο benchmark corpus \cite{korf2001timecomplexity}.
 
 Ο Thistlethwaite παραμένει χρήσιμος κυρίως για δύο λόγους. Πρώτον, αποτελεί
 ιστορικό ορόσημο στην επίλυση του κύβου. Δεύτερον, η πολυφασική μείωση
