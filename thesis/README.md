@@ -1,6 +1,6 @@
 # Thesis LaTeX Project
 
-This directory contains the thesis manuscript and its build assets. A review PDF can be built with the current XeLaTeX-compatible workflow or the tested Tectonic path. `chapters/00_approval.tex` is included in `main.tex` as the formal signature-page template; the final signed institutional copy still requires the remaining committee names and examination date from the official University of Patras process.
+This directory contains the thesis manuscript and its build assets. A technical-review PDF can be built with the current XeLaTeX-compatible workflow or the tested Tectonic path. `chapters/00_approval.tex` is included in `main.tex` as the formal signature-page template; the final signed institutional copy still requires the remaining committee names and examination date from the official University of Patras process.
 
 ## Structure
 
@@ -63,6 +63,10 @@ pins the `debian:bookworm-slim` base image by digest, while TeX packages still
 come from Debian package repositories at build time. This keeps the review build
 path source-defined when the host machine does not already have a TeX
 installation.
+
+The same Docker build path is encoded in `.github/workflows/thesis-build.yml`
+for CI review. The workflow validates the thesis sources, builds
+`thesis/main.pdf`, records its SHA-256 hash, and uploads both as artifacts.
 
 The Docker route requires Docker Engine/OrbStack/Colima to be installed and the
 daemon to be running before `build --mode docker` is invoked. A machine without

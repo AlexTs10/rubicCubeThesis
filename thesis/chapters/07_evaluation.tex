@@ -72,7 +72,8 @@ Kociemba \cite{kociemba_rubiks_optimal}, ο οποίος ενσωματώνετ�
 \toprule
 \normalfont\textbf{Πεδίο} & \textbf{Ρόλος στην αξιολόγηση} \\
 \midrule
-scramble\_id, requested\_scramble\_length & Ταυτότητα περίπτωσης και ζητούμενο μήκος παραγωγής scramble. \\
+case\_id & Καθολικά μοναδική ταυτότητα περίπτωσης στο combined artifact, π.χ. \texttt{d10\_000}. \\
+scramble\_id, requested\_scramble\_length & Το \texttt{scramble\_id} είναι μοναδικό μόνο εντός κάθε ζητούμενου μήκους· μαζί με το \texttt{requested\_scramble\_length} ορίζει την περίπτωση. \\
 scramble\_moves & Ακολουθία κινήσεων με την οποία παράγεται η αρχική κατάσταση. \\
 solved, reason\_failed & Επιτυχία επίλυσης ή αιτία αποτυχίας/timeout. \\
 time\_seconds & Χρόνος επίλυσης από τον benchmark harness. \\
@@ -403,7 +404,7 @@ baseline αυτή μετράται μέσω του εξωτερικού backend
 Δεύτερον, ο \textbf{Kociemba} είναι ο ισχυρότερος συνολικός συμβιβασμός, με
 100\% ποσοστό επιτυχίας και λύσεις αισθητά κοντύτερες από του Thistlethwaite.
 Τρίτον, ο \textbf{εξωτερικός exact backend} παρέχει το optimal benchmark reference και
-αποδίδει εντυπωσιακά καλά μέχρι ζητούμενο μήκος 15, αλλά στο ζητούμενο μήκος 20 εμφανίζει τα
+λύνει όλες τις περιπτώσεις μέχρι ζητούμενο μήκος 15, αλλά στο ζητούμενο μήκος 20 εμφανίζει τα
 πρώτα σαφή όρια της εκθετικής κλιμάκωσης, με 3 timeout αποτυχίες και πολύ
 υψηλό κόστος αναζήτησης.
 

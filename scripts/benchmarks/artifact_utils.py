@@ -84,12 +84,21 @@ def _verified_scramble_depth(result: dict[str, Any]) -> int | None:
     return None
 
 
+def _case_id(result: dict[str, Any], requested_scramble_length: int) -> str:
+    value = result.get("case_id")
+    if value:
+        return str(value)
+    scramble_id = int(result.get("scramble_id", 0))
+    return f"d{requested_scramble_length}_{scramble_id:03d}"
+
+
 def normalize_benchmark_result(result: dict[str, Any]) -> dict[str, Any]:
     """Backfill exporter fields that older committed artifacts may not yet contain."""
     normalized = dict(result)
     requested_scramble_length = _requested_scramble_length(normalized)
     verified_scramble_depth = _verified_scramble_depth(normalized)
 
+    normalized["case_id"] = _case_id(normalized, requested_scramble_length)
     normalized["requested_scramble_length"] = requested_scramble_length
     normalized["verified_scramble_depth"] = verified_scramble_depth
     normalized["scramble_depth_is_verified"] = verified_scramble_depth is not None

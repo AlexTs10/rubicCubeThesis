@@ -249,8 +249,10 @@ def validate_corpus(
     if oracle_required_cases and not use_oracle:
         raise ValueError(
             f"{oracle_required_cases} oracle-dependent validation cases require "
-            "the external optimal oracle. Install the RubikOptimal backend or "
-            "run --preset source-zip for the source-contained smoke check."
+            "the external optimal oracle. Canonical validation also requires "
+            "data/pattern_databases/corner_db.pkl. Install the RubikOptimal "
+            "backend and provide the corner cache, or run --preset source-zip "
+            "for the source-contained smoke check."
         )
 
     if require_corner_db:
@@ -262,8 +264,11 @@ def validate_corpus(
         if not corner_db_file.exists():
             raise FileNotFoundError(
                 f"Canonical native exact validation requires {corner_db_file}. "
-                "Generate it first with scripts/generate_corner_database.py or "
-                "run --preset source-zip for the source-archive smoke check."
+                "It also requires the RubikOptimal external oracle for the "
+                "oracle-depth cases. Generate the cache first with "
+                "scripts/generate_corner_database.py and install the external "
+                "backend, or run --preset source-zip for the source-archive "
+                "smoke check."
             )
 
     heuristic = (
@@ -399,8 +404,10 @@ def main() -> None:
         default="canonical",
         help=(
             "Named validation preset. The default 'canonical' preset reproduces "
-            "the thesis corpus and report schema. 'source-zip' is a smaller "
-            "fully contained smoke preset that does not require corner_db.pkl."
+            "the thesis corpus and report schema and requires both "
+            "data/pattern_databases/corner_db.pkl and the RubikOptimal external "
+            "oracle. 'source-zip' is a smaller fully contained smoke preset that "
+            "does not require corner_db.pkl or oracle-dependent cases."
         ),
     )
     parser.add_argument("--exhaustive-depth", type=int, default=3)

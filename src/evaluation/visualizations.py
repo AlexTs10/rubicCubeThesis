@@ -442,10 +442,10 @@ def main():
     print("\n✓ Visualization complete!")
     print(f"\nFigures saved to: {output_dir}")
     print("\nRecommended thesis figures:")
-    print("  - fig1_solution_length_boxplot.png  → Chapter 5: Results")
-    print("  - fig2_time_comparison.png          → Chapter 5: Performance Analysis")
-    print("  - fig4_success_rate.png             → Chapter 5: Algorithm Reliability")
-    print("  - fig7_performance_vs_depth.png     → Chapter 6: Scalability Analysis")
+    print("  - fig1_solution_length_boxplot.png  -> Chapter 7: solution-length results")
+    print("  - fig2_time_comparison.png          -> Chapter 7: runtime comparison")
+    print("  - fig4_success_rate.png             -> Chapter 7: reliability")
+    print("  - fig7_performance_vs_depth.png     -> Chapter 7: scalability discussion")
 
 
 if __name__ == '__main__':

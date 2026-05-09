@@ -5,7 +5,7 @@
 **Institution:** University of Patras
 
 **Project Type:** Undergraduate / Bachelor's thesis in ECE
-**Current State:** Review-ready manuscript, codebase, benchmarks, and local build workflow are present. The approval/signature page is included as a formal template, but the final signed institutional copy still requires the remaining committee names and examination date from the University of Patras.
+**Current State:** Technical review-ready manuscript, codebase, benchmarks, and local build workflow are present. Administrative signature-page completion is still pending: the approval/signature page is included as a formal template, but the final signed institutional copy still requires the remaining committee names and examination date from the University of Patras.
 
 This repository contains the implementation, evaluation, and thesis manuscript for a comparative study of three classical Rubik's Cube solving algorithms:
 
@@ -62,6 +62,11 @@ The thesis build workflow now has a source-defined Docker fallback. If local
 running, `python scripts/thesis_workflow.py build --mode auto` switches to
 Docker mode and builds the TeX image from `docker/thesis.Dockerfile` before
 compiling `thesis/main.tex`.
+
+For review systems that should not depend on local TeX state, the repository
+also includes `.github/workflows/thesis-build.yml`. That workflow validates the
+thesis sources, builds `thesis/main.pdf` with the source-defined Docker image,
+and uploads the PDF plus a SHA-256 hash as CI artifacts.
 
 The compiled thesis PDF is written to `thesis/main.pdf`.
 The archive-verifiable source manifest is written to
@@ -151,6 +156,7 @@ the commands below in a clean Python 3.12 environment for the current machine.
 
 - `python -m pytest tests --collect-only -q` reports the collected test count for the current checkout; the default fast profile excludes `slow`, `external`, and `cache_building`
 - `python -m pytest tests -q` runs the supported fast profile; heavyweight solver-quality, external-backend, and cache-generation checks are opt-in marker profiles
+- `python -m pytest tests -q --cov=src --cov-report=term-missing:skip-covered --cov-fail-under=49` is the conservative coverage gate for the current source tree; raise the threshold only after adding tests for the low-coverage evaluation and generated-table modules
 - `python verify_setup.py` runs the Python setup profile and fast tests by default; use `--full` for heavyweight Python tests and `--all-artifacts` when local TeX/Docker plus webapp dependencies are available
 - `cd webapp && npm ci && npm run build` succeeds from a clean dependency install
 - `python scripts/thesis_workflow.py build --mode auto` rebuilds `thesis/main.pdf` with local TeX/Tectonic when available, or with the repo-local Docker image from `docker/thesis.Dockerfile` when Docker is running; the Dockerfile pins `debian:bookworm-slim` by digest

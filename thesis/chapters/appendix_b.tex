@@ -5,7 +5,7 @@
 
 \section{Κλάση RubikCube}
 
-Το ακόλουθο απόσπασμα δείχνει την αρχικοποίηση solved state και τον βασικό έλεγχο ολοκλήρωσης. Η επιλογή \texttt{NumPy} πίνακα διαστάσεων $6 \times 9$ κρατά την αναπαράσταση απλή και ενιαία για όλο το αποθετήριο.
+Το ακόλουθο απόσπασμα δείχνει την αρχικοποίηση solved state και τον βασικό έλεγχο ολοκλήρωσης. Πρόκειται για απλοποιημένο excerpt: ο πλήρης constructor στο \filepath{src/cube/rubik\_cube.py} περιλαμβάνει επιπλέον structural validation, προαιρετικό legal-state validation και scramble metadata. Η επιλογή \texttt{NumPy} πίνακα διαστάσεων $6 \times 9$ κρατά την αναπαράσταση απλή και ενιαία για όλο το αποθετήριο.
 
 \begin{lstlisting}[language=Python, caption={Βασικός πυρήνας της κλάσης \texttt{RubikCube}}, label={lst:rubikcube_core}]
 class RubikCube:
@@ -31,7 +31,7 @@ class RubikCube:
 
 \section{Αλγόριθμος IDA*}
 
-Ο επόμενος κώδικας παρουσιάζει τον κύριο iterative deepening βρόχο του IDA*. Το bound αρχικοποιείται από admissible heuristic estimate και αυξάνεται σταδιακά μέχρι να βρεθεί λύση ή να ξεπεραστεί το μέγιστο επιτρεπτό βάθος.
+Ο επόμενος κώδικας παρουσιάζει τον κύριο iterative deepening βρόχο του IDA*. Το bound αρχικοποιείται από την configured heuristic estimate και αυξάνεται σταδιακά μέχρι να βρεθεί λύση ή να ξεπεραστεί το μέγιστο επιτρεπτό βάθος. Claims βελτιστότητας απαιτούν η συγκεκριμένη heuristic να είναι αποδεδειγμένο admissible lower bound.
 
 \begin{lstlisting}[language=Python, caption={Κύριος βρόχος του IDA* solver}, label={lst:idastar_loop}]
 class IDAStarSolver:

@@ -185,7 +185,10 @@ def check_required_packages(requirements_path: Path) -> bool:
     if all_installed:
         print(f"\n{Colors.GREEN}All required packages are installed{Colors.RESET}")
     else:
-        print(f"\n{Colors.RED}Some packages are missing. Run: pip install -r {requirements_path.name}{Colors.RESET}")
+        print(
+            f"\n{Colors.RED}Some packages are missing. Run: "
+            f"python -m pip install --require-hashes -r {requirements_path.name}{Colors.RESET}"
+        )
 
     return all_installed
 

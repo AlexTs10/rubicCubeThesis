@@ -28,6 +28,12 @@ def test_write_combined_results_preserves_korf_provenance(tmp_path):
                 "scramble_generation": "legacy_random_all_moves_redundant_allowed",
                 "scramble_corpus_status": "legacy redundant scrambles preserved",
                 "current_generator_for_new_runs": "random_no_consecutive_same_face_moves",
+                "environment": {"python_version": "3.12.2"},
+                "external_exact_backend_provenance": {
+                    "package": "RubikOptimal",
+                    "version": "1.1.0",
+                    "solver_py_sha256": "abc123",
+                },
             },
             "results": [{"scramble_depth": 5}],
         }
@@ -46,6 +52,8 @@ def test_write_combined_results_preserves_korf_provenance(tmp_path):
     assert combined["metadata"]["scramble_generation"] == "legacy_random_all_moves_redundant_allowed"
     assert combined["metadata"]["scramble_corpus_status"] == "legacy redundant scrambles preserved"
     assert combined["metadata"]["current_generator_for_new_runs"] == "random_no_consecutive_same_face_moves"
+    assert combined["metadata"]["environment"]["python_version"] == "3.12.2"
+    assert combined["metadata"]["external_exact_backend_provenance"]["solver_py_sha256"] == "abc123"
 
 
 def test_regenerator_loads_source_scramble_metadata(tmp_path):
@@ -147,6 +155,7 @@ def test_write_combined_results_backfills_current_export_schema(tmp_path):
 
     assert combined["metadata"]["verified_scramble_depth_available"] is True
     assert combined["metadata"]["depth_5"]["verified_scramble_depth_available"] is True
+    assert row["case_id"] == "d5_007"
     assert row["requested_scramble_length"] == 5
     assert row["verified_scramble_depth"] == 3
     assert row["scramble_depth_is_verified"] is True
@@ -155,6 +164,29 @@ def test_write_combined_results_backfills_current_export_schema(tmp_path):
     assert row["korf"]["scramble_depth_is_verified"] is True
     assert row["thistlethwaite"]["verified_scramble_depth"] is None
     assert row["kociemba"]["scramble_depth_is_verified"] is False
+
+
+def test_combined_results_assign_globally_unique_case_ids(tmp_path):
+    """Repeated scramble_id values across depths should still have unique case_id values."""
+    depth_payloads = {}
+    for depth in (5, 10):
+        depth_payloads[depth] = {
+            "metadata": {"timestamp": "2026-03-20T21:08:41.058167"},
+            "results": [
+                {
+                    "scramble_id": 0,
+                    "scramble_depth": depth,
+                    "scramble_moves": ["R"] * depth,
+                }
+            ],
+        }
+
+    combined_path = benchmark_regen.write_combined_results(tmp_path, depth_payloads)
+    combined = json.loads(combined_path.read_text())
+
+    case_ids = [row["case_id"] for row in combined["results"]]
+    assert case_ids == ["d5_000", "d10_000"]
+    assert len(case_ids) == len(set(case_ids))
 
 
 def test_committed_thesis_benchmark_artifacts_match_current_schema():

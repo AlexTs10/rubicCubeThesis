@@ -180,7 +180,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": 11,
-      "scramble_depth_is_verified": true
+      "scramble_depth_is_verified": true,
+      "case_id": "d20_000"
     },
     {
       "scramble_id": 1,
@@ -334,7 +335,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": 15,
-      "scramble_depth_is_verified": true
+      "scramble_depth_is_verified": true,
+      "case_id": "d20_001"
     },
     {
       "scramble_id": 2,
@@ -485,7 +487,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": 16,
-      "scramble_depth_is_verified": true
+      "scramble_depth_is_verified": true,
+      "case_id": "d20_002"
     },
     {
       "scramble_id": 3,
@@ -627,7 +630,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": 13,
-      "scramble_depth_is_verified": true
+      "scramble_depth_is_verified": true,
+      "case_id": "d20_003"
     },
     {
       "scramble_id": 4,
@@ -779,7 +783,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": 12,
-      "scramble_depth_is_verified": true
+      "scramble_depth_is_verified": true,
+      "case_id": "d20_004"
     },
     {
       "scramble_id": 5,
@@ -917,7 +922,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": null,
-      "scramble_depth_is_verified": false
+      "scramble_depth_is_verified": false,
+      "case_id": "d20_005"
     },
     {
       "scramble_id": 6,
@@ -1056,7 +1062,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": 12,
-      "scramble_depth_is_verified": true
+      "scramble_depth_is_verified": true,
+      "case_id": "d20_006"
     },
     {
       "scramble_id": 7,
@@ -1207,7 +1214,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": 17,
-      "scramble_depth_is_verified": true
+      "scramble_depth_is_verified": true,
+      "case_id": "d20_007"
     },
     {
       "scramble_id": 8,
@@ -1360,7 +1368,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": 16,
-      "scramble_depth_is_verified": true
+      "scramble_depth_is_verified": true,
+      "case_id": "d20_008"
     },
     {
       "scramble_id": 9,
@@ -1510,7 +1519,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": 12,
-      "scramble_depth_is_verified": true
+      "scramble_depth_is_verified": true,
+      "case_id": "d20_009"
     },
     {
       "scramble_id": 10,
@@ -1668,7 +1678,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": 16,
-      "scramble_depth_is_verified": true
+      "scramble_depth_is_verified": true,
+      "case_id": "d20_010"
     },
     {
       "scramble_id": 11,
@@ -1819,7 +1830,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": 15,
-      "scramble_depth_is_verified": true
+      "scramble_depth_is_verified": true,
+      "case_id": "d20_011"
     },
     {
       "scramble_id": 12,
@@ -1969,7 +1981,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": 12,
-      "scramble_depth_is_verified": true
+      "scramble_depth_is_verified": true,
+      "case_id": "d20_012"
     },
     {
       "scramble_id": 13,
@@ -2121,7 +2134,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": 14,
-      "scramble_depth_is_verified": true
+      "scramble_depth_is_verified": true,
+      "case_id": "d20_013"
     },
     {
       "scramble_id": 14,
@@ -2274,7 +2288,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": 14,
-      "scramble_depth_is_verified": true
+      "scramble_depth_is_verified": true,
+      "case_id": "d20_014"
     },
     {
       "scramble_id": 15,
@@ -2425,7 +2440,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": 14,
-      "scramble_depth_is_verified": true
+      "scramble_depth_is_verified": true,
+      "case_id": "d20_015"
     },
     {
       "scramble_id": 16,
@@ -2577,7 +2593,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": 15,
-      "scramble_depth_is_verified": true
+      "scramble_depth_is_verified": true,
+      "case_id": "d20_016"
     },
     {
       "scramble_id": 17,
@@ -2728,7 +2745,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": 13,
-      "scramble_depth_is_verified": true
+      "scramble_depth_is_verified": true,
+      "case_id": "d20_017"
     },
     {
       "scramble_id": 18,
@@ -2866,7 +2884,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": null,
-      "scramble_depth_is_verified": false
+      "scramble_depth_is_verified": false,
+      "case_id": "d20_018"
     },
     {
       "scramble_id": 19,
@@ -3025,7 +3044,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": 15,
-      "scramble_depth_is_verified": true
+      "scramble_depth_is_verified": true,
+      "case_id": "d20_019"
     },
     {
       "scramble_id": 20,
@@ -3154,7 +3174,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": null,
-      "scramble_depth_is_verified": false
+      "scramble_depth_is_verified": false,
+      "case_id": "d20_020"
     },
     {
       "scramble_id": 21,
@@ -3310,7 +3331,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": 17,
-      "scramble_depth_is_verified": true
+      "scramble_depth_is_verified": true,
+      "case_id": "d20_021"
     },
     {
       "scramble_id": 22,
@@ -3464,7 +3486,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": 15,
-      "scramble_depth_is_verified": true
+      "scramble_depth_is_verified": true,
+      "case_id": "d20_022"
     },
     {
       "scramble_id": 23,
@@ -3616,7 +3639,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": 12,
-      "scramble_depth_is_verified": true
+      "scramble_depth_is_verified": true,
+      "case_id": "d20_023"
     },
     {
       "scramble_id": 24,
@@ -3765,7 +3789,8 @@
       },
       "requested_scramble_length": 20,
       "verified_scramble_depth": 16,
-      "scramble_depth_is_verified": true
+      "scramble_depth_is_verified": true,
+      "case_id": "d20_024"
     }
   ]
 }

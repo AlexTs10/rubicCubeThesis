@@ -24,10 +24,11 @@ The `canonical` preset expands to the exact corpus recipe used for the thesis cl
 
 This canonical command is not fully reproducible from the source ZIP alone,
 because the source ZIP intentionally omits the generated full
-`data/pattern_databases/corner_db.pkl` cache. From a source-only ZIP, use
-`--preset source-zip` as an executable smoke check of the validation path. The
-canonical preset should fail with a prerequisite message unless the full corner
-cache has been generated or supplied as a separate artifact.
+`data/pattern_databases/corner_db.pkl` cache and the 12 oracle-dependent cases
+also require the optional `RubikOptimal` external exact backend. From a
+source-only ZIP, use `--preset source-zip` as an executable smoke check of the
+validation path. The canonical preset should fail with a prerequisite message
+unless both the full corner cache and external oracle are available.
 
 New reports written by the script preserve the corpus recipe in `config.corpus_generation`, so the exact corpus can be reconstructed from the JSON alone.
 
@@ -58,11 +59,13 @@ These reports remain useful for chronology and exploratory validation, but the t
 ## Reproducibility Notes
 
 - The checked-in JSON artifacts are preserved as canonical evidence, while full
-  canonical regeneration requires the generated `corner_db.pkl` companion cache.
+  canonical regeneration requires the generated `corner_db.pkl` companion cache
+  and the optional `RubikOptimal` external oracle backend.
 - If you regenerate the reports with the canonical preset, the output schema includes `config.corpus_generation` with the full corpus recipe.
 - The bare script invocation now defaults to the canonical thesis preset.
 - Source-ZIP reviewers should expect `--preset source-zip` to pass without large
-  generated caches and `--preset canonical` to require `corner_db.pkl`.
+  generated caches and `--preset canonical` to require both `corner_db.pkl` and
+  the external oracle.
 
 ## Legacy Reports
 

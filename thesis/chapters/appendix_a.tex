@@ -49,6 +49,10 @@ python -m pytest tests -q -m external
 python -m pytest tests -q -m cache_building
 \end{lstlisting}
 
+Το \texttt{external} profile συλλέγει τις δοκιμές εξωτερικών backends, αλλά οι
+oracle-dependent έλεγχοι παραμένουν προστατευμένοι με environment gate:
+\texttt{RUN\_NATIVE\_ORACLE\_TESTS=1} και εγκατεστημένο \texttt{RubikOptimal}.
+
 \section{Βασική Χρήση}
 
 Η απλούστερη χρήση του project είναι μέσω των demo scripts. Τα scripts αυτά καλύπτουν δημιουργία κύβου, scrambling, επίλυση και σύγκριση αλγορίθμων.
@@ -111,6 +115,7 @@ npm run dev
 python scripts/benchmarks/regenerate_thesis_benchmarks.py
 python scripts/benchmarks/analyze_thesis_data.py
 python scripts/benchmarks/generate_latex_tables.py
+python -m src.evaluation.visualizations results/benchmarks/thesis/thesis_results_combined.json thesis/figures
 \end{lstlisting}
 
 Τα scripts \filepath{generate_thesis_data.py} και
@@ -152,6 +157,8 @@ Kociemba backend & \texttt{kociemba\_internal} (100/100, χωρίς fallback) \\
 Thistlethwaite backend & \texttt{thistlethwaite\_native} (100/100) \\
 Korf benchmark backend & \texttt{optimal\_external} \\
 Εξωτερικός optimal backend & \texttt{RubikOptimal 1.1.0} (\texttt{hkociemba/RubiksCube-OptimalSolver}) \\
+\texttt{source-zip} native validation & 261 cases, no generated corner DB and no external oracle required \\
+\texttt{canonical} native validation & 3,513 cases; requires \texttt{data/pattern\_databases/corner\_db.pkl} and the external exact oracle \\
 \bottomrule
 \end{tabularx}
 \end{table}
@@ -160,9 +167,9 @@ Korf benchmark backend & \texttt{optimal\_external} \\
 \begin{itemize}
     \item \filepath{results/benchmarks/thesis/thesis\_results\_combined.json}
     \item \filepath{results/benchmarks/thesis/thesis\_bench\_d5.json},
-    \filepath{thesis\_bench\_d10.json},
-    \filepath{thesis\_bench\_d15.json},
-    \filepath{thesis\_bench\_d20.json}
+    \filepath{results/benchmarks/thesis/thesis\_bench\_d10.json},
+    \filepath{results/benchmarks/thesis/thesis\_bench\_d15.json},
+    \filepath{results/benchmarks/thesis/thesis\_bench\_d20.json}
     \item \filepath{thesis/main.tex} και τα κεφάλαια στο \filepath{thesis/chapters/}.
 \end{itemize}
 
@@ -171,5 +178,5 @@ Korf benchmark backend & \texttt{optimal\_external} \\
 \begin{itemize}
     \item Η πρώτη εκτέλεση ορισμένων solvers μπορεί να είναι αισθητά πιο αργή λόγω δημιουργίας ή φόρτωσης πινάκων.
     \item Τα benchmark scripts αποθηκεύουν ρητά τα scrambles και τα αποτελέσματα σε JSON μορφή.
-    \item Η πλήρης παραγωγή PDF της διπλωματικής απαιτεί TeX toolchain συμβατό με το \filepath{thesis/main.tex}. Στο αποθετήριο χρησιμοποιείται \texttt{tectonic}.
+    \item Η πλήρης παραγωγή PDF της διπλωματικής εκτελείται με \texttt{python scripts/thesis\_workflow.py build --mode auto}, το οποίο δοκιμάζει κατά σειρά \texttt{latexmk}/XeLaTeX, χειροκίνητο XeLaTeX με βιβλιογραφία, \texttt{tectonic}, και τέλος Docker όταν υπάρχει ενεργό container runtime.
 \end{itemize}

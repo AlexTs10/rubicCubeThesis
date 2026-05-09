@@ -327,8 +327,8 @@ class ThistlethwaiteSolver:
                 coords = CubeCoordinates(cube)
                 co = coords.get_corner_orientation_coord()
                 es = coords.get_e_slice_coord()
-                # E-slice coord should be 0 when all E-edges are in E-slice
-                # For now, simplified check
+                # Phase 1 is complete when corners are oriented and every E-slice
+                # edge belongs to the E-slice subset.
                 return co == 0 and es == 0
             return check
 

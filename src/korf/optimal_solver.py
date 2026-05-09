@@ -239,9 +239,10 @@ class KorfOptimalSolver:
         """
         if verbose:
             print("\n" + "="*70)
-            print("KORF'S OPTIMAL SOLVER (IDA* with Pattern Databases)")
+            print("EXTERNAL RUBIKOPTIMAL EXACT BACKEND WRAPPER")
             print("="*70)
-            print("⚠️  WARNING: This solver guarantees optimal solutions but may")
+            print("Backend: optional RubikOptimal package")
+            print("WARNING: This backend returns optimal solutions when it completes but may")
             print("   take significant time (minutes to hours for difficult cubes)")
             print("   For best performance, run with PyPy instead of CPython")
             print("="*70)

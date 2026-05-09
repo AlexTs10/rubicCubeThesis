@@ -35,10 +35,13 @@ Pattern-database artifacts used by:
 
 This includes smaller coordinate tables under `native_exact/`. Large thesis-grade caches such as `corner_db.pkl`, `edge1_db.pkl`, and `edge2_db.pkl` are intentionally treated as generated artifacts and are absent from the source ZIP. Validation presets that cite those artifacts must either ship them explicitly or fail hard when the required cache is missing.
 
-The canonical native exact validation preset is cache-dependent and requires the full corner cache:
+The canonical native exact validation preset is cache-dependent and also includes
+12 oracle-dependent cases. It requires both the full corner cache and the
+optional external exact oracle backend:
 
 ```bash
 python scripts/generate_corner_database.py --output data/pattern_databases/corner_db.pkl
+python -m pip install ".[external-exact]"
 python scripts/verification/native_exact_validation.py --preset canonical
 ```
 
@@ -46,8 +49,8 @@ The generated `corner_db.pkl` is intentionally excluded from source audit ZIPs
 because it is a large cache artifact. Treat it as an approved companion artifact
 for final canonical-validation reruns: either generate it with the command above
 or supply it alongside the source ZIP with a SHA-256 manifest entry. If the
-cache is absent, the canonical validation command fails with a clear prerequisite
-instead of silently running without the cited cache.
+cache or external oracle is absent, the canonical validation command fails with a
+clear prerequisite instead of silently running without the cited evidence.
 
 The full corner database covers 88,179,840 corner states. Expect roughly
 hundreds of megabytes of temporary working-set usage and a generated cache on
@@ -65,7 +68,7 @@ python scripts/verification/native_exact_validation.py --preset source-zip
 This smaller preset is not the canonical evidence for the thesis claim. It is
 the source-ZIP reproducible smoke check only; reviewers using the audit ZIP
 alone can execute this path, while the canonical native-exact claim requires the
-external/generated corner cache above.
+generated corner cache and external exact oracle above.
 
 ### `data/move_tables/` and `data/pruning_tables/`
 

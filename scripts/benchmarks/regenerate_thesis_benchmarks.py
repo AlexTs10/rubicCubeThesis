@@ -213,6 +213,8 @@ def write_combined_results(
                 "kociemba_timeout_grace",
                 "kociemba_effective_soft_timeout",
                 "timing_methodology",
+                "environment",
+                "external_exact_backend_provenance",
                 "scramble_depth_semantics",
                 "verified_scramble_depth_available",
             }:

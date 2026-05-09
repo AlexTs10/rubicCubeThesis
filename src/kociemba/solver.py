@@ -310,8 +310,8 @@ class KociembaSolver:
             cube: Scrambled cube to solve
             max_phase1_depth: Maximum depth for Phase 1 search
             max_phase2_depth: Maximum depth for Phase 2 search
-        timeout: Target time limit in seconds (soft limit; solver may use
-            up to timeout + timeout_grace before aborting)
+            timeout: Target time limit in seconds (soft limit; solver may use
+                up to timeout + timeout_grace before aborting)
             verbose: Whether to print progress
 
         Returns:
