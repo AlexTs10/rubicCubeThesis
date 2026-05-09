@@ -73,7 +73,7 @@ class AlgorithmResult:
     requested_scramble_length: Optional[int] = None
     verified_scramble_depth: Optional[int] = None
     scramble_depth_is_verified: bool = False
-    timing_method: str = "single-process sequential wall-clock; may include lazy-loading warmup"
+    timing_method: str = "single-process sequential perf_counter; may include lazy-loading warmup"
     memory_method: str = "process RSS delta in shared sequential process"
 
 
@@ -320,14 +320,14 @@ class AlgorithmComparison:
         """Test Thistlethwaite algorithm."""
         mem_before = self.process.memory_info().rss / 1024 / 1024
 
-        start_time = time.time()
+        start_time = time.perf_counter()
         try:
             result = self.thistlethwaite_solver.solve(
                 cube,
                 verbose=False,
                 max_time=self.thistlethwaite_timeout,
             )
-            elapsed = time.time() - start_time
+            elapsed = time.perf_counter() - start_time
 
             if result is None:
                 return AlgorithmResult(
@@ -368,7 +368,7 @@ class AlgorithmComparison:
             )
 
         except Exception as e:
-            elapsed = time.time() - start_time
+            elapsed = time.perf_counter() - start_time
             return AlgorithmResult(
                 algorithm="Thistlethwaite",
                 scramble_depth=scramble_depth,
@@ -386,7 +386,7 @@ class AlgorithmComparison:
         """Test Kociemba algorithm."""
         mem_before = self.process.memory_info().rss / 1024 / 1024
 
-        start_time = time.time()
+        start_time = time.perf_counter()
         try:
             self.kociemba_solver.last_backend_used = None
             # Solve - Kociemba solver expects RubikCube directly
@@ -397,7 +397,7 @@ class AlgorithmComparison:
                 timeout=self.kociemba_timeout,
                 verbose=False
             )
-            elapsed = time.time() - start_time
+            elapsed = time.perf_counter() - start_time
             backend = self._kociemba_backend_label(self.kociemba_solver.last_backend_used)
 
             # Result is tuple (solution, phase1_moves, phase2_moves) or None
@@ -440,7 +440,7 @@ class AlgorithmComparison:
             )
 
         except Exception as e:
-            elapsed = time.time() - start_time
+            elapsed = time.perf_counter() - start_time
             backend = self._kociemba_backend_label(self.kociemba_solver.last_backend_used)
             return AlgorithmResult(
                 algorithm="Kociemba",
@@ -459,7 +459,7 @@ class AlgorithmComparison:
         """Test the configured Korf backend."""
         mem_before = self.process.memory_info().rss / 1024 / 1024
 
-        start_time = time.time()
+        start_time = time.perf_counter()
         try:
             solve_stats: Dict[str, Any] = {}
 
@@ -476,7 +476,7 @@ class AlgorithmComparison:
             else:
                 solution = self.korf_solver.solve(cube)
 
-            elapsed = time.time() - start_time
+            elapsed = time.perf_counter() - start_time
 
             stats = self.korf_solver.get_statistics()
             if solve_stats:
@@ -527,7 +527,7 @@ class AlgorithmComparison:
             )
 
         except Exception as e:
-            elapsed = time.time() - start_time
+            elapsed = time.perf_counter() - start_time
             return AlgorithmResult(
                 algorithm="Korf_IDA*",
                 scramble_depth=scramble_depth,
@@ -750,6 +750,12 @@ class AlgorithmComparison:
                 'korf_pattern_db_status': self.korf_pattern_db_status,
                 'solver_instances_reused_per_batch': True,
                 'benchmark_warm_start': False,
+                'timer': "time.perf_counter",
+                'memory_methodology': (
+                    "Memory is recorded as process RSS before/after deltas in a "
+                    "shared sequential process. It is useful for coarse comparison "
+                    "only and is not isolated peak RSS per solver."
+                ),
                 'timing_methodology': (
                     "Solver instances are reused across scrambles within a batch. "
                     "Thistlethwaite and Kociemba still lazy-load heavy tables inside "

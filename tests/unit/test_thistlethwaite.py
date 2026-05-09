@@ -501,6 +501,7 @@ class TestThistlethwaiteSolver:
 class TestSolutionQuality:
     """Test solution quality and performance."""
 
+    @pytest.mark.slow
     def test_solution_length_bound(self):
         """Test that solutions stay within theoretical bounds."""
         solver = ThistlethwaiteSolver(use_pattern_databases=False)
@@ -523,6 +524,7 @@ class TestSolutionQuality:
                 assert len(phase_moves[2]) <= 25  # Phase 2: should be <= 15, but relaxed
                 assert len(phase_moves[3]) <= 30  # Phase 3: should be <= 17, but relaxed
 
+    @pytest.mark.slow
     def test_solution_correctness(self):
         """Test that all solutions correctly solve the cube."""
         solver = ThistlethwaiteSolver(use_pattern_databases=False)
@@ -544,6 +546,7 @@ class TestSolutionQuality:
                     f"Solution failed for scramble with seed {seed}"
 
 
+@pytest.mark.slow
 def test_integration_example():
     """Integration test: complete solve example."""
     # Create a scrambled cube

@@ -61,16 +61,29 @@ Kociemba \cite{kociemba_rubiks_optimal}, ο οποίος ενσωματώνετ�
     \item \filepath{results/benchmarks/thesis/thesis_bench_d20.json}
     \item \filepath{results/benchmarks/thesis/thesis_results_combined.json}
 \end{itemize}
-Κάθε εγγραφή περιέχει:
-\begin{enumerate}
-    \item το αναγνωριστικό του scramble,
-    \item την ακολουθία κινήσεων που χρησιμοποιήθηκε για το scramble,
-    \item τον χρόνο εκτέλεσης,
-    \item το μήκος λύσης,
-    \item την επιτυχία ή αποτυχία επίλυσης,
-    \item την κατανάλωση μνήμης σε επίπεδο process RSS,
-    \item και, για τον εξωτερικό exact backend, τον αριθμό των επεκταθέντων κόμβων.
-\end{enumerate}
+Κάθε εγγραφή περιέχει τα πεδία του Πίνακα~\ref{tab:eval_json_schema}.
+
+\begin{table}[htbp]
+\centering
+\footnotesize
+\caption{Κύρια πεδία του benchmark JSON που χρησιμοποιούνται για την αναπαραγωγή των αποτελεσμάτων του Κεφαλαίου~7.}
+\label{tab:eval_json_schema}
+\begin{tabularx}{\textwidth}{>{\ttfamily\RaggedRight\arraybackslash}p{4.0cm} Y}
+\toprule
+\normalfont\textbf{Πεδίο} & \textbf{Ρόλος στην αξιολόγηση} \\
+\midrule
+scramble\_id, requested\_scramble\_length & Ταυτότητα περίπτωσης και ζητούμενο μήκος παραγωγής scramble. \\
+scramble\_moves & Ακολουθία κινήσεων με την οποία παράγεται η αρχική κατάσταση. \\
+solved, reason\_failed & Επιτυχία επίλυσης ή αιτία αποτυχίας/timeout. \\
+time\_seconds & Χρόνος επίλυσης από τον benchmark harness. \\
+solution\_length, solution\_moves & Μήκος και ακολουθία επιστρεφόμενης λύσης, όταν υπάρχει. \\
+memory\_mb & Διαφορά process RSS στο κοινό benchmark process. \\
+nodes\_explored & Κόμβοι που καταγράφηκαν για την εξωτερική exact διαδρομή, όταν διατίθενται. \\
+backend, optimal\_guaranteed & Backend που παρήγαγε το αποτέλεσμα και δήλωση εγγύησης βέλτιστης λύσης. \\
+verified\_scramble\_depth, scramble\_depth\_is\_verified & Βέλτιστη απόσταση που επαληθεύεται μόνο όταν ολοκληρώνεται η exact διαδρομή. \\
+\bottomrule
+\end{tabularx}
+\end{table}
 
 Αξίζει να σημειωθεί ότι το \textbf{ζητούμενο μήκος scramble} δεν ταυτίζεται απαραίτητα με τη βέλτιστη απόσταση της κατάστασης από τη λύση. Για παράδειγμα, ένα scramble 10 κινήσεων μπορεί να καταλήξει σε κατάσταση που επιλύεται βέλτιστα σε λιγότερες από 10 κινήσεις λόγω αμοιβαίων αναιρέσεων ή πλεοναζουσών μετακινήσεων. Το checked-in corpus είναι legacy corpus που επιτρέπει πλεονασμό γειτονικών κινήσεων του ίδιου face· επομένως, το benchmark συγκρίνει τους αλγορίθμους σε ελεγχόμενο corpus με συγκεκριμένο \emph{requested scramble length} και όχι σε ομοιόμορφα δειγματοληπτημένες καταστάσεις ακριβούς βέλτιστου βάθους. Αυτό εξηγεί γιατί ο εξωτερικός exact backend, όταν επιτυγχάνει επίλυση, επιστρέφει συχνά λύσεις μικρότερου μήκους από το ζητούμενο μήκος scramble.
 
@@ -113,7 +126,10 @@ Kociemba \cite{kociemba_rubiks_optimal}, ο οποίος ενσωματώνετ�
 artifact του thesis benchmark. Για την αποφυγή υπερ-ερμηνείας, οι μέσοι όροι
 πρέπει να διαβάζονται μαζί με τα boxplots/ιστογράμματα των σχημάτων, τους
 ρητούς timeout περιορισμούς και τις robust περιγραφικές μετρικές του
-Πίνακα~\ref{tab:eval_robust_summary}.
+Πίνακα~\ref{tab:eval_robust_summary}. Το artifact δεν περιέχει επαναλήψεις
+ανά scramble, confidence intervals ή χωριστές cold/warm χρονομετρήσεις· οι
+μετρήσεις χρόνου είναι single-run, batch-amortized παρατηρήσεις για το
+συγκεκριμένο περιβάλλον.
 
 \begin{table}[htbp]
 \centering
@@ -322,11 +338,11 @@ baseline αυτή μετράται μέσω του εξωτερικού backend
 
 \subsection{Πρακτικές Συστάσεις}
 
-Με βάση τα παραπάνω, ο Πίνακας~\ref{tab:eval_recommendations} συνοψίζει την καταλληλότητα κάθε αλγορίθμου ανά περίπτωση χρήσης.
+Με βάση τα παραπάνω, ο Πίνακας~\ref{tab:eval_recommendations} συνοψίζει την καταλληλότητα κάθε αλγορίθμου ανά περίπτωση χρήσης \emph{μόνο} για το σταθερό legacy corpus, τα συγκεκριμένα timeouts, τα backend choices και την πλατφόρμα μέτρησης της παρούσας εργασίας.
 
 \begin{table}[htbp]
 \centering
-\caption{Οδηγός επιλογής αλγορίθμου}
+\caption{Οδηγός επιλογής αλγορίθμου για το σταθερό legacy corpus και τα όρια πόρων της παρούσας αξιολόγησης}
 \label{tab:eval_recommendations}
 \begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{3.8cm} >{\RaggedRight\arraybackslash}p{2.6cm} Y}
 \toprule
@@ -349,7 +365,7 @@ baseline αυτή μετράται μέσω του εξωτερικού backend
     \item \textbf{One-time preprocessing}: οι αναφερόμενοι χρόνοι εξακολουθούν να περιλαμβάνουν το αρχικό κόστος φόρτωσης για τους solvers που κάνουν lazy loading, άρα αναμιγνύουν cold-start και warm-start επιδράσεις. Μια αυστηρότερη μελλοντική εκτέλεση πρέπει να αναφέρει χωριστά cold-start και warm-start timings ή να εκτελεί τεκμηριωμένο warmup πριν από τις χρονομετρήσεις.
     \item \textbf{Requested scramble length}: τα επίπεδα 5/10/15/20 δηλώνουν μήκος παραγωγής scramble, όχι εγγυημένη βέλτιστη απόσταση από τη λυμένη κατάσταση.
     \item \textbf{Random scrambles}: δεν εξετάστηκαν ειδικές ακραίες καταστάσεις όπως superflip ή hand-crafted hard instances.
-    \item \textbf{Memory metric noise}: η process-level μέτρηση RSS προέρχεται από κοινή σειριακή διεργασία με επαναχρησιμοποιημένα solver instances. Είναι επαρκής μόνο για χονδρική σύγκριση και όχι για isolated peak-RSS συμπεράσματα ανά solver.
+    \item \textbf{Memory metric noise}: η process-level μέτρηση RSS προέρχεται από κοινή σειριακή διεργασία με επαναχρησιμοποιημένα solver instances. Είναι επαρκής μόνο ως ποιοτική ένδειξη τάξης μεγέθους και όχι για isolated peak-RSS συμπεράσματα ανά solver.
 \end{itemize}
 
 \section{Σύνοψη}

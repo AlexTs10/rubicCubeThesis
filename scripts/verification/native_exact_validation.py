@@ -35,6 +35,19 @@ CANONICAL_PRESET = {
     "corner_db_path": "data/pattern_databases/corner_db.pkl",
     "disable_corner_db": False,
 }
+SOURCE_ZIP_PRESET_NAME = "source_zip_smoke_no_corner_db"
+SOURCE_ZIP_PRESET = {
+    "exhaustive_depth": 2,
+    "oracle_depths": [],
+    "oracle_samples_per_depth": 0,
+    "max_depth": 6,
+    "timeout": 5.0,
+    "seed": 42,
+    "heuristic_cache_dir": "data/pattern_databases/native_exact",
+    "corner_db_path": None,
+    "disable_corner_db": True,
+    "minimal_heuristic": True,
+}
 
 
 @dataclass
@@ -52,6 +65,23 @@ class ValidationCase:
     expected_depth: int
     use_oracle: bool
     category: str
+
+
+class ZeroHeuristic:
+    """Source-ZIP smoke heuristic that avoids generated coordinate-table caches."""
+
+    def __call__(self, cubie: CubieCube) -> int:
+        return 0
+
+    def breakdown(self, cubie: CubieCube) -> Dict[str, int]:
+        return {"zero": 0}
+
+    def get_statistics(self) -> Dict[str, object]:
+        return {
+            "mode": "zero_heuristic_source_zip_smoke",
+            "corner_pattern_db_loaded": False,
+            "corner_pattern_db_complete": False,
+        }
 
 
 def _state_key(cubie: CubieCube) -> bytes:
@@ -192,6 +222,9 @@ def apply_preset(args: argparse.Namespace) -> argparse.Namespace:
     if args.preset == "canonical":
         for key, value in CANONICAL_PRESET.items():
             setattr(args, key, list(value) if isinstance(value, tuple) else value)
+    elif args.preset == "source-zip":
+        for key, value in SOURCE_ZIP_PRESET.items():
+            setattr(args, key, list(value) if isinstance(value, tuple) else value)
     return args
 
 
@@ -205,12 +238,17 @@ def validate_corpus(
     heuristic_cache_dir: str,
     corner_db_path: Optional[str],
     disable_corner_db: bool,
+    minimal_heuristic: bool = False,
     require_corner_db: bool = False,
 ) -> Dict:
-    heuristic = NativeCoordinateHeuristic(
-        cache_dir=heuristic_cache_dir,
-        corner_db_path=None if disable_corner_db else corner_db_path,
-        load_corner_db_if_available=not disable_corner_db,
+    heuristic = (
+        ZeroHeuristic()
+        if minimal_heuristic
+        else NativeCoordinateHeuristic(
+            cache_dir=heuristic_cache_dir,
+            corner_db_path=None if disable_corner_db else corner_db_path,
+            load_corner_db_if_available=not disable_corner_db,
+        )
     )
     if require_corner_db:
         if disable_corner_db:
@@ -325,11 +363,12 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--preset",
-        choices=("manual", "canonical"),
+        choices=("manual", "canonical", "source-zip"),
         default="canonical",
         help=(
             "Named validation preset. The default 'canonical' preset reproduces "
-            "the thesis corpus and report schema."
+            "the thesis corpus and report schema. 'source-zip' is a smaller "
+            "fully contained smoke preset that does not require corner_db.pkl."
         ),
     )
     parser.add_argument("--exhaustive-depth", type=int, default=3)
@@ -354,6 +393,11 @@ def main() -> None:
         help="Force validation to use only the smaller coordinate heuristic tables",
     )
     parser.add_argument(
+        "--minimal-heuristic",
+        action="store_true",
+        help="Use a zero heuristic for tiny source-ZIP smoke validation without generated move-table caches.",
+    )
+    parser.add_argument(
         "--output-dir",
         default="results/validation/native_exact",
         help="Directory for JSON validation artifacts",
@@ -372,7 +416,11 @@ def main() -> None:
         oracle_depths=args.oracle_depths,
         oracle_samples_per_depth=args.oracle_samples_per_depth,
         seed=args.seed,
-        preset=CANONICAL_PRESET_NAME if args.preset == "canonical" else None,
+        preset=(
+            CANONICAL_PRESET_NAME
+            if args.preset == "canonical"
+            else SOURCE_ZIP_PRESET_NAME if args.preset == "source-zip" else None
+        ),
     )
     corpus_generation.update(
         {
@@ -385,12 +433,13 @@ def main() -> None:
     report = validate_corpus(
         corpus,
         corpus_generation=corpus_generation,
-        use_oracle=OPTIMAL_AVAILABLE,
+        use_oracle=OPTIMAL_AVAILABLE and bool(random_corpus),
         max_depth=args.max_depth,
         timeout=args.timeout,
         heuristic_cache_dir=args.heuristic_cache_dir,
         corner_db_path=args.corner_db_path,
         disable_corner_db=args.disable_corner_db,
+        minimal_heuristic=args.minimal_heuristic,
         require_corner_db=args.preset == "canonical",
     )
 

@@ -181,8 +181,8 @@
     \item μια \emph{εγγενή} ακριβή διαδρομή (\filepath{src/korf/native_exact_solver.py}) με παραδεκτές ευρετικές συντεταγμένων (\filepath{src/korf/native_coordinate_heuristic.py}), προαιρετική εγγενή υποστήριξη corner PDB (\filepath{src/korf/corner_database.py}) μόνο όταν υπάρχει πλήρης cache, και API ακριβούς απόστασης κινήσεων,
     \item και έναν \emph{εξωτερικό} ήδη επαληθευμένο optimal backend για τα βαθύτερα benchmark αποτελέσματα και για oracle cross-checks.
 \end{itemize}
-Η native διαδρομή έχει επικυρωθεί εξαντλητικά σε 3.501 μοναδικές καταστάσεις
-έως βάθος 3. Σε corpus 3.513 περιπτώσεων, το native corner PDB support μείωσε
+Η native διαδρομή έχει επικυρωθεί εξαντλητικά σε 3.501 μη λυμένες καταστάσεις
+βάθους 1--3. Σε corpus 3.513 περιπτώσεων, το native corner PDB support μείωσε
 τις αποτυχίες υπό όριο 20\,s από 3 σε 1 και επέτρεψε την ολοκλήρωση sampled
 generated-length-9 περιπτώσεων που η μικρότερη παραδεκτή ευρετική δεν έλυνε.
 Το εναπομένον timeout είναι περίπτωση επικύρωσης παραγόμενου μήκους 8· το
@@ -219,7 +219,8 @@ generated-length-9 περιπτώσεων που η μικρότερη παρα�
 
 \section{Υποδομή Δοκιμών και Αναπαραγωγιμότητας}
 
-Η ποιότητα της υλοποίησης υποστηρίζεται από \textbf{291 συλλεγόμενα tests}.
+Η ποιότητα της υλοποίησης υποστηρίζεται από test suite του οποίου το ακριβές
+πλήθος αναπαράγεται με \texttt{python -m pytest tests --collect-only -q}.
 Η κύρια οργάνωση βρίσκεται στους καταλόγους \filepath{tests/unit/} και
 \filepath{tests/integration/}, ενώ διατηρείται και το top-level regression test
 \filepath{tests/test_facelet_cubie_conversion.py}. Το προεπιλεγμένο προφίλ

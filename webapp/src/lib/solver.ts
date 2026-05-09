@@ -1,4 +1,4 @@
-import { Algorithm, CubeState, Move, SolveResult } from '@/types/cube';
+import type { Algorithm, CubeState, Move, SolveResult } from '@/types/cube';
 import { applyMoves, isSolved, inverseMoves } from './cube';
 import { SOLVED_STATE } from './constants';
 

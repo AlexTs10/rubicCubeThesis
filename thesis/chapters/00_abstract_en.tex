@@ -11,28 +11,27 @@ This diploma thesis addresses the implementation and comparative evaluation of t
 \begin{itemize}
     \item \textbf{Thistlethwaite's algorithm} (1981), which uses four successive phases to gradually reduce the search space.
     \item \textbf{Kociemba's algorithm} (1992), which reduces the search to two phases and produces near-optimal solutions in practice.
-    \item \textbf{Korf's algorithm} (1997), which provides the optimal-search framework based on IDA* and pattern databases; the repository now contains a native cubie-level exact solver path with admissible coordinate heuristics and native corner pattern database support, while the canonical deep benchmark pipeline still uses an external exact backend compatible with Korf's method.
+    \item \textbf{Korf's algorithm} (1997), which provides the optimal-search framework based on IDA* and pattern databases.
 \end{itemize}
 
-Additionally, a distance-estimation component and several exploratory heuristic
-functions were implemented for search analysis. These components provide
-practical estimates of distance from the solved state rather than a general
-exact distance oracle. In parallel, the repository now exposes a native exact
-move-distance API for completed native runs. A composite heuristic was also
-developed as a state-aware exploratory estimate, while the deepest optimality
-benchmarks of the thesis continue to rely on the external Korf-compatible
-backend.
+The work combines a shared cube representation, independently implemented
+solver paths, benchmark tooling, validation scripts, and educational interfaces
+to study the practical trade-offs between solution quality, runtime, memory
+use, and optimality guarantees.
 
 Experimental evaluation confirms that:
 \begin{itemize}
     \item Thistlethwaite's corrected pure implementation solves all 100 benchmark scrambles, but with substantially longer solutions than the other two methods.
     \item Kociemba's algorithm achieves 100\% success on the benchmark corpus with average solution length 14.33 moves.
     \item The external exact backend used for the Korf benchmark path solves 97/100 benchmark scrambles within the enforced 120-second limit and returns optimal solutions whenever it completes.
-    \item The native exact solver is exhaustively validated on 3,501 unique states up to depth 3. On a reproducible 3,513-case validation corpus, enabling the native corner pattern database support reduces native failures under a 20-second limit from 3 to 1 and solves sampled generated-length-9 states that the smaller heuristic times out on. The remaining timeout is a generated-length-8 validation case whose exact depth and edge-dominance interpretation are not independently recorded in the stored oracle fields.
+    \item The native exact solver is exhaustively validated on 3,501 non-solved states at depths 1--3. On a reproducible 3,513-case validation corpus, enabling the native corner pattern database support reduces native failures under a 20-second limit from 3 to 1.
     \item In the implemented A*/IDA* baseline comparison, IDA* uses less memory than the included A* implementation, at the cost of repeated node expansions.
 \end{itemize}
 
-The implementation includes a comprehensive test suite whose default fast profile excludes heavyweight cache-building tests, interactive web applications for demonstration, and educational materials in the form of Jupyter notebooks.
+The implementation includes an extensive test suite with separate fast, slow,
+external-backend, and cache-building validation profiles, interactive
+applications for demonstration, and educational materials in the form of
+Jupyter notebooks.
 
 \vspace{1cm}
 \noindent\textbf{Keywords:} Rubik's Cube, search algorithms, IDA*, A*, pattern databases, heuristic functions, group theory, optimal solving

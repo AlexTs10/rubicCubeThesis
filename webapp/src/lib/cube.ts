@@ -1,4 +1,4 @@
-import { CubeState, Face, FaceColor, Move } from '@/types/cube';
+import type { CubeState, Face, FaceColor, Move } from '@/types/cube';
 import { SOLVED_STATE } from './constants';
 
 // Deep clone a cube state

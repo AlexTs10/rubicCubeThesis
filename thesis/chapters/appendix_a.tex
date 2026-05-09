@@ -34,8 +34,18 @@ python verify_setup.py
 
 \subsection{Εκτέλεση Test Suite}
 
+Το ακόλουθο command εκτελεί το προεπιλεγμένο γρήγορο προφίλ αναπαραγωγιμότητας.
+Οι αργές δοκιμές solver-quality, τα external backends και οι cache-building
+δοκιμές είναι opt-in marker profiles.
+
 \begin{lstlisting}
 python -m pytest tests -q
+\end{lstlisting}
+
+\begin{lstlisting}
+python -m pytest tests -q -m slow
+python -m pytest tests -q -m external
+python -m pytest tests -q -m cache_building
 \end{lstlisting}
 
 \section{Βασική Χρήση}

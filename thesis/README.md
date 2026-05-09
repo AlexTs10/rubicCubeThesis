@@ -40,7 +40,7 @@ From the repository root:
 python scripts/thesis_workflow.py build --mode auto
 ```
 
-`build --mode auto` is the documented review-build path. It prefers `latexmk -xelatex` when available, then a manual `xelatex` + bibliography pass sequence, then the tested local `tectonic` path, and finally Docker. Do not use `pdflatex` for this manuscript because Greek/Unicode listing content requires a Unicode-capable engine.
+`build --mode auto` is the documented review-build path. It prefers `latexmk -xelatex` when available, then a manual `xelatex` + bibliography pass sequence, then the tested local `tectonic` path, and finally Docker. Do not use `pdflatex` for this manuscript because Greek/Unicode listing content requires a Unicode-capable engine. If none of local TeX, Tectonic, or a running Docker daemon is available, the command fails explicitly instead of pretending that the checked-in PDF was rebuilt.
 
 From `thesis/`:
 
@@ -62,6 +62,12 @@ Docker mode builds the default image from `docker/thesis.Dockerfile` in this
 repository and then runs `latexmk -xelatex` inside that image. This keeps the
 review build path source-defined when the host machine does not already have a
 TeX installation.
+
+The Docker route requires Docker Engine/OrbStack/Colima to be installed and the
+daemon to be running before `build --mode docker` is invoked. A machine without
+any local TeX engine and without a running container runtime can still inspect
+the checked-in `thesis/main.pdf`, but cannot independently rebuild it until one
+of those prerequisites is installed.
 
 If Docker is installed but not running on macOS, start it with:
 

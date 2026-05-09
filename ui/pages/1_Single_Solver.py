@@ -135,11 +135,19 @@ if st.sidebar.button("🎲 Generate New Scramble", use_container_width=True):
         if custom_moves:
             moves = custom_moves.split()
             applied_moves = []
+            legal_moves = {
+                f"{face}{modifier}"
+                for face in ("U", "D", "F", "B", "L", "R")
+                for modifier in ("", "'", "2")
+            }
             for move in moves:
+                if move not in legal_moves:
+                    st.sidebar.error(f"Invalid move: {move}")
+                    continue
                 try:
                     st.session_state.cube.apply_move(move)
                     applied_moves.append(move)
-                except:
+                except ValueError:
                     st.sidebar.error(f"Invalid move: {move}")
             st.session_state.scramble_moves = applied_moves
     elif scramble_method == "Seeded Random":

@@ -47,6 +47,23 @@ because it is a large cache artifact. If the cache is absent, the canonical
 validation command fails with a clear prerequisite instead of silently running
 without the cited cache.
 
+The full corner database covers 88,179,840 corner states. Expect roughly
+hundreds of megabytes of temporary working-set usage and a generated cache on
+the order of 100 MB; generation time is machine-dependent and should be treated
+as a heavyweight cache-building step rather than part of the default review
+profile.
+
+For a source-ZIP-contained smoke validation that does not require the large
+corner cache, run:
+
+```bash
+python scripts/verification/native_exact_validation.py --preset source-zip
+```
+
+This smaller preset is not the canonical evidence for the thesis claim, but it
+allows reviewers to execute the native exact validation path from the audit ZIP
+alone.
+
 ### `data/move_tables/` and `data/pruning_tables/`
 
 Legacy/shared caches created by earlier solver generations. They are still used by parts of the codebase and should be treated as generated artifacts, not handwritten source files.

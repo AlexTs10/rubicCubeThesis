@@ -55,6 +55,10 @@ EXCLUDED_PATH_SUFFIXES = {
     "thesis/main-blx.bib",
 }
 
+EXCLUDED_PATH_PREFIXES = {
+    "agent_workflow/generated/",
+}
+
 
 def is_included(path: Path) -> bool:
     relative_parts = path.relative_to(ROOT).parts
@@ -63,6 +67,8 @@ def is_included(path: Path) -> bool:
     if any(part.endswith((".egg-info", ".dist-info")) for part in relative_parts):
         return False
     relative_path = path.relative_to(ROOT).as_posix()
+    if any(relative_path.startswith(prefix) for prefix in EXCLUDED_PATH_PREFIXES):
+        return False
     if any(relative_path.endswith(suffix) for suffix in EXCLUDED_PATH_SUFFIXES):
         return False
     if path.suffix.lower() == ".pdf" and relative_parts[:1] == ("papers",):
@@ -114,9 +120,11 @@ def main() -> None:
             "parts": sorted(EXCLUDED_PARTS),
             "suffixes": sorted(EXCLUDED_SUFFIXES),
             "path_suffixes": sorted(EXCLUDED_PATH_SUFFIXES),
+            "path_prefixes": sorted(EXCLUDED_PATH_PREFIXES),
             "notes": [
                 "papers/**/*.pdf is excluded from audit archives; papers/ documents remain as bibliography metadata.",
                 "data/pattern_databases/*.pkl is generated cache data and is excluded from audit archives.",
+                "agent_workflow/generated/ is local workflow output and is excluded to avoid host-specific validation snapshots.",
             ],
         },
         "file_count": len(file_hashes),

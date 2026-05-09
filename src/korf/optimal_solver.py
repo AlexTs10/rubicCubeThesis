@@ -1,23 +1,15 @@
 """
-Korf's Optimal Solver using Pattern Databases
+Wrapper around an optional Korf-style exact backend.
 
-This module implements an optimal solver for the Rubik's Cube using
-Richard Korf's IDA* algorithm with pattern databases. This guarantees
-optimal solutions (minimum number of moves).
+This module does not implement the heavy optimal-search engine directly. It
+loads the optional `RubikOptimal` package lazily and provides repository-local
+timeout handling, cube-state conversion, statistics extraction, and result
+normalization for the thesis benchmark path.
 
-Uses the optional `RubikOptimal` package (imported as `optimal.solver` in
-the common distribution) which implements:
-- Pattern databases for corners (~42MB) and edges (~244MB each)
-- IDA* search with additive heuristics
-- Guaranteed optimal solutions (≤20 moves)
-
-The backend is loaded lazily when `KorfOptimalSolver` is instantiated so that
-importing `src.korf` does not trigger any heavy table-generation side effects.
-
-Performance:
-- PyPy: ~13 minutes for 10 random cubes
-- CPython: ~8 hours for 10 random cubes (not recommended)
-- Hardest positions (20 moves): ~3 hours with PyPy
+The backend uses IDA* with pattern databases and returns optimal solutions when
+it completes. Runtime depends on the installed backend, Python implementation,
+generated tables, and input depth, so thesis-facing performance claims should
+come from the checked-in benchmark artifacts rather than this docstring.
 
 References:
 - Korf, R. (1997). "Finding Optimal Solutions to Rubik's Cube Using Pattern Databases"
@@ -81,10 +73,10 @@ def _optimal_backend_worker(cube_string: str, conn) -> None:
 
 class KorfOptimalSolver:
     """
-    Optimal solver using Korf's IDA* algorithm with pattern databases.
+    Adapter for the optional RubikOptimal exact backend.
 
-    This solver guarantees finding the shortest solution but may take
-    significant time for difficult positions.
+    Completed backend runs return shortest solutions. Difficult positions may
+    exceed the configured timeout or require backend-generated tables.
     """
 
     def __init__(self):

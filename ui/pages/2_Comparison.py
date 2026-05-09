@@ -43,6 +43,14 @@ def _optimality_label(algo_result) -> str:
         return "Not guaranteed"
     return "Unknown"
 
+
+def _format_memory_mb(value) -> str:
+    """Format optional memory deltas for Streamlit tables."""
+    if value is None:
+        return "N/A"
+    return f"{value:.2f}"
+
+
 # Page config
 st.set_page_config(page_title="Algorithm Comparison", page_icon="⚖️", layout="wide")
 
@@ -166,7 +174,7 @@ if st.session_state.comparison_results:
             st.success("✅ Solved")
             st.metric("Moves", r.solution_length)
             st.metric("Time", f"{r.time_seconds:.3f}s")
-            st.metric("Memory", f"{r.memory_mb:.2f} MB")
+            st.metric("Memory", f"{_format_memory_mb(r.memory_mb)} MB" if r.memory_mb is not None else "N/A")
             if r.nodes_explored:
                 st.metric("Nodes", f"{r.nodes_explored:,}")
         else:
@@ -181,7 +189,7 @@ if st.session_state.comparison_results:
             st.success("✅ Solved")
             st.metric("Moves", r.solution_length)
             st.metric("Time", f"{r.time_seconds:.3f}s")
-            st.metric("Memory", f"{r.memory_mb:.2f} MB")
+            st.metric("Memory", f"{_format_memory_mb(r.memory_mb)} MB" if r.memory_mb is not None else "N/A")
             if r.nodes_explored:
                 st.metric("Nodes", f"{r.nodes_explored:,}")
         else:
@@ -199,7 +207,7 @@ if st.session_state.comparison_results:
             st.success("✅ Solved")
             st.metric("Moves", r.solution_length)
             st.metric("Time", f"{r.time_seconds:.3f}s")
-            st.metric("Memory", f"{r.memory_mb:.2f} MB")
+            st.metric("Memory", f"{_format_memory_mb(r.memory_mb)} MB" if r.memory_mb is not None else "N/A")
             if r.nodes_explored:
                 st.metric("Nodes", f"{r.nodes_explored:,}")
             st.caption(f"Backend: {_backend_label(r)} | {_optimality_label(r)}")
@@ -226,7 +234,7 @@ if st.session_state.comparison_results:
                 "Solved": "✅",
                 "Moves": algo_result.solution_length,
                 "Time (s)": f"{algo_result.time_seconds:.3f}",
-                "Memory (MB)": f"{algo_result.memory_mb:.2f}",
+                "Memory (MB)": _format_memory_mb(algo_result.memory_mb),
                 "Nodes": algo_result.nodes_explored or "N/A",
                 "Backend": _backend_label(algo_result),
                 "Optimality": _optimality_label(algo_result),
@@ -237,7 +245,7 @@ if st.session_state.comparison_results:
                 "Solved": "❌",
                 "Moves": "-",
                 "Time (s)": f"{algo_result.time_seconds:.3f}",
-                "Memory (MB)": f"{algo_result.memory_mb:.2f}",
+                "Memory (MB)": _format_memory_mb(algo_result.memory_mb),
                 "Nodes": "-",
                 "Backend": _backend_label(algo_result),
                 "Optimality": _optimality_label(algo_result),
@@ -273,8 +281,12 @@ if st.session_state.comparison_results:
 
         # Least memory
         with col3:
-            winner = min(solved_results, key=lambda x: x[1].memory_mb)
-            st.success(f"**Least Memory**\n\n{winner[0]}\n\n{winner[1].memory_mb:.2f} MB")
+            memory_results = [item for item in solved_results if item[1].memory_mb is not None]
+            if memory_results:
+                winner = min(memory_results, key=lambda x: x[1].memory_mb)
+                st.success(f"**Least Memory**\n\n{winner[0]}\n\n{winner[1].memory_mb:.2f} MB")
+            else:
+                st.info("**Least Memory**\n\nN/A")
 
     # Solution sequences
     st.markdown("---")

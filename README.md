@@ -13,9 +13,9 @@ This repository contains the implementation, evaluation, and thesis manuscript f
 - Kociemba's 2-phase algorithm
 - Korf-style optimal search with pattern databases
 
-Generated artifacts such as `thesis/main.pdf`, benchmark outputs under `results/benchmarks/thesis/`, and workflow outputs under `agent_workflow/generated/` are not the source of truth. The source of truth lives in `src/`, `tests/`, `scripts/`, `docs/`, and `thesis/`.
+Source code, tests, scripts, documentation, and LaTeX sources are the editable source of truth. Checked-in benchmark JSON under `results/benchmarks/thesis/` is the canonical evidence for the submitted Chapter 7 benchmark results and can be regenerated with the documented benchmark scripts. Generated PDFs and workflow snapshots under `agent_workflow/generated/` are local outputs, not portable authority.
 
-For final thesis benchmark claims, use the checked-in benchmark artifacts under `results/benchmarks/thesis/` and the thesis text in `thesis/chapters/07_evaluation.tex`. Do not cite ad hoc demo output or legacy benchmark scripts as final results.
+For final thesis benchmark claims, use the checked-in benchmark artifacts under `results/benchmarks/thesis/` together with the thesis text in `thesis/chapters/07_evaluation.tex`. Do not cite ad hoc demo output or legacy benchmark scripts as final results.
 
 The Next.js frontend under `webapp/` is a synthetic preview layer for demos and presentations. Its move sequences are generated preview outputs rather than live solver telemetry, so use the Python benchmark artifacts and thesis sources when you need authoritative results.
 
@@ -40,9 +40,10 @@ python scripts/create_audit_zip.py
 
 Use `requirements.lock` as the pinned Python dependency snapshot for the audited
 environment. It is not a cryptographic lock file: it does not include hashes,
-platform markers, Python ABI constraints, TeX/Tectonic versions, or Node/npm
-versions. Use `requirements.txt` only when you need a flexible dependency range
-for local development.
+platform markers, Python ABI constraints, or TeX/Tectonic versions. Node and npm
+are pinned for the preview app with `.nvmrc` and `webapp/package.json`
+(`packageManager`). Use `requirements.txt` only when you need a flexible
+dependency range for local development.
 
 The default pytest/verification profile is intentionally the fast reproducibility profile. It excludes tests marked `slow`, `external`, or `cache_building`; run those markers explicitly only when validating generated caches or external backends.
 
@@ -63,12 +64,18 @@ The archive-verifiable source manifest is written to
 rubicCubeThesis/
 ├── src/                        # Solver implementations and evaluation code
 ├── tests/                      # Unit and integration tests
+├── data/                       # Generated-cache documentation and excluded large databases
 ├── demos/                      # Runnable demo scripts
+├── docker/                     # Source-defined thesis build container
 ├── docs/                       # Technical docs and supporting notes
+├── figures/                    # Thesis and benchmark figures
+├── notebooks/                  # Educational and exploratory notebooks
 ├── papers/                     # Bibliography notes; local PDFs are excluded from audit ZIPs
 ├── scripts/                    # Workflow, benchmarking, and utility scripts
 ├── results/                    # Benchmark outputs and generated reports
 ├── thesis/                     # LaTeX manuscript and references
+├── ui/                         # Streamlit execution UI
+├── webapp/                     # Next.js synthetic preview app
 └── agent_workflow/             # Repo-local thesis workflow prompts and outputs
 ```
 
@@ -125,7 +132,7 @@ These generated results are local evidence, not a portable source of truth. Re-r
 the commands below in a clean Python 3.12 environment for the current machine.
 
 - `python -m pytest tests --collect-only -q` reports the collected test count for the current checkout; the default fast profile excludes `slow`, `external`, and `cache_building`
-- `python -m pytest tests -q` runs the supported fast profile; expected runtime is several minutes on an Apple M3-class laptop because it still executes deterministic solver smoke tests
+- `python -m pytest tests -q` runs the supported fast profile; heavyweight solver-quality, external-backend, and cache-generation checks are opt-in marker profiles
 - `python verify_setup.py` runs the same fast test profile by default; use `--full` only for heavyweight local validation
 - `cd webapp && npm ci && npm run build` succeeds from a clean dependency install
 - `python scripts/thesis_workflow.py build --mode auto` rebuilds `thesis/main.pdf` with local TeX/Tectonic when available, or with the repo-local Docker image from `docker/thesis.Dockerfile` when Docker is running

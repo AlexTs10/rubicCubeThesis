@@ -1,4 +1,4 @@
-import { Algorithm, AlgorithmInfo, CubeState, FaceColor } from '@/types/cube';
+import type { Algorithm, AlgorithmInfo, CubeState, FaceColor } from '@/types/cube';
 
 // Color mapping for rendering
 export const COLOR_MAP: Record<FaceColor, string> = {

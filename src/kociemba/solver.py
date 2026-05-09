@@ -15,7 +15,9 @@ Algorithm Overview:
    - Search space: 19,508,428,800 parity-valid states before pruning
    - Uses only U, U2, U', D, D2, D', R2, L2, F2, and B2
 
-Total: Max 30 moves theoretically, typically <19 moves in practice
+Total: Max 30 moves theoretically. The thesis benchmark treats this as a
+near-optimal practical solver and reports corpus-dependent means up to about
+22 moves at requested scramble length 20.
 """
 
 import multiprocessing
