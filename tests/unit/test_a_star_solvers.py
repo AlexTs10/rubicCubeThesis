@@ -295,6 +295,10 @@ class TestIDAStarSolver:
 
         # Should timeout quickly
         assert elapsed_time < 1.0
+        stats = solver.get_statistics()
+        assert stats['timed_out'] is True
+        assert stats['solution_found'] is False
+        assert stats['depth_limit_reached'] is False
 
 
 class TestSolverComparison:

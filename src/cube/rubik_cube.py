@@ -72,7 +72,9 @@ class RubikCube:
             state: Optional pre-existing state. If None, creates a solved cube.
         """
         if state is not None:
-            self.state = state.copy()
+            candidate = np.array(state, copy=True)
+            self._validate_state(candidate)
+            self.state = candidate.astype(int, copy=False)
         else:
             # Create solved cube: each face shows its own color
             self.state = np.zeros((6, 9), dtype=int)
@@ -84,6 +86,25 @@ class RubikCube:
         self._scramble_moves: List[str] = []
         self._scramble_depth: int = 0
         self._scramble_seed: Optional[int] = None
+
+    @staticmethod
+    def _validate_state(state: np.ndarray) -> None:
+        """Reject malformed externally supplied facelet arrays."""
+        if state.shape != (6, 9):
+            raise ValueError("Cube state must have shape (6, 9)")
+        if not np.issubdtype(state.dtype, np.integer):
+            raise ValueError("Cube state must contain integer color values")
+        if np.any((state < 0) | (state > 5)):
+            raise ValueError("Cube state color values must be integers in the range 0..5")
+
+        counts = np.bincount(state.ravel(), minlength=6)
+        if len(counts) != 6 or not np.all(counts == 9):
+            raise ValueError("Cube state must contain exactly nine stickers of each color")
+
+        centers = state[:, 4]
+        expected_centers = np.array([face.value for face in Face])
+        if not np.array_equal(centers, expected_centers):
+            raise ValueError("Cube state centers must match the fixed face ordering")
 
     def copy(self) -> 'RubikCube':
         """Create a deep copy of the cube."""

@@ -25,6 +25,8 @@ from typing import List, Callable, Optional, Dict, Any, Tuple
 from dataclasses import dataclass, field
 from ..cube.rubik_cube import RubikCube
 
+_IDA_TIMEOUT = object()
+
 
 @dataclass(order=True)
 class SearchNode:
@@ -283,7 +285,9 @@ class AStarSolver:
             'total_states_stored': self.max_open_size + self.max_closed_size,
             'time_elapsed': elapsed_time,
             'nodes_per_second': self.nodes_explored / elapsed_time if elapsed_time > 0 else 0,
+            'approximate_memory_mb': (self.max_open_size + self.max_closed_size) / 100.0,
             'estimated_memory_mb': (self.max_open_size + self.max_closed_size) / 100.0,
+            'memory_metric_kind': 'approximate_state_count',
             'heuristic_is_admissible': self.heuristic_is_admissible,
             'optimality_guarantee': self.heuristic_is_admissible,
             'reopens_improved_states': True,
@@ -336,6 +340,9 @@ class IDAStarSolver:
         # Performance metrics
         self.nodes_explored = 0
         self.start_time = 0.0
+        self.timed_out = False
+        self.depth_limit_reached = False
+        self.solution_found = False
 
     def solve(self, cube: RubikCube) -> Optional[List[str]]:
         """
@@ -349,9 +356,13 @@ class IDAStarSolver:
         """
         self.start_time = time.time()
         self.nodes_explored = 0
+        self.timed_out = False
+        self.depth_limit_reached = False
+        self.solution_found = False
 
         # Check if already solved
         if cube.is_solved():
+            self.solution_found = True
             return []
 
         # Initialize bound with heuristic estimate
@@ -362,6 +373,7 @@ class IDAStarSolver:
         while bound <= self.max_depth:
             # Check timeout
             if time.time() - self.start_time > self.timeout:
+                self.timed_out = True
                 return None
 
             # Search with current bound
@@ -369,14 +381,20 @@ class IDAStarSolver:
 
             if isinstance(result, list):
                 # Found solution
+                self.solution_found = True
                 return result
+            elif result is _IDA_TIMEOUT:
+                self.timed_out = True
+                return None
             elif result == float('inf'):
-                # No solution exists
+                # Exhausted the bounded search tree at this threshold.
+                self.depth_limit_reached = True
                 return None
             else:
                 # Increase bound and try again
                 bound = result
 
+        self.depth_limit_reached = True
         return None
 
     def _search(
@@ -398,14 +416,15 @@ class IDAStarSolver:
         Returns:
             - List of moves if solution found
             - New bound if f > bound
-            - inf if no solution
+            - inf if the bounded subtree is exhausted
+            - _IDA_TIMEOUT if the wall-clock budget is exceeded
         """
         self.nodes_explored += 1
 
         # Check timeout periodically
         if self.nodes_explored % 10000 == 0:
             if time.time() - self.start_time > self.timeout:
-                return float('inf')
+                return _IDA_TIMEOUT
 
         # Calculate f = g + h
         h = self.heuristic(cube)
@@ -438,6 +457,8 @@ class IDAStarSolver:
 
             if isinstance(result, list):
                 return result
+            elif result is _IDA_TIMEOUT:
+                return _IDA_TIMEOUT
             elif result < min_bound:
                 min_bound = result
 
@@ -466,7 +487,12 @@ class IDAStarSolver:
             'nodes_explored': self.nodes_explored,
             'time_elapsed': elapsed_time,
             'nodes_per_second': self.nodes_explored / elapsed_time if elapsed_time > 0 else 0,
+            'approximate_memory_mb': 0.1,
             'estimated_memory_mb': 0.1,  # Minimal memory usage
+            'memory_metric_kind': 'constant_stack_estimate',
+            'timed_out': self.timed_out,
+            'depth_limit_reached': self.depth_limit_reached,
+            'solution_found': self.solution_found,
             'heuristic_is_admissible': self.heuristic_is_admissible,
             'optimality_guarantee': self.heuristic_is_admissible,
         }

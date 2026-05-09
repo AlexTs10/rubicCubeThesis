@@ -129,17 +129,17 @@ class StateAnalyzer:
 
 class CompositeHeuristic:
     """
-    Novel composite heuristic combining multiple estimation strategies.
+    Exploratory composite heuristic combining multiple estimation strategies.
 
     Research Contribution:
-    This heuristic adapts its weighting based on cube state analysis,
-    providing better estimates across varying scramble depths.
+    This heuristic uses rule-based state analysis to choose a conservative
+    estimate and to fall back cleanly when optional pattern databases are absent.
 
     Approach:
     1. Analyze state characteristics (entropy, separation, partial solutions)
     2. Select primary and secondary heuristics based on state
     3. Combine using maximum for a conservative practical estimate
-    4. Apply learning-based adjustment factors
+    4. Avoid unsupported learned weights or additive overestimation
     """
 
     def __init__(

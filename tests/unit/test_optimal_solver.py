@@ -66,6 +66,21 @@ def test_optimal_solver_parses_backend_node_counts():
     assert stats["verified"] is True
 
 
+def test_optimal_solver_parses_backend_node_counts_when_verbose(capsys):
+    """Verbose mode should echo backend logs without losing parsed stats."""
+    cube = RubikCube()
+    cube.apply_move("U")
+
+    solver = _build_solver(_ReportingBackend())
+    solution, stats = solver.solve(cube, verbose=True, timeout=1.0)
+
+    captured = capsys.readouterr()
+    assert "nodes generated: 300" in captured.out
+    assert solution == ["U'"]
+    assert stats["nodes_explored"] == 300
+    assert stats["nodes_generated"] == 300
+
+
 def test_optimal_solver_rejects_malformed_backend_output_quietly():
     """Malformed backend output should fail closed even when verbose=False."""
     cube = RubikCube()

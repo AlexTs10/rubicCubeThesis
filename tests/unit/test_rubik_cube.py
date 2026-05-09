@@ -49,6 +49,28 @@ class TestRubikCubeBasics:
         cube.apply_move('R\'')
         assert cube.is_solved()
 
+    def test_rejects_invalid_state_shape(self):
+        with pytest.raises(ValueError, match="shape"):
+            RubikCube(state=np.zeros((6, 8), dtype=int))
+
+    def test_rejects_invalid_state_value(self):
+        state = RubikCube().state.copy()
+        state[0, 0] = 6
+        with pytest.raises(ValueError, match="range"):
+            RubikCube(state=state)
+
+    def test_rejects_wrong_sticker_counts(self):
+        state = RubikCube().state.copy()
+        state[0, 0] = 1
+        with pytest.raises(ValueError, match="nine stickers"):
+            RubikCube(state=state)
+
+    def test_rejects_invalid_centers(self):
+        state = RubikCube().state.copy()
+        state[0, 4], state[1, 4] = state[1, 4], state[0, 4]
+        with pytest.raises(ValueError, match="centers"):
+            RubikCube(state=state)
+
 
 class TestBasicMoves:
     """Test basic cube moves."""

@@ -117,13 +117,14 @@ class KociembaSolver:
         self.nodes_explored = 0
         self.last_backend_used: Optional[str] = None
 
-    def _initialize(self) -> None:
+    def _initialize(self, verbose: bool = False) -> None:
         """Initialize move and pruning tables (lazy loading)."""
         if self._initialized:
             return
 
-        print("Initializing Kociemba solver...")
-        print("This may take a few minutes on first run (generating tables)...")
+        if verbose:
+            print("Initializing Kociemba solver...")
+            print("This may take a few minutes on first run (generating tables)...")
 
         # Load move tables
         self.move_tables = get_move_tables(f"{self.cache_dir}/move_tables")
@@ -134,7 +135,8 @@ class KociembaSolver:
         self.pruning_tables.load(max_depth=15)
 
         self._initialized = True
-        print("Kociemba solver initialized!")
+        if verbose:
+            print("Kociemba solver initialized!")
 
     def _timed_out(self, start_time: float, timeout: float) -> bool:
         """Check whether the elapsed time exceeded the soft timeout."""
@@ -355,7 +357,7 @@ class KociembaSolver:
                 return None
 
         # Initialize tables
-        self._initialize()
+        self._initialize(verbose=verbose)
         remaining_timeout = timeout - (time.time() - solve_start_time)
         if remaining_timeout <= 0:
             if verbose:

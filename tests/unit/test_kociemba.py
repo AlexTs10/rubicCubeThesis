@@ -318,7 +318,7 @@ class TestKociembaSolver:
         cube.apply_move("U")
         solver = KociembaSolver(backend="internal")
 
-        monkeypatch.setattr(solver, "_initialize", lambda: None)
+        monkeypatch.setattr(solver, "_initialize", lambda *args, **kwargs: None)
         monkeypatch.setattr(solver, "_solve_phase1", lambda *args, **kwargs: [])
         monkeypatch.setattr(solver, "_solve_phase2", lambda *args, **kwargs: [])
 
@@ -326,6 +326,25 @@ class TestKociembaSolver:
 
         assert result is None
         assert solver.last_backend_used == "internal_verification_failed"
+
+    def test_internal_initialization_is_quiet_when_verbose_false(self, monkeypatch, capsys, tmp_path):
+        """The first internal solve should not print table setup in quiet mode."""
+
+        class FakeTables:
+            def load(self, *args, **kwargs):
+                return None
+
+        cube = RubikCube()
+        cube.apply_move("U")
+        solver = KociembaSolver(cache_dir=str(tmp_path), backend="internal")
+
+        monkeypatch.setattr(solver_module, "get_move_tables", lambda *args, **kwargs: FakeTables())
+        monkeypatch.setattr(solver_module, "get_pruning_tables", lambda *args, **kwargs: FakeTables())
+        monkeypatch.setattr(solver, "_solve_phase1", lambda *args, **kwargs: [])
+        monkeypatch.setattr(solver, "_solve_phase2", lambda *args, **kwargs: [])
+
+        assert solver.solve(cube, timeout=1.0, verbose=False) is None
+        assert capsys.readouterr().out == ""
 
     @pytest.mark.cache_building
     def test_solve_solved_cube(self):

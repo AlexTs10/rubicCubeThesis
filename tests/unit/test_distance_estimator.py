@@ -105,6 +105,18 @@ class TestPatternDatabase:
         assert loaded.max_depth == 17
         assert loaded.states_at_depth == {0: 1, 17: 1}
 
+    def test_save_to_basename_only_path(self, tmp_path, monkeypatch):
+        """Saving in the current directory should not try to create ''."""
+        db = PatternDatabase("basename", 4)
+        db.set_distance(0, 0)
+
+        monkeypatch.chdir(tmp_path)
+        db.save("basename.pkl")
+
+        loaded = PatternDatabase.load("basename.pkl")
+        assert loaded.name == "basename"
+        assert loaded.get_distance(0) == 0
+
     def test_load_safe_legacy_nibble_database(self, tmp_path):
         """Legacy nibble files are upgraded only when conversion is unambiguous."""
         path = tmp_path / "legacy.pkl"

@@ -27,7 +27,6 @@ import os
 import platform
 import sys
 import importlib.metadata
-import hashlib
 from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass, asdict, field
 import json
@@ -764,11 +763,6 @@ class AlgorithmComparison:
             except importlib.metadata.PackageNotFoundError:
                 packages[package_name] = None
 
-        manifest_path = Path("REPRODUCIBILITY_MANIFEST.json")
-        manifest_sha256 = None
-        if manifest_path.exists():
-            manifest_sha256 = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
-
         cpu_count = os.cpu_count()
         cpu_model = platform.processor() or platform.machine()
         if hasattr(platform, "uname"):
@@ -782,7 +776,10 @@ class AlgorithmComparison:
             "python_implementation": platform.python_implementation(),
             "cpu_count": cpu_count,
             "package_versions": packages,
-            "reproducibility_manifest_sha256": manifest_sha256,
+            "provenance_note": (
+                "Package-level reproducibility manifests are stored outside "
+                "benchmark JSON to avoid circular hashes."
+            ),
         }
 
     def export_results(self, filename: str) -> None:

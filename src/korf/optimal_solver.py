@@ -265,10 +265,11 @@ class KorfOptimalSolver:
                 raise TimeoutError("Korf optimal solver exceeded timeout")
 
             def _invoke_backend() -> str:
-                if verbose:
-                    return self._backend.solve(cube_string)
                 with redirect_stdout(backend_output):
-                    return self._backend.solve(cube_string)
+                    result = self._backend.solve(cube_string)
+                if verbose and backend_output.getvalue():
+                    print(backend_output.getvalue(), end="")
+                return result
 
             if timeout is not None and self.timeout_supported:
                 previous_handler = signal.getsignal(signal.SIGALRM)
@@ -372,7 +373,9 @@ class KorfOptimalSolver:
 
         match = re.search(r"nodes generated:\s*(\d+)", output)
         if match:
-            stats['nodes_explored'] = int(match.group(1))
+            nodes_generated = int(match.group(1))
+            stats['nodes_explored'] = nodes_generated
+            stats['nodes_generated'] = nodes_generated
 
         depth_matches = re.findall(
             r"depth\s+(\d+)\s+done in\s+([0-9.]+)\s+s,\s+(\d+)\s+nodes generated",

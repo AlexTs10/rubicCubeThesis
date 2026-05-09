@@ -187,7 +187,11 @@
 generated-length-9 περιπτώσεων που η μικρότερη παραδεκτή ευρετική δεν έλυνε.
 Το εναπομένον timeout είναι περίπτωση επικύρωσης παραγόμενου μήκους 8· το
 αποθηκευμένο report δεν καταγράφει ανεξάρτητη oracle επιβεβαίωση του ακριβούς
-βάθους ή της ερμηνείας ότι το κόστος κυριαρχείται από τις ακμές.
+βάθους ή της ερμηνείας ότι το κόστος κυριαρχείται από τις ακμές. Τα ακριβή
+αρχεία τεκμηρίωσης είναι το
+\filepath{results/validation/native_exact/MANIFEST.json}, το
+\filepath{results/validation/native_exact/README.md} και τα αντίστοιχα JSON
+reports του ίδιου καταλόγου.
 
 \section{Εφαρμογές και Διεπαφές Χρήστη}
 
@@ -238,7 +242,7 @@ suite παραμένει opt-in και πρέπει να εκτελείται ό
     \item καθώς και end-to-end workflows.
 \end{itemize}
 
-Επιπλέον, το έργο περιλαμβάνει scripts όπως το \filepath{verify_setup.py}, το οποίο ελέγχει το περιβάλλον και επιχειρεί να εκτελέσει το υποστηριζόμενο command \texttt{python -m pytest tests -q} μέσα στο δικό του χρονικό όριο, καθώς και benchmark generators, validation harnesses και notebook smoke checks, ώστε το αποθετήριο να λειτουργεί όχι μόνο ως πηγαίος κώδικας αλλά και ως \emph{αναπαραγώγιμο ερευνητικό τεχνούργημα}. Η ύπαρξη JSON exports, figures, oracle agreement tests και scripts ανάλυσης συνέβαλε αποφασιστικά στη συγγραφή του Κεφαλαίου~\ref{ch:evaluation}.
+Επιπλέον, το έργο περιλαμβάνει scripts όπως το \filepath{verify_setup.py}, το οποίο ελέγχει το περιβάλλον και επιχειρεί να εκτελέσει το υποστηριζόμενο command \texttt{python -m pytest tests -q} μέσα στο δικό του χρονικό όριο, καθώς και benchmark generators, validation harnesses και notebook smoke checks, ώστε το αποθετήριο να λειτουργεί όχι μόνο ως πηγαίος κώδικας αλλά και ως \emph{αναπαραγώγιμο ερευνητικό τεχνούργημα}. Οι βασικές artifact άγκυρες είναι το \filepath{pytest.ini} για markers/εξαιρέσεις, το \filepath{results/benchmarks/thesis/thesis_results_combined.json} για τα δεδομένα αξιολόγησης, ο κατάλογος \filepath{results/benchmarks/thesis/} για τα per-depth benchmark JSON, το \filepath{results/validation/native_exact/MANIFEST.json} για την native exact επικύρωση και το top-level \filepath{REPRODUCIBILITY_MANIFEST.json} για το συνολικό source snapshot και τα hashes των benchmark artifacts. Η ύπαρξη JSON exports, figures, oracle agreement tests και scripts ανάλυσης συνέβαλε αποφασιστικά στη συγγραφή του Κεφαλαίου~\ref{ch:evaluation}.
 
 \section{Σύνοψη}
 

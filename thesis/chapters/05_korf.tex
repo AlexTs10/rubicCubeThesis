@@ -49,7 +49,7 @@ h(n) \leq h^*(n) \quad \forall n
 \textbf{Χαρακτηριστικό} & \textbf{A*} & \textbf{IDA*} \\
 \hline
 Πολυπλοκότητα Μνήμης & $O(b^d)$ & $O(d)$ \\
-Βελτιστότητα & Ναι & Ναι \\
+Βελτιστότητα & Ναι, αν $h$ είναι παραδεκτή & Ναι, αν $h$ είναι παραδεκτή \\
 Ανίχνευση Διπλότυπων & Ναι & Όχι \\
 Επανεπέκταση Κόμβων & Όχι & Ναι \\
 Πρακτικό για Rubik's & Όχι & Ναι \\
@@ -102,7 +102,7 @@ admissible coordinate tables, αλλά όχι ακόμη πλήρη corner/edge 
 \end{itemize}
 
 Η συνάρτηση υπολογισμού δείκτη παρατίθεται από το αρχείο
-\filepath{src/korf/corner_database.py}, γραμμές 38--59:
+\filepath{src/korf/corner_database.py}, στη συνάρτηση \texttt{corner\_index}:
 
 \begin{lstlisting}[language=Python, caption={Υπολογισμός δείκτη γωνίας}]
 def corner_index(cubie: CubieCube) -> int:
@@ -379,7 +379,7 @@ path-state checking και canonical pruning, ώστε να αποφεύγοντ
 \end{enumerate}
 
 Η υλοποίηση παρατίθεται από το αρχείο
-\filepath{src/korf/a_star.py}, γραμμές 418--431:
+\filepath{src/korf/a_star.py}, στις συναρτήσεις \texttt{\_is\_redundant\_move} των A* και IDA* solvers:
 
 \begin{lstlisting}[language=Python, caption={Έλεγχος περιττής κίνησης}]
 def _is_redundant_move(self, prev_move: str, current_move: str) -> bool:

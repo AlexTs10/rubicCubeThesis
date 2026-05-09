@@ -142,7 +142,7 @@
         "license_metadata_field": null,
         "note": "Backend package metadata was inspected post hoc on the archive machine; the original benchmark run did not record a wheel hash or upstream commit hash."
       },
-      "reproducibility_manifest_sha256": "b680fa72d060f073e8d88cfdb6bf2222da3fa69e2599c5fd3fb2841a82224a9e"
+      "provenance_note": "Package-level reproducibility manifests are stored outside benchmark JSON to avoid circular hashes."
     }
   },
   "results": [

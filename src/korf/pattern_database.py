@@ -172,7 +172,9 @@ class PatternDatabase:
         Args:
             filepath: Path to save the database
         """
-        os.makedirs(os.path.dirname(filepath), exist_ok=True)
+        directory = os.path.dirname(filepath)
+        if directory:
+            os.makedirs(directory, exist_ok=True)
 
         data_dict = {
             'format_version': self.FORMAT_VERSION,

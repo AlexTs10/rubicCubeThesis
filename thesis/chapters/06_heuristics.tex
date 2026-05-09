@@ -74,11 +74,11 @@ h_1(n) \geq h_2(n), \quad \forall n \in S
     \item \textbf{Υπολογιστικού κόστους:} Πολυπλοκότερες ευρετικές απαιτούν περισσότερο χρόνο υπολογισμού
 \end{itemize}
 
-Ο δείκτης αποδοτικότητας ορίζεται ως:
-\begin{equation}
-\label{eq:efficiency}
-\eta = \frac{\text{Μείωση κόμβων αναζήτησης}}{\text{Επιπλέον υπολογιστικό κόστος}}
-\end{equation}
+Στην αξιολόγηση που ακολουθεί δεν χρησιμοποιείται ένας ενιαίος δείκτης
+αποδοτικότητας, επειδή το checked-in benchmark artifact δεν περιέχει επαναλήψεις
+ανά scramble, confidence intervals ή απομονωμένες cold/warm χρονομετρήσεις.
+Η αποδοτικότητα συζητείται ποιοτικά μέσω χρόνου, μήκους λύσης, timeout και
+κόμβων αναζήτησης.
 
 Για τον κύβο Rubik, τα Pattern Databases αποτελούν ισχυρή κλασική admissible επιλογή για IDA* όταν το κόστος μνήμης, προεπεξεργασίας και δημιουργίας πινάκων είναι αποδεκτό \cite{korf1997finding}. Δεν αποτελούν καθολικά ``βέλτιστη'' επιλογή για κάθε περιβάλλον εκτέλεσης, ειδικά όταν οι διαθέσιμοι πόροι ή ο χρόνος αρχικοποίησης είναι περιορισμένοι.
 
@@ -149,16 +149,23 @@ def hamming_distance(cube: RubikCube) -> float:
 \subsection{Απόσταση Manhattan}
 \label{subsec:manhattan-distance}
 
-Η απόσταση Manhattan υπολογίζει το άθροισμα των ελάχιστων κινήσεων που απαιτούνται για κάθε κομμάτι ξεχωριστά, αγνοώντας τις αλληλεπιδράσεις μεταξύ κομματιών. Υπολογίζεται χωριστά για γωνίες και ακμές:
+Η ελαφριά ``Manhattan'' ευρετική του artifact δεν χρησιμοποιεί πίνακες
+ελάχιστης απόστασης ανά κομμάτι. Υπολογίζεται χωριστά για γωνίες και ακμές ως
+άθροισμα δύο μετρήσεων: πόσα cubies δεν βρίσκονται στη σωστή θέση και πόσα έχουν
+μη μηδενικό προσανατολισμό. Έπειτα κανονικοποιείται με διαίρεση δια του 4:
 
 \begin{equation}
 \label{eq:manhattan-corner}
-h_{\text{corner}}(n) = \frac{\sum_{i=0}^{7} d(\text{pos}_i, \text{target}_i) + \mathbf{1}[\text{orient}_i \neq 0]}{4}
+h_{\text{corner}}(n) =
+\frac{\sum_{i=0}^{7}\mathbf{1}[\text{corner\_perm}_i \neq i]
++ \sum_{i=0}^{7}\mathbf{1}[\text{corner\_orient}_i \neq 0]}{4}
 \end{equation}
 
 \begin{equation}
 \label{eq:manhattan-edge}
-h_{\text{edge}}(n) = \frac{\sum_{i=0}^{11} d(\text{pos}_i, \text{target}_i) + \mathbf{1}[\text{orient}_i \neq 0]}{4}
+h_{\text{edge}}(n) =
+\frac{\sum_{i=0}^{11}\mathbf{1}[\text{edge\_perm}_i \neq i]
++ \sum_{i=0}^{11}\mathbf{1}[\text{edge\_orient}_i \neq 0]}{4}
 \end{equation}
 
 Η τελική εκτίμηση λαμβάνει το μέγιστο των δύο αποστάσεων. Με αυτόν τον τρόπο
@@ -169,7 +176,7 @@ h_{\text{edge}}(n) = \frac{\sum_{i=0}^{11} d(\text{pos}_i, \text{target}_i) + \m
 h_{\text{manhattan}}(n) = \max(h_{\text{corner}}(n), h_{\text{edge}}(n))
 \end{equation}
 
-\begin{lstlisting}[language=Python, caption={Συνδυασμένη απόσταση Manhattan (src/korf/heuristics.py:169-192)}]
+\begin{lstlisting}[language=Python, caption={Συνδυασμένη απόσταση Manhattan (src/korf/heuristics.py:166-189)}]
 def manhattan_distance(cube: RubikCube) -> float:
     if cube.is_solved():
         return 0.0
@@ -359,7 +366,7 @@ h(s) = \max_i h_i(s) \leq h^*(s)
 \midrule
 $[0, 0.3)$ & Κοντά στη λύση & Manhattan & Ταχύτητα και επαρκής ακρίβεια \\
 $[0.3, 0.7]$ & Μεσαίο βάθος & Μέγιστο ευρετικών & Ισορροπία ακρίβειας και κόστους \\
-$(0.7, 1.0]$ & Βαθύ ανακάτεμα & Pattern DBs & Μέγιστη διαθέσιμη ακρίβεια \\
+$(0.7, 1.0]$ & Βαθύ ανακάτεμα & Pattern DBs όταν είναι διαθέσιμες, αλλιώς enhanced Manhattan & Μέγιστη διαθέσιμη ακρίβεια με τεκμηριωμένο fallback \\
 \bottomrule
 \end{tabularx}
 \end{table}
