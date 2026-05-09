@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, Target, Scale, GraduationCap, Menu, X, Github } from 'lucide-react';
+import { Home, Target, Scale, GraduationCap, Menu, X, GitBranch } from 'lucide-react';
 import { useState } from 'react';
 
 const navItems = [
@@ -59,7 +59,7 @@ export default function Navigation() {
             rel="noopener noreferrer"
             className="hidden md:flex items-center gap-2 text-slate-400 hover:text-white transition-colors"
           >
-            <Github className="w-5 h-5" />
+            <GitBranch className="w-5 h-5" />
           </a>
 
           {/* Mobile menu button */}

@@ -73,6 +73,8 @@ class AlgorithmResult:
     requested_scramble_length: Optional[int] = None
     verified_scramble_depth: Optional[int] = None
     scramble_depth_is_verified: bool = False
+    timing_method: str = "single-process sequential wall-clock; may include lazy-loading warmup"
+    memory_method: str = "process RSS delta in shared sequential process"
 
 
 @dataclass
@@ -240,7 +242,11 @@ class AlgorithmComparison:
 
     @staticmethod
     def _memory_delta_mb(mem_before: float, mem_after: float) -> float:
-        """Clamp RSS deltas so transient GC does not report negative memory."""
+        """Clamp shared-process RSS deltas so transient GC does not report negative memory.
+
+        This is a coarse process-level metric. It is useful for rough comparison
+        in the thesis artifact, but it is not isolated peak RSS per solver.
+        """
         return max(mem_after - mem_before, 0.0)
 
     @staticmethod

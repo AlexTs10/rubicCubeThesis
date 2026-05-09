@@ -124,6 +124,12 @@ class NativeCoordinateHeuristic:
             }
             for name, table in tables.items()
         }
+        statistics["corner_pattern_db_loaded"] = self.corner_db is not None
+        statistics["corner_pattern_db_complete"] = (
+            bool(self.corner_db.is_complete())
+            if self.corner_db is not None and hasattr(self.corner_db, "is_complete")
+            else self.corner_db is not None
+        )
         if self.corner_db is not None:
             statistics["corner_pattern_db"] = self.corner_db.get_statistics()
         return statistics
@@ -208,6 +214,19 @@ class NativeCoordinateHeuristic:
             )
         except (FileNotFoundError, ValueError):
             return None
+
+    def require_corner_pattern_db(self, corner_db_path: str) -> None:
+        """Fail when a validation preset requires a complete corner pattern database."""
+        if self.corner_db is None:
+            raise FileNotFoundError(
+                "A complete native corner pattern database is required for this run, "
+                f"but it was not loaded from {corner_db_path}."
+            )
+        if not self.corner_db.is_complete():
+            raise ValueError(
+                "The loaded native corner pattern database is incomplete "
+                f"({self.corner_db.initialized_count():,}/{self.corner_db.size:,} states)."
+            )
 
 
 def create_native_coordinate_heuristic(

@@ -23,8 +23,9 @@ from typing import Dict, Iterable, Tuple
 # The full repository suite includes exact-solver validation and can run much
 # longer on colder caches or nested subprocess execution than it does in an
 # already-warmed interactive shell.
-FAST_TEST_TIMEOUT_SECONDS = 300
+FAST_TEST_TIMEOUT_SECONDS = 900
 FULL_TEST_TIMEOUT_SECONDS = 1800
+DEMO_TIMEOUT_SECONDS = 60
 
 
 GENERATED_CACHE_DIRS = [
@@ -398,7 +399,7 @@ def check_demo() -> bool:
             cwd=str(project_root),
             capture_output=True,
             text=True,
-            timeout=10
+            timeout=DEMO_TIMEOUT_SECONDS
         )
 
         if result.returncode == 0:

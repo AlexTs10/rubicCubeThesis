@@ -4,9 +4,12 @@
 from __future__ import annotations
 
 import argparse
+from datetime import datetime, timezone
 import json
+import platform
 import re
 import shutil
+import socket
 import statistics
 import subprocess
 import sys
@@ -895,6 +898,14 @@ def format_validation_markdown(data: dict[str, Any]) -> str:
 
     sections = [
         "# Thesis Workflow Validation",
+        "",
+        "> Generated artifact, not source of truth. Re-run this command in the current environment before relying on the result.",
+        "",
+        "## Metadata",
+        f"- Generated at: {datetime.now(timezone.utc).isoformat()}",
+        f"- Host: {socket.gethostname()}",
+        f"- Platform: {platform.platform()}",
+        f"- Python: {platform.python_version()}",
         "",
         "## Checks",
         f"- Local `latexmk`: {'pass' if data['toolchain']['latexmk'] else 'fail'}",

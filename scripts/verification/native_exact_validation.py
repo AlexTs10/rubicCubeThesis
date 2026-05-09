@@ -205,12 +205,23 @@ def validate_corpus(
     heuristic_cache_dir: str,
     corner_db_path: Optional[str],
     disable_corner_db: bool,
+    require_corner_db: bool = False,
 ) -> Dict:
     heuristic = NativeCoordinateHeuristic(
         cache_dir=heuristic_cache_dir,
         corner_db_path=None if disable_corner_db else corner_db_path,
         load_corner_db_if_available=not disable_corner_db,
     )
+    if require_corner_db:
+        if disable_corner_db:
+            raise ValueError("--disable-corner-db cannot be combined with a preset that requires it.")
+        if corner_db_path is None:
+            raise ValueError("A corner DB path is required for this validation preset.")
+        heuristic.require_corner_pattern_db(corner_db_path)
+
+    heuristic_stats = heuristic.get_statistics() if hasattr(heuristic, "get_statistics") else {}
+    corner_db_loaded = bool(heuristic_stats.get("corner_pattern_db_loaded", False))
+    corner_db_complete = bool(heuristic_stats.get("corner_pattern_db_complete", False))
     oracle = KorfOptimalSolver() if use_oracle else None
     failures: List[ValidationFailure] = []
     results = []
@@ -292,6 +303,8 @@ def validate_corpus(
             "heuristic_cache_dir": heuristic_cache_dir,
             "corner_db_path": corner_db_path,
             "disable_corner_db": disable_corner_db,
+            "corner_db_loaded": corner_db_loaded,
+            "corner_db_complete": corner_db_complete,
         },
         "summary": {
             "total_cases": len(corpus),
@@ -375,6 +388,7 @@ def main() -> None:
         heuristic_cache_dir=args.heuristic_cache_dir,
         corner_db_path=args.corner_db_path,
         disable_corner_db=args.disable_corner_db,
+        require_corner_db=args.preset == "canonical",
     )
 
     output_dir = Path(args.output_dir)

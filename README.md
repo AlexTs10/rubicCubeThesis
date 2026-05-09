@@ -21,19 +21,31 @@ The Next.js frontend under `webapp/` is a synthetic preview layer for demos and 
 
 ## Where To Start
 
-If you want the current thesis state, use these commands from the repo root:
+If you want the current thesis state, start from a clean Python environment. The
+tested local environment is Python 3.12.
 
 ```bash
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.lock
 python verify_setup.py
 python -m pytest tests -q
 python scripts/thesis_workflow.py status --output agent_workflow/generated/status.md
 python scripts/thesis_workflow.py validate --output agent_workflow/generated/validation.md
 python scripts/thesis_workflow.py build --mode auto
+python scripts/generate_reproducibility_manifest.py
 ```
+
+Use `requirements.lock` for exact reproduction of the audited environment. Use
+`requirements.txt` only when you need a flexible dependency range for local
+development.
 
 The default pytest/verification profile is intentionally the fast reproducibility profile. It excludes tests marked `slow`, `external`, or `cache_building`; run those markers explicitly only when validating generated caches or external backends.
 
 The compiled thesis PDF is written to `thesis/main.pdf`.
+The archive-verifiable source manifest is written to
+`REPRODUCIBILITY_MANIFEST.json`.
 
 ## Repo Layout
 
@@ -99,8 +111,8 @@ Useful files:
 
 ## Current Verification Snapshot
 
-- `python -m pytest tests --collect-only -q` reports `291 tests collected`; the default fast profile selects `288` tests and deselects `3` cache-building tests
-- `python -m pytest tests -q` reports `287 passed, 1 skipped, 3 deselected` in the supported fast profile; full cache-building tests are opt-in with explicit markers
+- `python -m pytest tests --collect-only -q` reports `291 tests collected`; the default fast profile selects `284` tests and deselects `7` cache-building tests
+- `python -m pytest tests -q` reports `283 passed, 1 skipped, 7 deselected` in the supported fast profile; full cache-building tests are opt-in with explicit markers
 - `python verify_setup.py` runs the same fast test profile by default; use `--full` only for heavyweight local validation
 - `cd webapp && npm ci && npm run build` succeeds from a clean dependency install
 - `python scripts/thesis_workflow.py build --mode auto` rebuilds `thesis/main.pdf` when a supported local TeX/Tectonic/Docker build path is available

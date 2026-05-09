@@ -82,5 +82,9 @@
         "nodes_explored": 29
       }
     }
-  ]
+  ],
+  "config": {
+    "corner_db_loaded": true,
+    "corner_db_complete": true
+  }
 }

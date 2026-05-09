@@ -1,13 +1,16 @@
 """
 A* Search Algorithm for Rubik's Cube
 
-Implements standard A* algorithm with priority queue for optimal cube solving.
+Implements standard A* algorithm with a priority queue for cube-solving
+experiments. Optimality is guaranteed only when the supplied heuristic is a
+proven admissible lower bound; the lightweight demo heuristics in
+`src.korf.heuristics` do not provide that guarantee.
 This is compared against IDA* to demonstrate memory vs time tradeoffs.
 
 Key Implementation Details:
 - Uses heapq for efficient priority queue (min-heap)
 - Maintains open and closed sets for state management
-- Supports multiple admissible heuristics
+- Supports multiple heuristics, with explicit admissibility metadata
 - Tracks performance metrics (nodes explored, memory usage)
 
 References:
@@ -50,7 +53,7 @@ class SearchNode:
 
 class AStarSolver:
     """
-    A* solver for Rubik's Cube using admissible heuristics.
+    A* solver for Rubik's Cube.
 
     This implementation demonstrates why A* is impractical for Rubik's Cube:
     - Memory consumption grows exponentially
@@ -76,18 +79,23 @@ class AStarSolver:
         heuristic: Callable[[RubikCube], float],
         max_depth: int = 20,
         timeout: float = 300.0,
-        memory_limit_mb: int = 2048
+        memory_limit_mb: int = 2048,
+        heuristic_is_admissible: bool = False,
     ):
         """
         Initialize A* solver.
 
         Args:
-            heuristic: Admissible heuristic function (never overestimates)
+            heuristic: Heuristic distance estimate. Set
+                heuristic_is_admissible=True only for proven lower bounds.
             max_depth: Maximum search depth (prevents infinite search)
             timeout: Timeout in seconds
             memory_limit_mb: Approximate memory limit in megabytes
+            heuristic_is_admissible: Whether returned solutions carry an
+                optimality guarantee.
         """
         self.heuristic = heuristic
+        self.heuristic_is_admissible = heuristic_is_admissible
         self.max_depth = max_depth
         self.timeout = timeout
         self.memory_limit_mb = memory_limit_mb
@@ -265,6 +273,8 @@ class AStarSolver:
             'time_elapsed': elapsed_time,
             'nodes_per_second': self.nodes_explored / elapsed_time if elapsed_time > 0 else 0,
             'estimated_memory_mb': (self.max_open_size + self.max_closed_size) / 100.0,
+            'heuristic_is_admissible': self.heuristic_is_admissible,
+            'optimality_guarantee': self.heuristic_is_admissible,
         }
 
 
@@ -272,8 +282,9 @@ class IDAStarSolver:
     """
     IDA* (Iterative Deepening A*) solver for Rubik's Cube.
 
-    Memory-efficient alternative to A* that uses iterative deepening
-    with an admissible heuristic. Much more practical for Rubik's Cube.
+    Memory-efficient alternative to A* that uses iterative deepening.
+    It has the usual IDA* optimality guarantee only when the supplied heuristic
+    is a proven admissible lower bound.
 
     Key advantages over A*:
     - Constant memory (only stores current path)
@@ -291,17 +302,22 @@ class IDAStarSolver:
         self,
         heuristic: Callable[[RubikCube], float],
         max_depth: int = 20,
-        timeout: float = 300.0
+        timeout: float = 300.0,
+        heuristic_is_admissible: bool = False,
     ):
         """
         Initialize IDA* solver.
 
         Args:
-            heuristic: Admissible heuristic function
+            heuristic: Heuristic distance estimate. Set
+                heuristic_is_admissible=True only for proven lower bounds.
             max_depth: Maximum search depth
             timeout: Timeout in seconds
+            heuristic_is_admissible: Whether returned solutions carry an
+                optimality guarantee.
         """
         self.heuristic = heuristic
+        self.heuristic_is_admissible = heuristic_is_admissible
         self.max_depth = max_depth
         self.timeout = timeout
 
@@ -439,4 +455,6 @@ class IDAStarSolver:
             'time_elapsed': elapsed_time,
             'nodes_per_second': self.nodes_explored / elapsed_time if elapsed_time > 0 else 0,
             'estimated_memory_mb': 0.1,  # Minimal memory usage
+            'heuristic_is_admissible': self.heuristic_is_admissible,
+            'optimality_guarantee': self.heuristic_is_admissible,
         }

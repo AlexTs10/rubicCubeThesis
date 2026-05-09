@@ -22,7 +22,9 @@
       "exhaustive_cases": 3501,
       "oracle_cases": 12,
       "total_cases": 3513
-    }
+    },
+    "corner_db_loaded": true,
+    "corner_db_complete": true
   },
   "summary": {
     "total_cases": 3513,

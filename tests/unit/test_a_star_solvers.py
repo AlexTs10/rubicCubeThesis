@@ -306,7 +306,8 @@ class TestSolverComparison:
         assert solution_a is not None
         assert solution_ida is not None
 
-        # Solutions should be similar length (both optimal)
+        # With the lightweight demo heuristic, these solvers should produce
+        # similar short solutions, but this is not an optimality proof.
         assert abs(len(solution_a) - len(solution_ida)) <= 1
 
     def test_ida_star_uses_less_memory(self):
@@ -318,6 +319,7 @@ class TestSolverComparison:
         a_star = AStarSolver(heuristic=manhattan_distance, max_depth=15)
         a_star.solve(cube)
         stats_a = a_star.get_statistics()
+        assert stats_a["optimality_guarantee"] is False
 
         # Reset cube to the exact same scramble
         cube = RubikCube()

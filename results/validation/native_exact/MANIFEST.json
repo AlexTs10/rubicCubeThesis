@@ -5,7 +5,7 @@
     "corner_pdb_enabled": {
       "file": "native_exact_validation_20260322_144046.json",
       "date": "2026-03-22",
-      "description": "Primary thesis validation run with the full native corner pattern database enabled.",
+      "description": "Primary thesis validation run with the full native corner pattern database enabled. Reproduction requires a complete data/pattern_databases/corner_db.pkl artifact; the source ZIP may omit this generated cache and should then fail hard rather than silently degrading.",
       "total_cases": 3513,
       "failure_count": 1,
       "timeout_seconds": 20.0,
@@ -38,7 +38,9 @@
       "seed": 42
     },
     "report_schema": {
-      "config.corpus_generation": "preserved in every new report emitted by the validation harness"
+      "config.corpus_generation": "preserved in every new report emitted by the validation harness",
+      "config.corner_db_loaded": "true only when the full corner pattern database was actually loaded",
+      "config.corner_db_complete": "true only when the loaded corner pattern database covers every state"
     }
   },
   "supplemental_reports": {
@@ -63,5 +65,9 @@
     "The native exact solver is validated on a reproducible 3513-case corpus.",
     "Enabling the full native corner PDB reduces failures under a 20-second limit from 3 to 1.",
     "One edge-dominated depth-8 timeout remains in the corner-PDB-enabled run."
-  ]
+  ],
+  "config": {
+    "corner_db_loaded": true,
+    "corner_db_complete": true
+  }
 }

@@ -70,6 +70,12 @@ class PruningTables:
             max_depth: Maximum BFS depth before unreached entries are set to the cutoff
         """
         if self._loaded and not force_regenerate:
+            if self.max_depth != max_depth:
+                raise ValueError(
+                    f"Pruning tables are already loaded with max_depth={self.max_depth}; "
+                    f"requested max_depth={max_depth}. Use force_regenerate=True or a "
+                    "separate cache directory for a different cutoff."
+                )
             return
 
         # Load move tables first

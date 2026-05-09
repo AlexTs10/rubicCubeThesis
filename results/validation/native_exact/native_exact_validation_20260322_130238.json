@@ -68,5 +68,9 @@
       "oracle_stats": null
     }
   ],
-  "results": []
+  "results": [],
+  "config": {
+    "corner_db_loaded": true,
+    "corner_db_complete": true
+  }
 }

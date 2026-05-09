@@ -1,0 +1,191 @@
+[
+  {
+    "severity": "Critical",
+    "category": "Critical blockers",
+    "file": "tests/unit/test_kociemba.py; src/kociemba/pruning.py; pytest.ini; README.md; verify_setup.py",
+    "location": "tests/unit/test_kociemba.py:224-255; src/kociemba/pruning.py:64-115,136-199; pytest.ini:1-7; README.md:102-104; verify_setup.py:345-358",
+    "issue": "The default fast test/verification profile still runs unmarked Kociemba pruning-table loading tests that can generate large pruning tables, contradicting the README and thesis reproducibility claims.",
+    "exact_fix": "Mark the pruning-table generation tests with @pytest.mark.cache_building or replace them with tiny mocked/fixture-backed tests. Keep only cheap API tests in the default profile, then update README/thesis claims after the clean run passes.",
+    "verification_steps": "Freshly extract the ZIP, remove generated caches, run `python -m pytest tests -q` and `python verify_setup.py`, and confirm both finish within FAST_TEST_TIMEOUT_SECONDS=300 without generating large pruning caches."
+  },
+  {
+    "severity": "Critical",
+    "category": "Critical blockers",
+    "file": "webapp/package.json; webapp/package-lock.json; README.md",
+    "location": "webapp/package.json:16-19; webapp/package-lock.json:15-18,5011-5018; README.md:105",
+    "issue": "The README claims `npm ci && npm run build` succeeds, but the lockfile contains lucide-react@0.294.0 with a React <=18 peer requirement while the project uses React 19.2.4.",
+    "exact_fix": "Upgrade lucide-react to a React-19-compatible release and regenerate package-lock.json, or downgrade React/ReactDOM and dependent packages to a consistent React 18 stack.",
+    "verification_steps": "Run `cd webapp && rm -rf node_modules && npm ci && npm run build` from a clean extraction."
+  },
+  {
+    "severity": "Critical",
+    "category": "Critical blockers",
+    "file": "results/validation/native_exact/MANIFEST.json; results/validation/native_exact/native_exact_validation_20260322_144046.json; scripts/verification/native_exact_validation.py; src/korf/native_coordinate_heuristic.py; data/README.md",
+    "location": "MANIFEST.json:5-12,62-65; native_exact_validation_20260322_144046.json:6-8; scripts/verification/native_exact_validation.py:209-213,286-295; src/korf/native_coordinate_heuristic.py:86-87,199-210; data/README.md:13-18,36-47",
+    "issue": "The canonical validation claims full native corner PDB enabled, but the ZIP does not include data/pattern_databases/corner_db.pkl and the loader silently falls back to no corner DB while reports record only disable_corner_db=false.",
+    "exact_fix": "Include the required complete corner_db.pkl artifact or make the canonical preset fail if the file is missing. Add explicit corner_db_loaded and corner_db_complete fields to validation reports.",
+    "verification_steps": "In a clean extraction, check `test -f data/pattern_databases/corner_db.pkl`; run `python scripts/verification/native_exact_validation.py --preset canonical --output-dir <tmp>` and assert the report contains `corner_db_loaded: true`."
+  },
+  {
+    "severity": "Critical",
+    "category": "Critical blockers",
+    "file": "thesis/chapters/00_approval.tex",
+    "location": "thesis/chapters/00_approval.tex:35-44",
+    "issue": "The approval page still has two generic committee placeholders and a blank examination date.",
+    "exact_fix": "Replace placeholders with actual committee member names/titles and set the examination/submission date, or remove the page if the institution requires a blank signing form.",
+    "verification_steps": "Rebuild thesis/main.pdf and visually inspect the approval page."
+  },
+  {
+    "severity": "Minor",
+    "category": "Thesis writing issues",
+    "file": "thesis/chapters/08_implementation.tex",
+    "location": "thesis/chapters/08_implementation.tex:125",
+    "issue": "Greek academic prose contains the English verb `orchestrates` inside a Greek sentence.",
+    "exact_fix": "Replace with Greek wording such as `Η κύρια κλάση ενορχηστρώνει τις τέσσερις φάσεις` or `συντονίζει τις τέσσερις φάσεις`.",
+    "verification_steps": "Search for `orchestrates`, confirm it is gone, and rebuild the PDF."
+  },
+  {
+    "severity": "Major",
+    "category": "Thesis writing issues",
+    "file": "thesis/chapters/00_abstract_en.tex; thesis/chapters/00_abstract_gr.tex",
+    "location": "00_abstract_en.tex:32; 00_abstract_gr.tex:34",
+    "issue": "The abstracts overstate that IDA* outperforms A* for cube solving, while the repository only supports a narrower implementation-specific memory comparison.",
+    "exact_fix": "Reword to state that in the implemented benchmark/baseline comparison IDA* exhibits lower memory usage than the included A* implementation, at the cost of repeated expansions.",
+    "verification_steps": "Confirm the abstract wording matches actual evidence and does not imply a universal algorithmic proof."
+  },
+  {
+    "severity": "Major",
+    "category": "Thesis writing issues",
+    "file": "thesis/chapters/00_abstract_en.tex; thesis/chapters/00_abstract_gr.tex; thesis/chapters/01_introduction.tex; thesis/chapters/08_implementation.tex; thesis/chapters/appendix_a.tex",
+    "location": "00_abstract_en.tex:35; 00_abstract_gr.tex:37; 01_introduction.tex:80; 08_implementation.tex:221-227; appendix_a.tex:135-136",
+    "issue": "The thesis repeats that heavyweight cache-building tests are excluded from the default profile, but actual unmarked Kociemba pruning-table tests run in the default profile.",
+    "exact_fix": "Fix the pytest markers first, then update all thesis claims to match the verified default command output.",
+    "verification_steps": "Run `python -m pytest tests -q`; only after it passes quickly, rebuild the thesis and verify these statements."
+  },
+  {
+    "severity": "Major",
+    "category": "Thesis writing issues",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "thesis/chapters/07_evaluation.tex:320-328, especially line 322",
+    "issue": "The evaluation says 100 scrambles are enough for clear conclusions, which is too strong for a redundant legacy corpus with no uncertainty analysis.",
+    "exact_fix": "Change the wording to `indicative conclusions for this fixed corpus` and add confidence intervals or bootstrap analysis if stronger conclusions are desired.",
+    "verification_steps": "Rebuild the PDF and inspect the limitations section."
+  },
+  {
+    "severity": "Major",
+    "category": "Technical/code issues",
+    "file": "src/korf/a_star.py; src/korf/heuristics.py; tests/unit/test_a_star_solvers.py",
+    "location": "src/korf/a_star.py:4-10,51-61,271-276; src/korf/heuristics.py:4-7; tests/unit/test_a_star_solvers.py:73-107,195-220",
+    "issue": "A*/IDA* documentation says admissible/optimal, but tested heuristics such as manhattan_distance come from a module explicitly saying these estimates are not guaranteed lower bounds.",
+    "exact_fix": "Document that optimality holds only with proven admissible heuristics. Add heuristic metadata or a wrapper indicating admissibility and restrict optimality claims to PDB/native-exact heuristics.",
+    "verification_steps": "Add tests ensuring non-admissible heuristics are not advertised as optimal and that optimality claims are only made for admissible heuristics."
+  },
+  {
+    "severity": "Major",
+    "category": "Technical/code issues",
+    "file": "src/kociemba/pruning.py",
+    "location": "src/kociemba/pruning.py:64-73,90-111,337-354",
+    "issue": "PruningTables.load returns immediately when already loaded and does not check whether the requested max_depth matches the loaded max_depth.",
+    "exact_fix": "Modify the early return to check self.max_depth against requested max_depth and either raise ValueError or reload/regenerate when they differ.",
+    "verification_steps": "Add a unit test that loads with one max_depth and then calls load with a different max_depth, expecting a clear error or reload."
+  },
+  {
+    "severity": "Major",
+    "category": "Technical/code issues",
+    "file": "src/evaluation/algorithm_comparison.py; thesis/chapters/07_evaluation.tex",
+    "location": "algorithm_comparison.py:315-356,381-429,454-513,242-244; 07_evaluation.tex:70-72,327",
+    "issue": "Memory is measured as process RSS delta in a shared sequential process with reused solver instances, making the memory results noisy and order-dependent.",
+    "exact_fix": "Use isolated subprocesses and peak RSS per solver/scramble, or downgrade memory claims to clearly labeled process-level RSS deltas.",
+    "verification_steps": "Implement subprocess peak-memory measurement and compare the new results with current RSS-delta artifacts."
+  },
+  {
+    "severity": "Minor",
+    "category": "Technical/code issues",
+    "file": "webapp/package.json",
+    "location": "webapp/package.json:5-9; no test/spec files found under webapp/",
+    "issue": "The frontend has no automated test script or test files.",
+    "exact_fix": "Add Vitest/React Testing Library or Playwright smoke tests and add an npm `test` script.",
+    "verification_steps": "Run `cd webapp && npm test` successfully in a clean environment."
+  },
+  {
+    "severity": "Major",
+    "category": "Research/experimental issues",
+    "file": "results/benchmarks/thesis/thesis_results_combined.json; thesis/chapters/07_evaluation.tex",
+    "location": "thesis_results_combined.json:117-119,123-131,2306-2319,5348-5365,8720-8743; 07_evaluation.tex:75-77",
+    "issue": "The canonical benchmark corpus is legacy redundant and contains adjacent same-face cancellations/redundancy in many scrambles, weakening requested-depth comparisons.",
+    "exact_fix": "Add a second canonical corpus with allow_redundant=False and/or analyze results by verified optimal depth rather than requested scramble length.",
+    "verification_steps": "Run a script over scramble_moves to count adjacent same-face pairs and compare distributions before and after regenerating the corpus."
+  },
+  {
+    "severity": "Major",
+    "category": "Research/experimental issues",
+    "file": "results/benchmarks/thesis/thesis_results_combined.json; thesis/chapters/07_evaluation.tex",
+    "location": "thesis_results_combined.json:24-26; 07_evaluation.tex:318-328, especially line 324",
+    "issue": "Timing methodology includes lazy-loading/preprocessing in first timed solves while reusing solver instances, so cold-start and warm-start effects are mixed.",
+    "exact_fix": "Report cold-start and warm-start timings separately or perform a documented warmup before timed benchmark runs.",
+    "verification_steps": "Rerun benchmarks with explicit warmup and compare timing tables to the checked-in artifacts."
+  },
+  {
+    "severity": "Minor",
+    "category": "Research/experimental issues",
+    "file": "thesis/chapters/07_evaluation.tex; src/evaluation/algorithm_comparison.py",
+    "location": "07_evaluation.tex:213-226; algorithm_comparison.py:645-654,670-674",
+    "issue": "Timing and solution-length tables report means without uncertainty, and successful-only filtering for Korf timing is not explicit in the timing table caption.",
+    "exact_fix": "Add median/IQR/std or bootstrap confidence intervals and label Korf means as successful-solve-only where applicable.",
+    "verification_steps": "Recompute statistics from thesis_results_combined.json and update table captions and values."
+  },
+  {
+    "severity": "Minor",
+    "category": "Citation/reference issues",
+    "file": "thesis/references.bib",
+    "location": "references.bib:95-100,134-141,199-211,217-225,242-260",
+    "issue": "The bibliography source contains many unused entries and duplicate coverage of the DeepCubeA/Nature Machine Intelligence paper.",
+    "exact_fix": "Remove unused entries from the thesis bibliography or move them to separate literature notes; keep one canonical DeepCubeA entry.",
+    "verification_steps": "Run a citation-key audit comparing citations in thesis/chapters/*.tex with entries in references.bib."
+  },
+  {
+    "severity": "Major",
+    "category": "Reproducibility/setup issues",
+    "file": "README.md; requirements.txt; requirements.lock",
+    "location": "README.md:22-31; requirements.txt:1-42; requirements.lock:1-138",
+    "issue": "The start commands omit virtualenv/dependency installation and do not state whether requirements.txt or requirements.lock should be used.",
+    "exact_fix": "Add clean setup instructions with Python version, venv creation, and either exact `pip install -r requirements.lock` or flexible `pip install -r requirements.txt` guidance.",
+    "verification_steps": "Create a fresh environment and follow only the README instructions until verification succeeds."
+  },
+  {
+    "severity": "Major",
+    "category": "Reproducibility/setup issues",
+    "file": "thesis/chapters/appendix_a.tex",
+    "location": "appendix_a.tex:117-142, especially 130-132",
+    "issue": "The reproducibility snapshot lists repository, branch, and commit hash, but the ZIP has no .git directory, so the commit cannot be verified from the submitted artifact.",
+    "exact_fix": "Add a ZIP/archive manifest with archive hash, file hashes, packaging date, and revision information verifiable without .git.",
+    "verification_steps": "Run `test -d .git`; if false, verify the thesis snapshot from the added manifest."
+  },
+  {
+    "severity": "Minor",
+    "category": "Reproducibility/setup issues",
+    "file": "agent_workflow/generated/validation.md; scripts/thesis_workflow.py",
+    "location": "agent_workflow/generated/validation.md:3-16; scripts/thesis_workflow.py:873-910",
+    "issue": "The checked-in workflow validation output is environment-specific and lacks timestamp/host/toolchain metadata.",
+    "exact_fix": "Stop tracking generated validation output or add a timestamp, host/toolchain identity, and a clear generated-artifact banner.",
+    "verification_steps": "Run `python scripts/thesis_workflow.py validate --output agent_workflow/generated/validation.md` and confirm the regenerated file includes metadata."
+  },
+  {
+    "severity": "Minor",
+    "category": "Submission polish issues",
+    "file": "thesis/README.md",
+    "location": "thesis/README.md:105-114",
+    "issue": "The thesis progress tracker still has final validation, front matter review, proofreading, formatting, and PDF inspection unchecked.",
+    "exact_fix": "Complete these checks and mark them done, or remove the internal checklist from the final submission archive.",
+    "verification_steps": "Re-run validation/build, inspect the PDF, and update the checklist."
+  },
+  {
+    "severity": "Minor",
+    "category": "Submission polish issues",
+    "file": "thesis/main.tex; thesis/main.log",
+    "location": "main.tex:85-87,95-97; main.log:911-933",
+    "issue": "LaTeX warning filters and high hbadness suppress formatting diagnostics; the log still contains float-placement warnings.",
+    "exact_fix": "Remove warning suppression for final QA builds and fix any resulting overfull, font, or float warnings.",
+    "verification_steps": "Rebuild the thesis with warnings unsuppressed and confirm the log has no unresolved formatting warnings."
+  }
+]

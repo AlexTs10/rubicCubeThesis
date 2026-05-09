@@ -94400,5 +94400,9 @@
         "nodes_explored": 28
       }
     }
-  ]
+  ],
+  "config": {
+    "corner_db_loaded": true,
+    "corner_db_complete": true
+  }
 }

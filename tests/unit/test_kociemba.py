@@ -221,6 +221,7 @@ class TestMoveTables:
         assert new_us == direct_us
 
 
+@pytest.mark.cache_building
 class TestPruningTables:
     """Test pruning table generation and usage."""
 

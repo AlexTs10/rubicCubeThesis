@@ -29,10 +29,10 @@ Experimental evaluation confirms that:
     \item Kociemba's algorithm achieves 100\% success on the benchmark corpus with average solution length 14.33 moves.
     \item The external exact backend used for the Korf benchmark path solves 97/100 benchmark scrambles within the enforced 120-second limit and returns optimal solutions whenever it completes.
     \item The native exact solver is exhaustively validated on 3,501 unique states up to depth 3. On a reproducible 3,513-case validation corpus, enabling the native corner pattern database support reduces native failures under a 20-second limit from 3 to 1, solves sampled depth-9 states that the smaller heuristic times out on, and still leaves one edge-dominated depth-8 case as a timeout.
-    \item IDA* outperforms A* for cube solving due to lower memory requirements.
+    \item In the implemented A*/IDA* baseline comparison, IDA* uses less memory than the included A* implementation, at the cost of repeated node expansions.
 \end{itemize}
 
-The implementation includes a comprehensive test suite (291 collected tests, with heavyweight cache-building tests excluded from the default fast profile), interactive web applications for demonstration, and educational materials in the form of Jupyter notebooks.
+The implementation includes a comprehensive test suite whose default fast profile excludes heavyweight cache-building tests, interactive web applications for demonstration, and educational materials in the form of Jupyter notebooks.
 
 \vspace{1cm}
 \noindent\textbf{Keywords:} Rubik's Cube, search algorithms, IDA*, A*, pattern databases, heuristic functions, group theory, optimal solving

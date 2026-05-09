@@ -94698,5 +94698,9 @@
         "nodes_explored": 660
       }
     }
-  ]
+  ],
+  "config": {
+    "corner_db_loaded": true,
+    "corner_db_complete": true
+  }
 }

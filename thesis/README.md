@@ -102,13 +102,8 @@ python scripts/thesis_workflow.py packets --remaining
 3. Keep figure assets in `figures/` or refer to repo-level diagrams with verified relative paths.
 4. Re-run the workflow status and validation commands after substantial chapter edits.
 
-## Progress Tracking
+## Internal QA Notes
 
-- [x] Manuscript chapters complete
-- [x] Appendices complete
-- [x] Benchmark figures and JSON inputs present
-- [x] Workflow status has no open workflow targets
-- [ ] Re-run workflow validation on the final build machine
-- [ ] Abstracts and front matter final review
-- [ ] Final proofreading and formatting pass
-- [ ] Final PDF inspection
+The submission archive should be judged from the regenerated validation output
+and built PDF, not from a persistent checklist in this README. Re-run the
+workflow validation/build commands on the final build machine before submitting.
