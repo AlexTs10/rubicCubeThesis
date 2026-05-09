@@ -97,7 +97,8 @@ These Jupyter notebooks provide hands-on, interactive learning experiences for u
 
 ```bash
 # Install audited project dependencies
-pip install -r requirements.lock -e .
+pip install --require-hashes -r requirements.lock
+pip install --no-deps -e .
 
 # Optional: Install ipywidgets for interactive widgets
 pip install ipywidgets

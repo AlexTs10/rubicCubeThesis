@@ -55,6 +55,10 @@ class ValidationFailure:
     category: str
     scramble: List[str]
     message: str
+    expected_depth: int
+    expected_depth_source: str
+    case_category: str
+    oracle_length: Optional[int] = None
     native_stats: Optional[Dict] = None
     oracle_stats: Optional[Dict] = None
 
@@ -294,6 +298,9 @@ def validate_corpus(
                         category="oracle_incomplete",
                         scramble=case.scramble,
                         message="oracle did not complete",
+                        expected_depth=case.expected_depth,
+                        expected_depth_source="generated_length",
+                        case_category=case.category,
                     )
                 )
             else:
@@ -314,6 +321,10 @@ def validate_corpus(
                         if oracle_length is not None
                         else f"native solver did not complete for generated length {case.expected_depth}"
                     ),
+                    expected_depth=oracle_length if oracle_length is not None else case.expected_depth,
+                    expected_depth_source="oracle_length" if oracle_length is not None else "generated_length",
+                    case_category=case.category,
+                    oracle_length=oracle_length,
                     native_stats=native_stats,
                     oracle_stats=oracle_stats,
                 )
@@ -328,6 +339,10 @@ def validate_corpus(
                     category="oracle_disagreement" if oracle_length is not None else "native_depth_mismatch",
                     scramble=case.scramble,
                     message=f"native depth {len(native_moves)} != expected depth {expected_depth}",
+                    expected_depth=expected_depth,
+                    expected_depth_source="oracle_length" if oracle_length is not None else "generated_length",
+                    case_category=case.category,
+                    oracle_length=oracle_length,
                     native_stats=native_stats,
                     oracle_stats=oracle_stats,
                 )

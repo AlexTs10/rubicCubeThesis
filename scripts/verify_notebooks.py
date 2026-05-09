@@ -6,6 +6,8 @@ notebook is parseable JSON, has a kernelspec/language declaration when present,
 and contains at least one cell. It intentionally does not execute notebooks,
 because the heavier execution path depends on interactive widgets and optional
 long-running solver cells.
+It also blocks a small set of stale benchmark phrases that previously made
+educational notebooks disagree with the canonical Chapter 7 benchmark artifact.
 """
 
 from __future__ import annotations
@@ -17,6 +19,13 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 NOTEBOOK_DIR = ROOT / "notebooks"
+STALE_BENCHMARK_PHRASES = [
+    "17 avg",
+    "500ms",
+    "~2 MB",
+    "guaranteed ≤20",
+    "Korf IDA* Solution Lengths (OPTIMAL)",
+]
 
 
 def check_notebook(path: Path) -> tuple[bool, str]:
@@ -34,6 +43,15 @@ def check_notebook(path: Path) -> tuple[bool, str]:
     language_info = metadata.get("language_info")
     if kernelspec is None and language_info is None:
         return False, "missing kernelspec/language metadata"
+
+    text = "\n".join(
+        "".join(cell.get("source", []))
+        for cell in cells
+        if isinstance(cell, dict)
+    )
+    stale = [phrase for phrase in STALE_BENCHMARK_PHRASES if phrase in text]
+    if stale:
+        return False, f"stale benchmark claim(s): {', '.join(stale)}"
 
     return True, f"{len(cells)} cells"
 

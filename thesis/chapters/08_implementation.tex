@@ -7,7 +7,7 @@
 
 \subsection{Δομή Αποθετηρίου}
 
-Ο πυρήνας του λογισμικού βρίσκεται στον κατάλογο \filepath{src/}, ο οποίος περιέχει \textbf{40 αρχεία Python}. Τα \textbf{39} από αυτά ανήκουν στα έξι επιμέρους modules του Πίνακα~\ref{tab:impl_modules}, ενώ το top-level \filepath{src/\_\_init\_\_.py} λειτουργεί μόνο ως package marker. Η οργάνωση είναι θεματική και όχι τεχνητά object-oriented: κάθε αλγοριθμική οικογένεια συγκεντρώνεται στο δικό της module, ενώ οι κοινές εξαρτήσεις απομονώνονται στα \filepath{cube/}, \filepath{evaluation/} και \filepath{utils/}.
+Ο πυρήνας του λογισμικού βρίσκεται στον κατάλογο \filepath{src/}. Τα κύρια επιμέρους modules παρουσιάζονται στον Πίνακα~\ref{tab:impl_modules}, ενώ το top-level \filepath{src/\_\_init\_\_.py} λειτουργεί μόνο ως package marker. Η οργάνωση είναι θεματική και όχι τεχνητά object-oriented: κάθε αλγοριθμική οικογένεια συγκεντρώνεται στο δικό της module, ενώ οι κοινές εξαρτήσεις απομονώνονται στα \filepath{cube/}, \filepath{evaluation/} και \filepath{utils/}.
 
 \begin{table}[htbp]
 \centering
@@ -27,7 +27,7 @@
 \end{tabular}
 \end{table}
 
-Ο Πίνακας~\ref{tab:impl_modules} δείχνει ότι το μεγαλύτερο υλοποιητικό βάρος βρίσκεται στον Korf, κάτι αναμενόμενο: η optimal search απαιτεί pattern databases, heuristics, IDA*, utilities επικύρωσης και βοηθητικά εργαλεία για distance estimation. Μαζί με το top-level \filepath{src/\_\_init\_\_.py}, ο κατάλογος \filepath{src/} ανέρχεται σήμερα σε \textbf{40 αρχεία Python}. Οι ακριβείς γραμμές κώδικα αναφέρονται από το workflow status του αποθετηρίου και δεν παγώνουν πλέον στο κείμενο, επειδή μεταβάλλονται σε κάθε διορθωτικό pass. Αντίστοιχα, ο Kociemba συνδυάζει cubie representation, coordinate compression, move tables και pruning tables, ενώ ο Thistlethwaite βασίζεται στην πολυφασική λογική και στις επιμέρους coordinate abstractions.
+Ο Πίνακας~\ref{tab:impl_modules} δείχνει ότι το μεγαλύτερο υλοποιητικό βάρος βρίσκεται στον Korf, κάτι αναμενόμενο: η optimal search απαιτεί pattern databases, heuristics, IDA*, utilities επικύρωσης και βοηθητικά εργαλεία για distance estimation. Οι ακριβείς γραμμές κώδικα και τα πλήθη αρχείων αναφέρονται από το workflow status του αποθετηρίου και δεν παγώνουν πλέον στο κείμενο, επειδή μεταβάλλονται σε κάθε διορθωτικό pass. Αντίστοιχα, ο Kociemba συνδυάζει cubie representation, coordinate compression, move tables και pruning tables, ενώ ο Thistlethwaite βασίζεται στην πολυφασική λογική και στις επιμέρους coordinate abstractions.
 
 \subsection{Εξαρτήσεις Μεταξύ Modules}
 

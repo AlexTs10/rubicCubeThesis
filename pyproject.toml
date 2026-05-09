@@ -24,6 +24,7 @@ external-exact = [
 benchmark = [
   "matplotlib",
   "memory-profiler",
+  "line-profiler",
   "pandas",
   "psutil",
   "seaborn",
@@ -36,6 +37,9 @@ test = [
   "pytest",
   "pytest-benchmark",
   "pytest-cov",
+  "black",
+  "mypy",
+  "pylint",
 ]
 dev = [
   "black",

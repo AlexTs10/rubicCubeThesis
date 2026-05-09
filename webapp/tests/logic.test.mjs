@@ -56,7 +56,11 @@ test("cube move and inverse logic solves round trips", () => {
 });
 
 test("cube parser rejects invalid move tokens", () => {
+    assert.deepEqual(cube.parseMoves("RUR'U'"), ["R", "U", "R'", "U'"]);
+    assert.deepEqual(cube.parseMoves("R2U'D"), ["R2", "U'", "D"]);
+    assert.deepEqual(cube.parseMoves("R U  F2"), ["R", "U", "F2"]);
     assert.throws(() => cube.parseMoves("R X U"), /Invalid move token: X/);
+    assert.throws(() => cube.parseMoves("R3U"), /Invalid move token: 3U/);
     assert.throws(() => cube.inverseMove("X"), /Invalid move token: X/);
 });
 
@@ -71,6 +75,15 @@ test("synthetic solveCube returns a verified inverse solution", async () => {
         cube.isSolved(cube.applyMoves(state, result.solution)),
         true
     );
+});
+
+test("synthetic solveCube validates against the supplied state", async () => {
+    const scramble = ["R", "U", "F2"];
+    const mismatchedState = cube.applyMoves(cube.cloneCubeState(constants.SOLVED_STATE), ["L"]);
+    const result = await solver.solveCube(mismatchedState, scramble, "kociemba", 30_000);
+
+    assert.equal(result.solved, false);
+    assert.match(result.error ?? "", /failed validation/);
 });
 
 test("synthetic solver timeout path is executable", async () => {

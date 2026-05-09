@@ -29,7 +29,8 @@ recommended baseline for reproducing the thesis environment.
 python3.12 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install -r requirements.lock -e .
+python -m pip install --require-hashes -r requirements.lock
+python -m pip install --no-deps -e .
 python verify_setup.py
 python -m pytest tests -q
 python scripts/thesis_workflow.py status
@@ -48,8 +49,9 @@ Run `corepack enable` before `npm ci` if your npm version is not already
 11.6.0. Use `requirements.txt` only when you need a flexible dependency range
 for local development.
 
+The hash-locked `requirements.lock` is the full audited Python environment.
 The editable package keeps only core solver dependencies in base
-`pyproject.toml`. Optional extras separate heavier stacks:
+`pyproject.toml`. Optional extras separate lighter install stacks:
 `.[native]`, `.[external-exact]`, `.[benchmark]`, `.[ui]`, `.[test]`,
 `.[notebooks]`, `.[dev]`, and `.[thesis]` for the full thesis environment.
 

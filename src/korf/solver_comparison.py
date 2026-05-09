@@ -5,12 +5,11 @@ This module implements a comprehensive comparison framework to demonstrate
 why IDA* dominates A* for Rubik's Cube solving, despite A*'s theoretical
 advantages.
 
-Key Finding (from research):
-- A* typically solves 40-50 cubes before memory exhaustion
-- IDA* can solve 5000+ cubes with constant memory
-- IDA* is 10-100x slower per node but explores fewer total nodes
-
-This framework empirically validates these theoretical predictions.
+Scope:
+This framework is an educational comparison harness for the repository's A*
+and IDA* implementations. It reports measurements from the current run only;
+the checked-in thesis benchmark artifacts are the authority for thesis-facing
+quantitative claims.
 
 References:
 - Korf (1997): "Finding Optimal Solutions to Rubik's Cube Using Pattern Databases"

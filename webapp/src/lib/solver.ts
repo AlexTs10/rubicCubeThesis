@@ -1,5 +1,5 @@
 import type { Algorithm, CubeState, Move, SolveResult } from '@/types/cube';
-import { applyMoves, isSolved, inverseMoves } from './cube';
+import { applyMoves, cloneCubeState, isSolved, inverseMoves } from './cube';
 import { SOLVED_STATE } from './constants';
 
 // Synthetic demo results. The Next.js frontend is intentionally decoupled from
@@ -133,14 +133,13 @@ function generateDemoSolution(scramble: Move[]): Move[] {
 
 // Main solve function
 export async function solveCube(
-  _state: CubeState,
+  state: CubeState,
   scramble: Move[],
   algorithm: Algorithm,
   timeout: number = 30000
 ): Promise<SolveResult> {
   const startTime = performance.now();
   const metadata = backendInfo(algorithm);
-  const scrambleState = applyMoves({ ...SOLVED_STATE }, scramble);
   const scrambleKey = scrambleSignature(scramble);
   const solveTimeRng = createDeterministicRng('solve-time', algorithm, scrambleKey);
   const memoryRng = createDeterministicRng('memory', algorithm, scrambleKey);
@@ -181,7 +180,7 @@ export async function solveCube(
     // Simulate actual solving
     setTimeout(() => {
       const solution = generateDemoSolution(scramble);
-      const solvedState = applyMoves(scrambleState, solution);
+      const solvedState = applyMoves(cloneCubeState(state), solution);
       const actualTime = performance.now() - startTime;
 
       if (!isSolved(solvedState)) {

@@ -217,18 +217,28 @@ function isOppositeFace(face1: string, face2: string): boolean {
 
 // Parse move string to Move array
 export function parseMoves(moveString: string): Move[] {
-  // Handle both space-separated and continuous notation
-  const normalized = moveString
-    .replace(/[']/g, "'") // Normalize apostrophes
-    .replace(/2/g, '2 ')   // Add space after 2
-    .replace(/'/g, "' ")   // Add space after '
-    .split(/\s+/)
-    .filter(Boolean);
-
   const moves: Move[] = [];
-  for (const token of normalized) {
+  const input = moveString.replace(/[']/g, "'");
+  const tokenPattern = /[URFDLB](?:2|')?/y;
+  let index = 0;
+
+  while (index < input.length) {
+    if (/\s/.test(input[index])) {
+      index += 1;
+      continue;
+    }
+
+    tokenPattern.lastIndex = index;
+    const match = tokenPattern.exec(input);
+    if (!match) {
+      const next = input.slice(index).split(/\s+/)[0] || input[index];
+      throw new Error(`Invalid move token: ${next}`);
+    }
+
+    const token = match[0];
     assertMove(token);
     moves.push(token);
+    index = tokenPattern.lastIndex;
   }
 
   return moves;

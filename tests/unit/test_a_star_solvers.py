@@ -286,8 +286,8 @@ class TestIDAStarSolver:
         cube = RubikCube()
         cube.scramble(moves=10)
 
-        # Very short timeout
-        solver = IDAStarSolver(heuristic=manhattan_distance, max_depth=20, timeout=0.1)
+        # Zero timeout makes this deterministic even if the random scramble is shallow.
+        solver = IDAStarSolver(heuristic=manhattan_distance, max_depth=20, timeout=0.0)
 
         start_time = time.time()
         solution = solver.solve(cube)

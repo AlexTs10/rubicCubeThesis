@@ -62,8 +62,8 @@ class AStarSolver:
     - Open set can reach millions of states
     - Closed set also requires significant memory
 
-    Typical performance: Solves 40-50 cubes before running out of memory
-    (compared to IDA* which can solve 5000+)
+    Performance depends on the configured heuristic, scramble corpus, timeout,
+    and memory limit. Use committed benchmark artifacts for thesis claims.
     """
 
     # All 18 possible moves (6 faces × 3 types)
