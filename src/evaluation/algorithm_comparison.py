@@ -5,7 +5,7 @@ This module provides a comprehensive framework for comparing all three
 implemented Rubik's Cube solving algorithms:
 - Thistlethwaite (1981): 4-phase group-theoretic approach
 - Kociemba (1992): 2-phase near-optimal solver
-- Korf (1997): optimal IDA* with pattern databases
+- Korf-style exact benchmark route: external optimal backend wrapped by this repository
 
 The framework runs identical scrambles through all algorithms and collects
 standardized metrics for statistical analysis and thesis presentation.
@@ -153,6 +153,7 @@ class AlgorithmComparison:
         korf_use_pattern_db: bool = True,
         korf_pattern_db_cache_dir: str = "data/pattern_databases/korf",
         korf_backend: str = "auto",
+        kociemba_backend: str = "internal",
     ):
         """
         Initialize comparison framework.
@@ -165,6 +166,8 @@ class AlgorithmComparison:
             korf_use_pattern_db: Prefer pattern-database-backed composite heuristic
             korf_pattern_db_cache_dir: Directory containing optional Korf caches
             korf_backend: "auto", "optimal", or "heuristic"
+            kociemba_backend: "internal", "native", or "auto"; thesis benchmark
+                regeneration uses "internal" to match the checked-in artifacts
         """
         self.thistlethwaite_timeout = thistlethwaite_timeout
         self.kociemba_timeout = kociemba_timeout
@@ -173,6 +176,7 @@ class AlgorithmComparison:
         self.korf_use_pattern_db = korf_use_pattern_db
         self.korf_pattern_db_cache_dir = korf_pattern_db_cache_dir
         self.korf_backend_preference = korf_backend
+        self.kociemba_backend = kociemba_backend
 
         self.results: List[ComparisonResult] = []
         self.process = psutil.Process(os.getpid())
@@ -185,7 +189,7 @@ class AlgorithmComparison:
         )
         print("  ✓ Thistlethwaite solver ready")
 
-        self.kociemba_solver = KociembaSolver()
+        self.kociemba_solver = KociembaSolver(backend=kociemba_backend)
         print("  ✓ Kociemba solver ready")
 
         self.korf_heuristic = None

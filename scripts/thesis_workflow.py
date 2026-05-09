@@ -36,7 +36,7 @@ BENCHMARK_DIR = ROOT / "results" / "benchmarks" / "thesis"
 
 ALGORITHMS = ("thistlethwaite", "kociemba", "korf")
 THESIS_DOCKERFILE = ROOT / "docker" / "thesis.Dockerfile"
-DOCKER_IMAGE = "rubic-cube-thesis-tex:local"
+DOCKER_IMAGE = "rubiks-cube-thesis-tex:local"
 
 
 @dataclass(frozen=True)
@@ -875,8 +875,8 @@ def build_packet_markdown(config: ChapterConfig) -> str:
     return "\n".join(sections) + "\n"
 
 
-def format_validation_markdown(data: dict[str, Any]) -> str:
-    """Render a lightweight validation report."""
+def validation_issues(data: dict[str, Any]) -> list[str]:
+    """Return blocking validation issues for the current checkout."""
     issues = []
     backend = data["toolchain"]["bibliography_backend"]
     local_tex_ready = data["toolchain"]["local_tex_ready"]
@@ -897,6 +897,16 @@ def format_validation_markdown(data: dict[str, Any]) -> str:
         issues.append("No benchmark JSON files were found for the evaluation chapter.")
     if data["remaining_targets"]:
         issues.append("Stub workflow targets remain: " + ", ".join(data["remaining_targets"]))
+
+    return issues
+
+
+def format_validation_markdown(data: dict[str, Any]) -> str:
+    """Render a lightweight validation report."""
+    issues = validation_issues(data)
+    backend = data["toolchain"]["bibliography_backend"]
+    local_tex_ready = data["toolchain"]["local_tex_ready"]
+    docker_ready = data["toolchain"]["docker_daemon"]
 
     sections = [
         "# Thesis Workflow Validation",
@@ -1165,6 +1175,12 @@ def validate(output: Path | None) -> None:
     data = build_status_data()
     report = format_validation_markdown(data)
     write_or_print(report, output)
+    issues = validation_issues(data)
+    if issues:
+        raise SystemExit(
+            "Thesis workflow validation failed: "
+            + "; ".join(issues)
+        )
 
 
 def main() -> None:

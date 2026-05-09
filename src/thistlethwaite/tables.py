@@ -23,6 +23,7 @@ from ..kociemba.moves import (
 
 UNKNOWN_DISTANCE = 255
 CACHE_SCHEMA_VERSION = 1
+EXACT_DISTANCE_SCHEMA_VERSION = 1
 
 
 def _validate_uint8_table(table: object, *, name: str, size: int) -> np.ndarray:
@@ -64,6 +65,68 @@ def _uint8_table_cache_payload(db: "PatternDatabase") -> dict[str, object]:
         "dtype": "uint8",
         "table": db.table,
     }
+
+
+def _validate_distance_dict(distances: object, *, name: str) -> Dict[int, int]:
+    """Validate cached exact-state distances before using them."""
+    if not isinstance(distances, dict):
+        raise ValueError(f"Cached table '{name}' must be a dictionary of distances")
+
+    validated: Dict[int, int] = {}
+    for key, value in distances.items():
+        if not isinstance(key, int) or key < 0:
+            raise ValueError(f"Cached table '{name}' contains invalid state key {key!r}")
+        if not isinstance(value, int) or value < 0 or value >= UNKNOWN_DISTANCE:
+            raise ValueError(f"Cached table '{name}' contains invalid distance {value!r}")
+        validated[key] = value
+
+    if validated.get(0) != 0:
+        raise ValueError(f"Cached table '{name}' must contain solved-state distance 0")
+    return validated
+
+
+def _exact_distance_cache_payload(name: str, distances: Dict[int, int]) -> dict[str, object]:
+    """Create a schema-bearing payload for exact-state distance caches."""
+    return {
+        "schema_version": EXACT_DISTANCE_SCHEMA_VERSION,
+        "name": name,
+        "distances": distances,
+    }
+
+
+def _load_exact_distance_cache(cache_file: str, *, name: str) -> Dict[int, int]:
+    """Load and validate an exact-state distance cache."""
+    with open(cache_file, 'rb') as f:
+        payload = pickle.load(f)
+
+    if isinstance(payload, dict) and "distances" in payload:
+        if "schema_version" in payload:
+            if payload.get("schema_version") != EXACT_DISTANCE_SCHEMA_VERSION:
+                raise ValueError(f"Cached table '{name}' has unsupported schema version")
+            if payload.get("name") != name:
+                raise ValueError(f"Cached table '{name}' was stored for {payload.get('name')!r}")
+        return _validate_distance_dict(payload["distances"], name=name)
+
+    return _validate_distance_dict(payload, name=name)
+
+
+def _load_goal_distance_cache(
+    cache_file: str,
+    *,
+    name: str,
+    size: int,
+    goal_coords: Set[int],
+) -> np.ndarray:
+    """Load and validate a uint8 distance-to-goal cache."""
+    table = _load_uint8_table_cache(cache_file, name=name, size=size)
+    for coord in goal_coords:
+        if coord < 0 or coord >= size:
+            raise ValueError(f"Goal coordinate {coord} is outside cached table '{name}'")
+        if int(table[coord]) != 0:
+            raise ValueError(
+                f"Cached table '{name}' is inconsistent: goal coordinate {coord} has distance {int(table[coord])}"
+            )
+    return table
 
 
 class PatternDatabase:
@@ -510,9 +573,10 @@ class ThistlethwaitePatternDatabases:
 
         if os.path.exists(cache_file):
             print("Loading cached exact phase-3 subgroup table 'phase3_exact_g3_v4'...")
-            with open(cache_file, 'rb') as f:
-                data = pickle.load(f)
-            self.phase3_distances = data["distances"] if isinstance(data, dict) else data
+            self.phase3_distances = _load_exact_distance_cache(
+                cache_file,
+                name="phase3_exact_g3_v4",
+            )
             self._derive_phase3_goal_projections()
             print(
                 "  Loaded "
@@ -567,7 +631,13 @@ class ThistlethwaitePatternDatabases:
             f"{len(self.phase3_goal_slice_perms)} slice perms)"
         )
         with open(cache_file, 'wb') as f:
-            pickle.dump({"distances": self.phase3_distances}, f)
+            pickle.dump(
+                _exact_distance_cache_payload(
+                    "phase3_exact_g3_v4",
+                    self.phase3_distances,
+                ),
+                f,
+            )
         print(f"  Saved exact phase-3 subgroup table to {cache_file}")
 
     def _load_or_generate_goal_distance_table(
@@ -587,8 +657,12 @@ class ThistlethwaitePatternDatabases:
 
         if os.path.exists(cache_file):
             print(f"Loading cached pattern database '{name}'...")
-            with open(cache_file, 'rb') as f:
-                table = pickle.load(f)
+            table = _load_goal_distance_cache(
+                cache_file,
+                name=name,
+                size=size,
+                goal_coords=goal_coords,
+            )
             print(f"  Loaded {size} entries")
             return table
 
@@ -597,6 +671,8 @@ class ThistlethwaitePatternDatabases:
         queue = deque()
 
         for coord in sorted(goal_coords):
+            if coord < 0 or coord >= size:
+                raise ValueError(f"Goal coordinate {coord} is outside table '{name}'")
             table[coord] = 0
             queue.append(coord)
 
@@ -611,7 +687,16 @@ class ThistlethwaitePatternDatabases:
                 queue.append(next_coord)
 
         with open(cache_file, 'wb') as f:
-            pickle.dump(table, f)
+            pickle.dump(
+                {
+                    "schema_version": CACHE_SCHEMA_VERSION,
+                    "name": name,
+                    "size": size,
+                    "dtype": "uint8",
+                    "table": table,
+                },
+                f,
+            )
         known = int(np.count_nonzero(table != 255))
         print(f"  Visited {known} / {size} states ({100 * known / size:.1f}%)")
         print(f"  Saved to {cache_file}")

@@ -167,9 +167,12 @@ def affects_edge_slicing(move: str) -> bool:
 
 def affects_permutation_parity(move: str) -> bool:
     """
-    Check if a move affects permutation parity.
+    Check whether a move toggles the corner/edge permutation parity coordinate.
 
-    Only quarter turns (not double moves) affect parity.
+    The parity modeled here is the shared permutation parity used by the
+    coordinate abstraction: legal cube moves toggle corner and edge permutation
+    parity together on quarter turns, while half turns preserve it. This is not
+    a full subgroup-membership predicate by itself.
 
     Args:
         move: Move string
@@ -196,8 +199,13 @@ def is_in_g2(corner_orientation_coord: int, e_slice_coord: int) -> bool:
 
 
 def is_in_g3(corner_tetrad_coord: int, edge_slice_coord: int) -> bool:
-    """Check if cube is in group G3 (corners in tetrads, edges in slices)."""
-    # This is simplified - full check requires verifying tetrad and slice invariants
+    """
+    Check the simplified G3 projection tracked by this coordinate layer.
+
+    Full G3 membership is validated in ``ThistlethwaitePatternDatabases`` using
+    exact phase-3 coordinates. This helper only checks the reduced
+    corner-tetrad and edge-slice projection used by lightweight tests.
+    """
     return corner_tetrad_coord == 0 and edge_slice_coord == 0
 
 

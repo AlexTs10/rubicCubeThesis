@@ -147,3 +147,30 @@ def test_local_build_requires_bibliography_tool_before_latexmk(monkeypatch):
 
     assert "bibtex" in str(excinfo.value)
     assert commands == []
+
+
+def test_validate_exits_nonzero_when_no_build_path(monkeypatch):
+    """Validation should fail its process when it reports blocking build-path issues."""
+    data = {
+        "toolchain": {
+            "bibliography_backend": "bibtex",
+            "local_tex_ready": False,
+            "docker_daemon": False,
+            "latexmk": False,
+            "xelatex": False,
+            "bibliography_tool": False,
+            "tectonic": False,
+            "docker_cli": False,
+        },
+        "bibliography": {"missing_keys": []},
+        "benchmarks": {"files": ["results/benchmarks/thesis/thesis_results_combined.json"]},
+        "remaining_targets": [],
+    }
+
+    monkeypatch.setattr(thesis_workflow, "build_status_data", lambda: data)
+    monkeypatch.setattr(thesis_workflow, "write_or_print", lambda *_args, **_kwargs: None)
+
+    with pytest.raises(SystemExit) as excinfo:
+        thesis_workflow.validate(output=None)
+
+    assert "No thesis build path is ready" in str(excinfo.value)

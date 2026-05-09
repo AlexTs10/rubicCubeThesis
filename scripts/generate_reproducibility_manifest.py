@@ -10,8 +10,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import subprocess
-from datetime import datetime, timezone
 from pathlib import Path
 
 
@@ -87,18 +85,6 @@ def sha256(path: Path) -> str:
     return digest.hexdigest()
 
 
-def git_value(*args: str) -> str | None:
-    try:
-        return subprocess.check_output(
-            ["git", *args],
-            cwd=ROOT,
-            text=True,
-            stderr=subprocess.DEVNULL,
-        ).strip()
-    except (subprocess.CalledProcessError, FileNotFoundError):
-        return None
-
-
 def main() -> None:
     files = sorted(path for path in ROOT.rglob("*") if is_included(path))
     file_hashes = {
@@ -109,13 +95,9 @@ def main() -> None:
 
     manifest = {
         "schema_version": 1,
-        "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "source_root": ROOT.name,
         "revision": {
-            "git_commit": git_value("rev-parse", "--short=12", "HEAD"),
-            "git_branch": git_value("branch", "--show-current"),
-            "git_dirty": bool(git_value("status", "--porcelain")),
-            "note": "Git fields are informational; file hashes below are the archive-verifiable source of truth.",
+            "note": "Git metadata is intentionally omitted because the source ZIP is audited outside .git. File hashes below are the archive-verifiable source of truth.",
         },
         "exclusions": {
             "parts": sorted(EXCLUDED_PARTS),

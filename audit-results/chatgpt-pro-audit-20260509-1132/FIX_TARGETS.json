@@ -1,0 +1,265 @@
+[
+  {
+    "severity": "Critical",
+    "category": "Critical blockers",
+    "file": "thesis/main.tex; thesis/chapters/00_approval.tex; thesis/README.md; README.md",
+    "location": "thesis/main.tex:174-180; thesis/chapters/00_approval.tex:34-44; thesis/README.md:3; README.md:8",
+    "issue": "Formal approval/signature front matter is incomplete and excluded from the thesis build.",
+    "exact_fix": "Fill thesis/chapters/00_approval.tex with official committee names, roles, and examination date; include it in thesis/main.tex at the institutionally required position; update README status text after completion.",
+    "verification_steps": [
+      "Run python scripts/thesis_workflow.py build --mode auto.",
+      "Inspect the rebuilt PDF and confirm the approval page is present.",
+      "Run pdftotext thesis/main.pdf - and confirm the committee names and examination date appear.",
+      "Confirm no placeholder committee rows or dotfill examination-date fields remain."
+    ]
+  },
+  {
+    "severity": "Critical",
+    "category": "Critical blockers",
+    "file": "results/validation/native_exact/README.md; results/validation/native_exact/MANIFEST.json; scripts/verification/native_exact_validation.py",
+    "location": "results/validation/native_exact/README.md:25-30; results/validation/native_exact/MANIFEST.json:24-28; scripts/verification/native_exact_validation.py:244-255",
+    "issue": "Canonical native exact validation requires data/pattern_databases/corner_db.pkl, which is omitted from the source ZIP, so the canonical validation claim is not reproducible from the ZIP alone.",
+    "exact_fix": "Provide the canonical corner_db.pkl as a hashed external artifact with retrieval instructions, or add a deterministic generation command and record the generated hash. If not provided, downgrade the thesis claim to state that only the source-ZIP smoke preset is reproducible from the submitted archive.",
+    "verification_steps": [
+      "From a clean extraction, run python scripts/verification/native_exact_validation.py --preset canonical --output-dir /tmp/native_exact_audit.",
+      "Confirm it completes without manual artifact injection, or confirm the thesis explicitly states that canonical validation requires an external archived artifact."
+    ]
+  },
+  {
+    "severity": "Major",
+    "category": "Critical blockers",
+    "file": "scripts/thesis_workflow.py",
+    "location": "scripts/thesis_workflow.py:878-939; scripts/thesis_workflow.py:1163-1180",
+    "issue": "The validate command reports a failed thesis build path but exits with success status.",
+    "exact_fix": "Make validate return a non-zero exit code whenever hard validation issues are emitted, or add a strict mode and document it as the CI/default reproducibility command.",
+    "verification_steps": [
+      "Run python scripts/thesis_workflow.py validate in an environment without BibTeX, Tectonic, or Docker.",
+      "Confirm the command exits non-zero when it reports that no thesis build path is ready."
+    ]
+  },
+  {
+    "severity": "Major",
+    "category": "Thesis writing issues",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "thesis/chapters/07_evaluation.tex:6; thesis/chapters/07_evaluation.tex:34-44",
+    "issue": "The evaluation opening says it compares three implemented algorithms, while the official optimal/Korf benchmark uses an external exact backend wrapped by the repository.",
+    "exact_fix": "Change the wording to 'three solver paths' or 'two repository-implemented solvers plus an external exact optimal baseline wrapped by the repository', and repeat the distinction near the first evaluation table.",
+    "verification_steps": [
+      "Search thesis/chapters/07_evaluation.tex for wording equivalent to 'implemented algorithms'.",
+      "Confirm each occurrence distinguishes native/internal implementation from the external optimal backend."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Thesis writing issues",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "thesis/chapters/07_evaluation.tex:6; thesis/chapters/07_evaluation.tex:22-27; thesis/chapters/07_evaluation.tex:88; thesis/chapters/07_evaluation.tex:125-132; thesis/chapters/07_evaluation.tex:400-404",
+    "issue": "Some fairness and attribution wording is stronger than the benchmark design supports, given unequal timeouts, external backend use, redundant legacy scrambles, and single-run batch-amortized timings.",
+    "exact_fix": "Qualify the evaluation conclusions as applying under the documented fixed corpus, platform, timeout policy, backend selection, and batch-amortized methodology.",
+    "verification_steps": [
+      "Search for terms equivalent to fair comparison, common conditions, and algorithmic attribution.",
+      "Confirm those statements are bounded by the benchmark limitations already documented in the chapter."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Thesis writing issues",
+    "file": "src/evaluation/visualizations.py; thesis/figures/*.png",
+    "location": "src/evaluation/visualizations.py:204-205; src/evaluation/visualizations.py:243-244; src/evaluation/visualizations.py:284-285; src/evaluation/visualizations.py:324-325; src/evaluation/visualizations.py:347-349; src/evaluation/visualizations.py:386-388; src/evaluation/visualizations.py:417-419",
+    "issue": "The generated thesis figures use English titles and axis labels inside a Greek-language thesis.",
+    "exact_fix": "Add Greek label support to src/evaluation/visualizations.py or translate the thesis figure labels directly, then regenerate all thesis figures.",
+    "verification_steps": [
+      "Regenerate thesis figures.",
+      "Open thesis/figures/fig*.png and confirm titles, axes, legends, and metric names use the same language style as the thesis text."
+    ]
+  },
+  {
+    "severity": "Major",
+    "category": "Technical/code issues",
+    "file": "src/evaluation/algorithm_comparison.py; src/kociemba/solver.py; scripts/benchmarks/regenerate_thesis_benchmarks.py",
+    "location": "src/evaluation/algorithm_comparison.py:188; src/kociemba/solver.py:79-87; src/kociemba/solver.py:337-344; src/kociemba/solver.py:380-390; src/kociemba/solver.py:405-414; src/kociemba/solver.py:435-445; scripts/benchmarks/regenerate_thesis_benchmarks.py:223-229",
+    "issue": "The thesis benchmark regeneration path does not force Kociemba's internal backend even though the thesis and current JSON describe all Kociemba benchmark rows as internal.",
+    "exact_fix": "Add a kociemba_backend parameter and CLI flag; instantiate KociembaSolver(backend='internal') for thesis regeneration; add an export assertion that every Kociemba row records kociemba_internal and no fallback.",
+    "verification_steps": [
+      "Install the optional native package in a clean environment.",
+      "Rerun the thesis benchmark regeneration command.",
+      "Assert that every exported Kociemba result has backend equal to kociemba_internal."
+    ]
+  },
+  {
+    "severity": "Major",
+    "category": "Technical/code issues",
+    "file": "src/thistlethwaite/tables.py",
+    "location": "src/thistlethwaite/tables.py:573-593",
+    "issue": "The Thistlethwaite goal-distance pickle cache is loaded without validating object type, dtype, shape, sentinel range, or goal-state consistency.",
+    "exact_fix": "Validate loaded cache structure and contents before returning it; regenerate or fail loudly when validation fails.",
+    "verification_steps": [
+      "Add a regression test that writes an invalid pickle at the expected cache path.",
+      "Confirm the loader rejects or regenerates the invalid cache.",
+      "Run the Thistlethwaite unit tests and full fast test profile."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Technical/code issues",
+    "file": "src/thistlethwaite/moves.py",
+    "location": "src/thistlethwaite/moves.py:198-201",
+    "issue": "is_in_g3 is named as a full G3 subgroup predicate but implements only a simplified projection over two coordinates.",
+    "exact_fix": "Rename the function to describe the projection it checks, or implement the full G3 invariant predicate and add tests for missing-invariant cases.",
+    "verification_steps": [
+      "Search for all is_in_g3 usages.",
+      "Add tests for states that satisfy the current two-coordinate check but violate the missing invariants.",
+      "Confirm solver behavior and tests remain correct."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Technical/code issues",
+    "file": "src/thistlethwaite/moves.py",
+    "location": "src/thistlethwaite/moves.py:168-181",
+    "issue": "affects_permutation_parity has ambiguous parity terminology and does not specify the exact parity coordinate being modeled.",
+    "exact_fix": "Rename the helper to specify the modeled parity coordinate or remove it if unused; add tests documenting quarter-turn and half-turn behavior for the intended parity concept.",
+    "verification_steps": [
+      "Run grep -R \"affects_permutation_parity\" src tests thesis.",
+      "Confirm all references use precise parity terminology.",
+      "Run the added parity-semantics tests."
+    ]
+  },
+  {
+    "severity": "Major",
+    "category": "Research/experimental issues",
+    "file": "results/benchmarks/thesis/thesis_results_combined.json; thesis/chapters/07_evaluation.tex",
+    "location": "results/benchmarks/thesis/thesis_results_combined.json:117-119; results/benchmarks/thesis/thesis_results_combined.json:152-157; thesis/chapters/07_evaluation.tex:88",
+    "issue": "The primary benchmark corpus is a legacy random-move corpus that permits adjacent same-face redundancy, so requested scramble length is not exact depth.",
+    "exact_fix": "Regenerate the primary benchmark using no-consecutive-same-face scrambles or an oracle-verified exact-depth corpus; retain the legacy corpus only as a historical appendix.",
+    "verification_steps": [
+      "Run a corpus validation script that asserts no adjacent same-face moves.",
+      "Record verified optimal depth for every scramble.",
+      "Rerun benchmarks and update all evaluation tables and figures."
+    ]
+  },
+  {
+    "severity": "Major",
+    "category": "Research/experimental issues",
+    "file": "thesis/chapters/07_evaluation.tex; results/benchmarks/thesis/thesis_results_combined.json",
+    "location": "thesis/chapters/07_evaluation.tex:125-132; thesis/chapters/07_evaluation.tex:180-184; thesis/chapters/07_evaluation.tex:376-386; results/benchmarks/thesis/thesis_results_combined.json:24-26",
+    "issue": "Runtime evidence is based on single-run batch-amortized observations without repetitions, cold/warm separation, or confidence intervals.",
+    "exact_fix": "Add repeated trials per solver and scramble, separate cold-start from warm-cache timing, and report median, IQR, and confidence intervals.",
+    "verification_steps": [
+      "Update benchmark JSON schema to store repeated observations.",
+      "Recompute timing tables from repeated-run data.",
+      "Confirm the thesis reports uncertainty intervals rather than only means."
+    ]
+  },
+  {
+    "severity": "Major",
+    "category": "Research/experimental issues",
+    "file": "src/evaluation/algorithm_comparison.py; thesis/chapters/07_evaluation.tex",
+    "location": "src/evaluation/algorithm_comparison.py:331; src/evaluation/algorithm_comparison.py:364-372; src/evaluation/algorithm_comparison.py:397; src/evaluation/algorithm_comparison.py:437-445; src/evaluation/algorithm_comparison.py:470; src/evaluation/algorithm_comparison.py:521-529; thesis/chapters/07_evaluation.tex:121; thesis/chapters/07_evaluation.tex:150; thesis/chapters/07_evaluation.tex:307-311; thesis/chapters/07_evaluation.tex:385",
+    "issue": "Memory comparison uses shared-process before/after RSS deltas, which are too coarse for strong per-solver memory claims.",
+    "exact_fix": "Run solver invocations in isolated subprocesses and record peak RSS, separating persistent preprocessing/cache memory from per-solve memory.",
+    "verification_steps": [
+      "Add fields such as peak_rss_mb, isolated_process, and cache_state to benchmark output.",
+      "Rebuild memory tables from isolated-process measurements.",
+      "Confirm thesis memory claims are limited to the new measurement method."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Research/experimental issues",
+    "file": "thesis/chapters/07_evaluation.tex; results/benchmarks/thesis/thesis_results_combined.json",
+    "location": "thesis/chapters/07_evaluation.tex:22-27; thesis/chapters/07_evaluation.tex:29-32; thesis/chapters/07_evaluation.tex:34-44; results/benchmarks/thesis/thesis_results_combined.json:12-16",
+    "issue": "The solvers use unequal timeout policies, weakening direct runtime comparisons.",
+    "exact_fix": "Add a sensitivity experiment with equal wall-time budgets, or separate the exact solver's role as a quality baseline from runtime comparison tables.",
+    "verification_steps": [
+      "Run a second benchmark with equal timeout settings.",
+      "Add a table showing whether conclusions change under equal time budgets."
+    ]
+  },
+  {
+    "severity": "Major",
+    "category": "Citation/reference issues",
+    "file": "thesis/references.bib; results/benchmarks/thesis/thesis_results_combined.json; README.md",
+    "location": "thesis/references.bib:157-163; results/benchmarks/thesis/thesis_results_combined.json:136-143; README.md:115-117",
+    "issue": "The external optimal backend citation and benchmark provenance do not include an archived release identifier, wheel hash, or upstream commit hash.",
+    "exact_fix": "Add an exact software citation with version, release tag or commit, wheel/source SHA256, retrieval date, and license information; update benchmark metadata accordingly.",
+    "verification_steps": [
+      "Install the cited package version in a clean environment.",
+      "Compute the wheel or source hash.",
+      "Confirm the hash, version, and license metadata match the bibliography and benchmark metadata."
+    ]
+  },
+  {
+    "severity": "Major",
+    "category": "Reproducibility/setup issues",
+    "file": "docker/thesis.Dockerfile; thesis/README.md; README.md",
+    "location": "docker/thesis.Dockerfile:1-15; thesis/README.md:42-69; README.md:55-59",
+    "issue": "The thesis build environment is not pinned deterministically; the Dockerfile uses an unpinned Debian tag and moving apt package sources.",
+    "exact_fix": "Pin the Docker base image by digest and use a frozen TeX Live image or Debian snapshot; record image digest and TeX versions in the reproducibility manifest.",
+    "verification_steps": [
+      "Build the thesis twice from a clean Docker-only machine.",
+      "Compare resulting PDF hashes.",
+      "Confirm the image digest and TeX versions are recorded."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Reproducibility/setup issues",
+    "file": "requirements.lock; README.md",
+    "location": "requirements.lock:1-120; README.md:41-44",
+    "issue": "The Python dependency lock is version-pinned but not cryptographic or platform-complete.",
+    "exact_fix": "Generate a hash-locked dependency file using pip-tools --generate-hashes, uv.lock, or equivalent, and include Python ABI/platform constraints.",
+    "verification_steps": [
+      "Run pip install --require-hashes -r requirements.lock or the equivalent locked install command in a clean Python 3.12 environment.",
+      "Confirm all dependencies install reproducibly."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Reproducibility/setup issues",
+    "file": ".nvmrc; webapp/package.json; README.md",
+    "location": ".nvmrc:1; webapp/package.json:5; README.md:43-44",
+    "issue": "Node and npm versions are documented but not strongly enforced during webapp installation.",
+    "exact_fix": "Add package.json engines, add .npmrc with engine-strict=true, and document corepack activation for npm 11.6.0.",
+    "verification_steps": [
+      "Run npm ci with an intentionally wrong Node/npm version and confirm it fails.",
+      "Run npm ci, npm test, npm run lint, and npm run build with Node 24.9.0 and npm 11.6.0 and confirm all pass."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Reproducibility/setup issues",
+    "file": "docs/CODE_TO_THESIS_MAPPING.md; docs/THESIS_OUTLINE.md",
+    "location": "docs/CODE_TO_THESIS_MAPPING.md:189-194; docs/THESIS_OUTLINE.md:405-408",
+    "issue": "Documentation contains stale test-count claims that do not match the current pytest collection output.",
+    "exact_fix": "Update the hard-coded test counts to the current collection output or remove exact counts and document the verification command instead.",
+    "verification_steps": [
+      "Run python -m pytest tests --collect-only -q.",
+      "Confirm the documentation matches the current collection output or no longer embeds stale counts."
+    ]
+  },
+  {
+    "severity": "Minor",
+    "category": "Submission polish issues",
+    "file": "docs/PATH_A_NATIVE_EXACT_PLAN.md",
+    "location": "docs/PATH_A_NATIVE_EXACT_PLAN.md:532-555",
+    "issue": "Historical Path A documentation still contains active-sounding 'Immediate next slice' and 'in progress' language.",
+    "exact_fix": "Move those sections under a clearly marked historical/superseded heading or update them to reflect the current native/external exact backend status.",
+    "verification_steps": [
+      "Search for 'Immediate next slice', 'in progress', and 'Until then'.",
+      "Confirm those statements are removed, updated, or explicitly marked as historical."
+    ]
+  },
+  {
+    "severity": "Minor",
+    "category": "Submission polish issues",
+    "file": "README.md; scripts/thesis_workflow.py",
+    "location": "README.md:69; scripts/thesis_workflow.py:39",
+    "issue": "The typo 'rubic' appears in repository naming text and the Docker image constant.",
+    "exact_fix": "Rename visible strings to use 'rubik' consistently or choose a neutral project slug.",
+    "verification_steps": [
+      "Run grep -R \"rubic\" README.md scripts thesis docs docker.",
+      "Confirm no unintended occurrences remain."
+    ]
+  }
+]

@@ -83,6 +83,15 @@ def parse_args() -> argparse.Namespace:
         default="auto",
         help="Which Korf backend to use.",
     )
+    parser.add_argument(
+        "--kociemba-backend",
+        choices=("internal", "native", "auto"),
+        default="internal",
+        help=(
+            "Which Kociemba backend to use. The default is 'internal' so "
+            "regenerated thesis artifacts match the documented checked-in benchmark rows."
+        ),
+    )
     return parser.parse_args()
 
 
@@ -226,6 +235,7 @@ def main() -> None:
         korf_timeout=args.korf_timeout,
         korf_max_depth=args.korf_max_depth,
         korf_backend=args.korf_backend,
+        kociemba_backend=args.kociemba_backend,
     )
 
     depth_payloads: dict[int, dict[str, object]] = {}

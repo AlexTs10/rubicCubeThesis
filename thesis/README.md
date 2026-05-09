@@ -58,9 +58,11 @@ python scripts/thesis_workflow.py build --mode docker
 ```
 
 Docker mode builds the default image from `docker/thesis.Dockerfile` in this
-repository and then runs `latexmk -xelatex` inside that image. This keeps the
-review build path source-defined when the host machine does not already have a
-TeX installation.
+repository and then runs `latexmk -xelatex` inside that image. The Dockerfile
+pins the `debian:bookworm-slim` base image by digest, while TeX packages still
+come from Debian package repositories at build time. This keeps the review build
+path source-defined when the host machine does not already have a TeX
+installation.
 
 The Docker route requires Docker Engine/OrbStack/Colima to be installed and the
 daemon to be running before `build --mode docker` is invoked. A machine without

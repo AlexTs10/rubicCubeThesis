@@ -404,8 +404,8 @@ ui/      - Streamlit application
 
 ### 8.3 Testing (1 σελ.)
 **Τι να γράψεις:**
-- `python -m pytest tests --collect-only -q` currently reports `285 tests collected`
-- `python -m pytest tests -q` is the supported full-suite command for the current docs snapshot
+- Use `python -m pytest tests --collect-only -q` for the current collection count.
+- Use `python -m pytest tests -q` for the supported fast/full-suite command under the repository's default marker exclusions.
 - Test coverage per module
 - Integration tests
 

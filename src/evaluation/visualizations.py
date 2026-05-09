@@ -65,7 +65,7 @@ class VisualizationGenerator:
         self.display_labels = {
             'Thistlethwaite': 'Thistlethwaite',
             'Kociemba': 'Kociemba',
-            'Korf_IDA*': 'External exact backend',
+            'Korf_IDA*': 'Εξωτερικός exact backend',
         }
 
     def _load_results(self) -> Dict:
@@ -201,8 +201,8 @@ class VisualizationGenerator:
             patch.set_facecolor(color)
             patch.set_alpha(0.7)
 
-        ax.set_ylabel('Solution Length (moves)')
-        ax.set_title('Solution Length Comparison')
+        ax.set_ylabel('Μήκος λύσης (κινήσεις)')
+        ax.set_title('Σύγκριση μήκους λύσης')
         ax.grid(True, alpha=0.3)
 
         plt.savefig(output_path)
@@ -240,8 +240,8 @@ class VisualizationGenerator:
                    f'{height:.3f}s',
                    ha='center', va='bottom', fontsize=12)
 
-        ax.set_ylabel('Average Time (seconds)')
-        ax.set_title('Algorithm Speed Comparison')
+        ax.set_ylabel('Μέσος χρόνος (δευτερόλεπτα)')
+        ax.set_title('Σύγκριση ταχύτητας αλγορίθμων')
         ax.set_xticks(x_pos)
         ax.set_xticklabels(algorithms)
         ax.grid(True, alpha=0.3, axis='y')
@@ -281,8 +281,8 @@ class VisualizationGenerator:
                    f'{height:.2f} MB',
                    ha='center', va='bottom', fontsize=12)
 
-        ax.set_ylabel('Average Memory Usage (MB)')
-        ax.set_title('Memory Usage Comparison')
+        ax.set_ylabel('Μέση χρήση μνήμης (MB)')
+        ax.set_title('Σύγκριση χρήσης μνήμης')
         ax.set_xticks(x_pos)
         ax.set_xticklabels(algorithms)
         ax.grid(True, alpha=0.3, axis='y')
@@ -321,8 +321,8 @@ class VisualizationGenerator:
                    f'{height:.1f}%',
                    ha='center', va='bottom', fontsize=12)
 
-        ax.set_ylabel('Success Rate (%)')
-        ax.set_title('Algorithm Success Rate Comparison')
+        ax.set_ylabel('Ποσοστό επιτυχίας (%)')
+        ax.set_title('Σύγκριση ποσοστού επιτυχίας')
         ax.set_xticks(x_pos)
         ax.set_xticklabels(algorithms)
         ax.set_ylim(0, 110)
@@ -344,9 +344,9 @@ class VisualizationGenerator:
                        label=self.display_labels[algo_name],
                        color=self.colors[algo_name], edgecolor='black')
 
-        ax.set_xlabel('Solution Length (moves)')
-        ax.set_ylabel('Frequency')
-        ax.set_title('Solution Length Distribution')
+        ax.set_xlabel('Μήκος λύσης (κινήσεις)')
+        ax.set_ylabel('Συχνότητα')
+        ax.set_title('Κατανομή μήκους λύσης')
         ax.legend()
         ax.grid(True, alpha=0.3, axis='y')
 
@@ -383,8 +383,8 @@ class VisualizationGenerator:
             patch.set_facecolor(color)
             patch.set_alpha(0.7)
 
-        ax.set_ylabel('Nodes Explored')
-        ax.set_title('Search Efficiency Comparison (Nodes Explored)')
+        ax.set_ylabel('Κόμβοι αναζήτησης')
+        ax.set_title('Σύγκριση αναζήτησης σε κόμβους')
         ax.set_yscale('log')  # Log scale for better visualization
         ax.grid(True, alpha=0.3)
 
@@ -414,9 +414,9 @@ class VisualizationGenerator:
                        label=self.display_labels[algo_name],
                        color=self.colors[algo_name], markersize=8)
 
-        ax.set_xlabel('Requested Scramble Length (moves)')
-        ax.set_ylabel('Average Solution Length (moves)')
-        ax.set_title('Average Solution Length vs Requested Scramble Length')
+        ax.set_xlabel('Ζητούμενο μήκος scramble (κινήσεις)')
+        ax.set_ylabel('Μέσο μήκος λύσης (κινήσεις)')
+        ax.set_title('Μέσο μήκος λύσης ανά ζητούμενο μήκος scramble')
         ax.legend()
         ax.grid(True, alpha=0.3)
 

@@ -186,12 +186,11 @@ src/
     └── algorithm_comparison.py
 ```
 
-Current codebase counts from this checkout:
+Current verification commands for this checkout:
 
-- `src/`: 40 Python files, excluding `__pycache__`
-- `tests/`: 25 Python files, excluding `__pycache__`
-- full test collection: `291 tests collected` with `python -m pytest tests --collect-only -q`
-- default fast profile: `288/291 tests collected (3 deselected)` because `pytest.ini` excludes cache-building tests unless explicitly selected
+- Source and test file counts are reported by `python scripts/thesis_workflow.py status`.
+- Full pytest collection is reported by `python -m pytest tests --collect-only -q`.
+- The default fast profile is controlled by `pytest.ini`, which excludes `slow`, `external`, and `cache_building` tests unless explicitly selected.
 
 ### Web Applications
 | App | Location | Technology |

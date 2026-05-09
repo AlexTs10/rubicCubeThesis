@@ -529,9 +529,11 @@ Deliverable:
 - list of thesis sections that must change,
 - exact wording boundaries for native vs external claims.
 
-## 12. Immediate Next Slice
+## 12. Historical Immediate Next Slice
 
-The next implementation slice should be narrow and disciplined:
+The following list is preserved as historical planning context from before the
+current native exact path was implemented. It is not a live task list for the
+current checkout:
 
 1. Fix the pattern database storage ambiguity.
 2. Add exact-safe tests for storage.
@@ -539,7 +541,7 @@ The next implementation slice should be narrow and disciplined:
 4. Integrate a corner-only admissible lower bound.
 5. Add shallow exactness tests.
 
-Only after those steps pass should deeper heuristic work begin.
+Only after those steps passed should deeper heuristic work begin.
 
 ## 13. Completion Definition
 
@@ -552,4 +554,6 @@ Path A is complete only if the repository can demonstrate all of the following a
 - tests and validation support the claim,
 - the thesis wording matches the truth exactly.
 
-Until then, Path A is in progress, not complete.
+The current checkout contains the native path described above, while the final
+deep thesis benchmark still uses the external exact backend. Treat this document
+as historical scope control, not as the current completion status.

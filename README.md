@@ -41,9 +41,11 @@ python scripts/create_audit_zip.py
 Use `requirements.lock` as the pinned Python dependency snapshot for the audited
 environment. It is not a cryptographic lock file: it does not include hashes,
 platform markers, Python ABI constraints, or TeX/Tectonic versions. Node and npm
-are pinned for the preview app with `.nvmrc` and `webapp/package.json`
-(`packageManager`). Use `requirements.txt` only when you need a flexible
-dependency range for local development.
+are pinned for the preview app with `.nvmrc`, `webapp/package.json`
+(`packageManager` and `engines`), and `webapp/.npmrc` (`engine-strict=true`).
+Run `corepack enable` before `npm ci` if your npm version is not already
+11.6.0. Use `requirements.txt` only when you need a flexible dependency range
+for local development.
 
 The editable package keeps only core solver dependencies in base
 `pyproject.toml`. Optional extras separate heavier stacks:
@@ -66,7 +68,7 @@ The archive-verifiable source manifest is written to
 ## Repo Layout
 
 ```text
-rubicCubeThesis/
+repository-root/
 ├── src/                        # Solver implementations and evaluation code
 ├── tests/                      # Unit and integration tests
 ├── data/                       # Generated-cache documentation and excluded large databases
@@ -147,7 +149,7 @@ the commands below in a clean Python 3.12 environment for the current machine.
 - `python -m pytest tests -q` runs the supported fast profile; heavyweight solver-quality, external-backend, and cache-generation checks are opt-in marker profiles
 - `python verify_setup.py` runs the Python setup profile and fast tests by default; use `--full` for heavyweight Python tests and `--all-artifacts` when local TeX/Docker plus webapp dependencies are available
 - `cd webapp && npm ci && npm run build` succeeds from a clean dependency install
-- `python scripts/thesis_workflow.py build --mode auto` rebuilds `thesis/main.pdf` with local TeX/Tectonic when available, or with the repo-local Docker image from `docker/thesis.Dockerfile` when Docker is running
+- `python scripts/thesis_workflow.py build --mode auto` rebuilds `thesis/main.pdf` with local TeX/Tectonic when available, or with the repo-local Docker image from `docker/thesis.Dockerfile` when Docker is running; the Dockerfile pins `debian:bookworm-slim` by digest
 - the manuscript chapters and appendices are present in `thesis/chapters/`
 
 There is no active top-level `TESTING_REPORT.md` in this checkout. Treat any older testing report copied from another branch or artifact bundle as historical unless it is regenerated from the commands above.
