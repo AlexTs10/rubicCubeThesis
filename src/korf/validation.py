@@ -5,8 +5,8 @@ This module provides tools for validating the accuracy of distance estimation
 by comparing estimates against known optimal distances.
 
 Features:
-- Generate test positions with known distances
-- Load validation data from cube20.org
+- Generate test positions with reproducible approximate distances
+- Fail loudly for unsupported external cube20.org data
 - Calculate Mean Absolute Error (MAE)
 - Compare multiple estimation methods
 - Generate accuracy reports
@@ -18,7 +18,6 @@ IMPLEMENTATION STATUS:
     ⚠️ Advanced features: Partial implementation
 
 FUTURE ENHANCEMENTS:
-    - Full cube state serialization/deserialization
     - cube20.org format compatibility
     - Large-scale validation datasets
     - Automated regression testing
@@ -27,7 +26,7 @@ DESIGN DECISIONS:
     For thesis scope, we prioritize:
     1. Core algorithm correctness over advanced validation
     2. Self-contained test generation over external datasets
-    3. Clear code over comprehensive persistence
+    3. Explicit unsupported-format failures over silent empty datasets
 
     These decisions can be revisited post-thesis if needed.
 
@@ -80,13 +79,15 @@ class ValidationDataset:
             count_per_distance: Number of positions per distance
             seed: Random seed for reproducibility
         """
-        if seed is not None:
-            np.random.seed(seed)
+        rng = np.random.Generator(np.random.PCG64(seed)) if seed is not None else None
 
         for distance in distances:
             for i in range(count_per_distance):
                 cube = RubikCube()
-                scramble = cube.scramble(moves=distance, seed=None)
+                scramble_seed = None
+                if rng is not None:
+                    scramble_seed = int(rng.integers(0, np.iinfo(np.uint32).max))
+                cube.scramble(moves=distance, seed=scramble_seed)
 
                 # Add to dataset (using scramble length as approximate distance)
                 self.add_position(cube, distance)
@@ -102,7 +103,8 @@ class ValidationDataset:
             "positions": [
                 {
                     "moves": "R U R' U'",
-                    "distance": 4
+                    "distance": 4,
+                    "state": [[0, 0, ...], ...]  // optional full facelet state
                 },
                 ...
             ]
@@ -115,9 +117,20 @@ class ValidationDataset:
             data = json.load(f)
 
         for entry in data['positions']:
-            cube = RubikCube()
-            moves_str = entry['moves']
-            cube.apply_move_sequence(moves_str)
+            if 'state' in entry:
+                cube = RubikCube(state=np.array(entry['state'], dtype=int))
+                moves = entry.get('moves', '')
+                if moves:
+                    cube._scramble_moves = moves.split()
+                    cube._scramble_depth = len(cube._scramble_moves)
+            elif 'moves' in entry:
+                cube = RubikCube()
+                moves_str = entry['moves']
+                cube.apply_move_sequence(moves_str)
+                cube._scramble_moves = moves_str.split()
+                cube._scramble_depth = len(cube._scramble_moves)
+            else:
+                raise ValueError("Validation entry must contain either 'state' or 'moves'")
             distance = entry['distance']
 
             self.add_position(cube, distance)
@@ -131,19 +144,24 @@ class ValidationDataset:
         Args:
             filepath: Path to save the dataset
         """
-        # FUTURE ENHANCEMENT: Full cube state serialization
-        # Current implementation saves only position count for performance.
-        # Full serialization would require:
-        #   - Facelet string representation (54 chars per cube)
-        #   - Or move sequence from solved state
-        #   - Estimated file size: ~50KB per 1000 positions
-        #
-        # Design decision: Deferred for thesis to focus on core algorithms.
-        # Can be added post-thesis if validation persistence needed.
+        positions = []
+        for cube, distance in self.positions:
+            moves = getattr(cube, '_scramble_moves', [])
+            entry = {
+                'distance': distance,
+                'state': cube.state.tolist(),
+            }
+            if moves:
+                entry['moves'] = ' '.join(moves)
+                entry['scramble_depth'] = getattr(cube, '_scramble_depth', len(moves))
+                if getattr(cube, '_scramble_seed', None) is not None:
+                    entry['scramble_seed'] = cube._scramble_seed
+            positions.append(entry)
+
         data = {
             'count': len(self.positions),
-            'positions': [],  # Empty - see above
-            'note': 'Full serialization deferred - see comments'
+            'positions': positions,
+            'format': 'rubik_cube_validation_dataset_v1',
         }
 
         with open(filepath, 'w') as f:
@@ -367,8 +385,6 @@ def load_cube20_data(filepath: str) -> ValidationDataset:
     Note:
         Data can be downloaded from http://www.cube20.org/distance20s
     """
-    dataset = ValidationDataset()
-
     if not os.path.exists(filepath):
         raise FileNotFoundError(
             f"Cube20 data not found at {filepath}. "
@@ -384,13 +400,15 @@ def load_cube20_data(filepath: str) -> ValidationDataset:
     #   - Or cubie notation (space-separated)
     #   - Requires format detection and conversion
     #
-    # Design decision: Deferred for thesis scope. Current validation methods
-    # (self-generated test cases) are sufficient for thesis requirements.
+    # Design decision: Deferred for thesis scope. The function fails loudly
+    # instead of returning an empty dataset that could be mistaken for loaded
+    # optimal-distance evidence.
     #
     # References:
     #   - http://cube20.org/ (when accessible)
     #   - Korf's original dataset format
-    print("Info: cube20.org parser not implemented (see comments)")
-    print("      Using self-generated validation instead")
-
-    return dataset
+    raise NotImplementedError(
+        "cube20.org parser is not implemented. Use create_test_dataset() for "
+        "self-generated validation data or provide a supported JSON validation "
+        "dataset with ValidationDataset.load_from_file()."
+    )

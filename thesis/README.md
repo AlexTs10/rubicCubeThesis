@@ -58,6 +58,11 @@ For Docker-only validation:
 python scripts/thesis_workflow.py build --mode docker
 ```
 
+Docker mode builds the default image from `docker/thesis.Dockerfile` in this
+repository and then runs `latexmk -xelatex` inside that image. This keeps the
+review build path source-defined when the host machine does not already have a
+TeX installation.
+
 If Docker is installed but not running on macOS, start it with:
 
 ```bash

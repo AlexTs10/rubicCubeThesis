@@ -92,6 +92,7 @@ conj_twist
 # Generated workflow outputs
 agent_workflow/generated/
 figures/diagrams/
+audit-results/packages/
 
 # Local exact-solver caches / generated tables
 cornerprun

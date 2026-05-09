@@ -119,6 +119,7 @@ def test_coordinate_heuristic_includes_corner_pattern_db_when_injected(heuristic
     assert "corner_pattern_db" in heuristic.get_statistics()
 
 
+@pytest.mark.cache_building
 def test_coordinate_heuristic_ignores_incomplete_corner_database(heuristic_cache_dir, tmp_path):
     corner_db_path = tmp_path / "corner_partial.pkl"
     create_corner_database(

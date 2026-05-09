@@ -545,7 +545,8 @@ class AlgorithmComparison:
         self,
         n_scrambles: int = 10,
         scramble_depth: int = 10,
-        seed: Optional[int] = None
+        seed: Optional[int] = None,
+        append: bool = False,
     ) -> List[ComparisonResult]:
         """
         Run all algorithms on N scrambles.
@@ -554,6 +555,8 @@ class AlgorithmComparison:
             n_scrambles: Number of scrambles to test
             scramble_depth: Number of moves per scramble
             seed: Random seed for reproducibility
+            append: Keep previous batch results when True. By default each
+                batch replaces the object's collected results.
 
         Returns:
             List of ComparisonResults
@@ -567,6 +570,9 @@ class AlgorithmComparison:
         print(f"Random seed:     {seed}")
         print("=" * 70)
         print()
+
+        if not append:
+            self.results = []
 
         for i in range(n_scrambles):
             # Generate scramble

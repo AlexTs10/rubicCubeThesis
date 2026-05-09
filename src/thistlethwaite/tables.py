@@ -22,6 +22,48 @@ from ..kociemba.moves import (
 
 
 UNKNOWN_DISTANCE = 255
+CACHE_SCHEMA_VERSION = 1
+
+
+def _validate_uint8_table(table: object, *, name: str, size: int) -> np.ndarray:
+    """Validate a cached uint8 pruning table before using it."""
+    if not isinstance(table, np.ndarray):
+        raise ValueError(f"Cached table '{name}' must be a numpy array")
+    if table.shape != (size,):
+        raise ValueError(f"Cached table '{name}' has shape {table.shape}, expected ({size},)")
+    if table.dtype != np.uint8:
+        raise ValueError(f"Cached table '{name}' has dtype {table.dtype}, expected uint8")
+    return table
+
+
+def _load_uint8_table_cache(cache_file: str, *, name: str, size: int) -> np.ndarray:
+    """Load and validate a cache payload for a uint8 pruning table."""
+    with open(cache_file, 'rb') as f:
+        payload = pickle.load(f)
+
+    if isinstance(payload, dict) and "table" in payload:
+        if payload.get("schema_version") != CACHE_SCHEMA_VERSION:
+            raise ValueError(f"Cached table '{name}' has unsupported schema version")
+        if payload.get("name") != name:
+            raise ValueError(f"Cached table '{name}' was stored for {payload.get('name')!r}")
+        if payload.get("size") != size:
+            raise ValueError(f"Cached table '{name}' has size metadata {payload.get('size')}, expected {size}")
+        return _validate_uint8_table(payload["table"], name=name, size=size)
+
+    # Legacy caches are accepted only after strict shape/type validation.
+    return _validate_uint8_table(payload, name=name, size=size)
+
+
+def _uint8_table_cache_payload(db: "PatternDatabase") -> dict[str, object]:
+    """Create a schema-bearing payload for generated pruning-table caches."""
+    return {
+        "schema_version": CACHE_SCHEMA_VERSION,
+        "name": db.name,
+        "size": db.size,
+        "moves": list(db.moves),
+        "dtype": "uint8",
+        "table": db.table,
+    }
 
 
 class PatternDatabase:
@@ -119,8 +161,11 @@ class PatternDatabase:
         """
         if os.path.exists(self.cache_file):
             print(f"Loading cached pattern database '{self.name}'...")
-            with open(self.cache_file, 'rb') as f:
-                self.table = pickle.load(f)
+            self.table = _load_uint8_table_cache(
+                self.cache_file,
+                name=self.name,
+                size=self.size,
+            )
             print(f"  Loaded {self.size} entries")
         else:
             self.generate(max_depth)
@@ -130,7 +175,7 @@ class PatternDatabase:
         """Save table to cache file."""
         print(f"Saving pattern database '{self.name}' to {self.cache_file}...")
         with open(self.cache_file, 'wb') as f:
-            pickle.dump(self.table, f)
+            pickle.dump(_uint8_table_cache_payload(self), f)
         print(f"  Saved")
 
     def lookup(self, cube: RubikCube) -> int:
@@ -324,8 +369,11 @@ class ThistlethwaitePatternDatabases:
             return False
 
         print(f"Loading cached pattern database '{db.name}'...")
-        with open(db.cache_file, 'rb') as f:
-            db.table = pickle.load(f)
+        db.table = _load_uint8_table_cache(
+            db.cache_file,
+            name=db.name,
+            size=db.size,
+        )
         print(f"  Loaded {db.size} entries")
         return True
 

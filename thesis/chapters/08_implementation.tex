@@ -178,15 +178,16 @@
 μιας διπλωματικής εργασίας σε Python. Για τον λόγο αυτό, το artifact πλέον
 συνδυάζει δύο ακριβείς διαδρομές με διαφορετικό ρόλο:
 \begin{itemize}
-    \item μια \emph{εγγενή} exact διαδρομή (\filepath{src/korf/native_exact_solver.py}) με admissible coordinate heuristics (\filepath{src/korf/native_coordinate_heuristic.py}), προαιρετικό native corner PDB support (\filepath{src/korf/corner_database.py}) μόνο όταν υπάρχει πλήρης cache, και exact move-distance API,
+    \item μια \emph{εγγενή} ακριβή διαδρομή (\filepath{src/korf/native_exact_solver.py}) με παραδεκτές ευρετικές συντεταγμένων (\filepath{src/korf/native_coordinate_heuristic.py}), προαιρετική εγγενή υποστήριξη corner PDB (\filepath{src/korf/corner_database.py}) μόνο όταν υπάρχει πλήρης cache, και API ακριβούς απόστασης κινήσεων,
     \item και έναν \emph{εξωτερικό} ήδη επαληθευμένο optimal backend για τα βαθύτερα benchmark αποτελέσματα και για oracle cross-checks.
 \end{itemize}
 Η native διαδρομή έχει επικυρωθεί εξαντλητικά σε 3.501 μοναδικές καταστάσεις
 έως βάθος 3. Σε corpus 3.513 περιπτώσεων, το native corner PDB support μείωσε
 τις αποτυχίες υπό όριο 20\,s από 3 σε 1 και επέτρεψε την ολοκλήρωση sampled
-depth-9 περιπτώσεων που ο μικρότερος admissible heuristic δεν έλυνε, αλλά
-μια edge-dominated depth-8 κατάσταση εξακολουθεί να αποτελεί δύσκολο όριο
-χωρίς βαριές edge PDBs.
+generated-length-9 περιπτώσεων που η μικρότερη παραδεκτή ευρετική δεν έλυνε.
+Το εναπομένον timeout είναι περίπτωση επικύρωσης παραγόμενου μήκους 8· το
+αποθηκευμένο report δεν καταγράφει ανεξάρτητη oracle επιβεβαίωση του ακριβούς
+βάθους ή της ερμηνείας ότι το κόστος κυριαρχείται από τις ακμές.
 
 \section{Εφαρμογές και Διεπαφές Χρήστη}
 
@@ -208,21 +209,21 @@ depth-9 περιπτώσεων που ο μικρότερος admissible heurist
 
 Ο κατάλογος \filepath{webapp/} περιλαμβάνει δεύτερη διεπαφή σε Next.js/React. Σε αντίθεση με το Streamlit, το οποίο αποτελεί τη ζωντανή Python-based διεπαφή εκτέλεσης των αλγορίθμων, εδώ δόθηκε έμφαση στην πλοήγηση, στην 3D οπτικοποίηση και στην παρουσίαση του έργου ως ολοκληρωμένης εφαρμογής επίδειξης. Οι τέσσερις βασικές σελίδες είναι:
 \begin{itemize}
-    \item αρχική σελίδα,
+    \item σελίδα εισόδου,
     \item solver,
     \item comparison,
     \item educational.
 \end{itemize}
 
-Η συγκεκριμένη εφαρμογή δεν καλεί απευθείας τον solver backend του repository. Αντίθετα, παρουσιάζει \emph{synthetic preview} αποτελέσματα και οπτικοποιήσεις, τα οποία ακολουθούν το προφίλ του benchmark corpus αλλά δεν αποτελούν ούτε live solver telemetry ούτε authoritative benchmark evidence. Επομένως, ο ρόλος της είναι παρουσιαστικός και εκπαιδευτικός, ενώ η authoritative live εκτέλεση των αλγορίθμων παραμένει στο Streamlit UI και στα scripts αναπαραγωγής/benchmarking.
+Η συγκεκριμένη εφαρμογή δεν καλεί απευθείας τον μηχανισμό επίλυσης του repository. Αντίθετα, παρουσιάζει \emph{ενδεικτικά προεπισκοπικά} αποτελέσματα και οπτικοποιήσεις, τα οποία ακολουθούν το προφίλ του corpus συγκριτικής αξιολόγησης αλλά δεν αποτελούν ούτε ζωντανή τηλεμετρία solver ούτε επίσημη τεκμηρίωση benchmark. Επομένως, ο ρόλος της είναι παρουσιαστικός και εκπαιδευτικός, ενώ η επίσημη ζωντανή εκτέλεση των αλγορίθμων παραμένει στο Streamlit UI και στα scripts αναπαραγωγής/benchmarking.
 
 \section{Υποδομή Δοκιμών και Αναπαραγωγιμότητας}
 
 Η ποιότητα της υλοποίησης υποστηρίζεται από \textbf{291 συλλεγόμενα tests}.
 Η κύρια οργάνωση βρίσκεται στους καταλόγους \filepath{tests/unit/} και
 \filepath{tests/integration/}, ενώ διατηρείται και το top-level regression test
-\filepath{tests/test_facelet_cubie_conversion.py}. Το προεπιλεγμένο reproducibility
-profile εξαιρεί ρητά τα βαριά \texttt{cache\_building} tests, ώστε το βασικό
+\filepath{tests/test_facelet_cubie_conversion.py}. Το προεπιλεγμένο προφίλ
+αναπαραγωγιμότητας εξαιρεί ρητά τις βαριές δοκιμές \texttt{cache\_building}, ώστε το βασικό
 setup check να ολοκληρώνεται χωρίς παραγωγή μεγάλων pattern databases. Το πλήρες
 suite παραμένει opt-in και πρέπει να εκτελείται όταν ελέγχονται cache artifacts
 ή εξωτερικά backends. Το test suite καλύπτει:

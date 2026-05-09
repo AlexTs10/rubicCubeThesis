@@ -14,6 +14,7 @@ import sys
 import os
 import argparse
 import importlib
+import importlib.metadata
 import importlib.util
 import subprocess
 from pathlib import Path
@@ -68,18 +69,23 @@ PACKAGE_IMPORTS: Dict[str, str] = {
 }
 
 
-def iter_requirements(requirements_path: Path) -> Iterable[Tuple[str, str]]:
-    """Yield package names and import targets from requirements.txt."""
+def iter_requirements(requirements_path: Path) -> Iterable[Tuple[str, str, str | None]]:
+    """Yield package names, import targets, and exact pins from a requirements file."""
     for raw_line in requirements_path.read_text().splitlines():
         line = raw_line.split("#", 1)[0].strip()
         if not line:
             continue
         package_name = line
+        expected_version = None
+        if "==" in package_name:
+            package_name, expected_version = [part.strip() for part in package_name.split("==", 1)]
+            yield package_name, PACKAGE_IMPORTS.get(package_name, package_name.replace("-", "_")), expected_version
+            continue
         for separator in ("==", ">=", "<=", "~=", ">", "<"):
             if separator in package_name:
                 package_name = package_name.split(separator, 1)[0].strip()
                 break
-        yield package_name, PACKAGE_IMPORTS.get(package_name, package_name.replace("-", "_"))
+        yield package_name, PACKAGE_IMPORTS.get(package_name, package_name.replace("-", "_")), expected_version
 
 
 class Colors:
@@ -131,37 +137,49 @@ def check_python_version() -> bool:
         return False
 
 
-def check_required_packages() -> bool:
+def check_required_packages(requirements_path: Path) -> bool:
     """Check if all required packages are installed."""
     print_section("2. Required Packages Check")
 
-    requirements_path = Path(__file__).parent / "requirements.txt"
+    print(f"Checking packages from: {requirements_path}")
     required_packages = list(iter_requirements(requirements_path))
 
     all_installed = True
 
-    for package_name, import_name in required_packages:
+    for package_name, import_name, expected_version in required_packages:
+        try:
+            version = importlib.metadata.version(package_name)
+            if expected_version is not None and version != expected_version:
+                print_error(f"{package_name:20s} {version} installed, expected {expected_version}")
+                all_installed = False
+                continue
+            print_success(f"{package_name:20s} {version}")
+            continue
+        except importlib.metadata.PackageNotFoundError:
+            pass
+
         if import_name.startswith('spec:'):
             package_spec = import_name.split(':', 1)[1]
-            if importlib.util.find_spec(package_spec) is not None:
-                print_success(f"{package_name:20s} installed")
-            else:
-                print_error(f"{package_name:20s} NOT INSTALLED")
-                all_installed = False
-            continue
+            installed = importlib.util.find_spec(package_spec) is not None
+        else:
+            try:
+                module = importlib.import_module(import_name)
+                version = getattr(module, '__version__', 'installed')
+                print_success(f"{package_name:20s} {version}")
+                continue
+            except ImportError:
+                installed = False
 
-        try:
-            module = importlib.import_module(import_name)
-            version = getattr(module, '__version__', 'unknown')
-            print_success(f"{package_name:20s} {version}")
-        except ImportError:
+        if installed:
+            print_success(f"{package_name:20s} installed")
+        else:
             print_error(f"{package_name:20s} NOT INSTALLED")
             all_installed = False
 
     if all_installed:
         print(f"\n{Colors.GREEN}All required packages are installed{Colors.RESET}")
     else:
-        print(f"\n{Colors.RED}Some packages are missing. Run: pip install -r requirements.txt{Colors.RESET}")
+        print(f"\n{Colors.RED}Some packages are missing. Run: pip install -r {requirements_path.name}{Colors.RESET}")
 
     return all_installed
 
@@ -213,6 +231,7 @@ def check_project_structure(create_cache_dirs: bool = False) -> bool:
     required_files = [
         'README.md',
         'requirements.txt',
+        'requirements.lock',
         'src/cube/rubik_cube.py',
         'src/cube/moves.py',
         'src/cube/visualization.py',
@@ -339,7 +358,7 @@ def check_tests(full: bool = False) -> bool:
 
     try:
         if full:
-            command = [sys.executable, '-m', 'pytest', 'tests', '-q']
+            command = [sys.executable, '-m', 'pytest', 'tests', '-q', '-o', 'addopts=']
             timeout = FULL_TEST_TIMEOUT_SECONDS
             label = "full test suite"
         else:
@@ -459,7 +478,16 @@ def main():
         action="store_true",
         help="create generated cache directories instead of only checking their presence",
     )
+    parser.add_argument(
+        "--requirements",
+        default="requirements.lock",
+        help="requirements file to verify; defaults to the pinned requirements.lock",
+    )
     args = parser.parse_args()
+    project_root = Path(__file__).parent
+    requirements_path = Path(args.requirements)
+    if not requirements_path.is_absolute():
+        requirements_path = project_root / requirements_path
 
     print(f"{Colors.BOLD}{'=' * 60}{Colors.RESET}")
     print(f"{Colors.BOLD}Rubik's Cube Thesis - Setup Verification{Colors.RESET}")
@@ -467,7 +495,7 @@ def main():
 
     checks = [
         ("Python Version", check_python_version),
-        ("Required Packages", check_required_packages),
+        ("Required Packages", lambda: check_required_packages(requirements_path)),
         ("Project Structure", lambda: check_project_structure(create_cache_dirs=args.create_cache_dirs)),
         ("Core Functionality", check_core_functionality),
         ("Test Suite", lambda: check_tests(full=args.full)),

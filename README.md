@@ -46,6 +46,12 @@ for local development.
 
 The default pytest/verification profile is intentionally the fast reproducibility profile. It excludes tests marked `slow`, `external`, or `cache_building`; run those markers explicitly only when validating generated caches or external backends.
 
+The thesis build workflow now has a source-defined Docker fallback. If local
+`latexmk`/`xelatex`/bibliography tooling and `tectonic` are absent but Docker is
+running, `python scripts/thesis_workflow.py build --mode auto` switches to
+Docker mode and builds the TeX image from `docker/thesis.Dockerfile` before
+compiling `thesis/main.tex`.
+
 The compiled thesis PDF is written to `thesis/main.pdf`.
 The archive-verifiable source manifest is written to
 `REPRODUCIBILITY_MANIFEST.json`, and the matching audit ZIP is written under
@@ -122,7 +128,7 @@ the commands below in a clean Python 3.12 environment for the current machine.
 - `python -m pytest tests -q` runs the supported fast profile; expected runtime is several minutes on an Apple M3-class laptop because it still executes deterministic solver smoke tests
 - `python verify_setup.py` runs the same fast test profile by default; use `--full` only for heavyweight local validation
 - `cd webapp && npm ci && npm run build` succeeds from a clean dependency install
-- `python scripts/thesis_workflow.py build --mode auto` rebuilds `thesis/main.pdf` when a supported local TeX/Tectonic/Docker build path is available
+- `python scripts/thesis_workflow.py build --mode auto` rebuilds `thesis/main.pdf` with local TeX/Tectonic when available, or with the repo-local Docker image from `docker/thesis.Dockerfile` when Docker is running
 - the manuscript chapters and appendices are present in `thesis/chapters/`
 
 There is no active top-level `TESTING_REPORT.md` in this checkout. Treat any older testing report copied from another branch or artifact bundle as historical unless it is regenerated from the commands above.

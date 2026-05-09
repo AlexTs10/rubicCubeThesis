@@ -28,7 +28,7 @@ Experimental evaluation confirms that:
     \item Thistlethwaite's corrected pure implementation solves all 100 benchmark scrambles, but with substantially longer solutions than the other two methods.
     \item Kociemba's algorithm achieves 100\% success on the benchmark corpus with average solution length 14.33 moves.
     \item The external exact backend used for the Korf benchmark path solves 97/100 benchmark scrambles within the enforced 120-second limit and returns optimal solutions whenever it completes.
-    \item The native exact solver is exhaustively validated on 3,501 unique states up to depth 3. On a reproducible 3,513-case validation corpus, enabling the native corner pattern database support reduces native failures under a 20-second limit from 3 to 1, solves sampled depth-9 states that the smaller heuristic times out on, and still leaves one edge-dominated depth-8 case as a timeout.
+    \item The native exact solver is exhaustively validated on 3,501 unique states up to depth 3. On a reproducible 3,513-case validation corpus, enabling the native corner pattern database support reduces native failures under a 20-second limit from 3 to 1 and solves sampled generated-length-9 states that the smaller heuristic times out on. The remaining timeout is a generated-length-8 validation case whose exact depth and edge-dominance interpretation are not independently recorded in the stored oracle fields.
     \item In the implemented A*/IDA* baseline comparison, IDA* uses less memory than the included A* implementation, at the cost of repeated node expansions.
 \end{itemize}
 

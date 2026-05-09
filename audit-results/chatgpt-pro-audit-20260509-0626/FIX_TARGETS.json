@@ -1,0 +1,315 @@
+[
+  {
+    "severity": "critical",
+    "category": "Critical blocker",
+    "file": "thesis/main.tex; thesis/chapters/00_approval.tex; README.md; thesis/README.md",
+    "location": "thesis/main.tex:174-180; thesis/chapters/00_approval.tex:36-44; README.md:7-8; thesis/README.md:3",
+    "issue": "The formal approval/signature page is excluded from the manuscript and still contains placeholder committee members/date.",
+    "why_it_matters": "The thesis is not institutionally submission-ready without completed and included approval front matter.",
+    "exact_fix": "Fill in official committee names, titles, signatures/date in 00_approval.tex and include the approval page in main.tex at the required front-matter position.",
+    "verification_steps": [
+      "Run rg -n \"00_approval|Μέλος Εξεταστικής|Ημερομηνία εξέτασης\" thesis/main.tex thesis/chapters/00_approval.tex.",
+      "Rebuild thesis/main.pdf.",
+      "Inspect the PDF front matter and confirm the approval page is present and complete."
+    ]
+  },
+  {
+    "severity": "critical",
+    "category": "Reproducibility/setup issue",
+    "file": "README.md; thesis/README.md; scripts/thesis_workflow.py",
+    "location": "README.md:28-38; thesis/README.md:39-43; scripts/thesis_workflow.py:482-516; scripts/thesis_workflow.py:1034-1052",
+    "issue": "The documented thesis build path depends on a locally available TeX/Tectonic/Docker path and exits if none is ready.",
+    "why_it_matters": "A thesis archive needs a deterministic build route from clean checkout to PDF.",
+    "exact_fix": "Add a pinned Docker/TeX build target or explicit install script that provides xelatex and bibtex/tectonic, then make build --mode auto pass from a clean environment.",
+    "verification_steps": [
+      "Run python scripts/thesis_workflow.py validate --output /tmp/validation.md.",
+      "Run python scripts/thesis_workflow.py build --mode auto.",
+      "Confirm thesis/main.pdf is regenerated without manual toolchain guessing."
+    ]
+  },
+  {
+    "severity": "critical",
+    "category": "Reproducibility/setup issue",
+    "file": "tests/unit/test_native_coordinate_heuristic.py; src/korf/corner_database.py; pytest.ini; thesis/chapters/00_abstract_en.tex; thesis/chapters/08_implementation.tex",
+    "location": "tests/unit/test_native_coordinate_heuristic.py:122-131; src/korf/corner_database.py:8-16; src/korf/corner_database.py:266-336; pytest.ini:3-7; thesis/chapters/00_abstract_en.tex:35; thesis/chapters/08_implementation.tex:221-227",
+    "issue": "A heavyweight corner database generation test is unmarked, contradicting the claim that the default fast profile excludes cache-building tests.",
+    "why_it_matters": "The default reproducibility profile can run unexpectedly expensive cache generation.",
+    "exact_fix": "Mark test_coordinate_heuristic_ignores_incomplete_corner_database with @pytest.mark.cache_building or replace real database generation with a tiny mocked incomplete fixture.",
+    "verification_steps": [
+      "Run python -m pytest tests --collect-only -q -m cache_building and confirm the test is collected.",
+      "Run python -m pytest tests/unit/test_native_coordinate_heuristic.py::test_coordinate_heuristic_ignores_incomplete_corner_database -q -m \"not cache_building\" and confirm it is deselected."
+    ]
+  },
+  {
+    "severity": "critical",
+    "category": "Research/experimental issue",
+    "file": "scripts/verification/native_exact_validation.py; results/validation/native_exact/native_exact_validation_20260322_144046.json; thesis/chapters/05_korf.tex; thesis/chapters/09_conclusions.tex; thesis/chapters/00_abstract_en.tex; thesis/chapters/00_abstract_gr.tex",
+    "location": "scripts/verification/native_exact_validation.py:125-167; scripts/verification/native_exact_validation.py:235-289; results/validation/native_exact/native_exact_validation_20260322_144046.json:39-70; thesis/chapters/05_korf.tex:73-79; thesis/chapters/09_conclusions.tex:52-61; thesis/chapters/00_abstract_en.tex:31; thesis/chapters/00_abstract_gr.tex:33",
+    "issue": "The thesis claims the remaining native timeout is an edge-dominated depth-8 case, but the failure record has oracle_stats null and the validation script skips oracle verification on native timeout.",
+    "why_it_matters": "The exact depth and interpretation of the failure are not fully supported by the stored evidence.",
+    "exact_fix": "Run the oracle independently for every oracle-sample case, including native timeouts, record oracle_length/oracle_stats, and compare native length against oracle length rather than generated scramble length.",
+    "verification_steps": [
+      "Rerun python scripts/verification/native_exact_validation.py --preset canonical --output-dir results/validation/native_exact after providing required caches.",
+      "Inspect every failure entry and confirm oracle_stats and oracle_length are present or the failure is labelled unverified-depth.",
+      "Update thesis claims if oracle evidence changes the depth or interpretation."
+    ]
+  },
+  {
+    "severity": "minor",
+    "category": "Thesis writing issue",
+    "file": "thesis/chapters/00_abstract_gr.tex; thesis/chapters/07_evaluation.tex; thesis/chapters/08_implementation.tex",
+    "location": "thesis/chapters/00_abstract_gr.tex:14; thesis/chapters/00_abstract_gr.tex:21-23; thesis/chapters/00_abstract_gr.tex:37; thesis/chapters/07_evaluation.tex:321; thesis/chapters/08_implementation.tex:217",
+    "issue": "The Greek thesis text mixes untranslated English repository jargon with academic prose.",
+    "why_it_matters": "The manuscript reads less polished and less academically consistent.",
+    "exact_fix": "Translate recurring terms or define them once in parentheses; replace Use case with Περίπτωση χρήσης and rewrite synthetic preview/live telemetry/authoritative evidence in Greek academic style.",
+    "verification_steps": [
+      "Run rg -n \"Use case|synthetic preview|live solver telemetry|authoritative|profile|cache-building|exact solver\" thesis/chapters.",
+      "Confirm remaining English terms are either standard technical terms or first-use definitions."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "Thesis writing issue",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "thesis/chapters/07_evaluation.tex:125-133; thesis/chapters/07_evaluation.tex:217-224; thesis/chapters/07_evaluation.tex:345-347",
+    "issue": "Chapter 7 contains revision-history language such as corrected, older wrong picture, and initial wrong version.",
+    "why_it_matters": "Final thesis chapters should present validated results, not internal correction history.",
+    "exact_fix": "Rewrite the passages as neutral final findings and move correction history to an appendix only if needed.",
+    "verification_steps": [
+      "Run rg -n \"διόρθωση|λανθασμένη|παλαιότερη|αρχική\" thesis/chapters/07_evaluation.tex.",
+      "Confirm no final-result paragraph uses debugging or revision-history language."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "Technical/code issue",
+    "file": "src/korf/validation.py; src/cube/rubik_cube.py",
+    "location": "src/korf/validation.py:68-94; src/cube/rubik_cube.py:258-299",
+    "issue": "ValidationDataset.generate_random_scrambles accepts a seed but passes seed=None to RubikCube.scramble, making generated datasets non-deterministic.",
+    "why_it_matters": "Seeded validation data cannot be reproduced reliably.",
+    "exact_fix": "Use a local RNG seeded by the method argument and pass deterministic per-case seeds into cube.scramble; store generated move sequences.",
+    "verification_steps": [
+      "Generate two ValidationDataset instances with the same seed.",
+      "Compare [cube.state_key() for cube, _ in dataset] across both runs.",
+      "Assert the lists are identical."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "Technical/code issue",
+    "file": "src/korf/validation.py",
+    "location": "src/korf/validation.py:96-152",
+    "issue": "ValidationDataset.save_to_file writes an empty positions array even though load_from_file expects positions with moves and distance.",
+    "why_it_matters": "Validation datasets cannot round-trip and saved validation artifacts are misleading.",
+    "exact_fix": "Serialize every position with move sequence or facelet state plus distance, and add a save/load round-trip test.",
+    "verification_steps": [
+      "Create a dataset with at least two positions.",
+      "Save it and reload it.",
+      "Assert equal length, distances, and cube.state_key values."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "Technical/code issue",
+    "file": "src/korf/validation.py",
+    "location": "src/korf/validation.py:1-12; src/korf/validation.py:354-396",
+    "issue": "load_cube20_data is advertised as a feature but the parser is not implemented and returns an empty dataset for existing files.",
+    "why_it_matters": "A caller can believe external optimal-distance data was loaded when no validation cases were loaded.",
+    "exact_fix": "Implement cube20 parsing with fixtures or raise NotImplementedError instead of returning an empty ValidationDataset.",
+    "verification_steps": [
+      "Create a small valid cube20-format fixture.",
+      "Run load_cube20_data on it.",
+      "Assert the dataset length is nonzero, or assert unsupported formats fail loudly."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "Technical/code issue",
+    "file": "src/kociemba/solver.py",
+    "location": "src/kociemba/solver.py:118-135; src/kociemba/solver.py:353-360",
+    "issue": "KociembaSolver.solve starts its internal timeout clock after lazy table initialization.",
+    "why_it_matters": "The timeout parameter does not bound cold-start solve latency.",
+    "exact_fix": "Start timing before _initialize or split initialization into an explicit warmup API and document timeout semantics.",
+    "verification_steps": [
+      "Remove generated kociemba caches.",
+      "Call solve(timeout=1) on a scramble.",
+      "Confirm the call is bounded by the timeout policy or reports initialization time separately."
+    ]
+  },
+  {
+    "severity": "minor",
+    "category": "Technical/code issue",
+    "file": "src/evaluation/algorithm_comparison.py",
+    "location": "src/evaluation/algorithm_comparison.py:167; src/evaluation/algorithm_comparison.py:571-583",
+    "issue": "AlgorithmComparison.run_batch_test appends to self.results without clearing previous batch results.",
+    "why_it_matters": "Repeated batch runs on the same object can contaminate summaries and exports.",
+    "exact_fix": "Clear self.results at the start of run_batch_test or add an explicit append parameter defaulting to false.",
+    "verification_steps": [
+      "Run run_batch_test(n_scrambles=1) twice on the same object.",
+      "Assert the second returned result list has length 1 unless append mode is explicitly enabled."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "Technical/code issue",
+    "file": "src/thistlethwaite/tables.py",
+    "location": "src/thistlethwaite/tables.py:120-124; src/thistlethwaite/tables.py:320-330",
+    "issue": "Thistlethwaite cached tables are loaded from pickle without validating schema, type, or expected size.",
+    "why_it_matters": "Stale or corrupt generated cache files can silently affect solver correctness.",
+    "exact_fix": "Store and validate schema version, table name, expected size, move set, and checksum before accepting cached tables.",
+    "verification_steps": [
+      "Write an invalid pickle payload to a cache path.",
+      "Run the loader.",
+      "Confirm it rejects the payload with a clear error."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "Research/experimental issue",
+    "file": "results/benchmarks/thesis/thesis_results_combined.json; thesis/chapters/07_evaluation.tex",
+    "location": "results/benchmarks/thesis/thesis_results_combined.json:115-119; results/benchmarks/thesis/thesis_results_combined.json:123-131; thesis/chapters/07_evaluation.tex:75-77; thesis/chapters/07_evaluation.tex:331-340",
+    "issue": "The canonical benchmark corpus is legacy_random_all_moves_redundant_allowed, so requested scramble length is not exact optimal depth.",
+    "why_it_matters": "Depth-based conclusions are weaker because they refer to generation length, not guaranteed search depth.",
+    "exact_fix": "Regenerate and report a clean corpus with no redundant same-face moves and oracle-verified exact-depth buckets; keep legacy results only as historical comparison.",
+    "verification_steps": [
+      "Inspect benchmark metadata for scramble_generation and redundancy policy.",
+      "Verify exact-depth distribution using the optimal backend.",
+      "Update thesis tables to label requested length versus verified depth."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "Research/experimental issue",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "thesis/chapters/07_evaluation.tex:112-117; thesis/chapters/07_evaluation.tex:226-239",
+    "issue": "Main evaluation tables rely on means and defer median, standard deviation/IQR, confidence intervals, and timeout-aware summaries to a future stricter run.",
+    "why_it_matters": "Solver runtime distributions are skewed and timeout-sensitive; means alone are insufficient for robust comparison.",
+    "exact_fix": "Add median, IQR, standard deviation, bootstrap confidence intervals, and timeout-count fields to the tables or supplementary analysis.",
+    "verification_steps": [
+      "Rerun the analysis pipeline.",
+      "Confirm generated tables include robust distribution metrics and timeout-aware summaries.",
+      "Update Chapter 7 text to interpret those metrics."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "Research/experimental issue",
+    "file": "src/evaluation/algorithm_comparison.py; thesis/chapters/07_evaluation.tex",
+    "location": "src/evaluation/algorithm_comparison.py:76-78; src/evaluation/algorithm_comparison.py:243-250; thesis/chapters/07_evaluation.tex:108-119; thesis/chapters/07_evaluation.tex:337-340",
+    "issue": "Memory is measured as process RSS delta in a shared sequential process with reused solvers.",
+    "why_it_matters": "The metric cannot support isolated peak-memory claims per solver.",
+    "exact_fix": "Run each solver/case in a separate child process and record peak RSS with cold-start and warm-start modes separated.",
+    "verification_steps": [
+      "Regenerate benchmark JSON with an isolated peak-RSS memory_method.",
+      "Confirm each solver result records peak memory independently.",
+      "Update Chapter 7 memory figure and captions."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "Reproducibility/setup issue",
+    "file": "data/README.md; results/validation/native_exact/MANIFEST.json; scripts/verification/native_exact_validation.py",
+    "location": "data/README.md:28-37; results/validation/native_exact/MANIFEST.json:5-12; results/validation/native_exact/MANIFEST.json:24-27; scripts/verification/native_exact_validation.py:26-37; scripts/verification/native_exact_validation.py:382-392",
+    "issue": "The canonical native exact validation requires data/pattern_databases/corner_db.pkl, but generated .pkl caches are omitted from the source ZIP.",
+    "why_it_matters": "The native exact validation claim cannot be fully rerun from the archive alone without a separate large generated artifact.",
+    "exact_fix": "Add a documented cache-generation target with expected runtime and hash, or distribute the required cache as a separately verifiable artifact.",
+    "verification_steps": [
+      "Extract the ZIP into a fresh directory.",
+      "Run the canonical native validation command.",
+      "Confirm it either succeeds end-to-end or fails with a documented command for generating the missing cache."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "Citation/reference issue",
+    "file": "thesis/references.bib; thesis/chapters/03_thistlethwaite.tex; thesis/chapters/02_background.tex",
+    "location": "thesis/references.bib:25-30; thesis/chapters/03_thistlethwaite.tex:8-16; thesis/chapters/02_background.tex:160; thesis/chapters/02_background.tex:237",
+    "issue": "The foundational Thistlethwaite citation is a secondary Jaap Scherphuis webpage but is used to support primary algorithm history and theory.",
+    "why_it_matters": "Core historical and mathematical claims need primary or explicitly secondary sourcing.",
+    "exact_fix": "Replace or supplement thistlethwaite1981 with the best primary/historical source available, or explicitly label it as a secondary explanatory source in the thesis.",
+    "verification_steps": [
+      "Inspect thesis/references.bib for a primary Thistlethwaite source or explicit secondary-source note.",
+      "Confirm chapter text distinguishes historical source from explanatory webpage."
+    ]
+  },
+  {
+    "severity": "minor",
+    "category": "Citation/reference issue",
+    "file": "thesis/references.bib",
+    "location": "thesis/references.bib:188-199; thesis/references.bib:231-249",
+    "issue": "The bibliography contains uncited entries; static analysis found 32 uncited keys.",
+    "why_it_matters": "Uncited entries make the bibliography look padded and reduce reference-list precision.",
+    "exact_fix": "Remove uncited entries or cite them in a relevant related-work or future-work section.",
+    "verification_steps": [
+      "Run a script comparing LaTeX cite keys to thesis/references.bib keys.",
+      "Confirm uncited count is zero or intentionally documented."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "Citation/reference issue",
+    "file": "papers/DOWNLOAD_SUMMARY.txt; REPRODUCIBILITY_MANIFEST.json; README.md",
+    "location": "papers/DOWNLOAD_SUMMARY.txt:13-16; papers/DOWNLOAD_SUMMARY.txt:31-39; papers/DOWNLOAD_SUMMARY.txt:54-64; papers/DOWNLOAD_SUMMARY.txt:110-116; REPRODUCIBILITY_MANIFEST.json:2-6; README.md:61-62",
+    "issue": "Citation-content verification is not possible from the ZIP alone because cited PDFs are excluded and the acquisition log records incomplete coverage.",
+    "why_it_matters": "An auditor can verify citation keys but not whether every cited claim is supported by source text.",
+    "exact_fix": "Add a claim-to-reference evidence table with page/section pointers and public DOI/URL fields, or provide a separately verifiable permitted evidence bundle.",
+    "verification_steps": [
+      "Sample cited claims from thesis chapters.",
+      "Confirm each sampled claim has a source locator that can be checked without private/local PDFs."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "Reproducibility/setup issue",
+    "file": "verify_setup.py; pytest.ini; pyproject.toml",
+    "location": "verify_setup.py:341-349; verify_setup.py:451-456; pytest.ini:3-7; pyproject.toml:15-22",
+    "issue": "verify_setup.py --full does not override pytest addopts, so slow/external/cache_building tests remain excluded.",
+    "why_it_matters": "The advertised full verification mode is not actually full.",
+    "exact_fix": "For full mode, call pytest with -o addopts= and an explicit marker policy, or clear PYTEST_ADDOPTS before running pytest.",
+    "verification_steps": [
+      "Run python -m pytest tests --collect-only -q and observe default deselections.",
+      "Run python verify_setup.py --full after the fix and confirm the previously deselected tests are included or explicitly reported according to policy."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "Reproducibility/setup issue",
+    "file": "README.md; verify_setup.py; requirements.txt; requirements.lock",
+    "location": "README.md:28-33; README.md:41-45; verify_setup.py:138-164; requirements.txt:1-42; requirements.lock:1-18",
+    "issue": "README instructs installation from requirements.lock, but verify_setup.py checks requirements.txt and tells users to install requirements.txt.",
+    "why_it_matters": "The verification script does not validate the pinned audited dependency snapshot.",
+    "exact_fix": "Make verify_setup.py default to requirements.lock, add a --requirements option if needed, and update the missing-package message.",
+    "verification_steps": [
+      "Run python verify_setup.py.",
+      "Confirm it reports requirements.lock as the checked dependency file.",
+      "Confirm missing-package instructions match README setup instructions."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "Reproducibility/setup issue",
+    "file": "README.md; requirements.lock",
+    "location": "README.md:41-45; requirements.lock:1-18; requirements.lock:117-143",
+    "issue": "The Python lock file is explicitly non-cryptographic and omits hashes, platform markers, Python ABI constraints, and TeX/Tectonic versions.",
+    "why_it_matters": "Dependency installation can drift across platforms even when versions appear pinned.",
+    "exact_fix": "Use a hash-verified lock mechanism such as uv.lock or pip-tools --generate-hashes, and pin TeX/Docker image and Node/npm versions.",
+    "verification_steps": [
+      "Install dependencies with hash checking from a clean environment.",
+      "Record Python, package, TeX, Node, and npm versions in the validation output.",
+      "Confirm setup/build/test commands use those pinned versions."
+    ]
+  },
+  {
+    "severity": "minor",
+    "category": "Submission polish issue",
+    "file": "docs/THESIS_FULL_AUDIT_2026-03-21.md",
+    "location": "docs/THESIS_FULL_AUDIT_2026-03-21.md:1-7; docs/THESIS_FULL_AUDIT_2026-03-21.md:28-34; docs/THESIS_FULL_AUDIT_2026-03-21.md:492-509",
+    "issue": "A historical internal audit report with old findings and open questions remains under docs.",
+    "why_it_matters": "It can confuse reviewers or make the final submission package look unresolved.",
+    "exact_fix": "Move the file to an archive/audit-history area or exclude it from the final submission ZIP while retaining it internally.",
+    "verification_steps": [
+      "Inspect the final archive contents.",
+      "Confirm historical audit material is either absent from submission docs or clearly quarantined as archival."
+    ]
+  }
+]

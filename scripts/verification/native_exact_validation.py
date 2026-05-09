@@ -228,39 +228,8 @@ def validate_corpus(
 
     for case in corpus:
         cube = _apply_scramble(case.scramble)
-        native_solver = NativeExactSolver(heuristic=heuristic, max_depth=max_depth, timeout=timeout)
-        native_result = native_solver.solve(cube)
-        native_stats = native_solver.get_statistics()
-
-        if native_result is None:
-            failures.append(
-                ValidationFailure(
-                    category="native_incomplete",
-                    scramble=case.scramble,
-                    message=f"native solver did not complete for expected depth {case.expected_depth}",
-                    native_stats=native_stats,
-                )
-            )
-            continue
-
-        native_moves, _ = native_result
-        if len(native_moves) != case.expected_depth:
-            failures.append(
-                ValidationFailure(
-                    category="native_depth_mismatch",
-                    scramble=case.scramble,
-                    message=f"native depth {len(native_moves)} != expected depth {case.expected_depth}",
-                    native_stats=native_stats,
-                )
-            )
-
-        record = {
-            "scramble": case.scramble,
-            "expected_depth": case.expected_depth,
-            "category": case.category,
-            "native_length": len(native_moves),
-            "native_stats": native_stats,
-        }
+        oracle_length: Optional[int] = None
+        oracle_stats: Optional[Dict] = None
 
         if oracle is not None and case.use_oracle:
             oracle_result = oracle.solve(cube, verbose=False, timeout=timeout)
@@ -270,23 +239,57 @@ def validate_corpus(
                         category="oracle_incomplete",
                         scramble=case.scramble,
                         message="oracle did not complete",
-                        native_stats=native_stats,
                     )
                 )
             else:
                 oracle_moves, oracle_stats = oracle_result
-                record["oracle_length"] = len(oracle_moves)
-                record["oracle_stats"] = oracle_stats
-                if len(native_moves) != len(oracle_moves):
-                    failures.append(
-                        ValidationFailure(
-                            category="oracle_disagreement",
-                            scramble=case.scramble,
-                            message=f"native length {len(native_moves)} != oracle length {len(oracle_moves)}",
-                            native_stats=native_stats,
-                            oracle_stats=oracle_stats,
-                        )
-                    )
+                oracle_length = len(oracle_moves)
+
+        native_solver = NativeExactSolver(heuristic=heuristic, max_depth=max_depth, timeout=timeout)
+        native_result = native_solver.solve(cube)
+        native_stats = native_solver.get_statistics()
+
+        if native_result is None:
+            failures.append(
+                ValidationFailure(
+                    category="native_incomplete",
+                    scramble=case.scramble,
+                    message=(
+                        f"native solver did not complete for oracle depth {oracle_length}"
+                        if oracle_length is not None
+                        else f"native solver did not complete for generated length {case.expected_depth}"
+                    ),
+                    native_stats=native_stats,
+                    oracle_stats=oracle_stats,
+                )
+            )
+            continue
+
+        native_moves, _ = native_result
+        expected_depth = oracle_length if oracle_length is not None else case.expected_depth
+        if len(native_moves) != expected_depth:
+            failures.append(
+                ValidationFailure(
+                    category="oracle_disagreement" if oracle_length is not None else "native_depth_mismatch",
+                    scramble=case.scramble,
+                    message=f"native depth {len(native_moves)} != expected depth {expected_depth}",
+                    native_stats=native_stats,
+                    oracle_stats=oracle_stats,
+                )
+            )
+
+        record = {
+            "scramble": case.scramble,
+            "expected_depth": case.expected_depth,
+            "expected_depth_source": "oracle_length" if oracle_length is not None else "generated_length",
+            "category": case.category,
+            "native_length": len(native_moves),
+            "native_stats": native_stats,
+        }
+
+        if oracle_length is not None:
+            record["oracle_length"] = oracle_length
+            record["oracle_stats"] = oracle_stats
 
         results.append(record)
 

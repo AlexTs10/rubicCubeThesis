@@ -118,3 +118,42 @@ class TestAlgorithmComparison:
         assert module.OPTIMAL_AVAILABLE is expected_backend_available
         assert "optimal.solver" not in sys.modules
         assert "RubikOptimal.solver" not in sys.modules
+
+    def test_run_batch_test_replaces_previous_results_by_default(self, monkeypatch):
+        """Separate benchmark batches should not contaminate each other's summaries."""
+
+        class DummyThistlethwaiteSolver:
+            def __init__(self, *args, **kwargs):
+                pass
+
+        class DummyKociembaSolver:
+            def __init__(self, *args, **kwargs):
+                pass
+
+        class DummyOptimalSolver:
+            timeout_supported = True
+
+            def __init__(self, *args, **kwargs):
+                pass
+
+            def get_statistics(self):
+                return {"cubes_solved": 0}
+
+        monkeypatch.setattr(comparison_module, "ThistlethwaiteSolver", DummyThistlethwaiteSolver)
+        monkeypatch.setattr(comparison_module, "KociembaSolver", DummyKociembaSolver)
+        monkeypatch.setattr(comparison_module, "KorfOptimalSolver", DummyOptimalSolver)
+        monkeypatch.setattr(comparison_module, "OPTIMAL_AVAILABLE", True)
+        monkeypatch.setattr(
+            AlgorithmComparison,
+            "compare_on_scramble",
+            lambda self, cube, scramble_id: f"result-{scramble_id}",
+        )
+
+        comparison = AlgorithmComparison()
+
+        assert comparison.run_batch_test(n_scrambles=2, seed=1) == ["result-0", "result-1"]
+        assert comparison.run_batch_test(n_scrambles=1, seed=2) == ["result-0"]
+        assert comparison.run_batch_test(n_scrambles=1, seed=3, append=True) == [
+            "result-0",
+            "result-0",
+        ]

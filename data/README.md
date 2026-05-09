@@ -35,6 +35,18 @@ Pattern-database artifacts used by:
 
 This includes smaller coordinate tables under `native_exact/`. Large thesis-grade caches such as `corner_db.pkl`, `edge1_db.pkl`, and `edge2_db.pkl` are intentionally treated as generated artifacts and may be absent from a source ZIP. Validation presets that cite those artifacts must either ship them explicitly or fail hard when the required cache is missing.
 
+The canonical native exact validation preset requires the full corner cache:
+
+```bash
+python scripts/generate_corner_database.py --output data/pattern_databases/corner_db.pkl
+python scripts/verification/native_exact_validation.py --preset canonical
+```
+
+The generated `corner_db.pkl` is intentionally excluded from source audit ZIPs
+because it is a large cache artifact. If the cache is absent, the canonical
+validation command fails with a clear prerequisite instead of silently running
+without the cited cache.
+
 ### `data/move_tables/` and `data/pruning_tables/`
 
 Legacy/shared caches created by earlier solver generations. They are still used by parts of the codebase and should be treated as generated artifacts, not handwritten source files.

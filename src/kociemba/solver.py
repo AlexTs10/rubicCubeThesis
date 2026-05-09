@@ -330,6 +330,8 @@ class KociembaSolver:
             self.last_backend_used = "none"
             return ([], [], [])
 
+        solve_start_time = time.time()
+
         use_native_first = (
             self.backend == "native" or
             (
@@ -352,11 +354,16 @@ class KociembaSolver:
 
         # Initialize tables
         self._initialize()
+        remaining_timeout = timeout - (time.time() - solve_start_time)
+        if remaining_timeout <= 0:
+            if verbose:
+                print("Timeout during Kociemba table initialization")
+            return None
 
         # Convert to cubie representation
         cubie = from_facelet_cube(cube)
 
-        start_time = time.time()
+        start_time = solve_start_time
 
         # Phase 1: Reach G1
         if verbose:
@@ -365,13 +372,16 @@ class KociembaSolver:
             print("-"*70)
 
         phase1_solution = self._solve_phase1(
-            cubie, max_phase1_depth, timeout, verbose
+            cubie, max_phase1_depth, remaining_timeout, verbose
         )
 
         if phase1_solution is None:
             if self.backend == "auto":
+                remaining_timeout = timeout - (time.time() - solve_start_time)
+                if remaining_timeout <= 0:
+                    return None
                 native_result = self._solve_with_native_backend(
-                    cube, max_phase1_depth, max_phase2_depth, timeout, verbose
+                    cube, max_phase1_depth, max_phase2_depth, remaining_timeout, verbose
                 )
                 if native_result is not None:
                     return native_result
@@ -391,8 +401,11 @@ class KociembaSolver:
         coord = CoordCube(cubie)
         if not coord.is_phase1_solved():
             if self.backend == "auto":
+                remaining_timeout = timeout - (time.time() - solve_start_time)
+                if remaining_timeout <= 0:
+                    return None
                 native_result = self._solve_with_native_backend(
-                    cube, max_phase1_depth, max_phase2_depth, timeout, verbose
+                    cube, max_phase1_depth, max_phase2_depth, remaining_timeout, verbose
                 )
                 if native_result is not None:
                     return native_result
@@ -415,8 +428,11 @@ class KociembaSolver:
 
         if phase2_solution is None:
             if self.backend == "auto":
+                remaining_timeout = timeout - (time.time() - solve_start_time)
+                if remaining_timeout <= 0:
+                    return None
                 native_result = self._solve_with_native_backend(
-                    cube, max_phase1_depth, max_phase2_depth, timeout, verbose
+                    cube, max_phase1_depth, max_phase2_depth, remaining_timeout, verbose
                 )
                 if native_result is not None:
                     return native_result

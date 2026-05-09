@@ -36,7 +36,8 @@ MAPPING_FILE = ROOT / "docs" / "CODE_TO_THESIS_MAPPING.md"
 BENCHMARK_DIR = ROOT / "results" / "benchmarks" / "thesis"
 
 ALGORITHMS = ("thistlethwaite", "kociemba", "korf")
-DOCKER_IMAGE = "blang/latex:ctanfull"
+THESIS_DOCKERFILE = ROOT / "docker" / "thesis.Dockerfile"
+DOCKER_IMAGE = "rubic-cube-thesis-tex:local"
 
 
 @dataclass(frozen=True)
@@ -1071,6 +1072,19 @@ def build_thesis(mode: str, image: str, clean: bool) -> None:
             raise SystemExit("Docker mode requires the `docker` CLI.")
         if not docker_ready:
             raise SystemExit("Docker mode requires a running Docker daemon. Start Docker Desktop and retry.")
+        if image == DOCKER_IMAGE and THESIS_DOCKERFILE.exists():
+            run_build_command(
+                [
+                    "docker",
+                    "build",
+                    "-f",
+                    str(THESIS_DOCKERFILE.relative_to(ROOT)),
+                    "-t",
+                    image,
+                    ".",
+                ],
+                ROOT,
+            )
         run_build_command(
             [
                 "docker",
