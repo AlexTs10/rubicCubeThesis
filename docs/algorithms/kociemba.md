@@ -190,8 +190,8 @@ PYTHONPATH=/home/user/rubicCubeThesis python demos/kociemba_demo.py
 - **Typical**: highly scramble-dependent; see the thesis benchmark corpus for measured averages
 
 ### Space Complexity
-- **Move Tables**: ~3.4 MB on disk in the current repo snapshot
-- **Pruning Tables**: ~5.3 MB on disk in the current repo snapshot
+- **Move Tables**: approximately 3.4 MB once generated locally
+- **Pruning Tables**: approximately 5.3 MB once generated locally
 - **Search**: O(depth) stack space
 
 ### Optimality

@@ -3,6 +3,8 @@
 import json
 from pathlib import Path
 
+import pytest
+
 import scripts.benchmarks.artifact_utils as artifact_utils
 import scripts.benchmarks.regenerate_thesis_benchmarks as benchmark_regen
 import scripts.verification.native_exact_validation as native_validation
@@ -222,6 +224,38 @@ def test_native_exact_validation_records_corpus_generation(tmp_path, monkeypatch
     assert report["summary"]["total_cases"] == 1
     assert report["summary"]["successful_cases"] == 1
     assert report["summary"]["failure_count"] == 0
+
+
+def test_native_exact_validation_requires_oracle_for_oracle_cases(tmp_path, monkeypatch):
+    """Oracle-tagged cases must not fall back to generated scramble length."""
+
+    class DummyHeuristic:
+        def __init__(self, *args, **kwargs):
+            pass
+
+        def get_statistics(self):
+            return {"corner_pattern_db_loaded": False, "corner_pattern_db_complete": False}
+
+    monkeypatch.setattr(native_validation, "NativeCoordinateHeuristic", DummyHeuristic)
+
+    case = native_validation.ValidationCase(
+        scramble=["R", "U", "F"],
+        expected_depth=3,
+        use_oracle=True,
+        category="oracle_sample",
+    )
+
+    with pytest.raises(ValueError, match="oracle-dependent validation cases require"):
+        native_validation.validate_corpus(
+            [case],
+            corpus_generation={"oracle_cases": 1, "total_cases": 1},
+            use_oracle=False,
+            max_depth=5,
+            timeout=5.0,
+            heuristic_cache_dir=str(tmp_path / "heuristics"),
+            corner_db_path=None,
+            disable_corner_db=True,
+        )
 
 
 def test_canonical_validation_reports_record_corpus_generation():

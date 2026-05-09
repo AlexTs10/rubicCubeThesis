@@ -38,10 +38,11 @@ python scripts/thesis_workflow.py build --mode auto
 python scripts/create_audit_zip.py
 ```
 
-Use `requirements.lock` as the pinned Python dependency snapshot for the audited
-environment. It is not a cryptographic lock file: it does not include hashes,
-platform markers, Python ABI constraints, or TeX/Tectonic versions. Node and npm
-are pinned for the preview app with the root `.nvmrc`, `webapp/package.json`
+Use `requirements.lock` as the hash-locked Python dependency snapshot for the
+audited environment. Install it with `python -m pip install --require-hashes -r
+requirements.lock` when reproducing the audited Python environment. The lock
+does not pin TeX/Tectonic, OS packages, or Node tooling. Node and npm are pinned
+for the preview app with the root `.nvmrc`, `webapp/package.json`
 (`packageManager` and `engines`), and `webapp/.npmrc` (`engine-strict=true`).
 Run `corepack enable` before `npm ci` if your npm version is not already
 11.6.0. Use `requirements.txt` only when you need a flexible dependency range

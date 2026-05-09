@@ -78,6 +78,9 @@ def iter_requirements(requirements_path: Path) -> Iterable[Tuple[str, str, str |
         line = raw_line.split("#", 1)[0].strip()
         if not line:
             continue
+        if line.startswith(("--", "-r ", "-c ")):
+            continue
+        line = line.removesuffix("\\").strip()
         package_name = line
         expected_version = None
         if "==" in package_name:

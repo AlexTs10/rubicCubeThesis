@@ -98,7 +98,7 @@ admissible coordinate tables, αλλά όχι ακόμη πλήρη corner/edge 
     \item \textbf{Χώρος καταστάσεων:} $8! \times 3^7 = 40,320 \times 2,187 = 88,179,840$ καταστάσεις
     \item \textbf{Υπολογισμός δείκτη:} $\text{index} = \text{perm\_rank} \times 2187 + \text{orient\_coord}$
     \item \textbf{Μέγιστη απόσταση:} 11-12 κινήσεις
-    \item \textbf{Μνήμη:} θεωρητικά ~44 MB (με συμπίεση nibble) ή ~88 MB με exact-safe byte storage
+    \item \textbf{Μνήμη:} θεωρητικά ~88 MB με exact-safe byte storage πριν από runtime overhead. Η παλαιότερη nibble-packed εκδοχή θα ήταν περίπου ~44 MB, αλλά δεν χρησιμοποιείται ως current exact-safe cache.
 \end{itemize}
 
 Η συνάρτηση υπολογισμού δείκτη παρατίθεται από το αρχείο
@@ -144,7 +144,7 @@ def corner_index(cubie: CubieCube) -> int:
 \hline
 \textbf{Βάση Δεδομένων} & \textbf{Καταστάσεις} & \textbf{Ασυμπίεστη} & \textbf{Συμπιεσμένη} \\
 \hline
-Corner & 88.2M & ~88 MB & ~44 MB \\
+Corner & 88.2M & ~88 MB & ~44 MB (legacy nibble-packed) \\
 Edge 1 & 42.6M & ~42.6 MB & ~20 MB \\
 Edge 2 & 42.6M & ~42.6 MB & ~20 MB \\
 \hline
@@ -273,13 +273,14 @@ h_{PDB}(s) = \max(h_{corner}(s), h_{edge1}(s), h_{edge2}(s))
 Simple & Χαμηλή & Πολύ υψηλή & 0 \\
 Hamming & Χαμηλή & Υψηλή & 0 \\
 Manhattan & Μέτρια & Υψηλή & 0 \\
-Corner PDB only & Υψηλή για γωνίες & Μέτρια & περίπου 44 MB compressed \\
+Corner PDB only & Υψηλή για γωνίες & Μέτρια & περίπου 88 MB exact-safe cache \\
 Πλήρες corner/edge PDB stack & Υψηλή & Μέτρια--χαμηλή & πολλαπλάσια του corner-only cache \\
 \bottomrule
 \end{tabularx}
 \end{table}
 
-Η τιμή περίπου 44 MB αφορά μόνο τη συμπιεσμένη native corner database. Η
+Η τιμή περίπου 44 MB αφορά μόνο μια legacy nibble-packed corner database και
+δεν περιγράφει την current exact-safe byte-per-entry cache του artifact. Η
 θεωρητική ευρετική της Εξίσωσης~\ref{eq:pdb_heuristic} απαιτεί ξεχωριστές βάσεις
 για γωνίες και δύο ομάδες ακμών, άρα δεν πρέπει να αποδίδεται ο ίδιος αριθμός
 μνήμης στο πλήρες corner/edge stack.
