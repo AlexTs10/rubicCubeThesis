@@ -9,6 +9,9 @@ from src.korf.native_coordinate_heuristic import NativeCoordinateHeuristic
 from src.korf.native_exact_solver import NativeExactSolver
 
 
+pytestmark = pytest.mark.cache_building
+
+
 def _cube_from_moves(moves):
     cube = RubikCube()
     cube.apply_moves(moves)

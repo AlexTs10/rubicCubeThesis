@@ -8,15 +8,21 @@ version = "0.1.0"
 description = "Rubik's Cube solver implementations, benchmarks, and thesis workflow."
 readme = "README.md"
 requires-python = ">=3.12,<3.15"
+dependencies = [
+  "dataclasses-json",
+  "kociemba",
+  "matplotlib",
+  "memory-profiler",
+  "numpy",
+  "pandas",
+  "plotly",
+  "psutil",
+  "pytest",
+  "RubikOptimal",
+  "scipy",
+  "seaborn",
+  "streamlit",
+]
 
 [tool.setuptools.packages.find]
 include = ["src*"]
-
-[tool.pytest.ini_options]
-testpaths = ["tests"]
-addopts = "-m \"not slow and not external and not cache_building\""
-markers = [
-  "slow: long-running tests that are not part of the default verification profile",
-  "external: tests requiring optional external tools or services",
-  "cache_building: tests that intentionally build large generated solver caches",
-]

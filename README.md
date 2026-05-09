@@ -32,8 +32,8 @@ python -m pip install --upgrade pip
 python -m pip install -r requirements.lock -e .
 python verify_setup.py
 python -m pytest tests -q
-python scripts/thesis_workflow.py status --output agent_workflow/generated/status.md
-python scripts/thesis_workflow.py validate --output agent_workflow/generated/validation.md
+python scripts/thesis_workflow.py status
+python scripts/thesis_workflow.py validate
 python scripts/thesis_workflow.py build --mode auto
 python scripts/create_audit_zip.py
 ```
@@ -45,7 +45,7 @@ are pinned for the preview app with `.nvmrc` and `webapp/package.json`
 (`packageManager`). Use `requirements.txt` only when you need a flexible
 dependency range for local development.
 
-The default pytest/verification profile is intentionally the fast reproducibility profile. It excludes tests marked `slow`, `external`, or `cache_building`; run those markers explicitly only when validating generated caches or external backends.
+The default pytest/verification profile is intentionally the fast reproducibility profile. It excludes tests marked `slow`, `external`, or `cache_building`; run those markers explicitly only when validating generated caches or external backends. Generated workflow snapshots may be written under `agent_workflow/generated/` during local work, but that directory is intentionally excluded from source audit ZIPs.
 
 The thesis build workflow now has a source-defined Docker fallback. If local
 `latexmk`/`xelatex`/bibliography tooling and `tectonic` are absent but Docker is
@@ -120,11 +120,18 @@ The repo includes a lightweight workflow driver in [`scripts/thesis_workflow.py`
 - `packet` / `packets`: chapter packets for agent-assisted writing or review
 - `build`: local or Docker thesis compilation
 
-Useful files:
+Useful source files:
 
-- [`agent_workflow/generated/status.md`](agent_workflow/generated/status.md)
-- [`agent_workflow/generated/validation.md`](agent_workflow/generated/validation.md)
 - [`thesis/README.md`](thesis/README.md)
+
+Optional local snapshots can be regenerated with:
+
+```bash
+python scripts/thesis_workflow.py status --output agent_workflow/generated/status.md
+python scripts/thesis_workflow.py validate --output agent_workflow/generated/validation.md
+```
+
+Those generated files are host-specific and are not included in source audit archives.
 
 ## Local Verification Snapshot
 

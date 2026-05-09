@@ -24,9 +24,10 @@ from typing import Dict, Iterable, Tuple
 # The full repository suite includes exact-solver validation and can run much
 # longer on colder caches or nested subprocess execution than it does in an
 # already-warmed interactive shell.
-FAST_TEST_TIMEOUT_SECONDS = 900
+FAST_TEST_TIMEOUT_SECONDS = 120
 FULL_TEST_TIMEOUT_SECONDS = 1800
 DEMO_TIMEOUT_SECONDS = 60
+NOTEBOOK_TIMEOUT_SECONDS = 30
 
 
 GENERATED_CACHE_DIRS = [
@@ -465,6 +466,35 @@ def check_documentation() -> bool:
     return all_present
 
 
+def check_notebooks() -> bool:
+    """Run the lightweight notebook source smoke check."""
+    print_section("8. Notebook Smoke Check")
+
+    project_root = Path(__file__).parent
+    command = [sys.executable, "scripts/verify_notebooks.py"]
+    try:
+        result = subprocess.run(
+            command,
+            cwd=str(project_root),
+            capture_output=True,
+            text=True,
+            timeout=NOTEBOOK_TIMEOUT_SECONDS,
+        )
+    except subprocess.TimeoutExpired:
+        print_error(f"Notebook smoke check timed out after {NOTEBOOK_TIMEOUT_SECONDS}s")
+        return False
+
+    if result.returncode == 0:
+        print_success("Notebook smoke check passed")
+        print(result.stdout.strip())
+        return True
+
+    print_error("Notebook smoke check failed")
+    print(result.stdout)
+    print(result.stderr)
+    return False
+
+
 def main():
     """Run all verification checks."""
     parser = argparse.ArgumentParser(description="Verify the Rubik's Cube thesis checkout.")
@@ -482,6 +512,11 @@ def main():
         "--requirements",
         default="requirements.lock",
         help="requirements file to verify; defaults to the pinned requirements.lock",
+    )
+    parser.add_argument(
+        "--notebooks",
+        action="store_true",
+        help="also run the lightweight notebook JSON/metadata smoke check",
     )
     args = parser.parse_args()
     project_root = Path(__file__).parent
@@ -502,6 +537,8 @@ def main():
         ("Demo Script", check_demo),
         ("Documentation", check_documentation),
     ]
+    if args.notebooks:
+        checks.append(("Notebook Smoke", check_notebooks))
 
     results = {}
 

@@ -1,0 +1,258 @@
+[
+  {
+    "severity": "critical",
+    "category": "critical blockers",
+    "file": "thesis/main.tex; thesis/chapters/00_approval.tex; thesis/README.md",
+    "location": "thesis/main.tex:173-180; thesis/chapters/00_approval.tex:36-44; thesis/README.md:3",
+    "issue": "Problem: the formal approval/signature page is excluded from the thesis build and still contains placeholder committee/date fields. Why it matters: the produced PDF is explicitly a review build, not a final institutional submission.",
+    "exact_fix": "Fill the missing committee members and examination date in thesis/chapters/00_approval.tex, then include the approval page in thesis/main.tex immediately after the title page, before acknowledgements/abstracts. Remove or update the thesis/README.md warning once the final page is included.",
+    "verification_steps": [
+      "Run: cd thesis && xelatex -interaction=nonstopmode -halt-on-error main.tex",
+      "Open thesis/main.pdf and verify that the approval page appears after the title page.",
+      "Confirm that thesis/chapters/00_approval.tex no longer contains 'Μέλος Εξεταστικής Επιτροπής' placeholders or '\\dotfill' for the examination date."
+    ]
+  },
+  {
+    "severity": "critical",
+    "category": "critical blockers",
+    "file": "README.md; pytest.ini; verify_setup.py; tests/unit/test_kociemba.py; tests/unit/test_native_coordinate_heuristic.py; tests/unit/test_thistlethwaite.py; src/kociemba/moves.py; src/korf/native_coordinate_heuristic.py; src/thistlethwaite/solver.py",
+    "location": "README.md:28-35,48,134-136; pytest.ini:1-7; verify_setup.py:348-370; tests/unit/test_kociemba.py:172-200; tests/unit/test_native_coordinate_heuristic.py:23-28,48-57; tests/unit/test_thistlethwaite.py:360-391; src/kociemba/moves.py:66-108,110-149; src/korf/native_coordinate_heuristic.py:62-84,192-202; src/thistlethwaite/solver.py:73-80",
+    "issue": "Problem: the repository claims the default pytest profile is a fast reproducibility profile excluding cache_building tests, but unmarked tests still call heavy move-table, coordinate-table, and Thistlethwaite pattern-database loading/generation paths. The source ZIP ships only data/README.md under data/, so these paths can generate large caches or hang. Why it matters: the documented reviewer command 'python -m pytest tests -q' is not a reliable fast verification command from the source ZIP.",
+    "exact_fix": "Mark every test that calls tables.load(), NativeCoordinateHeuristic construction with generated coordinate tables, ThistlethwaiteSolver(use_pattern_databases=True)._ensure_databases_loaded(), or solver paths that build large caches with @pytest.mark.cache_building or @pytest.mark.slow. Add separate lightweight tests using mocks or tiny fixtures for the default profile. Reduce verify_setup.py's fast timeout after the truly fast set is isolated.",
+    "verification_steps": [
+      "From a clean extraction with no generated data caches, run: PYTHONPATH=. timeout 120s python -m pytest tests -q",
+      "Run: PYTHONPATH=. python -m pytest tests -q -m cache_building to confirm the heavy tests are still available as an opt-in profile.",
+      "Run: PYTHONPATH=. timeout 20s python -m pytest tests/unit/test_kociemba.py::TestMoveTables::test_move_tables_loading -q before the fix; it currently enters the heavy move-table path."
+    ]
+  },
+  {
+    "severity": "critical",
+    "category": "critical blockers",
+    "file": "data/README.md; scripts/verification/native_exact_validation.py; src/korf/native_coordinate_heuristic.py",
+    "location": "data/README.md:45-48; scripts/verification/native_exact_validation.py:26-37,244-258,433-444; src/korf/native_coordinate_heuristic.py:62-84",
+    "issue": "Problem: data/README.md says canonical native exact validation fails with a clear prerequisite when data/pattern_databases/corner_db.pkl is absent, but validate_corpus constructs NativeCoordinateHeuristic before calling heuristic.require_corner_pattern_db(). NativeCoordinateHeuristic immediately loads/generates move and coordinate tables. Why it matters: the canonical validation command does not fail fast from the source ZIP and can time out before reporting the missing required cache.",
+    "exact_fix": "Move the canonical prerequisite check before NativeCoordinateHeuristic construction. In validate_corpus(), when require_corner_db is true, check disable_corner_db, corner_db_path, Path(corner_db_path).exists(), and optionally cache completeness before creating the heuristic. Emit a clear FileNotFoundError or ValueError that names data/pattern_databases/corner_db.pkl.",
+    "verification_steps": [
+      "Delete or move data/pattern_databases/corner_db.pkl.",
+      "Run: PYTHONPATH=. python scripts/verification/native_exact_validation.py --preset canonical",
+      "Verify that the command exits immediately with a clear missing-corner-db prerequisite message.",
+      "Run: PYTHONPATH=. python scripts/verification/native_exact_validation.py --preset source-zip and verify that the source-ZIP smoke preset still completes."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "thesis writing issues",
+    "file": "thesis/chapters/01_introduction.tex",
+    "location": "thesis/chapters/01_introduction.tex:80",
+    "issue": "Problem: the contribution sentence says the thesis provides experimental algorithm comparison 'with fast default test profile' and 'official benchmark data.' This mixes scientific contribution, pytest execution policy, and benchmark artifacts in one grammatically awkward claim. Why it matters: it weakens the academic framing of the contribution and confuses experiments with CI/test mechanics.",
+    "exact_fix": "Rewrite the bullet as two separate contributions: one for experimental comparison using the recorded benchmark corpus and one for reproducibility infrastructure/test profiles. Example: 'Πειραματική σύγκριση των αλγορίθμων σε κοινό corpus benchmark με καταγεγραμμένα JSON αποτελέσματα' and a separate bullet for 'Υποδομή αναπαραγωγιμότητας με διακριτά test profiles.'",
+    "verification_steps": [
+      "Open thesis/chapters/01_introduction.tex and confirm line 80 no longer combines benchmark claims with pytest profile claims.",
+      "Rebuild thesis/main.pdf and inspect the introduction contribution list."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "thesis writing issues",
+    "file": "thesis/chapters/02_background.tex",
+    "location": "thesis/chapters/02_background.tex:307-312",
+    "issue": "Problem: after deriving O(b^d) memory growth for A*, the thesis claims that in practice A* can solve about 40-50 cubes before exhausting memory, even with gigabytes available. The repository provides no experiment, citation, hardware context, implementation context, or definition of '40-50 cubes.' Why it matters: this is an unsupported quantitative claim in a theory/background chapter.",
+    "exact_fix": "Either remove the 40-50-cube sentence or replace it with a cited and scoped statement. A safe replacement is: 'Στην πράξη, η εκθετική αποθήκευση των OPEN/CLOSED καθιστά τον A* ακατάλληλο για βαθιές τυχαίες καταστάσεις του κύβου χωρίς εξαιρετικά ισχυρές ευρετικές ή περιορισμούς μνήμης.'",
+    "verification_steps": [
+      "Search thesis/chapters/02_background.tex for '40-50'.",
+      "Confirm the sentence is removed or accompanied by a real citation and a clear experimental setup."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "thesis writing issues",
+    "file": "thesis/chapters/03_thistlethwaite.tex; src/thistlethwaite/solver.py",
+    "location": "thesis/chapters/03_thistlethwaite.tex:329-333; src/thistlethwaite/solver.py:66-80,151-163",
+    "issue": "Problem: the thesis states that the implementation guarantees <=45 moves when phases complete and then says 'Πάντα βρίσκει λύση, χωρίς τυχαιότητα.' The code has bounded phase depths/timeouts and can return None when a phase fails and fallback is disabled or fails. Why it matters: the thesis overstates completeness; benchmark success on a corpus is not the same as a mathematical guarantee for all states.",
+    "exact_fix": "Replace the guarantee/determinism bullets with a scoped claim: 'Στο τελικό benchmark corpus έλυσε 100/100 περιπτώσεις. Η υλοποίηση είναι ντετερμινιστική για σταθερές παραμέτρους, αλλά επειδή χρησιμοποιεί διαμορφωμένα phase depths και χρονικά όρια, μπορεί να αποτύχει ή να χρησιμοποιήσει fallback σε εκτός-corpus περιπτώσεις.'",
+    "verification_steps": [
+      "Inspect src/thistlethwaite/solver.py:151-163 and confirm solve() can return None.",
+      "Update thesis/chapters/03_thistlethwaite.tex:329-333.",
+      "Rebuild the thesis and confirm the claim no longer says 'Πάντα βρίσκει λύση'."
+    ]
+  },
+  {
+    "severity": "minor",
+    "category": "thesis writing issues",
+    "file": "thesis/chapters/03_thistlethwaite.tex",
+    "location": "thesis/chapters/03_thistlethwaite.tex:291",
+    "issue": "Problem: the sentence 'Κάθε φάση χρησιμοποιεί τον αλγόριθμο IDA* ... με \\cite{korf1985depth}:' is grammatically awkward and places the citation as if it were the object of 'με'. Why it matters: it reads like mechanically inserted citation text rather than polished academic Greek.",
+    "exact_fix": "Rewrite as: 'Κάθε φάση χρησιμοποιεί τον αλγόριθμο IDA*~\\cite{korf1985depth} (βλ. Κεφάλαιο~\\ref{ch:background}) με:'",
+    "verification_steps": [
+      "Open thesis/chapters/03_thistlethwaite.tex:291.",
+      "Confirm the citation is attached directly to IDA* and the sentence reads naturally."
+    ]
+  },
+  {
+    "severity": "minor",
+    "category": "research/experimental issues",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "thesis/chapters/07_evaluation.tex:195-198,211-214,310-314",
+    "issue": "Problem: the chapter says Kociemba remains close to optimal, but the table shows Kociemba average length 21.96 versus exact-backend successful average 14.18 at requested scramble length 20. The text partially qualifies this, but the summary wording remains too strong. Why it matters: 'near optimal' is plausible for Kociemba generally, but this corpus-specific gap should be stated precisely.",
+    "exact_fix": "Change the summary wording to explicitly report the observed gap: 'Στο συγκεκριμένο corpus ο Kociemba διατηρεί πρακτικά μικρά μήκη λύσης, αλλά στα ζητούμενα μήκη 15 και 20 απέχει περίπου 8 κινήσεις κατά μέσο όρο από τον exact backend στις επιτυχείς περιπτώσεις.'",
+    "verification_steps": [
+      "Confirm thesis/chapters/07_evaluation.tex:211-214 still reports Kociemba 21.96 and exact backend 14.18 for requested length 20.",
+      "Confirm the conclusion text no longer presents this as unqualified closeness to optimal."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "technical/code issues",
+    "file": "src/thistlethwaite/solver.py",
+    "location": "src/thistlethwaite/solver.py:193-216",
+    "issue": "Problem: ThistlethwaiteSolver.solve() verifies the final solution only inside an if verbose block and returns (all_moves, phase_solutions, used_fallback) regardless. If verbose=False, the API returns without final verification; if verbose=True and verification fails, it only prints a warning. Why it matters: benchmark wrappers verify independently, but direct API users can receive invalid solutions silently.",
+    "exact_fix": "Move final verification outside the verbose block. Before returning, apply all_moves to a copy of the original cube. If the result is not solved, return None or raise a SolverVerificationError. Only print human-readable details when verbose is true.",
+    "verification_steps": [
+      "Add a unit test that monkeypatches a phase search to return an invalid move sequence and asserts solve() returns None or raises.",
+      "Run: PYTHONPATH=. python -m pytest tests/unit/test_thistlethwaite.py -q",
+      "Inspect src/thistlethwaite/solver.py and confirm verification occurs regardless of verbose."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "technical/code issues",
+    "file": "src/kociemba/solver.py",
+    "location": "src/kociemba/solver.py:452-471",
+    "issue": "Problem: the internal Kociemba path verifies the complete solution only inside an if verbose block and returns the solution even if verification would fail. The native backend path correctly verifies at src/kociemba/solver.py:281-285, but the internal path does not enforce the same invariant. Why it matters: direct users of KociembaSolver.solve() can receive an unverified invalid solution from the internal backend.",
+    "exact_fix": "Mirror the native backend behavior: after solution = phase1_solution + phase2_solution, always apply the solution to a cube copy. If not solved, set last_backend_used to an error value and return None or raise a verification error. Keep printing only under verbose.",
+    "verification_steps": [
+      "Add a unit test that monkeypatches phase solutions to an invalid sequence and asserts no invalid solution is returned.",
+      "Run: PYTHONPATH=. python -m pytest tests/unit/test_kociemba.py -q",
+      "Confirm src/kociemba/solver.py:452-471 performs unconditional verification."
+    ]
+  },
+  {
+    "severity": "minor",
+    "category": "technical/code issues",
+    "file": "pytest.ini; pyproject.toml",
+    "location": "pytest.ini:1-7; pyproject.toml:15-22",
+    "issue": "Problem: pytest configuration is duplicated in both pytest.ini and pyproject.toml. Pytest will prioritize pytest.ini, so the pyproject configuration can be ignored or drift. Why it matters: duplicated test policy is a reproducibility risk, especially for marker exclusions that are central to the thesis claims.",
+    "exact_fix": "Keep pytest configuration in one file only. Recommended: keep pytest.ini and remove [tool.pytest.ini_options] from pyproject.toml, or delete pytest.ini and move all config to pyproject.toml.",
+    "verification_steps": [
+      "Run: PYTHONPATH=. python -m pytest --collect-only -q",
+      "Confirm pytest reports a single intended config file.",
+      "Search for duplicate marker definitions and confirm only one source remains."
+    ]
+  },
+  {
+    "severity": "minor",
+    "category": "technical/code issues",
+    "file": "pyproject.toml",
+    "location": "pyproject.toml:5-10",
+    "issue": "Problem: pyproject.toml declares project metadata and Python bounds but no project dependencies. The README compensates by requiring 'pip install -r requirements.lock -e .', but the package metadata itself is not self-contained. Why it matters: reviewers or tools using 'pip install -e .' alone will not install runtime dependencies.",
+    "exact_fix": "Either add a [project] dependencies list matching the intended runtime requirements, or explicitly document in pyproject/README that this package is not installable standalone and must always be installed with requirements.lock.",
+    "verification_steps": [
+      "Create a clean virtual environment.",
+      "Run: python -m pip install -e .",
+      "Run a minimal import such as: python -c 'from src.cube.rubik_cube import RubikCube; print(RubikCube().is_solved())'",
+      "Confirm either dependencies install automatically or documentation clearly forbids standalone editable install."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "research/experimental issues",
+    "file": "src/evaluation/algorithm_comparison.py; thesis/chapters/07_evaluation.tex",
+    "location": "src/evaluation/algorithm_comparison.py:630-689; thesis/chapters/07_evaluation.tex:254-257",
+    "issue": "Problem: the summary computation averages times, memory, and lengths only over successful results. The thesis caption discloses this, but there is no timeout-inclusive or censored aggregate metric alongside the successful-only mean. Why it matters: an algorithm with timeouts can appear faster than it is under a real workload.",
+    "exact_fix": "Add timeout-inclusive metrics to ComparisonSummary and tables, for example mean_time_with_timeouts_as_limit, median_time_all_cases, failure_count, timeout_count, and success_rate. In the thesis, present successful-only and timeout-inclusive/censored metrics side by side.",
+    "verification_steps": [
+      "Inspect src/evaluation/algorithm_comparison.py:637 and confirm only successful results are currently averaged.",
+      "Regenerate benchmark summaries after adding all-case/censored timing fields.",
+      "Update thesis/chapters/07_evaluation.tex table captions and discussion to include both metrics."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "research/experimental issues",
+    "file": "results/benchmarks/thesis/thesis_results_combined.json; src/evaluation/algorithm_comparison.py",
+    "location": "results/benchmarks/thesis/thesis_results_combined.json:1-119; src/evaluation/algorithm_comparison.py:723-765",
+    "issue": "Problem: benchmark metadata records solver timeouts, backend choice, scramble semantics, and timing methodology, but does not export hardware, OS, Python version, dependency versions, or CPU details. The thesis text provides some environment information, but the JSON artifact itself is not independently self-describing. Why it matters: benchmark reproducibility depends heavily on machine and software environment.",
+    "exact_fix": "Extend export_results() metadata with platform.platform(), platform.machine(), Python version, relevant package versions, CPU/model information when available, and git/archive manifest hash. Regenerate results/benchmarks/thesis/thesis_results_combined.json or add a separate environment JSON linked from it.",
+    "verification_steps": [
+      "Inspect results/benchmarks/thesis/thesis_results_combined.json:1-119 and confirm no hardware/Python/package environment block exists.",
+      "After the fix, run the benchmark export path and verify the JSON contains an 'environment' object."
+    ]
+  },
+  {
+    "severity": "minor",
+    "category": "citation/reference issues",
+    "file": "thesis/references.bib",
+    "location": "Unused entries at lines 95,134,142,226,238,250,262,274,285,295,305,359,378,386,394,405,423,440,448,456,503,510,517,525,532,541,549,569,576,584",
+    "issue": "Problem: 30 bibliography entries are present in references.bib but not cited by thesis/main.tex or thesis/chapters/*.tex. Why it matters: unused bibliography metadata does not necessarily appear in the final PDF, but it increases audit noise and suggests literature that may not actually be integrated into the argument.",
+    "exact_fix": "Either cite the relevant unused sources where they genuinely support thesis claims, or remove unused entries from thesis/references.bib. Do not add citations merely to use entries.",
+    "verification_steps": [
+      "Run a script that extracts citation keys from thesis/**/*.tex and compares them with thesis/references.bib.",
+      "Confirm there are zero missing citation keys and that unused entries are intentionally retained or removed."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "reproducibility/setup issues",
+    "file": "README.md; scripts/generate_reproducibility_manifest.py",
+    "location": "README.md:123-127; scripts/generate_reproducibility_manifest.py:58-60,125-128",
+    "issue": "Problem: README.md lists agent_workflow/generated/status.md and agent_workflow/generated/validation.md as useful files, but scripts/generate_reproducibility_manifest.py intentionally excludes agent_workflow/generated/. The uploaded source ZIP contains no agent_workflow/generated files. Why it matters: the README contains broken links in the audit archive.",
+    "exact_fix": "Either remove those links from README.md or change the wording to say these files are generated locally after running thesis_workflow.py. Do not list excluded generated files as existing useful files in the source archive.",
+    "verification_steps": [
+      "Run: unzip -Z1 repo-audit-20260509-0825.zip | grep '^agent_workflow/generated/'",
+      "Confirm no files are returned.",
+      "Open README.md and confirm it no longer presents those paths as existing files."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "reproducibility/setup issues",
+    "file": "data/README.md",
+    "location": "data/README.md:5-20,36-48",
+    "issue": "Problem: data/README.md labels a generated cache tree as 'Current Structure,' listing data/kociemba, data/move_tables, data/pattern_databases/corner_db.pkl, and other paths. In the uploaded source ZIP, the only data file is data/README.md. Why it matters: reviewers can misread generated/excluded data as present source artifacts.",
+    "exact_fix": "Rename the section to 'Expected generated structure' or 'Generated structure after cache creation.' Add a one-line statement that the source ZIP intentionally contains only data/README.md under data/ and that caches are generated or separately supplied.",
+    "verification_steps": [
+      "Run: unzip -Z1 repo-audit-20260509-0825.zip | grep '^data/'",
+      "Confirm only data/README.md is present.",
+      "Confirm data/README.md explicitly distinguishes source-ZIP contents from generated cache layout."
+    ]
+  },
+  {
+    "severity": "major",
+    "category": "reproducibility/setup issues",
+    "file": "conj_twist; .gitignore; REPRODUCIBILITY_MANIFEST.json",
+    "location": "conj_twist: entire root-level binary file; .gitignore:90; REPRODUCIBILITY_MANIFEST.json:56",
+    "issue": "Problem: root-level binary/data file conj_twist is ignored by .gitignore but included in the uploaded source ZIP and reproducibility manifest, and no repository documentation explains its purpose. Why it matters: unexplained generated-looking binary artifacts undermine reproducibility and source-audit clarity.",
+    "exact_fix": "Determine whether conj_twist is required. If generated or accidental, exclude it via scripts/generate_reproducibility_manifest.py and remove it from the audit ZIP. If required, move it under data/ with a descriptive filename, document its provenance, format, generation command, and checksum.",
+    "verification_steps": [
+      "Run: file conj_twist and confirm it is a binary/data file.",
+      "Run: rg -n 'conj_twist' . --hidden --glob '!conj_twist' and confirm only .gitignore/manifest references exist before the fix.",
+      "Regenerate REPRODUCIBILITY_MANIFEST.json and confirm conj_twist is either documented or absent."
+    ]
+  },
+  {
+    "severity": "minor",
+    "category": "reproducibility/setup issues",
+    "file": "notebooks/README.md; verify_setup.py; thesis/chapters/08_implementation.tex",
+    "location": "notebooks/README.md:94-121; verify_setup.py:348-370; thesis/chapters/08_implementation.tex:241",
+    "issue": "Problem: six notebooks are marked complete and described as part of the reproducible research artifact, but verify_setup.py and pytest do not execute or smoke-test notebooks. notebooks/README.md also tells users to cd via git rev-parse, which fails in a source ZIP without .git, and recommends requirements.txt instead of the pinned requirements.lock. Why it matters: notebook examples can drift silently, and the setup instructions are not source-ZIP friendly.",
+    "exact_fix": "Add a notebook smoke-test profile using nbmake, papermill, or a script that at least opens and optionally executes notebooks. Update notebooks/README.md to use 'cd /path/to/extracted/repo' and prefer 'pip install -r requirements.lock -e .' for audited reproduction.",
+    "verification_steps": [
+      "Run: rg -n 'nbmake|papermill|notebook' README.md verify_setup.py pytest.ini pyproject.toml scripts tests",
+      "Confirm there is currently no notebook execution check.",
+      "After the fix, run the notebook smoke command from a source-ZIP extraction without .git."
+    ]
+  },
+  {
+    "severity": "minor",
+    "category": "submission polish issues",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "thesis/chapters/07_evaluation.tex:139-148",
+    "issue": "Problem: the LaTeX build reports an overfull hbox for the robust summary table at lines 139-148. Why it matters: overfull tables can protrude into margins in the final PDF and reduce submission polish.",
+    "exact_fix": "Replace the fixed tabular with tabularx, reduce header text, rotate or wrap long headers, or use smaller columns. For example, abbreviate 'Median length / IQR' and use tabularx with X columns.",
+    "verification_steps": [
+      "Run: cd thesis && xelatex -interaction=nonstopmode -halt-on-error main.tex",
+      "Check the log for 'Overfull \\hbox' at thesis/chapters/07_evaluation.tex lines 139-148.",
+      "Render or open the affected PDF page and confirm the table no longer exceeds margins."
+    ]
+  }
+]

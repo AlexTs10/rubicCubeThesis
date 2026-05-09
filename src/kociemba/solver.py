@@ -449,9 +449,13 @@ class KociembaSolver:
         # Complete solution
         solution = phase1_solution + phase2_solution
 
+        test_cube = cube.copy()
+        test_cube.apply_moves(solution)
+        solution_verified = test_cube.is_solved()
+
         if verbose:
             print("\n" + "="*70)
-            print("SOLUTION FOUND!")
+            print("SOLUTION FOUND!" if solution_verified else "INVALID SOLUTION")
             print("="*70)
             print(f"Phase 1: {len(phase1_solution)} moves in {phase1_time:.2f}s")
             print(f"Phase 2: {len(phase2_solution)} moves in {total_time - phase1_time:.2f}s")
@@ -459,13 +463,14 @@ class KociembaSolver:
             print(f"Nodes explored: {self.nodes_explored:,}")
             print(f"\nSolution: {' '.join(solution)}")
 
-            # Verify solution
-            test_cube = cube.copy()
-            test_cube.apply_moves(solution)
-            if test_cube.is_solved():
+            if solution_verified:
                 print("\n✓ Solution verified!")
             else:
-                print("\n✗ WARNING: Solution does not solve cube!")
+                print("\n✗ Solution verification failed; returning no solution.")
+
+        if not solution_verified:
+            self.last_backend_used = "internal_verification_failed"
+            return None
 
         self.last_backend_used = "internal"
         return (solution, phase1_solution, phase2_solution)

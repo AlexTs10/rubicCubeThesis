@@ -103,11 +103,11 @@ xelatex -interaction=nonstopmode -halt-on-error main.tex
 ## Workflow Commands
 
 ```bash
-# Regenerate the thesis status snapshot
-python scripts/thesis_workflow.py status --output agent_workflow/generated/status.md
+# Print the current thesis status
+python scripts/thesis_workflow.py status
 
 # Re-run workflow validation
-python scripts/thesis_workflow.py validate --output agent_workflow/generated/validation.md
+python scripts/thesis_workflow.py validate
 
 # Rebuild chapter packets if needed
 python scripts/thesis_workflow.py packets --remaining
@@ -119,6 +119,10 @@ python scripts/thesis_workflow.py packets --remaining
 2. Add citations to `references.bib` and use `\cite{key}` in the chapter text.
 3. Keep figure assets in `figures/` or refer to repo-level diagrams with verified relative paths.
 4. Re-run the workflow status and validation commands after substantial chapter edits.
+
+Generated workflow snapshots can be written to `agent_workflow/generated/` for
+local review, but that directory is excluded from source audit archives because
+the files are host-specific.
 
 ## Internal QA Notes
 

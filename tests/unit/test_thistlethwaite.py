@@ -357,6 +357,7 @@ class TestThistlethwaiteSolver:
         # Solution should be reasonably short
         assert len(all_moves) <= 52  # Thistlethwaite guarantees <= 52 moves
 
+    @pytest.mark.cache_building
     def test_exact_g3_membership_rejects_old_false_positive(self):
         """A state that only passed the old tetrad approximation must not count as G3."""
         solver = ThistlethwaiteSolver(use_pattern_databases=True)
@@ -371,6 +372,7 @@ class TestThistlethwaiteSolver:
 
         assert solver.pattern_databases.is_phase3_reachable(cube) is False
 
+    @pytest.mark.cache_building
     def test_pattern_database_solver_handles_previous_phase3_false_positive_scramble(self):
         """The exact G3 table should allow this formerly failing pure solve to succeed."""
         cube = RubikCube()
@@ -389,6 +391,21 @@ class TestThistlethwaiteSolver:
         test_cube.apply_moves(all_moves)
         assert test_cube.is_solved()
         assert used_fallback is False
+
+    def test_solver_rejects_unverified_solution_when_not_verbose(self, monkeypatch):
+        """solve() must verify returned moves even when verbose output is disabled."""
+        cube = RubikCube()
+        cube.apply_move("U")
+        solver = ThistlethwaiteSolver(
+            use_pattern_databases=False,
+            enable_kociemba_fallback=False,
+        )
+
+        monkeypatch.setattr(solver, "_solve_phase", lambda *args, **kwargs: [])
+
+        result = solver.solve(cube, verbose=False, max_time=1.0)
+
+        assert result is None
 
     def test_pure_solver_aborts_without_fallback(self, monkeypatch):
         """Pure Thistlethwaite mode must not silently delegate to Kociemba."""

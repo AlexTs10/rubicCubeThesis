@@ -190,9 +190,13 @@ class ThistlethwaiteSolver:
 
         total_time = time.time() - total_start_time
 
+        test_cube = cube.copy()
+        test_cube.apply_moves(all_moves)
+        solution_verified = test_cube.is_solved()
+
         if verbose:
             print(f"\n{'='*60}")
-            print("SOLUTION FOUND!")
+            print("SOLUTION FOUND!" if solution_verified else "INVALID SOLUTION")
             print(f"{'='*60}")
             print(f"Total moves: {len(all_moves)}")
             print(f"Total time: {total_time:.2f}s")
@@ -202,16 +206,16 @@ class ThistlethwaiteSolver:
             for i, moves in enumerate(phase_solutions):
                 print(f"  Phase {i}: {' '.join(moves) if moves else '(none)'}")
 
-            # Verify solution
-            test_cube = cube.copy()
-            test_cube.apply_moves(all_moves)
-            if test_cube.is_solved():
+            if solution_verified:
                 print(f"\n✓ Solution verified!")
             else:
-                print(f"\n✗ WARNING: Solution does not solve cube!")
+                print(f"\n✗ Solution verification failed; returning no solution.")
 
             if used_fallback:
                 print(f"\nNote: Kociemba fallback was used for final phase(s)")
+
+        if not solution_verified:
+            return None
 
         return (all_moves, phase_solutions, used_fallback)
 

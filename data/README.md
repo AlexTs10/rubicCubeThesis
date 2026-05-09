@@ -1,8 +1,8 @@
 # Data Directory
 
-This directory contains generated caches and lookup tables used by the solver implementations.
+This directory documents generated caches and lookup tables used by the solver implementations. In the source audit ZIP, `data/README.md` is intentionally the only file under `data/`; cache trees are generated locally or supplied as separate artifacts.
 
-## Current Structure
+## Expected Generated Structure After Cache Creation
 
 ```text
 data/
@@ -33,7 +33,7 @@ Pattern-database artifacts used by:
 - the native exact solver heuristics
 - the native corner pattern database infrastructure and generated cache files
 
-This includes smaller coordinate tables under `native_exact/`. Large thesis-grade caches such as `corner_db.pkl`, `edge1_db.pkl`, and `edge2_db.pkl` are intentionally treated as generated artifacts and may be absent from a source ZIP. Validation presets that cite those artifacts must either ship them explicitly or fail hard when the required cache is missing.
+This includes smaller coordinate tables under `native_exact/`. Large thesis-grade caches such as `corner_db.pkl`, `edge1_db.pkl`, and `edge2_db.pkl` are intentionally treated as generated artifacts and are absent from the source ZIP. Validation presets that cite those artifacts must either ship them explicitly or fail hard when the required cache is missing.
 
 The canonical native exact validation preset requires the full corner cache:
 

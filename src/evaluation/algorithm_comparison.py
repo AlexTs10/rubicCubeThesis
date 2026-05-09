@@ -24,10 +24,15 @@ References:
 
 import time
 import os
+import platform
+import sys
+import importlib.metadata
+import hashlib
 from typing import List, Dict, Any, Optional, Tuple
 from dataclasses import dataclass, asdict, field
 import json
 from datetime import datetime
+from pathlib import Path
 
 try:
     import psutil
@@ -118,6 +123,11 @@ class ComparisonSummary:
     # Additional metrics
     total_nodes_explored: Optional[int] = None
     avg_nodes_explored: Optional[float] = None
+    failure_count: int = 0
+    timeout_count: int = 0
+    avg_time_all_cases: float = 0.0
+    avg_time_timeout_capped_seconds: float = 0.0
+    timeout_limit_seconds: Optional[float] = None
 
 
 class AlgorithmComparison:
@@ -636,6 +646,23 @@ class AlgorithmComparison:
         total_tests = len(results)
         successful = [r for r in results if r.solved]
         successful_solves = len(successful)
+        failure_count = total_tests - successful_solves
+        timeout_count = sum(1 for r in results if (r.reason_failed or "").lower() == "timeout")
+        timeout_limits = {
+            "Thistlethwaite": self.thistlethwaite_timeout,
+            "Kociemba": self.kociemba_timeout,
+            "Korf_IDA*": self.korf_timeout,
+        }
+        timeout_limit = timeout_limits.get(algorithm)
+        all_case_times = [r.time_seconds for r in results if r.time_seconds is not None]
+        capped_times = [
+            r.time_seconds
+            if r.solved or timeout_limit is None
+            else timeout_limit
+            for r in results
+        ]
+        avg_time_all_cases = sum(all_case_times) / len(all_case_times) if all_case_times else 0.0
+        avg_time_capped = sum(capped_times) / len(capped_times) if capped_times else 0.0
 
         if successful_solves == 0:
             return ComparisonSummary(
@@ -651,7 +678,12 @@ class AlgorithmComparison:
                 min_time_seconds=0.0,
                 max_time_seconds=0.0,
                 avg_memory_mb=0.0,
-                max_memory_mb=0.0
+                max_memory_mb=0.0,
+                failure_count=failure_count,
+                timeout_count=timeout_count,
+                avg_time_all_cases=avg_time_all_cases,
+                avg_time_timeout_capped_seconds=avg_time_capped,
+                timeout_limit_seconds=timeout_limit,
             )
 
         # Solution lengths
@@ -663,7 +695,7 @@ class AlgorithmComparison:
         times = [r.time_seconds for r in successful]
 
         # Memory
-        memories = [r.memory_mb for r in successful]
+        memories = [r.memory_mb for r in successful if r.memory_mb is not None]
 
         # Nodes (if available)
         nodes_list = [r.nodes_explored for r in successful if r.nodes_explored is not None]
@@ -682,10 +714,15 @@ class AlgorithmComparison:
             avg_time_seconds=sum(times) / len(times),
             min_time_seconds=min(times),
             max_time_seconds=max(times),
-            avg_memory_mb=sum(memories) / len(memories),
-            max_memory_mb=max(memories),
+            avg_memory_mb=sum(memories) / len(memories) if memories else 0.0,
+            max_memory_mb=max(memories) if memories else 0.0,
             total_nodes_explored=total_nodes,
-            avg_nodes_explored=avg_nodes
+            avg_nodes_explored=avg_nodes,
+            failure_count=failure_count,
+            timeout_count=timeout_count,
+            avg_time_all_cases=avg_time_all_cases,
+            avg_time_timeout_capped_seconds=avg_time_capped,
+            timeout_limit_seconds=timeout_limit,
         )
 
     def print_summary(self, summaries: Optional[Dict[str, ComparisonSummary]] = None) -> None:
@@ -706,12 +743,43 @@ class AlgorithmComparison:
                 print(f"  Avg solution length:  {summary.avg_solution_length:.1f} moves (min={summary.min_solution_length}, max={summary.max_solution_length})")
                 print(f"  Std deviation:        {summary.std_solution_length:.2f} moves")
                 print(f"  Avg time:             {summary.avg_time_seconds:.3f}s (min={summary.min_time_seconds:.3f}s, max={summary.max_time_seconds:.3f}s)")
+                print(f"  Avg time (all cases): {summary.avg_time_all_cases:.3f}s observed; {summary.avg_time_timeout_capped_seconds:.3f}s timeout-capped")
                 print(f"  Avg memory:           {summary.avg_memory_mb:.2f} MB (max={summary.max_memory_mb:.2f} MB)")
 
                 if summary.avg_nodes_explored is not None:
                     print(f"  Avg nodes explored:   {summary.avg_nodes_explored:,.0f}")
 
         print("\n" + "=" * 70)
+
+    def _environment_metadata(self) -> Dict[str, Any]:
+        """Collect environment details for new benchmark exports."""
+        packages = {}
+        for package_name in ["numpy", "psutil", "kociemba", "RubikOptimal", "scipy"]:
+            try:
+                packages[package_name] = importlib.metadata.version(package_name)
+            except importlib.metadata.PackageNotFoundError:
+                packages[package_name] = None
+
+        manifest_path = Path("REPRODUCIBILITY_MANIFEST.json")
+        manifest_sha256 = None
+        if manifest_path.exists():
+            manifest_sha256 = hashlib.sha256(manifest_path.read_bytes()).hexdigest()
+
+        cpu_count = os.cpu_count()
+        cpu_model = platform.processor() or platform.machine()
+        if hasattr(platform, "uname"):
+            cpu_model = platform.uname().processor or cpu_model
+
+        return {
+            "platform": platform.platform(),
+            "machine": platform.machine(),
+            "processor": cpu_model,
+            "python_version": sys.version,
+            "python_implementation": platform.python_implementation(),
+            "cpu_count": cpu_count,
+            "package_versions": packages,
+            "reproducibility_manifest_sha256": manifest_sha256,
+        }
 
     def export_results(self, filename: str) -> None:
         """
@@ -762,6 +830,7 @@ class AlgorithmComparison:
                     "their first timed solve call, so one-off initialization cost is "
                     "amortized but not strictly excluded from solve_time_seconds."
                 ),
+                'environment': self._environment_metadata(),
             },
             'results': [asdict(r) for r in self.results]
         }
@@ -792,19 +861,24 @@ class AlgorithmComparison:
         """Export summary as Markdown table."""
         lines = [
             "# Algorithm Comparison Summary\n",
-            "| Algorithm | Success Rate | Avg Moves | Std Dev | Avg Time (s) | Avg Memory (MB) |",
-            "|-----------|--------------|-----------|---------|--------------|-----------------|"
+            "| Algorithm | Success Rate | Failures | Avg Moves | Std Dev | Avg Time Success (s) | Avg Time Capped (s) | Avg Memory (MB) |",
+            "|-----------|--------------|----------|-----------|---------|----------------------|---------------------|-----------------|"
         ]
 
         for algo_name, summary in summaries.items():
             if summary.successful_solves > 0:
                 lines.append(
                     f"| {algo_name} | {summary.success_rate*100:.1f}% | "
+                    f"{summary.failure_count} | "
                     f"{summary.avg_solution_length:.1f} | {summary.std_solution_length:.2f} | "
-                    f"{summary.avg_time_seconds:.3f} | {summary.avg_memory_mb:.2f} |"
+                    f"{summary.avg_time_seconds:.3f} | {summary.avg_time_timeout_capped_seconds:.3f} | "
+                    f"{summary.avg_memory_mb:.2f} |"
                 )
             else:
-                lines.append(f"| {algo_name} | 0.0% | - | - | - | - |")
+                lines.append(
+                    f"| {algo_name} | 0.0% | {summary.failure_count} | - | - | - | "
+                    f"{summary.avg_time_timeout_capped_seconds:.3f} | - |"
+                )
 
         with open(filename, 'w') as f:
             f.write('\n'.join(lines))
@@ -816,9 +890,9 @@ class AlgorithmComparison:
         lines = [
             "\\begin{table}[h]",
             "\\centering",
-            "\\begin{tabular}{|l|c|c|c|c|c|}",
+            "\\begin{tabular}{|l|c|c|c|c|c|c|}",
             "\\hline",
-            "Algorithm & Success Rate & Avg Moves & Std Dev & Avg Time (s) & Avg Memory (MB) \\\\",
+            "Algorithm & Success Rate & Failures & Avg Moves & Std Dev & Avg Time Success (s) & Avg Time Capped (s) \\\\",
             "\\hline"
         ]
 
@@ -826,11 +900,15 @@ class AlgorithmComparison:
             if summary.successful_solves > 0:
                 lines.append(
                     f"{algo_name.replace('_', ' ')} & {summary.success_rate*100:.1f}\\% & "
+                    f"{summary.failure_count} & "
                     f"{summary.avg_solution_length:.1f} & {summary.std_solution_length:.2f} & "
-                    f"{summary.avg_time_seconds:.3f} & {summary.avg_memory_mb:.2f} \\\\"
+                    f"{summary.avg_time_seconds:.3f} & {summary.avg_time_timeout_capped_seconds:.3f} \\\\"
                 )
             else:
-                lines.append(f"{algo_name.replace('_', ' ')} & 0.0\\% & - & - & - & - \\\\")
+                lines.append(
+                    f"{algo_name.replace('_', ' ')} & 0.0\\% & {summary.failure_count} & - & - & - & "
+                    f"{summary.avg_time_timeout_capped_seconds:.3f} \\\\"
+                )
 
         lines.extend([
             "\\hline",

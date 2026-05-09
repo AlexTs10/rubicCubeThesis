@@ -52,6 +52,7 @@ EXCLUDED_SUFFIXES = {
 
 EXCLUDED_PATH_SUFFIXES = {
     ".DS_Store",
+    "conj_twist",
     "thesis/main-blx.bib",
 }
 
@@ -124,6 +125,7 @@ def main() -> None:
             "notes": [
                 "papers/**/*.pdf is excluded from audit archives; papers/ documents remain as bibliography metadata.",
                 "data/pattern_databases/*.pkl is generated cache data and is excluded from audit archives.",
+                "conj_twist is an ignored generated exact-solver data file and is excluded from audit archives.",
                 "agent_workflow/generated/ is local workflow output and is excluded to avoid host-specific validation snapshots.",
             ],
         },

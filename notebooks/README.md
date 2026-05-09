@@ -96,11 +96,8 @@ These Jupyter notebooks provide hands-on, interactive learning experiences for u
 ### Prerequisites
 
 ```bash
-# Install Jupyter
-pip install jupyter jupyterlab
-
-# Install project dependencies
-pip install -r requirements.txt
+# Install audited project dependencies
+pip install -r requirements.lock -e .
 
 # Optional: Install ipywidgets for interactive widgets
 pip install ipywidgets
@@ -110,8 +107,8 @@ jupyter nbextension enable --py widgetsnbextension
 ### Running the Notebooks
 
 ```bash
-# From project root
-cd "$(git rev-parse --show-toplevel)"
+# From the extracted repository root
+cd /path/to/extracted/rubicCubeThesis
 
 # Start Jupyter Lab (recommended)
 jupyter lab notebooks/
@@ -119,6 +116,20 @@ jupyter lab notebooks/
 # Or start Jupyter Notebook
 jupyter notebook notebooks/
 ```
+
+### Source-ZIP Smoke Check
+
+The default setup verifier does not execute notebooks. To validate that the
+notebook files in a source ZIP are parseable and have basic notebook metadata,
+run:
+
+```bash
+python scripts/verify_notebooks.py
+python verify_setup.py --notebooks
+```
+
+Full notebook execution is intentionally opt-in because some cells are
+educational, interactive, or solver-heavy.
 
 ### Recommended Order
 

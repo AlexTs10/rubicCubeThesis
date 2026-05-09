@@ -241,6 +241,19 @@ def validate_corpus(
     minimal_heuristic: bool = False,
     require_corner_db: bool = False,
 ) -> Dict:
+    if require_corner_db:
+        if disable_corner_db:
+            raise ValueError("--disable-corner-db cannot be combined with a preset that requires it.")
+        if corner_db_path is None:
+            raise ValueError("A corner DB path is required for this validation preset.")
+        corner_db_file = Path(corner_db_path)
+        if not corner_db_file.exists():
+            raise FileNotFoundError(
+                f"Canonical native exact validation requires {corner_db_file}. "
+                "Generate it first with scripts/generate_corner_database.py or "
+                "run --preset source-zip for the source-archive smoke check."
+            )
+
     heuristic = (
         ZeroHeuristic()
         if minimal_heuristic
@@ -251,10 +264,6 @@ def validate_corpus(
         )
     )
     if require_corner_db:
-        if disable_corner_db:
-            raise ValueError("--disable-corner-db cannot be combined with a preset that requires it.")
-        if corner_db_path is None:
-            raise ValueError("A corner DB path is required for this validation preset.")
         heuristic.require_corner_pattern_db(corner_db_path)
 
     heuristic_stats = heuristic.get_statistics() if hasattr(heuristic, "get_statistics") else {}
@@ -430,18 +439,22 @@ def main() -> None:
         }
     )
 
-    report = validate_corpus(
-        corpus,
-        corpus_generation=corpus_generation,
-        use_oracle=OPTIMAL_AVAILABLE and bool(random_corpus),
-        max_depth=args.max_depth,
-        timeout=args.timeout,
-        heuristic_cache_dir=args.heuristic_cache_dir,
-        corner_db_path=args.corner_db_path,
-        disable_corner_db=args.disable_corner_db,
-        minimal_heuristic=args.minimal_heuristic,
-        require_corner_db=args.preset == "canonical",
-    )
+    try:
+        report = validate_corpus(
+            corpus,
+            corpus_generation=corpus_generation,
+            use_oracle=OPTIMAL_AVAILABLE and bool(random_corpus),
+            max_depth=args.max_depth,
+            timeout=args.timeout,
+            heuristic_cache_dir=args.heuristic_cache_dir,
+            corner_db_path=args.corner_db_path,
+            disable_corner_db=args.disable_corner_db,
+            minimal_heuristic=args.minimal_heuristic,
+            require_corner_db=args.preset == "canonical",
+        )
+    except (FileNotFoundError, ValueError) as exc:
+        print(f"Validation prerequisite failed: {exc}", file=sys.stderr)
+        raise SystemExit(2) from None
 
     output_dir = Path(args.output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)

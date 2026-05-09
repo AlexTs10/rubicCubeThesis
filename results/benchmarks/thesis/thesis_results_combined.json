@@ -116,7 +116,25 @@
     "verified_scramble_depth_available": true,
     "scramble_generation": "legacy_random_all_moves_redundant_allowed",
     "scramble_corpus_status": "Legacy canonical thesis corpus generated before no-consecutive-same-face scramble generation was added. Scramble depth fields are requested lengths; some sequences contain adjacent same-face moves and cancellations.",
-    "current_generator_for_new_runs": "random_no_consecutive_same_face_moves"
+    "current_generator_for_new_runs": "random_no_consecutive_same_face_moves",
+    "environment": {
+      "note": "Post-hoc archive environment metadata added for reproducibility context; the original benchmark run did not record full hardware/package metadata.",
+      "platform": "macOS-26.2-arm64-arm-64bit",
+      "machine": "arm64",
+      "processor": "arm",
+      "python_version": "3.12.2 | packaged by conda-forge | (main, Feb 16 2024, 20:54:21) [Clang 16.0.6 ]",
+      "python_implementation": "CPython",
+      "cpu_count": 8,
+      "package_versions": {
+        "numpy": "2.4.4",
+        "psutil": "7.2.2",
+        "kociemba": "1.2.1",
+        "RubikOptimal": "1.1.0",
+        "scipy": "1.17.1",
+        "pandas": "3.0.2"
+      },
+      "reproducibility_manifest_sha256": "b680fa72d060f073e8d88cfdb6bf2222da3fa69e2599c5fd3fb2841a82224a9e"
+    }
   },
   "results": [
     {

@@ -1,0 +1,7061 @@
+{
+  "config": {
+    "corpus_generation": {
+      "exhaustive_depth": 2,
+      "oracle_depths": [],
+      "oracle_samples_per_depth": 0,
+      "seed": 42,
+      "preset": "source_zip_smoke_no_corner_db",
+      "exhaustive_cases": 261,
+      "oracle_cases": 0,
+      "total_cases": 261
+    },
+    "use_oracle": false,
+    "max_depth": 6,
+    "timeout": 5.0,
+    "heuristic_cache_dir": "data/pattern_databases/native_exact",
+    "corner_db_path": null,
+    "disable_corner_db": true,
+    "corner_db_loaded": false,
+    "corner_db_complete": false
+  },
+  "summary": {
+    "total_cases": 261,
+    "successful_cases": 261,
+    "failure_count": 0,
+    "failure_categories": {}
+  },
+  "total_cases": 261,
+  "failures": [],
+  "results": [
+    {
+      "scramble": [
+        "U"
+      ],
+      "expected_depth": 1,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 1,
+      "native_stats": {
+        "time": 0.002547025680541992,
+        "moves": 1,
+        "solution_length": 1,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 37,
+        "iterations": 2,
+        "initial_bound": 0,
+        "final_bound": 1,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U'"
+      ],
+      "expected_depth": 1,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 1,
+      "native_stats": {
+        "time": 0.0007071495056152344,
+        "moves": 1,
+        "solution_length": 1,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 21,
+        "iterations": 2,
+        "initial_bound": 0,
+        "final_bound": 1,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U2"
+      ],
+      "expected_depth": 1,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 1,
+      "native_stats": {
+        "time": 0.0014307498931884766,
+        "moves": 1,
+        "solution_length": 1,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 53,
+        "iterations": 2,
+        "initial_bound": 0,
+        "final_bound": 1,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D"
+      ],
+      "expected_depth": 1,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 1,
+      "native_stats": {
+        "time": 0.0019960403442382812,
+        "moves": 1,
+        "solution_length": 1,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 82,
+        "iterations": 2,
+        "initial_bound": 0,
+        "final_bound": 1,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D'"
+      ],
+      "expected_depth": 1,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 1,
+      "native_stats": {
+        "time": 0.0016613006591796875,
+        "moves": 1,
+        "solution_length": 1,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 69,
+        "iterations": 2,
+        "initial_bound": 0,
+        "final_bound": 1,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D2"
+      ],
+      "expected_depth": 1,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 1,
+      "native_stats": {
+        "time": 0.0031280517578125,
+        "moves": 1,
+        "solution_length": 1,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 95,
+        "iterations": 2,
+        "initial_bound": 0,
+        "final_bound": 1,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F"
+      ],
+      "expected_depth": 1,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 1,
+      "native_stats": {
+        "time": 0.004105806350708008,
+        "moves": 1,
+        "solution_length": 1,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 124,
+        "iterations": 2,
+        "initial_bound": 0,
+        "final_bound": 1,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F'"
+      ],
+      "expected_depth": 1,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 1,
+      "native_stats": {
+        "time": 0.003075122833251953,
+        "moves": 1,
+        "solution_length": 1,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 108,
+        "iterations": 2,
+        "initial_bound": 0,
+        "final_bound": 1,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F2"
+      ],
+      "expected_depth": 1,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 1,
+      "native_stats": {
+        "time": 0.004078865051269531,
+        "moves": 1,
+        "solution_length": 1,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 140,
+        "iterations": 2,
+        "initial_bound": 0,
+        "final_bound": 1,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B"
+      ],
+      "expected_depth": 1,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 1,
+      "native_stats": {
+        "time": 0.005337953567504883,
+        "moves": 1,
+        "solution_length": 1,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 169,
+        "iterations": 2,
+        "initial_bound": 0,
+        "final_bound": 1,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B'"
+      ],
+      "expected_depth": 1,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 1,
+      "native_stats": {
+        "time": 0.004308938980102539,
+        "moves": 1,
+        "solution_length": 1,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 156,
+        "iterations": 2,
+        "initial_bound": 0,
+        "final_bound": 1,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B2"
+      ],
+      "expected_depth": 1,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 1,
+      "native_stats": {
+        "time": 0.004934787750244141,
+        "moves": 1,
+        "solution_length": 1,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 182,
+        "iterations": 2,
+        "initial_bound": 0,
+        "final_bound": 1,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L"
+      ],
+      "expected_depth": 1,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 1,
+      "native_stats": {
+        "time": 0.00573420524597168,
+        "moves": 1,
+        "solution_length": 1,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 211,
+        "iterations": 2,
+        "initial_bound": 0,
+        "final_bound": 1,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L'"
+      ],
+      "expected_depth": 1,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 1,
+      "native_stats": {
+        "time": 0.006446123123168945,
+        "moves": 1,
+        "solution_length": 1,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 195,
+        "iterations": 2,
+        "initial_bound": 0,
+        "final_bound": 1,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L2"
+      ],
+      "expected_depth": 1,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 1,
+      "native_stats": {
+        "time": 0.0066242218017578125,
+        "moves": 1,
+        "solution_length": 1,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 227,
+        "iterations": 2,
+        "initial_bound": 0,
+        "final_bound": 1,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R"
+      ],
+      "expected_depth": 1,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 1,
+      "native_stats": {
+        "time": 0.007631778717041016,
+        "moves": 1,
+        "solution_length": 1,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 256,
+        "iterations": 2,
+        "initial_bound": 0,
+        "final_bound": 1,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R'"
+      ],
+      "expected_depth": 1,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 1,
+      "native_stats": {
+        "time": 0.006299018859863281,
+        "moves": 1,
+        "solution_length": 1,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 243,
+        "iterations": 2,
+        "initial_bound": 0,
+        "final_bound": 1,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R2"
+      ],
+      "expected_depth": 1,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 1,
+      "native_stats": {
+        "time": 0.00774693489074707,
+        "moves": 1,
+        "solution_length": 1,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 269,
+        "iterations": 2,
+        "initial_bound": 0,
+        "final_bound": 1,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U",
+        "D"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.015788793563842773,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 511,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U",
+        "D'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.014243125915527344,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 498,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U",
+        "D2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.021831750869750977,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 524,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U",
+        "F"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.05437493324279785,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1681,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U",
+        "F'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.06417012214660645,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1467,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U",
+        "F2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.0588221549987793,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1895,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U",
+        "B"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.09244418144226074,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2284,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U",
+        "B'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.07129693031311035,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2109,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U",
+        "B2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.07268810272216797,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2459,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U",
+        "L"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.08223104476928711,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2848,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U",
+        "L'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.07244110107421875,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2634,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U",
+        "L2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.09144306182861328,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3062,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U",
+        "R"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.09921598434448242,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3451,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U",
+        "R'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.11938285827636719,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3276,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U",
+        "R2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.12924814224243164,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3626,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U'",
+        "D"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.00840306282043457,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 297,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U'",
+        "D'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.008497238159179688,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 284,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U'",
+        "D2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.00734400749206543,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 310,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U'",
+        "F"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.0435791015625,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1665,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U'",
+        "F'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.039801836013793945,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1451,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U'",
+        "F2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.05248308181762695,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1879,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U'",
+        "B"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.06381106376647949,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2268,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U'",
+        "B'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.05502009391784668,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2093,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U'",
+        "B2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.07331085205078125,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2443,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U'",
+        "L"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.07726192474365234,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2832,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U'",
+        "L'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.08380413055419922,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2618,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U'",
+        "L2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.12064504623413086,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3046,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U'",
+        "R"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.15368914604187012,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3435,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U'",
+        "R'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.13769912719726562,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3260,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U'",
+        "R2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.12082982063293457,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3610,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U2",
+        "D"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.024677753448486328,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 725,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U2",
+        "D'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.019491910934448242,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 712,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U2",
+        "D2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.023686885833740234,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 738,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U2",
+        "F"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.04083991050720215,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1697,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U2",
+        "F'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.03585505485534668,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1483,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U2",
+        "F2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.04803204536437988,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1911,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U2",
+        "B"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.058013200759887695,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2300,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U2",
+        "B'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.07887911796569824,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2125,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U2",
+        "B2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.07459902763366699,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2475,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U2",
+        "L"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.07285022735595703,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2864,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U2",
+        "L'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.06500387191772461,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2650,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U2",
+        "L2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.07699394226074219,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3078,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U2",
+        "R"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.08847999572753906,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3467,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U2",
+        "R'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.08262920379638672,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3292,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "U2",
+        "R2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.09333419799804688,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3642,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D",
+        "F"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.048837900161743164,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1726,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D",
+        "F'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.04096198081970215,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1512,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D",
+        "F2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.0482943058013916,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1940,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D",
+        "B"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.05980801582336426,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2329,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D",
+        "B'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.05541825294494629,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2154,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D",
+        "B2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.06360483169555664,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2504,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D",
+        "L"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.07502889633178711,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2893,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D",
+        "L'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.06652188301086426,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2679,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D",
+        "L2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.07939410209655762,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3107,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D",
+        "R"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.22624588012695312,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3496,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D",
+        "R'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.16720271110534668,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3321,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D",
+        "R2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.09367895126342773,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3671,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D'",
+        "F"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.0442960262298584,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1713,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D'",
+        "F'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.04170703887939453,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1499,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D'",
+        "F2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.049340248107910156,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1927,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D'",
+        "B"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.05689215660095215,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2316,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D'",
+        "B'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.05292391777038574,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2141,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D'",
+        "B2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.07317113876342773,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2491,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D'",
+        "L"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.08830690383911133,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2880,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D'",
+        "L'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.06900668144226074,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2666,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D'",
+        "L2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.07710886001586914,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3094,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D'",
+        "R"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.09143686294555664,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3483,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D'",
+        "R'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.08175897598266602,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3308,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D'",
+        "R2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.09135293960571289,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3658,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D2",
+        "F"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.043347835540771484,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1739,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D2",
+        "F'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.03558492660522461,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1525,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D2",
+        "F2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.04677581787109375,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1953,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D2",
+        "B"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.05410504341125488,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2342,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D2",
+        "B'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.0542600154876709,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2167,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D2",
+        "B2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.0641489028930664,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2517,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D2",
+        "L"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.07115602493286133,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2906,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D2",
+        "L'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.06390571594238281,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2692,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D2",
+        "L2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.07343196868896484,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3120,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D2",
+        "R"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.08483719825744629,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3509,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D2",
+        "R'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.07887697219848633,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3334,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "D2",
+        "R2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.08736395835876465,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3684,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F",
+        "U"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.014265060424804688,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 553,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F",
+        "U'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.009015083312988281,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 339,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F",
+        "U2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.017452001571655273,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 767,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F",
+        "D"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.027554988861083984,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1117,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F",
+        "D'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.02466416358947754,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 942,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F",
+        "D2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.03196907043457031,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1292,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F",
+        "B"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.04421091079711914,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1765,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F",
+        "B'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.04365897178649902,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1752,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F",
+        "B2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.04864168167114258,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1778,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F",
+        "L"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.07400774955749512,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2935,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F",
+        "L'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.06492900848388672,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2721,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F",
+        "L2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.0740809440612793,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3149,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F",
+        "R"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.08387994766235352,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3538,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F",
+        "R'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.08079695701599121,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3363,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F",
+        "R2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.08522391319274902,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3713,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F'",
+        "U"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.010600805282592773,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 537,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F'",
+        "U'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.008249282836914062,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 323,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F'",
+        "U2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.020931243896484375,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 751,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F'",
+        "D"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.026664018630981445,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1101,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F'",
+        "D'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.02366805076599121,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 926,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F'",
+        "D2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.03208303451538086,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1276,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F'",
+        "B"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.03672385215759277,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1551,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F'",
+        "B'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.035616159439086914,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1538,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F'",
+        "B2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.035919904708862305,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1564,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F'",
+        "L"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.06872701644897461,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2919,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F'",
+        "L'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.06292605400085449,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2705,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F'",
+        "L2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.07748198509216309,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3133,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F'",
+        "R"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.08316516876220703,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3522,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F'",
+        "R'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.1775820255279541,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3347,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F'",
+        "R2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.11025595664978027,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3697,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F2",
+        "U"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.012591123580932617,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 569,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F2",
+        "U'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.007790803909301758,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 355,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F2",
+        "U2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.01814413070678711,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 783,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F2",
+        "D"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.02766275405883789,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1133,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F2",
+        "D'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.020631074905395508,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 958,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F2",
+        "D2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.03238391876220703,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1308,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F2",
+        "B"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.04763507843017578,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1979,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F2",
+        "B'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.04929208755493164,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1966,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F2",
+        "B2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.04650688171386719,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1992,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F2",
+        "L"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.06936383247375488,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2951,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F2",
+        "L'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.06132197380065918,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2737,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F2",
+        "L2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.07467079162597656,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3165,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F2",
+        "R"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.08289003372192383,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3554,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F2",
+        "R'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.08261489868164062,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3379,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "F2",
+        "R2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.09454798698425293,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3729,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B",
+        "U"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.014010906219482422,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 598,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B",
+        "U'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.010385990142822266,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 384,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B",
+        "U2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.0198209285736084,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 812,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B",
+        "D"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.031178951263427734,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1162,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B",
+        "D'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.025171995162963867,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 987,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B",
+        "D2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.032763004302978516,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1337,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B",
+        "L"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.07236504554748535,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2980,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B",
+        "L'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.07218194007873535,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2766,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B",
+        "L2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.07769894599914551,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3194,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B",
+        "R"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.09053897857666016,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3583,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B",
+        "R'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.08913612365722656,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3408,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B",
+        "R2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.08994770050048828,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3758,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B'",
+        "U"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.014520883560180664,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 585,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B'",
+        "U'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.00963592529296875,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 371,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B'",
+        "U2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.01941704750061035,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 799,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B'",
+        "D"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.027233123779296875,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1149,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B'",
+        "D'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.023843050003051758,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 974,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B'",
+        "D2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.030848026275634766,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1324,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B'",
+        "L"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.06920194625854492,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2967,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B'",
+        "L'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.06812214851379395,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2753,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B'",
+        "L2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.09815335273742676,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3181,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B'",
+        "R"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.1208031177520752,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3570,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B'",
+        "R'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.08558416366577148,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3395,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B'",
+        "R2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.10535383224487305,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3745,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B2",
+        "U"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.01850414276123047,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 611,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B2",
+        "U'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.011162996292114258,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 397,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B2",
+        "U2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.023710012435913086,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 825,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B2",
+        "D"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.03622102737426758,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1175,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B2",
+        "D'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.03165698051452637,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1000,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B2",
+        "D2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.04624676704406738,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1350,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B2",
+        "L"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.08865904808044434,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2993,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B2",
+        "L'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.08188891410827637,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2779,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B2",
+        "L2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.0908050537109375,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3207,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B2",
+        "R"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.1006631851196289,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3596,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B2",
+        "R'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.0972590446472168,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3421,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "B2",
+        "R2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.10489892959594727,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3771,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L",
+        "U"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.019266128540039062,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 640,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L",
+        "U'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.010515928268432617,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 426,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L",
+        "U2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.023518800735473633,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 854,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L",
+        "D"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.029550790786743164,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1204,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L",
+        "D'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.02498793601989746,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1029,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L",
+        "D2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.04098391532897949,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1379,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L",
+        "F"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.044471025466918945,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1807,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L",
+        "F'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.03974795341491699,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1593,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L",
+        "F2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.049585819244384766,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2021,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L",
+        "B"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.05794811248779297,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2371,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L",
+        "B'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.055991172790527344,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2196,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L",
+        "B2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.06270194053649902,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2546,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L",
+        "R"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.06663084030151367,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3019,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L",
+        "R'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.07106304168701172,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3006,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L",
+        "R2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.0626220703125,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3032,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L'",
+        "U"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.014401912689208984,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 624,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L'",
+        "U'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.009634017944335938,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 410,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L'",
+        "U2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.018124103546142578,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 838,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L'",
+        "D"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.026386737823486328,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1188,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L'",
+        "D'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.02023911476135254,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1013,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L'",
+        "D2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.030790090560913086,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1363,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L'",
+        "F"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.03797411918640137,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1791,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L'",
+        "F'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.03383302688598633,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1577,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L'",
+        "F2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.04975581169128418,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2005,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L'",
+        "B"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.04907822608947754,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2355,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L'",
+        "B'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.048596858978271484,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2180,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L'",
+        "B2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.05082511901855469,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2530,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L'",
+        "R"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.06391096115112305,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2805,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L'",
+        "R'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.05684494972229004,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2792,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L'",
+        "R2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.059697866439819336,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2818,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L2",
+        "U"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.013633012771606445,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 656,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L2",
+        "U'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.008244991302490234,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 442,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L2",
+        "U2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.01694512367248535,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 870,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L2",
+        "D"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.025668859481811523,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1220,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L2",
+        "D'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.02199578285217285,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1045,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L2",
+        "D2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.028730154037475586,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1395,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L2",
+        "F"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.03760099411010742,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1823,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L2",
+        "F'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.03330492973327637,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1609,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L2",
+        "F2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.04107022285461426,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2037,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L2",
+        "B"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.04661417007446289,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2387,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L2",
+        "B'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.045591115951538086,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2212,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L2",
+        "B2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.05653524398803711,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2562,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L2",
+        "R"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.06566619873046875,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3233,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L2",
+        "R'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.06505703926086426,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3220,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "L2",
+        "R2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.06561684608459473,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 3246,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R",
+        "U"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.013936042785644531,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 685,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R",
+        "U'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.01220083236694336,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 471,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R",
+        "U2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.02082681655883789,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 899,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R",
+        "D"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.02784585952758789,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1249,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R",
+        "D'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.024074077606201172,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1074,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R",
+        "D2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.03231096267700195,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1424,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R",
+        "F"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.0430300235748291,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1852,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R",
+        "F'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.03417491912841797,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1638,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R",
+        "F2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.04283881187438965,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2066,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R",
+        "B"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.049059152603149414,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2416,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R",
+        "B'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.05229806900024414,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2241,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R",
+        "B2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.05238914489746094,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2591,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R'",
+        "U"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.01429891586303711,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 672,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R'",
+        "U'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.008836030960083008,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 458,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R'",
+        "U2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.018047094345092773,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 886,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R'",
+        "D"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.02602696418762207,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1236,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R'",
+        "D'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.02015089988708496,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1061,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R'",
+        "D2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.028509855270385742,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1411,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R'",
+        "F"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.038510799407958984,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1839,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R'",
+        "F'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.03201913833618164,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1625,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R'",
+        "F2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.041532039642333984,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2053,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R'",
+        "B"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.04776191711425781,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2403,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R'",
+        "B'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.046070098876953125,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2228,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R'",
+        "B2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.05145001411437988,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2578,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R2",
+        "U"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.01495504379272461,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 698,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R2",
+        "U'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.010947227478027344,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 484,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R2",
+        "U2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.01673603057861328,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 912,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R2",
+        "D"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.027144908905029297,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1262,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R2",
+        "D'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.025059938430786133,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1087,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R2",
+        "D2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.029658794403076172,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1437,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R2",
+        "F"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.03757810592651367,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1865,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R2",
+        "F'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.03186321258544922,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 1651,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R2",
+        "F2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.04140186309814453,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2079,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R2",
+        "B"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.04580974578857422,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2429,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R2",
+        "B'"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.04362297058105469,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2254,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    },
+    {
+      "scramble": [
+        "R2",
+        "B2"
+      ],
+      "expected_depth": 2,
+      "expected_depth_source": "generated_length",
+      "category": "exhaustive",
+      "native_length": 2,
+      "native_stats": {
+        "time": 0.051278114318847656,
+        "moves": 2,
+        "solution_length": 2,
+        "optimal": true,
+        "completed": true,
+        "timed_out": false,
+        "depth_limit_reached": false,
+        "nodes_explored": 2604,
+        "iterations": 3,
+        "initial_bound": 0,
+        "final_bound": 2,
+        "max_depth": 6,
+        "max_depth_limit": 6,
+        "heuristic": "ZeroHeuristic",
+        "heuristic_name": "ZeroHeuristic"
+      }
+    }
+  ]
+}

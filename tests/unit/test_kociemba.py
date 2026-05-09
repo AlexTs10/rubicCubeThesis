@@ -166,6 +166,7 @@ class TestCoordinates:
         assert get_edge_orientation(cubie) == 200
 
 
+@pytest.mark.cache_building
 class TestMoveTables:
     """Test move table generation and usage."""
 
@@ -310,6 +311,21 @@ class TestKociembaSolver:
         assert result is None
         assert solver.last_backend_used == "native_timeout"
         assert elapsed < 1.0
+
+    def test_internal_backend_rejects_unverified_solution(self, monkeypatch):
+        """Internal search must not return moves that leave the cube unsolved."""
+        cube = RubikCube()
+        cube.apply_move("U")
+        solver = KociembaSolver(backend="internal")
+
+        monkeypatch.setattr(solver, "_initialize", lambda: None)
+        monkeypatch.setattr(solver, "_solve_phase1", lambda *args, **kwargs: [])
+        monkeypatch.setattr(solver, "_solve_phase2", lambda *args, **kwargs: [])
+
+        result = solver.solve(cube, timeout=1.0, verbose=False)
+
+        assert result is None
+        assert solver.last_backend_used == "internal_verification_failed"
 
     def test_solve_solved_cube(self):
         """Test solving an already solved cube."""
