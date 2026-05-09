@@ -71,6 +71,17 @@ class TestRubikCubeBasics:
         with pytest.raises(ValueError, match="centers"):
             RubikCube(state=state)
 
+    def test_can_reject_physically_impossible_external_state(self):
+        state = RubikCube().state.copy()
+        state[Face.U.value, 0], state[Face.F.value, 0] = (
+            state[Face.F.value, 0],
+            state[Face.U.value, 0],
+        )
+
+        RubikCube(state=state)
+        with pytest.raises(ValueError, match="Invalid cube state"):
+            RubikCube(state=state, validate_legal=True)
+
 
 class TestBasicMoves:
     """Test basic cube moves."""

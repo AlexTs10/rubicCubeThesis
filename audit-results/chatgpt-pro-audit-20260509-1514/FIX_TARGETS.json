@@ -1,0 +1,295 @@
+[
+  {
+    "severity": "Critical",
+    "category": "Critical blockers",
+    "file": "thesis/main.tex",
+    "location": "lines 178-179; related placeholders in thesis/chapters/00_approval.tex:36-44",
+    "issue": "The final institutional approval/signature page is incomplete and intentionally excluded from the thesis build.",
+    "exact_fix": "Complete thesis/chapters/00_approval.tex with official committee members and examination date, include it from thesis/main.tex, rebuild thesis/main.pdf, and update README.md so it no longer says final front matter is pending.",
+    "verification_steps": [
+      "Confirm thesis/main.tex includes chapters/00_approval.tex.",
+      "Confirm thesis/chapters/00_approval.tex has no dotfill or committee placeholders.",
+      "Rebuild thesis/main.pdf and verify the approval page appears in the front matter."
+    ]
+  },
+  {
+    "severity": "Critical",
+    "category": "Critical blockers",
+    "file": "results/benchmarks/thesis/thesis_results_combined.json",
+    "location": "line 145",
+    "issue": "The benchmark metadata embeds a stale reproducibility_manifest_sha256 value and creates circular provenance because the manifest also hashes benchmark artifacts.",
+    "exact_fix": "Remove the manifest hash from benchmark JSON or move it to an external provenance file that is not part of the hashed benchmark set. Regenerate benchmark metadata and REPRODUCIBILITY_MANIFEST.json consistently.",
+    "verification_steps": [
+      "Run sha256sum REPRODUCIBILITY_MANIFEST.json.",
+      "Verify no benchmark JSON embeds an obsolete manifest hash.",
+      "Run the repository manifest verification check and confirm all listed hashes pass."
+    ]
+  },
+  {
+    "severity": "High",
+    "category": "Research/experimental issues",
+    "file": "thesis/chapters/06_heuristics.tex",
+    "location": "lines 152-163; implementation at src/korf/heuristics.py:96-189",
+    "issue": "The thesis defines a Manhattan-style heuristic using minimum per-piece move distances, but the implementation counts misplaced positions and orientation flags.",
+    "exact_fix": "Either rewrite the thesis to describe the actual mismatch/orientation-count heuristic or implement the stated distance-table heuristic with tests.",
+    "verification_steps": [
+      "Compare thesis/chapters/06_heuristics.tex:152-163 with src/korf/heuristics.py:96-189.",
+      "Add a unit test showing documented heuristic values match implementation values.",
+      "Rebuild the thesis after updating the formula or code."
+    ]
+  },
+  {
+    "severity": "High",
+    "category": "Research/experimental issues",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "lines 88-90; related metadata in results/benchmarks/thesis/thesis_results_combined.json:115-119",
+    "issue": "Benchmark depth is requested scramble length, not verified optimal distance, and the legacy corpus can contain redundant moves.",
+    "exact_fix": "Regenerate the corpus with canonical nonredundant exact-depth instances, or relabel all tables and discussion as requested scramble length and add verified-depth distributions.",
+    "verification_steps": [
+      "Inspect benchmark scrambles for adjacent same-face redundancies.",
+      "Compute verified optimal depths for a representative subset.",
+      "Update Chapter 7 labels and discussion to match the actual corpus semantics."
+    ]
+  },
+  {
+    "severity": "High",
+    "category": "Research/experimental issues",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "lines 125-136 and 380-390",
+    "issue": "The benchmark lacks repeated runs, confidence intervals, cold/warm timing separation, and complete original environment provenance.",
+    "exact_fix": "Rerun benchmarks with multiple repetitions, report variability, separate cold-start and warmed-cache timing, and record package/backend/environment metadata at run time.",
+    "verification_steps": [
+      "Regenerate benchmark JSON with per-run timing samples.",
+      "Verify Chapter 7 reports mean or median plus variability.",
+      "Verify benchmark metadata includes environment and backend provenance captured during the run."
+    ]
+  },
+  {
+    "severity": "High",
+    "category": "Research/experimental issues",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "lines 34-42",
+    "issue": "Korf benchmark performance is reported for an external exact backend, not for the repository's native exact solver implementation.",
+    "exact_fix": "Reframe all Korf performance results as external exact reference backend results, and add a separate native exact benchmark on a feasible corpus if native implementation performance is claimed.",
+    "verification_steps": [
+      "Search thesis and README for Korf performance claims.",
+      "Confirm each claim distinguishes external backend results from native implementation results.",
+      "Add native benchmark artifacts or remove native-performance implications."
+    ]
+  },
+  {
+    "severity": "High",
+    "category": "Reproducibility/setup issues",
+    "file": "results/validation/native_exact/README.md",
+    "location": "lines 25-30; hard prerequisite check at scripts/verification/native_exact_validation.py:252-263",
+    "issue": "The canonical native exact validation depends on data/pattern_databases/corner_db.pkl, which is not included in the uploaded source ZIP.",
+    "exact_fix": "Include the required corner database as a separately hashed artifact, provide a deterministic generation procedure with expected hash/size/runtime, or demote the canonical validation claim to archived-result status and clearly label the source-ZIP command as smoke-only.",
+    "verification_steps": [
+      "Extract the ZIP into a clean directory.",
+      "Run the canonical native exact validation command.",
+      "Confirm it succeeds from provided artifacts, or confirm the documentation no longer claims full source-only reproducibility."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Thesis writing issues",
+    "file": "thesis/chapters/05_korf.tex",
+    "location": "lines 43-58, especially line 52",
+    "issue": "The A*/IDA* comparison table says both algorithms are optimal without stating the admissible-heuristic condition.",
+    "exact_fix": "Change the optimality entries to state that optimality holds only when the heuristic is admissible, and preferably consistent where relevant.",
+    "verification_steps": [
+      "Rebuild the thesis.",
+      "Inspect the A*/IDA* comparison table in Chapter 5.",
+      "Confirm the admissibility condition appears in the table."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Thesis writing issues",
+    "file": "thesis/chapters/06_heuristics.tex",
+    "location": "lines 351-362; implementation at src/korf/composite_heuristic.py:232-250 and 322-352",
+    "issue": "The composite heuristic strategy table says high-entropy states use Pattern DBs but omits the implemented fallback to enhanced Manhattan.",
+    "exact_fix": "Update the high-entropy table row to say Pattern DBs are used when available and enhanced Manhattan is used otherwise.",
+    "verification_steps": [
+      "Compare the table with src/korf/composite_heuristic.py fallback logic.",
+      "Rebuild the thesis.",
+      "Confirm the table states the conditional behavior."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Thesis writing issues",
+    "file": "thesis/chapters/05_korf.tex",
+    "location": "lines 104-105 and 381-382",
+    "issue": "The thesis contains stale source-line references for corner_index and _is_redundant_move.",
+    "exact_fix": "Update the corner_index reference to src/korf/corner_database.py:56-77 and update the _is_redundant_move references to the current A*/IDA* locations, or cite function names without exact line ranges.",
+    "verification_steps": [
+      "Grep for def corner_index and def _is_redundant_move.",
+      "Verify Chapter 5 references match the current source locations.",
+      "Rebuild the thesis."
+    ]
+  },
+  {
+    "severity": "Low",
+    "category": "Thesis writing issues",
+    "file": "thesis/chapters/06_heuristics.tex",
+    "location": "line 172",
+    "issue": "The manhattan_distance listing caption cites stale source lines.",
+    "exact_fix": "Update the caption to cite src/korf/heuristics.py:166-189 or remove the fragile exact line range.",
+    "verification_steps": [
+      "Grep for def manhattan_distance.",
+      "Confirm the caption points to the current function location.",
+      "Rebuild the thesis."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Thesis writing issues",
+    "file": "thesis/chapters/06_heuristics.tex",
+    "location": "lines 77-81",
+    "issue": "The efficiency index eta is introduced but not used in the later evaluation.",
+    "exact_fix": "Remove the metric definition or add an evaluation table computing eta for the compared heuristic strategies.",
+    "verification_steps": [
+      "Search the thesis for subsequent uses of eta.",
+      "Confirm the metric is either removed or supported by reported data."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Technical/code issues",
+    "file": "src/korf/optimal_solver.py",
+    "location": "lines 267-288; parser at lines 368-391",
+    "issue": "External backend stdout is not captured when verbose=True, so parsed backend statistics are lost.",
+    "exact_fix": "Always capture backend stdout into a buffer, and optionally echo the captured output when verbose=True.",
+    "verification_steps": [
+      "Add a fake backend that prints nodes generated: 42.",
+      "Call solve(verbose=True).",
+      "Verify the returned stats include nodes_generated equal to 42."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Technical/code issues",
+    "file": "src/korf/a_star.py",
+    "location": "lines 361-375 and 405-408",
+    "issue": "IDA* returns float('inf') for timeout and the outer loop treats that as no solution, conflating timeout, incompleteness, and unsolvability.",
+    "exact_fix": "Introduce a distinct timeout result or exception and record timed_out, depth_limit_reached, and solution_found separately.",
+    "verification_steps": [
+      "Add a forced-timeout unit test.",
+      "Verify the solver reports timeout explicitly.",
+      "Verify timeout is not described as no solution."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Technical/code issues",
+    "file": "src/korf/a_star.py",
+    "location": "lines 160-163, 269-289, and 461-470",
+    "issue": "A* and IDA* memory statistics are rough estimates or constants rather than measured memory.",
+    "exact_fix": "Rename the fields to make them explicitly approximate or replace them with measured RSS/tracemalloc/psutil values.",
+    "verification_steps": [
+      "Run A* and IDA* on a small cube.",
+      "Inspect the reported memory fields.",
+      "Confirm they are measured or clearly labeled as estimates."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Technical/code issues",
+    "file": "src/korf/pattern_database.py",
+    "location": "lines 168-175",
+    "issue": "PatternDatabase.save fails for basename-only file paths because os.makedirs is called with an empty dirname.",
+    "exact_fix": "Only call os.makedirs when os.path.dirname(filepath) is non-empty.",
+    "verification_steps": [
+      "Add a test that saves to a basename-only path in a temporary working directory.",
+      "Reload the saved database.",
+      "Confirm the test passes."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Technical/code issues",
+    "file": "src/cube/rubik_cube.py",
+    "location": "lines 67-80",
+    "issue": "RubikCube accepts externally supplied states without validating shape, sticker values, sticker counts, or centers.",
+    "exact_fix": "Validate supplied states for shape (6, 9), integer color range, exactly nine stickers per color, and center consistency, or document that supplied states are unchecked internal data.",
+    "verification_steps": [
+      "Add tests for invalid shape, invalid sticker value, wrong sticker counts, and bad centers.",
+      "Confirm invalid states are rejected or explicitly documented."
+    ]
+  },
+  {
+    "severity": "Low",
+    "category": "Technical/code issues",
+    "file": "src/kociemba/solver.py",
+    "location": "lines 120-137",
+    "issue": "KociembaSolver initialization prints messages even during quiet solve calls.",
+    "exact_fix": "Pass verbosity into initialization or replace unconditional prints with logger calls controlled by verbosity.",
+    "verification_steps": [
+      "Capture stdout during the first solve(verbose=False) call.",
+      "Confirm no initialization text is printed."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Technical/code issues",
+    "file": "src/korf/composite_heuristic.py",
+    "location": "lines 130-143",
+    "issue": "The CompositeHeuristic docstring claims learning-based adjustment factors and better estimates, but the implementation is rule-based and does not learn.",
+    "exact_fix": "Rewrite the docstring to describe the implemented exploratory rule-based selector and remove unsupported learning/better-estimate claims.",
+    "verification_steps": [
+      "Grep for learning-based and better estimates.",
+      "Confirm unsupported claims are removed or backed by implementation and tests."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Citation/reference issues",
+    "file": "thesis/chapters/08_implementation.tex",
+    "location": "lines 184-190 and 220-241",
+    "issue": "Chapter 8 makes implementation, validation, test, and reproducibility claims without formal citations or artifact cross-references.",
+    "exact_fix": "Add explicit cross-references to the validation manifest, benchmark manifest, test configuration, reproducibility manifest, and appendix/artifact descriptions.",
+    "verification_steps": [
+      "Grep Chapter 8 for citation and cross-reference commands.",
+      "Verify claims at lines 184-190 and 220-241 point to exact artifacts."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Reproducibility/setup issues",
+    "file": "README.md",
+    "location": "lines 41-43",
+    "issue": "The dependency lock is not cryptographic and lacks hashes, platform markers, Python ABI constraints, and TeX/Tectonic pinning.",
+    "exact_fix": "Adopt a hash-locked Python dependency file and record Python ABI, OS, and TeX/Tectonic versions required to reproduce the results.",
+    "verification_steps": [
+      "Create a clean container.",
+      "Install dependencies using only the new lock file with hash checking.",
+      "Run the default tests and setup verification."
+    ]
+  },
+  {
+    "severity": "Medium",
+    "category": "Reproducibility/setup issues",
+    "file": "docker/thesis.Dockerfile",
+    "location": "lines 5-15",
+    "issue": "The Dockerfile pins the Debian base digest but installs TeX/build packages from live Debian repositories without package-version or snapshot pinning.",
+    "exact_fix": "Use Debian snapshot repositories, pin apt package versions, or publish a built thesis-builder image digest.",
+    "verification_steps": [
+      "Rebuild the thesis Docker image in two clean environments.",
+      "Compare installed package versions.",
+      "Compare the resulting thesis/main.pdf hash."
+    ]
+  },
+  {
+    "severity": "Low",
+    "category": "Submission polish issues",
+    "file": "thesis/main.pdf",
+    "location": "PDF metadata: Tagged: no",
+    "issue": "The generated PDF is not tagged for accessibility.",
+    "exact_fix": "Generate a tagged/accessibility-compliant PDF if required by the institution, or document that tagging is not required.",
+    "verification_steps": [
+      "Run pdfinfo thesis/main.pdf.",
+      "Confirm Tagged is yes, or attach the institutional exemption."
+    ]
+  }
+]

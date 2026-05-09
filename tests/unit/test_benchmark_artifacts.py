@@ -23,6 +23,9 @@ def test_write_combined_results_preserves_korf_provenance(tmp_path):
                     "scramble_depth records the requested scramble length; verified_scramble_depth "
                     "is populated only when the exact distance is known from the optimal Korf backend."
                 ),
+                "scramble_generation": "legacy_random_all_moves_redundant_allowed",
+                "scramble_corpus_status": "legacy redundant scrambles preserved",
+                "current_generator_for_new_runs": "random_no_consecutive_same_face_moves",
             },
             "results": [{"scramble_depth": 5}],
         }
@@ -38,6 +41,39 @@ def test_write_combined_results_preserves_korf_provenance(tmp_path):
     assert combined["metadata"]["korf_pattern_db_loaded"] is True
     assert combined["metadata"]["korf_pattern_db_status"] == "provided by external optimal backend"
     assert "scramble_depth_semantics" in combined["metadata"]
+    assert combined["metadata"]["scramble_generation"] == "legacy_random_all_moves_redundant_allowed"
+    assert combined["metadata"]["scramble_corpus_status"] == "legacy redundant scrambles preserved"
+    assert combined["metadata"]["current_generator_for_new_runs"] == "random_no_consecutive_same_face_moves"
+
+
+def test_regenerator_loads_source_scramble_metadata(tmp_path):
+    """Reruns should preserve whether the loaded source corpus is legacy redundant."""
+    source = tmp_path / "source.json"
+    source.write_text(
+        json.dumps(
+            {
+                "metadata": {
+                    "scramble_generation": "legacy_random_all_moves_redundant_allowed",
+                    "scramble_corpus_status": "legacy redundant scrambles preserved",
+                    "current_generator_for_new_runs": "random_no_consecutive_same_face_moves",
+                },
+                "results": [
+                    {
+                        "scramble_depth": 5,
+                        "scramble_id": 0,
+                        "scramble_moves": ["R", "R'"],
+                    }
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    metadata = benchmark_regen.load_scramble_source_metadata(source)
+
+    assert metadata["scramble_generation"] == "legacy_random_all_moves_redundant_allowed"
+    assert metadata["scramble_corpus_status"] == "legacy redundant scrambles preserved"
+    assert metadata["current_generator_for_new_runs"] == "random_no_consecutive_same_face_moves"
 
 
 def test_write_combined_results_backfills_current_export_schema(tmp_path):

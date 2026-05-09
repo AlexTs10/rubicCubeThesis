@@ -57,7 +57,8 @@ These reports remain useful for chronology and exploratory validation, but the t
 
 ## Reproducibility Notes
 
-- The checked-in JSON artifacts are preserved as canonical evidence.
+- The checked-in JSON artifacts are preserved as canonical evidence, while full
+  canonical regeneration requires the generated `corner_db.pkl` companion cache.
 - If you regenerate the reports with the canonical preset, the output schema includes `config.corpus_generation` with the full corpus recipe.
 - The bare script invocation now defaults to the canonical thesis preset.
 - Source-ZIP reviewers should expect `--preset source-zip` to pass without large

@@ -59,14 +59,17 @@ from ..cube.rubik_cube import RubikCube, Face
 
 def _optimal_backend_worker(cube_string: str, conn) -> None:
     """Run the optional optimal backend in a subprocess for portable timeouts."""
+    backend_output = io.StringIO()
     try:
         backend = _load_backend_module()
         if backend is None:
-            conn.send(("error", "RubikOptimal backend is not installed"))
+            conn.send(("error", "RubikOptimal backend is not installed", backend_output.getvalue()))
             return
-        conn.send(("ok", backend.solve(cube_string)))
+        with redirect_stdout(backend_output):
+            result = backend.solve(cube_string)
+        conn.send(("ok", result, backend_output.getvalue()))
     except Exception as exc:  # pragma: no cover - defensive child-process path
-        conn.send(("error", repr(exc)))
+        conn.send(("error", repr(exc), backend_output.getvalue()))
     finally:
         conn.close()
 
@@ -184,7 +187,7 @@ class KorfOptimalSolver:
 
         return moves
 
-    def _solve_backend_with_process_timeout(self, cube_string: str, timeout: float) -> str:
+    def _solve_backend_with_process_timeout(self, cube_string: str, timeout: float) -> Tuple[str, str]:
         """Invoke the real backend in a subprocess and enforce a wall-clock timeout."""
         ctx = multiprocessing.get_context("spawn")
         parent_conn, child_conn = ctx.Pipe(duplex=False)
@@ -198,7 +201,7 @@ class KorfOptimalSolver:
 
         try:
             if parent_conn.poll(timeout):
-                status, payload = parent_conn.recv()
+                message = parent_conn.recv()
             else:
                 process.terminate()
                 process.join(timeout=1.0)
@@ -210,8 +213,9 @@ class KorfOptimalSolver:
             parent_conn.close()
 
         process.join(timeout=1.0)
+        status, payload, child_stdout = message
         if status == "ok":
-            return payload
+            return payload, child_stdout
         raise RuntimeError(payload)
 
     def solve(
@@ -281,7 +285,10 @@ class KorfOptimalSolver:
                     signal.setitimer(signal.ITIMER_REAL, 0.0)
                     signal.signal(signal.SIGALRM, previous_handler)
             elif timeout is not None:
-                solution_str = self._solve_backend_with_process_timeout(cube_string, timeout)
+                solution_str, child_stdout = self._solve_backend_with_process_timeout(cube_string, timeout)
+                backend_output.write(child_stdout)
+                if verbose and child_stdout:
+                    print(child_stdout, end="")
             else:
                 solution_str = _invoke_backend()
 

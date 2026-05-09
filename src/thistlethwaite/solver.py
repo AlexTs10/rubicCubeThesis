@@ -70,12 +70,13 @@ class ThistlethwaiteSolver:
             # Keep non-PDB runs snappy for demos and tests.
             self.phase_timeouts = [2.0, 5.0, 8.0, 12.0]
 
-    def _ensure_databases_loaded(self):
+    def _ensure_databases_loaded(self, verbose: bool = True):
         """Ensure pattern databases are loaded (lazy loading)."""
         if not self.use_pattern_databases or self._databases_loaded:
             return
 
-        print("Loading pattern databases for first time...")
+        if verbose:
+            print("Loading pattern databases for first time...")
         self.pattern_databases.load_all(ALL_PHASE_MOVES, max_depth=15)
         self._databases_loaded = True
 
@@ -113,7 +114,7 @@ class ThistlethwaiteSolver:
 
         # Ensure pattern databases are loaded
         if self.use_pattern_databases:
-            self._ensure_databases_loaded()
+            self._ensure_databases_loaded(verbose=verbose)
 
         # Solve each phase
         current_cube = cube.copy()

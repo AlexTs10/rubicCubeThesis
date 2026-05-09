@@ -23,8 +23,8 @@ Experimental evaluation confirms that:
 \begin{itemize}
     \item Thistlethwaite's corrected pure implementation solves all 100 benchmark scrambles, but with substantially longer solutions than the other two methods.
     \item Kociemba's algorithm achieves 100\% success on the benchmark corpus with average solution length 14.33 moves.
-    \item The external exact backend used for the Korf benchmark path solves 97/100 benchmark scrambles within the enforced 120-second limit and returns optimal solutions whenever it completes.
-    \item The native exact solver is exhaustively validated on 3,501 non-solved states at depths 1--3. On a reproducible 3,513-case validation corpus, enabling the native corner pattern database support reduces native failures under a 20-second limit from 3 to 1.
+    \item The external exact backend used for the Korf benchmark path solves 97/100 benchmark scrambles within the enforced 120-second limit and returns optimal solutions whenever it completes. This is the exact backend used for the main 100-scramble Chapter~7 benchmark.
+    \item The repository-native exact solver is evaluated separately from that external benchmark backend. It is exhaustively validated on 3,501 non-solved states at depths 1--3. On the 3,513-case canonical native-validation corpus, enabling the native corner pattern database support reduces native failures under a 20-second limit from 3 to 1.
     \item In the implemented A*/IDA* baseline comparison, IDA* uses less memory than the included A* implementation, at the cost of repeated node expansions.
 \end{itemize}
 
@@ -32,6 +32,12 @@ The implementation includes an extensive test suite with separate fast, slow,
 external-backend, and cache-building validation profiles, interactive
 applications for demonstration, and educational materials in the form of
 Jupyter notebooks.
+
+The source ZIP is sufficient for the default fast tests, thesis build, checked-in
+benchmark inspection, and a smaller native-exact smoke validation. Regenerating
+the full canonical native-validation comparison requires the generated
+\texttt{data/pattern\_databases/corner\_db.pkl} companion cache, which is not
+embedded in the source ZIP.
 
 \vspace{1cm}
 \noindent\textbf{Keywords:} Rubik's Cube, search algorithms, IDA*, A*, pattern databases, heuristic functions, group theory, optimal solving

@@ -85,6 +85,14 @@ seed = st.sidebar.number_input(
     value=42,
     help="For reproducible results"
 )
+scramble_policy = st.sidebar.selectbox(
+    "Scramble Policy",
+    options=[
+        "Benchmark-style: no consecutive same-face moves",
+        "Legacy demo: redundant moves allowed",
+    ],
+    help="Benchmark-style mode matches the current generator; legacy mode preserves older demo behavior.",
+)
 
 # Timeout settings
 st.sidebar.subheader("Timeout Settings")
@@ -122,7 +130,11 @@ if 'comparison_running' in st.session_state and st.session_state.comparison_runn
 
     # Create scramble
     cube = RubikCube()
-    cube.scramble(moves=scramble_depth, seed=seed)
+    cube.scramble(
+        moves=scramble_depth,
+        seed=seed,
+        allow_redundant=scramble_policy.startswith("Legacy"),
+    )
     scramble_moves = getattr(cube, '_scramble_moves', [])
 
     # Show scrambled cube

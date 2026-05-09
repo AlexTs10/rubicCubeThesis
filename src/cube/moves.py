@@ -33,6 +33,9 @@ def inverse_move(move: str) -> str:
         >>> inverse_move('F2')
         'F2'
     """
+    if move not in ALL_MOVES:
+        raise ValueError(f"Invalid move: {move}")
+
     if len(move) == 1:
         return move + "'"
     elif move.endswith("'"):

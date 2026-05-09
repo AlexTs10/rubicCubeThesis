@@ -143,6 +143,18 @@
         "note": "Backend package metadata was inspected post hoc on the archive machine; the original benchmark run did not record a wheel hash or upstream commit hash."
       },
       "provenance_note": "Package-level reproducibility manifests are stored outside benchmark JSON to avoid circular hashes."
+    },
+    "external_exact_backend_provenance": {
+      "package": "RubikOptimal",
+      "version": "1.1.0",
+      "import_package": "optimal",
+      "dist_metadata_sha256": "53c0f4acad5f676edd194e155c92d259c559c03d050b50897ccaeba26ad236e0",
+      "dist_record_sha256": "7ab5e475389232e62003ecf090ab0cc90490479c7d882351f75b50ab00263bc0",
+      "license_file_sha256": "53927bd0b739d38c87a0a82236fd9b070c2dfff11c0c119be50372005d5047ad",
+      "solver_py_sha256": "a6f6d67ca3f3cd3bbc93004e3db62abef4dc3d1996470f016048201ff80d4246",
+      "upstream_repository": "https://github.com/hkociemba/RubiksCube-OptimalSolver",
+      "upstream_commit": null,
+      "note": "Installed PyPI distribution metadata does not expose an upstream commit or formal license field."
     }
   },
   "results": [

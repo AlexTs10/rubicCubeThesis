@@ -1,6 +1,6 @@
 # Thesis LaTeX Project
 
-This directory contains the thesis manuscript and its build assets. A review PDF can be built with the current XeLaTeX-compatible workflow or the tested Tectonic path. The final institutional submission build is not complete until `chapters/00_approval.tex` contains the official committee names and examination date and is included in `main.tex`.
+This directory contains the thesis manuscript and its build assets. A review PDF can be built with the current XeLaTeX-compatible workflow or the tested Tectonic path. `chapters/00_approval.tex` is included in `main.tex` as the formal signature-page template; the final signed institutional copy still requires the remaining committee names and examination date from the official University of Patras process.
 
 ## Structure
 

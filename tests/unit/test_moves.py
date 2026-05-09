@@ -38,6 +38,10 @@ class TestInverseMove:
         """Test invalid moves raise errors."""
         with pytest.raises(ValueError):
             inverse_move('R3')
+        with pytest.raises(ValueError):
+            inverse_move('X')
+        with pytest.raises(ValueError):
+            inverse_move('')
 
 
 class TestInverseSequence:

@@ -43,9 +43,11 @@ python scripts/verification/native_exact_validation.py --preset canonical
 ```
 
 The generated `corner_db.pkl` is intentionally excluded from source audit ZIPs
-because it is a large cache artifact. If the cache is absent, the canonical
-validation command fails with a clear prerequisite instead of silently running
-without the cited cache.
+because it is a large cache artifact. Treat it as an approved companion artifact
+for final canonical-validation reruns: either generate it with the command above
+or supply it alongside the source ZIP with a SHA-256 manifest entry. If the
+cache is absent, the canonical validation command fails with a clear prerequisite
+instead of silently running without the cited cache.
 
 The full corner database covers 88,179,840 corner states. Expect roughly
 hundreds of megabytes of temporary working-set usage and a generated cache on

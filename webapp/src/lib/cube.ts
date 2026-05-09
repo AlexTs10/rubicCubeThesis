@@ -1,6 +1,18 @@
 import type { CubeState, Face, FaceColor, Move } from '@/types/cube';
 import { SOLVED_STATE } from './constants';
 
+const VALID_MOVES = new Set<Move>([
+  'R', "R'", 'R2', 'L', "L'", 'L2',
+  'U', "U'", 'U2', 'D', "D'", 'D2',
+  'F', "F'", 'F2', 'B', "B'", 'B2',
+]);
+
+function assertMove(move: string): asserts move is Move {
+  if (!VALID_MOVES.has(move as Move)) {
+    throw new Error(`Invalid move token: ${move}`);
+  }
+}
+
 // Deep clone a cube state
 export function cloneCubeState(state: CubeState): CubeState {
   return {
@@ -205,12 +217,6 @@ function isOppositeFace(face1: string, face2: string): boolean {
 
 // Parse move string to Move array
 export function parseMoves(moveString: string): Move[] {
-  const validMoves = new Set([
-    'R', "R'", 'R2', 'L', "L'", 'L2',
-    'U', "U'", 'U2', 'D', "D'", 'D2',
-    'F', "F'", 'F2', 'B', "B'", 'B2',
-  ]);
-
   // Handle both space-separated and continuous notation
   const normalized = moveString
     .replace(/[']/g, "'") // Normalize apostrophes
@@ -221,12 +227,8 @@ export function parseMoves(moveString: string): Move[] {
 
   const moves: Move[] = [];
   for (const token of normalized) {
-    // Try to parse as full move first
-    if (validMoves.has(token as Move)) {
-      moves.push(token as Move);
-    } else if (token.length === 1 && validMoves.has(token as Move)) {
-      moves.push(token as Move);
-    }
+    assertMove(token);
+    moves.push(token);
   }
 
   return moves;
@@ -234,6 +236,7 @@ export function parseMoves(moveString: string): Move[] {
 
 // Get inverse of a move
 export function inverseMove(move: Move): Move {
+  assertMove(move);
   if (move.endsWith('2')) return move;
   if (move.endsWith("'")) return move.slice(0, -1) as Move;
   return (move + "'") as Move;

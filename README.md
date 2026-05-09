@@ -5,7 +5,7 @@
 **Institution:** University of Patras
 
 **Project Type:** Undergraduate / Bachelor's thesis in ECE
-**Current State:** Review manuscript, codebase, benchmarks, and local build workflow are present; final institutional front matter is still pending
+**Current State:** Review-ready manuscript, codebase, benchmarks, and local build workflow are present. The approval/signature page is included as a formal template, but the final signed institutional copy still requires the remaining committee names and examination date from the University of Patras.
 
 This repository contains the implementation, evaluation, and thesis manuscript for a comparative study of three classical Rubik's Cube solving algorithms:
 
@@ -41,7 +41,7 @@ python scripts/create_audit_zip.py
 Use `requirements.lock` as the pinned Python dependency snapshot for the audited
 environment. It is not a cryptographic lock file: it does not include hashes,
 platform markers, Python ABI constraints, or TeX/Tectonic versions. Node and npm
-are pinned for the preview app with `.nvmrc`, `webapp/package.json`
+are pinned for the preview app with the root `.nvmrc`, `webapp/package.json`
 (`packageManager` and `engines`), and `webapp/.npmrc` (`engine-strict=true`).
 Run `corepack enable` before `npm ci` if your npm version is not already
 11.6.0. Use `requirements.txt` only when you need a flexible dependency range
@@ -105,6 +105,7 @@ repository-root/
 - exact benchmark path provided by `KorfOptimalSolver` when `RubikOptimal` is installed
 - strongest optimality guarantees in the repository, but only on completed runs within the configured timeout
 - native exact search support is implemented separately in `src/korf/native_exact_solver.py` and validated on the native-exact corpus; the canonical 100-scramble thesis benchmark still records the external optimal backend
+- the full canonical native-exact validation requires the generated `data/pattern_databases/corner_db.pkl` companion cache; the source ZIP includes a smaller `--preset source-zip` smoke check instead
 - the internal Python heuristic/composite path is retained for exploratory experiments and is not presented as generally admissible
 - the exact `KorfOptimalSolver` wrapper is imported lazily
 - the first exact-optimal solve may generate large backend tables and is much faster under PyPy
@@ -116,7 +117,7 @@ Importing `src.korf` does not load the exact solver backend. The optional `Rubik
 
 ### Optional Exact Backend
 
-`RubikOptimal>=1.1.0` is listed in `requirements.txt` for the full thesis benchmark environment and under the `external-exact` project extra. On this machine, the installed distribution is `RubikOptimal 1.1.0`, importable as `optimal`, with package metadata pointing to Herbert Kociemba's `RubiksCube-OptimalSolver` repository. The installed wheel includes `RubikOptimal-1.1.0.dist-info/LICENSE` with SHA-256 `53927bd0b739d38c87a0a82236fd9b070c2dfff11c0c119be50372005d5047ad`, but the PyPI metadata does not expose a `License` field, so do not invent a license label in thesis-facing documentation; inspect the package or upstream repository if a formal license statement is needed.
+`RubikOptimal>=1.1.0` is listed in `requirements.txt` for the full thesis benchmark environment and under the `external-exact` project extra. On this machine, the installed distribution is `RubikOptimal 1.1.0`, importable as `optimal`, with package metadata pointing to Herbert Kociemba's `RubiksCube-OptimalSolver` repository. The installed wheel includes `RubikOptimal-1.1.0.dist-info/LICENSE` with SHA-256 `53927bd0b739d38c87a0a82236fd9b070c2dfff11c0c119be50372005d5047ad`, `RubikOptimal-1.1.0.dist-info/METADATA` with SHA-256 `53c0f4acad5f676edd194e155c92d259c559c03d050b50897ccaeba26ad236e0`, and `optimal/solver.py` with SHA-256 `a6f6d67ca3f3cd3bbc93004e3db62abef4dc3d1996470f016048201ff80d4246`. The PyPI metadata does not expose a `License` field, so do not invent a license label in thesis-facing documentation; inspect the package or upstream repository if a formal license statement is needed.
 
 ## Thesis Workflow
 

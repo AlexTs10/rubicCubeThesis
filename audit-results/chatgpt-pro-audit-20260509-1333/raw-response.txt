@@ -1,0 +1,8 @@
+ChatGPT Pro audit response transcribed from accessibility tree because the ChatGPT UI copy action failed.
+
+Scores:
+- Overall thesis quality score: 84/100
+- Technical quality score: 78/100
+- Submission readiness score: 66/100
+
+See audit.md for the transcribed findings and FIX_TARGETS.json for the machine-readable target list.

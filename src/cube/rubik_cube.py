@@ -64,16 +64,21 @@ class RubikCube:
     element represents the color at that facelet position.
     """
 
-    def __init__(self, state: Optional[np.ndarray] = None):
+    def __init__(self, state: Optional[np.ndarray] = None, validate_legal: bool = False):
         """
         Initialize a Rubik's Cube.
 
         Args:
             state: Optional pre-existing state. If None, creates a solved cube.
+            validate_legal: When True for an externally supplied state, also
+                validate cubie-level physical legality. The default constructor
+                check remains structural only for lightweight array handling.
         """
         if state is not None:
             candidate = np.array(state, copy=True)
             self._validate_state(candidate)
+            if validate_legal:
+                self._validate_legal_state(candidate)
             self.state = candidate.astype(int, copy=False)
         else:
             # Create solved cube: each face shows its own color
@@ -105,6 +110,15 @@ class RubikCube:
         expected_centers = np.array([face.value for face in Face])
         if not np.array_equal(centers, expected_centers):
             raise ValueError("Cube state centers must match the fixed face ordering")
+
+    @staticmethod
+    def _validate_legal_state(state: np.ndarray) -> None:
+        """Reject structurally valid but physically impossible cube states."""
+        from ..kociemba.cubie import from_facelet_cube
+
+        candidate = object.__new__(RubikCube)
+        candidate.state = state.astype(int, copy=True)
+        from_facelet_cube(candidate)
 
     def copy(self) -> 'RubikCube':
         """Create a deep copy of the cube."""

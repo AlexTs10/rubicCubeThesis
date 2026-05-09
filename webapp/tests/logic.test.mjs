@@ -55,6 +55,11 @@ test("cube move and inverse logic solves round trips", () => {
     );
 });
 
+test("cube parser rejects invalid move tokens", () => {
+    assert.throws(() => cube.parseMoves("R X U"), /Invalid move token: X/);
+    assert.throws(() => cube.inverseMove("X"), /Invalid move token: X/);
+});
+
 test("synthetic solveCube returns a verified inverse solution", async () => {
     const scramble = ["R", "U", "F2"];
     const state = cube.applyMoves(cube.cloneCubeState(constants.SOLVED_STATE), scramble);

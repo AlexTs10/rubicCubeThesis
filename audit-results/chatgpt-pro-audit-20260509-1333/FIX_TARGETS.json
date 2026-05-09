@@ -1,0 +1,146 @@
+[
+  {
+    "severity": "Critical external dependency / final submission blocker",
+    "category": "Critical blockers",
+    "file": "thesis/main.tex; thesis/chapters/00_approval.tex; thesis/README.md",
+    "location": "thesis/main.tex:173-180; thesis/chapters/00_approval.tex:30-44; thesis/README.md:1-4",
+    "issue": "Final institutional approval page is excluded and contains placeholders.",
+    "exact_fix": "Fill official committee names, roles, and examination date; include the approval page in thesis/main.tex; rebuild thesis/main.pdf; remove or update the warning in thesis/README.md.",
+    "verification_steps": "Search for approval placeholders, rebuild the thesis, and inspect generated PDF front matter."
+  },
+  {
+    "severity": "Major",
+    "category": "Thesis writing issues",
+    "file": "thesis/chapters/02_background.tex",
+    "location": "thesis/chapters/02_background.tex:281-299",
+    "issue": "A* pseudocode is incomplete for graph-search optimality.",
+    "exact_fix": "Revise pseudocode to maintain best known g per state, skip stale heap entries, update open entries on better paths, and reopen closed states when needed, or explicitly state a consistency assumption.",
+    "verification_steps": "Rebuild the thesis and check that the A* section contains reopen-safe graph-search pseudocode or a clear consistency assumption."
+  },
+  {
+    "severity": "Major",
+    "category": "Thesis writing issues",
+    "file": "thesis/chapters/03_thistlethwaite.tex; src/thistlethwaite/tables.py",
+    "location": "thesis/chapters/03_thistlethwaite.tex:262-278; thesis/chapters/03_thistlethwaite.tex:329-333; src/thistlethwaite/tables.py:561-641; src/thistlethwaite/tables.py:823-849",
+    "issue": "Thistlethwaite memory claim undercounts Python exact phase-3 dictionary overhead.",
+    "exact_fix": "Distinguish compact NumPy coordinate tables from Python runtime overhead; report measured RSS or serialized artifact size separately.",
+    "verification_steps": "Run or add a memory measurement and confirm the phrase '1.2 MB for all PDBs' is removed or qualified."
+  },
+  {
+    "severity": "Major",
+    "category": "Thesis writing issues",
+    "file": "thesis/chapters/04_kociemba.tex; src/kociemba/pruning.py; src/kociemba/solver.py",
+    "location": "thesis/chapters/04_kociemba.tex:203-204; src/kociemba/pruning.py:4-7; src/kociemba/pruning.py:64-71; src/kociemba/pruning.py:192-193; src/kociemba/solver.py:132-134",
+    "issue": "Kociemba pruning tables are described as exact full-state minimum-distance tables, but implementation uses capped BFS tables.",
+    "exact_fix": "State that tables store exact distances for states reached within the BFS cutoff and represent unreached states by cutoff, producing clipped pruning estimates.",
+    "verification_steps": "Rebuild the thesis and grep for 'minimum distance from every state'."
+  },
+  {
+    "severity": "Minor",
+    "category": "Thesis writing issues",
+    "file": "README.md; thesis/chapters/08_implementation.tex; src/kociemba/solver.py",
+    "location": "README.md:101; thesis/chapters/08_implementation.tex:119; src/kociemba/solver.py:36-39; src/kociemba/solver.py:95-98",
+    "issue": "Native terminology is ambiguous between repository-native code and optional external/native-extension kociemba package.",
+    "exact_fix": "In prose, use 'optional PyPI/native-extension kociemba backend' or 'external kociemba package backend'; keep code labels where required.",
+    "verification_steps": "Search for native kociemba terminology and confirm explanatory prose distinguishes external package backends from repository-native implementations."
+  },
+  {
+    "severity": "Major",
+    "category": "Technical/code issues",
+    "file": "src/korf/a_star.py",
+    "location": "src/korf/a_star.py:77-95; src/korf/a_star.py:141-220; src/korf/a_star.py:267-278",
+    "issue": "AStarSolver can overstate optimality guarantees for admissible but inconsistent heuristics.",
+    "exact_fix": "Add best_g tracking, stale heap-entry skipping, and reopen logic for improved paths, or require heuristic consistency before reporting an optimality guarantee; add regression tests.",
+    "verification_steps": "Run python -m pytest tests/unit/test_a_star_solvers.py and confirm optimality guarantee handling is corrected."
+  },
+  {
+    "severity": "Major",
+    "category": "Technical/code issues",
+    "file": "scripts/verification/native_exact_validation.py; src/korf/optimal_solver.py",
+    "location": "scripts/verification/native_exact_validation.py:155-197; scripts/verification/native_exact_validation.py:315-317; scripts/verification/native_exact_validation.py:442-453; src/korf/optimal_solver.py:55",
+    "issue": "Canonical native-exact validation can silently degrade when the external oracle is unavailable.",
+    "exact_fix": "For canonical preset, fail hard if oracle cases are requested and OPTIMAL_AVAILABLE is false, or skip oracle-dependent random cases with an explicit record.",
+    "verification_steps": "Simulate OPTIMAL_AVAILABLE=false and confirm canonical validation exits with a clear error instead of producing a canonical-looking report."
+  },
+  {
+    "severity": "Medium",
+    "category": "Research/experimental issues",
+    "file": "scripts/benchmarks/regenerate_thesis_benchmarks.py; src/evaluation/algorithm_comparison.py",
+    "location": "scripts/benchmarks/regenerate_thesis_benchmarks.py:51-55; scripts/benchmarks/regenerate_thesis_benchmarks.py:80-84; scripts/benchmarks/regenerate_thesis_benchmarks.py:232-239; src/evaluation/algorithm_comparison.py:202-240; src/evaluation/algorithm_comparison.py:795-838",
+    "issue": "Canonical benchmark overwrite can fall back to heuristic Korf when optimal backend is unavailable.",
+    "exact_fix": "When --overwrite-canonical is used, require --korf-backend optimal and assert resolved backend is optimal_external before writing canonical files.",
+    "verification_steps": "Run the script without the optimal backend using --overwrite-canonical and confirm it refuses to overwrite canonical artifacts."
+  },
+  {
+    "severity": "Medium documented limitation",
+    "category": "Research/experimental issues",
+    "file": "results/benchmarks/thesis/thesis_results_combined.json; thesis/chapters/07_evaluation.tex",
+    "location": "results/benchmarks/thesis/thesis_results_combined.json:120-144; thesis/chapters/07_evaluation.tex:8-20; thesis/chapters/07_evaluation.tex:125-132",
+    "issue": "Original benchmark run lacks full run-time environment metadata and backend provenance.",
+    "exact_fix": "Rerun canonical benchmarks with captured metadata or add explicit caveat in Chapter 7 and Appendix A matching JSON limitation.",
+    "verification_steps": "Confirm benchmark artifact contains runtime captured metadata or thesis text explicitly states the provenance limitation."
+  },
+  {
+    "severity": "Major",
+    "category": "Citation/reference issues",
+    "file": "thesis/chapters/02_background.tex; thesis/chapters/06_heuristics.tex",
+    "location": "thesis/chapters/02_background.tex:396-404; thesis/chapters/06_heuristics.tex:255-268",
+    "issue": "Pattern-database additivity explanation is mathematically oversimplified.",
+    "exact_fix": "Rewrite Chapter 2 so max over admissible PDBs is generally safe, while summation requires cost partitioning or operator-disjoint abstractions.",
+    "verification_steps": "Search the thesis for disjoint subsets and summed and confirm the corrected statement does not imply piece-disjointness alone guarantees additive admissibility."
+  },
+  {
+    "severity": "Minor documented limitation",
+    "category": "Reproducibility/setup issues",
+    "file": "README.md; requirements.lock",
+    "location": "README.md:39-43; requirements.lock:1-139",
+    "issue": "Python lock file is exact-version pinned but not hash-locked.",
+    "exact_fix": "Generate a hash-locked requirements file and update README installation command.",
+    "verification_steps": "Run pip install --require-hashes -r requirements.lock or equivalent and confirm installation succeeds."
+  },
+  {
+    "severity": "Medium",
+    "category": "Reproducibility/setup issues",
+    "file": "docs/algorithms/kociemba.md; data/README.md",
+    "location": "docs/algorithms/kociemba.md:29-33; docs/algorithms/kociemba.md:90-98; data/README.md:1-4",
+    "issue": "Kociemba documentation says cached tables are present in the current repo, but the source ZIP intentionally omits generated caches.",
+    "exact_fix": "Change Kociemba documentation to say tables are generated locally and cached after first build, not shipped in the source ZIP.",
+    "verification_steps": "Search for data/kociemba and current repo and confirm documentation no longer claims generated caches are included."
+  },
+  {
+    "severity": "Medium",
+    "category": "Submission polish issues",
+    "file": "docs/algorithms/kociemba.md; thesis/chapters/04_kociemba.tex; src/kociemba/solver.py",
+    "location": "docs/algorithms/kociemba.md:19-27; thesis/chapters/04_kociemba.tex:31-45; src/kociemba/solver.py:10-18",
+    "issue": "Kociemba documentation gives an incorrect Phase-2 state-space number.",
+    "exact_fix": "Replace with raw coordinate combinations 40,320 x 40,320 x 24 = 39,016,857,600 and parity-valid Phase-2 states 19,508,428,800.",
+    "verification_steps": "Search for 39,038,976,000 and confirm it is removed or corrected."
+  },
+  {
+    "severity": "Medium",
+    "category": "Submission polish issues",
+    "file": "docs/DISTANCE_ESTIMATOR_README.md; src/korf/pattern_database.py; data/README.md",
+    "location": "docs/DISTANCE_ESTIMATOR_README.md:15-18; docs/DISTANCE_ESTIMATOR_README.md:149-182; docs/DISTANCE_ESTIMATOR_README.md:245-247; src/korf/pattern_database.py:8-12; src/korf/pattern_database.py:34-37; src/korf/pattern_database.py:50-53; data/README.md:50-54",
+    "issue": "Distance-estimator documentation is stale about nibble compression and memory size.",
+    "exact_fix": "Update docs to describe byte-per-entry exact-safe storage, 255 sentinel, historical legacy-nibble loader if relevant, and current expected cache size.",
+    "verification_steps": "Search for nibble, 44 MB, and 2x and confirm remaining mentions are historical or removed."
+  },
+  {
+    "severity": "Major",
+    "category": "Submission polish issues",
+    "file": "docs/DISTANCE_ESTIMATOR_README.md; src/korf/heuristics.py; thesis/chapters/06_heuristics.tex",
+    "location": "docs/DISTANCE_ESTIMATOR_README.md:30-42; docs/DISTANCE_ESTIMATOR_README.md:203-210; docs/DISTANCE_ESTIMATOR_README.md:245-252; src/korf/heuristics.py:4-7; thesis/chapters/06_heuristics.tex:89-92",
+    "issue": "Distance-estimator documentation overclaims admissibility of lightweight heuristics.",
+    "exact_fix": "Rewrite distance-estimator README to claim admissibility only for validated exact-safe PDB/native-coordinate heuristics under the documented combination rule; simple heuristics are exploratory/ranking estimates.",
+    "verification_steps": "Search for ensure admissibility, admissibility verification, and basic heuristics and confirm documentation matches implementation and Chapter 6."
+  },
+  {
+    "severity": "Minor",
+    "category": "Submission polish issues",
+    "file": "docs/PATH_A_NATIVE_EXACT_PLAN.md; src/korf/pattern_database.py",
+    "location": "docs/PATH_A_NATIVE_EXACT_PLAN.md:1-7; docs/PATH_A_NATIVE_EXACT_PLAN.md:76-78; docs/PATH_A_NATIVE_EXACT_PLAN.md:532-559; src/korf/pattern_database.py:8-12",
+    "issue": "Historical native-exact plan contains a stale 'currently uses nibble' statement.",
+    "exact_fix": "Change the phrase to 'originally used' or add a resolved note pointing to byte-storage implementation.",
+    "verification_steps": "Search for currently uses nibble and confirm it no longer appears as a current-state claim."
+  }
+]

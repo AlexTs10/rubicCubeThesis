@@ -95,6 +95,27 @@ def parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def load_scramble_source_metadata(source: Path) -> dict[str, object]:
+    """Load scramble-corpus metadata from the source artifact when available."""
+    if source.is_dir():
+        combined = source / COMBINED_BENCHMARK_NAME
+        source_paths = [combined] if combined.exists() else sorted(source.glob(DEPTH_BENCHMARK_GLOB))
+    else:
+        source_paths = [source]
+
+    for source_path in source_paths:
+        payload = normalize_benchmark_payload(json.loads(source_path.read_text(encoding="utf-8")))
+        metadata = payload.get("metadata", {}) if isinstance(payload, dict) else {}
+        if not isinstance(metadata, dict):
+            continue
+        return {
+            "scramble_generation": metadata.get("scramble_generation"),
+            "scramble_corpus_status": metadata.get("scramble_corpus_status"),
+            "current_generator_for_new_runs": metadata.get("current_generator_for_new_runs"),
+        }
+    return {}
+
+
 def load_scramble_set(source: Path) -> dict[int, list[dict[str, object]]]:
     """Load the stored scramble set grouped by scramble depth."""
     grouped: dict[int, list[dict[str, object]]] = {}
@@ -183,6 +204,9 @@ def write_combined_results(
             if key.startswith("korf_") or key in {
                 "solver_instances_reused_per_batch",
                 "benchmark_warm_start",
+                "scramble_generation",
+                "scramble_corpus_status",
+                "current_generator_for_new_runs",
                 "thistlethwaite_timeout",
                 "kociemba_timeout",
                 "kociemba_timeout_soft",
@@ -229,6 +253,7 @@ def main() -> None:
         )
 
     scramble_set = load_scramble_set(args.source)
+    source_metadata = load_scramble_source_metadata(args.source)
     if not scramble_set:
         raise ValueError(f"No scrambles found in {args.source}")
 
@@ -242,6 +267,12 @@ def main() -> None:
         korf_backend=args.korf_backend,
         kociemba_backend=args.kociemba_backend,
     )
+    if source_metadata.get("scramble_generation"):
+        comparison.scramble_generation = str(source_metadata["scramble_generation"])
+    if source_metadata.get("scramble_corpus_status"):
+        comparison.scramble_corpus_status = str(source_metadata["scramble_corpus_status"])
+    if source_metadata.get("current_generator_for_new_runs"):
+        comparison.current_generator_for_new_runs = str(source_metadata["current_generator_for_new_runs"])
     if args.overwrite_canonical and comparison.korf_backend != "optimal_external":
         raise RuntimeError(
             "Refusing to overwrite canonical thesis benchmarks because the "
