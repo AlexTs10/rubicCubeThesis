@@ -105,7 +105,7 @@ def generate_benchmarks(depths: List[int], tests_per_depth: int, seeds_start: in
 
             # Create scrambled cube
             cube = RubikCube()
-            scramble = cube.scramble(moves=depth, seed=seed)
+            scramble = cube.scramble(moves=depth, seed=seed, allow_redundant=False)
 
             # Test Thistlethwaite
             print("  - Running Thistlethwaite...", end=" ", flush=True)

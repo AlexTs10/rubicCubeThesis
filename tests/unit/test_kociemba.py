@@ -374,6 +374,7 @@ class TestKociembaSolver:
         test_cube.apply_moves(solution)
         assert test_cube.is_solved()
 
+    @pytest.mark.slow
     def test_solver_performance(self):
         """Test solver performance on multiple cubes."""
         solver = KociembaSolver()
@@ -448,6 +449,7 @@ class TestIntegration:
         coord = CoordCube(cubie)
         assert coord.is_phase1_solved()
 
+    @pytest.mark.slow
     def test_full_solution_solves_cube(self):
         """Test that the complete solution solves the cube."""
         for seed in range(5):

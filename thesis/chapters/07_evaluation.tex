@@ -100,7 +100,7 @@ Kociemba \cite{kociemba_rubiks_optimal}, ο οποίος ενσωματώνετ�
 
 \subsection{Μετρικές}
 
-Συλλέχθηκαν οι εξής μετρικές:
+Συλλέχθηκαν οι εξής βασικές μετρικές:
 \begin{itemize}
     \item \textbf{Success rate}: ποσοστό επιτυχούς επίλυσης εντός timeout
     \item \textbf{Solution length}: αριθμός κινήσεων στην τελική λύση
@@ -108,6 +108,13 @@ Kociemba \cite{kociemba_rubiks_optimal}, ο οποίος ενσωματώνετ�
     \item \textbf{Memory delta}: διαφορά process RSS πριν και μετά την επίλυση
     \item \textbf{Nodes explored}: διαθέσιμο μόνο για τον εξωτερικό exact backend
 \end{itemize}
+
+Οι κύριοι πίνακες αναφέρουν μέσους όρους επειδή παράγονται από το σταθερό
+artifact του thesis benchmark. Για την αποφυγή υπερ-ερμηνείας, οι μέσοι όροι
+πρέπει να διαβάζονται μαζί με τα boxplots/ιστογράμματα των σχημάτων και με τους
+ρητούς timeout περιορισμούς. Μια αυστηρότερη επόμενη εκτέλεση πρέπει να
+προσθέσει median, standard deviation ή IQR, confidence intervals όπου έχουν
+νόημα, και timeout-aware summaries στους ίδιους πίνακες.
 
 Η μετρική μνήμης είναι χρήσιμη συγκριτικά, αλλά είναι πιο θορυβώδης από τον χρόνο και το μήκος λύσης, ειδικά για πολύ γρήγορες εκτελέσεις. Για αυτόν τον λόγο, στα συμπεράσματα του παρόντος κεφαλαίου δίνεται μεγαλύτερη βαρύτητα στις μετρικές ποσοστού επιτυχίας, χρόνου και ποιότητας λύσης.
 
@@ -140,6 +147,12 @@ Kociemba επιλύουν επιτυχώς \emph{όλα} τα 100 scrambles το
 \bottomrule
 \end{tabular}
 \end{table}
+
+Ο Πίνακας~\ref{tab:eval_times} αναφέρει batch-amortized χρόνους επιτυχών
+εκτελέσεων. Δεν διαχωρίζει πλήρως cold-start και warm-start timings, επειδή το
+τρέχον benchmark artifact δεν περιλαμβάνει τεκμηριωμένο warmup στάδιο. Για τον
+λόγο αυτό οι τιμές χρησιμοποιούνται για συγκριτική εικόνα στο συγκεκριμένο
+corpus και όχι ως καθαρή μέτρηση steady-state latency.
 
 \begin{figure}[htbp]
 \centering

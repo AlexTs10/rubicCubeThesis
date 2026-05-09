@@ -123,11 +123,11 @@ def check_python_version() -> bool:
 
     print(f"Current Python version: {version_str}")
 
-    if version.major > 3 or (version.major == 3 and version.minor >= 10):
-        print_success(f"Python {version_str} is supported (>= 3.10 required)")
+    if version.major == 3 and 12 <= version.minor <= 14:
+        print_success(f"Python {version_str} is supported (Python 3.12-3.14)")
         return True
     else:
-        print_error(f"Python {version_str} is too old (>= 3.10 required)")
+        print_error(f"Python {version_str} is outside the supported range (Python 3.12-3.14)")
         return False
 
 

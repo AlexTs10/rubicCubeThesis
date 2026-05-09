@@ -5,7 +5,7 @@
 
 Για την εκτέλεση του project απαιτείται:
 \begin{itemize}
-    \item Python 3.10 ή νεότερο
+    \item Python 3.12--3.14 (συνιστώμενη baseline έκδοση: Python 3.12)
     \item \texttt{pip} για εγκατάσταση εξαρτήσεων
     \item βασικές βιβλιοθήκες επιστημονικού Python stack:
     \texttt{numpy}, \texttt{scipy}, \texttt{pandas}, \texttt{matplotlib}
@@ -13,16 +13,17 @@
     \item προαιρετικά: \texttt{node/npm} για τη Next.js εφαρμογή
 \end{itemize}
 
-Η τρέχουσα έκδοση του αποθετηρίου έχει επαληθευθεί με \texttt{Python 3.12.2}. Για πλήρη έλεγχο του περιβάλλοντος διατίθεται το script \filepath{verify_setup.py}.
+Η τρέχουσα έκδοση του αποθετηρίου υποστηρίζει \texttt{Python 3.12} έως \texttt{Python 3.14}, με συνιστώμενη baseline έκδοση την \texttt{Python 3.12}. Για πλήρη έλεγχο του περιβάλλοντος διατίθεται το script \filepath{verify_setup.py}.
 
 \section{Εγκατάσταση}
 
 \subsection{Βασική Εγκατάσταση}
 
 \begin{lstlisting}
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
+python3.12 -m venv .venv
+source .venv/bin/activate
+python -m pip install --upgrade pip
+python -m pip install -r requirements.lock -e .
 \end{lstlisting}
 
 \subsection{Έλεγχος Περιβάλλοντος}

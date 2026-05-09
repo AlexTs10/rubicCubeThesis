@@ -1,5 +1,10 @@
 #!/usr/bin/env python3
-"""Generate a source-archive manifest that is verifiable without `.git`."""
+"""Generate a source-archive manifest that is verifiable without `.git`.
+
+The manifest describes the files intentionally included in the external audit
+archive. Heavy generated caches, LaTeX intermediates, local dependency trees,
+and locally downloaded paper PDFs are excluded from that archive.
+"""
 
 from __future__ import annotations
 
@@ -24,12 +29,45 @@ EXCLUDED_PARTS = {
     "audit-results",
 }
 
+EXCLUDED_SUFFIXES = {
+    ".aux",
+    ".bbl",
+    ".bcf",
+    ".blg",
+    ".db",
+    ".fdb_latexmk",
+    ".fls",
+    ".lof",
+    ".log",
+    ".lot",
+    ".out",
+    ".pkl",
+    ".pickle",
+    ".run.xml",
+    ".sqlite",
+    ".synctex.gz",
+    ".toc",
+    ".xdv",
+}
+
+EXCLUDED_PATH_SUFFIXES = {
+    ".DS_Store",
+    "thesis/main-blx.bib",
+}
+
 
 def is_included(path: Path) -> bool:
     relative_parts = path.relative_to(ROOT).parts
     if any(part in EXCLUDED_PARTS for part in relative_parts):
         return False
-    if path.name == ".DS_Store":
+    if any(part.endswith((".egg-info", ".dist-info")) for part in relative_parts):
+        return False
+    relative_path = path.relative_to(ROOT).as_posix()
+    if any(relative_path.endswith(suffix) for suffix in EXCLUDED_PATH_SUFFIXES):
+        return False
+    if path.suffix.lower() == ".pdf" and relative_parts[:1] == ("papers",):
+        return False
+    if any(relative_path.endswith(suffix) for suffix in EXCLUDED_SUFFIXES):
         return False
     return path.is_file()
 
@@ -72,7 +110,15 @@ def main() -> None:
             "git_dirty": bool(git_value("status", "--porcelain")),
             "note": "Git fields are informational; file hashes below are the archive-verifiable source of truth.",
         },
-        "exclusions": sorted(EXCLUDED_PARTS),
+        "exclusions": {
+            "parts": sorted(EXCLUDED_PARTS),
+            "suffixes": sorted(EXCLUDED_SUFFIXES),
+            "path_suffixes": sorted(EXCLUDED_PATH_SUFFIXES),
+            "notes": [
+                "papers/**/*.pdf is excluded from audit archives; papers/ documents remain as bibliography metadata.",
+                "data/pattern_databases/*.pkl is generated cache data and is excluded from audit archives.",
+            ],
+        },
         "file_count": len(file_hashes),
         "file_hashes_sha256": file_hashes,
     }

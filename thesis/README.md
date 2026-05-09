@@ -1,6 +1,6 @@
 # Thesis LaTeX Project
 
-This directory contains the thesis manuscript and its build assets. The manuscript is complete and buildable with the current XeLaTeX-compatible workflow or the tested Tectonic path. The remaining work is review, formatting polish, and final PDF verification.
+This directory contains the thesis manuscript and its build assets. A review PDF can be built with the current XeLaTeX-compatible workflow or the tested Tectonic path. The final institutional submission build is not complete until `chapters/00_approval.tex` contains the official committee names and examination date and is included in `main.tex`.
 
 ## Structure
 
@@ -32,14 +32,15 @@ thesis/
 
 ## Build Paths
 
-### Preferred Commands
+### Preferred Review-Build Command
 
 From the repository root:
 
 ```bash
 python scripts/thesis_workflow.py build --mode auto
-python scripts/thesis_workflow.py build --mode docker
 ```
+
+`build --mode auto` is the documented review-build path. It prefers `latexmk -xelatex` when available, then a manual `xelatex` + bibliography pass sequence, then the tested local `tectonic` path, and finally Docker. Do not use `pdflatex` for this manuscript because Greek/Unicode listing content requires a Unicode-capable engine.
 
 From `thesis/`:
 
@@ -51,7 +52,13 @@ make clean
 make view
 ```
 
-`build --mode auto` prefers `latexmk -xelatex` when available, then a manual `xelatex` + bibliography pass sequence, then the tested local `tectonic` path, and finally Docker. Do not use `pdflatex` for this manuscript because Greek/Unicode listing content requires a Unicode-capable engine. If Docker is installed but not running on macOS, start it with:
+For Docker-only validation:
+
+```bash
+python scripts/thesis_workflow.py build --mode docker
+```
+
+If Docker is installed but not running on macOS, start it with:
 
 ```bash
 open -a Docker

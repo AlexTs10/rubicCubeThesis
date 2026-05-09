@@ -78,7 +78,7 @@ for depth in SCRAMBLE_DEPTHS:
 
         # Generate scramble
         cube = RubikCube()
-        scramble = cube.scramble(depth, seed=seed)
+        scramble = cube.scramble(depth, seed=seed, allow_redundant=False)
         scramble_str = " ".join(scramble)
 
         result = {

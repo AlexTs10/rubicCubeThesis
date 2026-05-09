@@ -624,6 +624,8 @@ def format_status_markdown(data: dict[str, Any]) -> str:
     sections = [
         "# Thesis Workflow Status",
         "",
+        "> Generated artifact, not source of truth. Re-run this command in the current environment before relying on the result.",
+        "",
         "## Thesis Chapters",
         markdown_table(["File", "Words", "Citations", "State"], chapter_rows),
         "",

@@ -4,14 +4,15 @@ RUBIK'S CUBE THESIS - ACADEMIC BIBLIOGRAPHY DOWNLOAD SUMMARY
 
 Date: November 7, 2025
 Task: Search and download 75 academic papers for Rubik's Cube thesis
-Status: SUCCESSFULLY COMPLETED ✓
+Status: LOCAL ACQUISITION LOG; PDF FILES ARE NOT INCLUDED IN AUDIT ZIPS
 
 ================================================================================
 OVERALL RESULTS
 ================================================================================
 
-Downloaded Resources: 51 PDFs + 7 HTML/text files = 58 resources
-Total Size: ~45 MB
+Downloaded Resources: 51 PDFs + 7 HTML/text files = 58 resources in the local acquisition set
+Audit ZIP Contents: bibliography metadata only; papers/**/*.pdf is intentionally excluded
+Local PDF Size: ~45 MB when the private/local PDF collection is present
 Success Rate: 77% (51 of 75 unique PDF citations)
 Time Invested: ~45 minutes (using parallel download agents)
 

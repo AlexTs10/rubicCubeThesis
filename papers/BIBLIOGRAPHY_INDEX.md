@@ -2,9 +2,10 @@
 ## Download Status Report
 
 **Total Papers Requested:** 75 citations
-**Successfully Downloaded:** 51 PDFs + 7 HTML/Text resources = 58 resources
-**Download Success Rate:** ~77%
-**Total Size:** ~50+ MB
+**Local acquisition log:** 51 PDFs + 7 HTML/Text resources were collected during literature gathering.
+**Audit archive policy:** `scripts/create_audit_zip.py` excludes local `papers/**/*.pdf` files; this file is metadata, not proof that PDFs are present in an uploaded ZIP.
+**Download Success Rate:** ~77% at acquisition time
+**Local PDF Size:** ~50+ MB when the private/local PDF collection is present
 
 **Last Updated:** 2025-11-07
 

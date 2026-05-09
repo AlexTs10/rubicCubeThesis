@@ -63,7 +63,7 @@ class AlgorithmResult:
     solved: bool
     solution_length: Optional[int]
     time_seconds: float
-    memory_mb: float
+    memory_mb: Optional[float]
     nodes_explored: Optional[int] = None
     reason_failed: Optional[str] = None
     solution_moves: Optional[List[str]] = None
@@ -336,7 +336,7 @@ class AlgorithmComparison:
                     solved=False,
                     solution_length=None,
                     time_seconds=elapsed,
-                    memory_mb=0.0,
+                    memory_mb=None,
                     reason_failed="no_solution",
                     backend="thistlethwaite_native",
                     optimal_guaranteed=False,
@@ -408,7 +408,7 @@ class AlgorithmComparison:
                     solved=False,
                     solution_length=None,
                     time_seconds=elapsed,
-                    memory_mb=0.0,
+                    memory_mb=None,
                     reason_failed="no_solution",
                     backend=backend,
                     optimal_guaranteed=False,
@@ -498,7 +498,7 @@ class AlgorithmComparison:
                     nodes_explored=stats.get('nodes_explored', 0),
                     reason_failed=reason,
                     backend=self.korf_backend,
-                    optimal_guaranteed=self.korf_guarantees_optimal,
+                    optimal_guaranteed=False if self.korf_guarantees_optimal else None,
                     requested_scramble_length=scramble_depth,
                 )
 

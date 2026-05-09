@@ -414,9 +414,9 @@ class VisualizationGenerator:
                        label=self.display_labels[algo_name],
                        color=self.colors[algo_name], markersize=8)
 
-        ax.set_xlabel('Scramble Depth (moves)')
+        ax.set_xlabel('Requested Scramble Length (moves)')
         ax.set_ylabel('Average Solution Length (moves)')
-        ax.set_title('Average Solution Length vs Scramble Depth')
+        ax.set_title('Average Solution Length vs Requested Scramble Length')
         ax.legend()
         ax.grid(True, alpha=0.3)
 

@@ -147,7 +147,7 @@ def main():
     with st.expander("🔧 Technical Details"):
         st.markdown("""
         **Implementation Details:**
-        - Language: Python 3.10+
+        - Language: Python 3.12-3.14 (Python 3.12 recommended baseline)
         - UI Framework: Streamlit
         - Visualization: matplotlib (3D), seaborn (charts)
         - Testing Framework: Comprehensive Phase 8 evaluation

@@ -273,7 +273,7 @@ class ComprehensiveTestRunner:
                 from src.cube.rubik_cube import RubikCube
                 cube = RubikCube()
                 seed = self.config.seed + test_id
-                scramble = cube.scramble(moves=depth, seed=seed)
+                scramble = cube.scramble(moves=depth, seed=seed, allow_redundant=False)
 
                 # Store scramble info
                 cube._scramble_depth = depth

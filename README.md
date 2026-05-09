@@ -5,7 +5,7 @@
 **Institution:** University of Patras
 
 **Project Type:** Undergraduate / Bachelor's thesis in ECE
-**Current State:** Thesis manuscript, codebase, benchmarks, and local build workflow are all present
+**Current State:** Review manuscript, codebase, benchmarks, and local build workflow are present; final institutional front matter is still pending
 
 This repository contains the implementation, evaluation, and thesis manuscript for a comparative study of three classical Rubik's Cube solving algorithms:
 
@@ -22,30 +22,34 @@ The Next.js frontend under `webapp/` is a synthetic preview layer for demos and 
 ## Where To Start
 
 If you want the current thesis state, start from a clean Python environment. The
-tested local environment is Python 3.12.
+supported review range is Python 3.12 through Python 3.14; Python 3.12 is the
+recommended baseline for reproducing the thesis environment.
 
 ```bash
 python3.12 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install -r requirements.lock
+python -m pip install -r requirements.lock -e .
 python verify_setup.py
 python -m pytest tests -q
 python scripts/thesis_workflow.py status --output agent_workflow/generated/status.md
 python scripts/thesis_workflow.py validate --output agent_workflow/generated/validation.md
 python scripts/thesis_workflow.py build --mode auto
-python scripts/generate_reproducibility_manifest.py
+python scripts/create_audit_zip.py
 ```
 
-Use `requirements.lock` for exact reproduction of the audited environment. Use
-`requirements.txt` only when you need a flexible dependency range for local
-development.
+Use `requirements.lock` as the pinned Python dependency snapshot for the audited
+environment. It is not a cryptographic lock file: it does not include hashes,
+platform markers, Python ABI constraints, TeX/Tectonic versions, or Node/npm
+versions. Use `requirements.txt` only when you need a flexible dependency range
+for local development.
 
 The default pytest/verification profile is intentionally the fast reproducibility profile. It excludes tests marked `slow`, `external`, or `cache_building`; run those markers explicitly only when validating generated caches or external backends.
 
 The compiled thesis PDF is written to `thesis/main.pdf`.
 The archive-verifiable source manifest is written to
-`REPRODUCIBILITY_MANIFEST.json`.
+`REPRODUCIBILITY_MANIFEST.json`, and the matching audit ZIP is written under
+`audit-results/packages/`.
 
 ## Repo Layout
 
@@ -55,7 +59,7 @@ rubicCubeThesis/
 ├── tests/                      # Unit and integration tests
 ├── demos/                      # Runnable demo scripts
 ├── docs/                       # Technical docs and supporting notes
-├── papers/                     # Literature collection and bibliography notes
+├── papers/                     # Bibliography notes; local PDFs are excluded from audit ZIPs
 ├── scripts/                    # Workflow, benchmarking, and utility scripts
 ├── results/                    # Benchmark outputs and generated reports
 ├── thesis/                     # LaTeX manuscript and references
@@ -109,10 +113,13 @@ Useful files:
 - [`agent_workflow/generated/validation.md`](agent_workflow/generated/validation.md)
 - [`thesis/README.md`](thesis/README.md)
 
-## Current Verification Snapshot
+## Local Verification Snapshot
 
-- `python -m pytest tests --collect-only -q` reports `291 tests collected`; the default fast profile selects `284` tests and deselects `7` cache-building tests
-- `python -m pytest tests -q` reports `283 passed, 1 skipped, 7 deselected` in the supported fast profile; full cache-building tests are opt-in with explicit markers
+These generated results are local evidence, not a portable source of truth. Re-run
+the commands below in a clean Python 3.12 environment for the current machine.
+
+- `python -m pytest tests --collect-only -q` reports the collected test count for the current checkout; the default fast profile excludes `slow`, `external`, and `cache_building`
+- `python -m pytest tests -q` runs the supported fast profile; expected runtime is several minutes on an Apple M3-class laptop because it still executes deterministic solver smoke tests
 - `python verify_setup.py` runs the same fast test profile by default; use `--full` only for heavyweight local validation
 - `cd webapp && npm ci && npm run build` succeeds from a clean dependency install
 - `python scripts/thesis_workflow.py build --mode auto` rebuilds `thesis/main.pdf` when a supported local TeX/Tectonic/Docker build path is available

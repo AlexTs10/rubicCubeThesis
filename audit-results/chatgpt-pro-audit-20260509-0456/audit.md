@@ -1,0 +1,484 @@
+I audited the extracted ZIP repository only. I did not use GitHub or external repositories. I verified paths and locations against the extracted files, rendered/inspected the thesis PDF, compared the manifest against the original ZIP contents, collected tests, ran selected tests, and inspected the implementation/results artifacts.
+
+I found **no missing citation keys** among the cited LaTeX references: the extracted thesis cites 31 keys and all 31 exist in `thesis/references.bib`. The citation/reference problems below are instead about missing claimed local paper artifacts and documentation inconsistency.
+
+## 1. Critical blockers
+
+### Issue 1 — Reproducibility manifest does not describe the uploaded ZIP
+
+* **Severity:** critical
+* **File:** `REPRODUCIBILITY_MANIFEST.json`; `scripts/generate_reproducibility_manifest.py`
+* **Location:** `REPRODUCIBILITY_MANIFEST.json:12-13`; `scripts/generate_reproducibility_manifest.py:57-63`
+* **Problem:** The manifest claims `file_count: 332`, but the original uploaded ZIP contains 273 files. The manifest references 60 files absent from the ZIP, including paper PDFs and LaTeX auxiliary outputs.
+* **Why it matters:** This invalidates the archive-verifiable source claim. A reproducibility auditor cannot use the manifest to verify the submitted archive.
+* **Exact fix recommendation:** Regenerate `REPRODUCIBILITY_MANIFEST.json` from the exact final ZIP contents, or include every manifest-listed file in the archive. Also update the manifest generator to exclude non-source LaTeX build artifacts unless they are intentionally submitted.
+* **Verification steps:** Re-run `python scripts/generate_reproducibility_manifest.py`, recreate the ZIP, then compare ZIP file paths against `file_hashes_sha256`. The manifest count must equal the ZIP file count minus the manifest itself, and every listed hash must match.
+
+### Issue 2 — Papers documentation claims 51 PDFs that are absent
+
+* **Severity:** critical
+* **File:** `papers/README.md`; `papers/BIBLIOGRAPHY_INDEX.md`; `papers/DOWNLOAD_SUMMARY.txt`
+* **Location:** `papers/README.md:5-7`, `papers/README.md:49-86`, `papers/README.md:117-124`; `papers/BIBLIOGRAPHY_INDEX.md:4-7`; `papers/DOWNLOAD_SUMMARY.txt:13-16`
+* **Problem:** The repository claims “51 PDFs + 7 supporting documents,” but the uploaded ZIP contains no `papers/**/*.pdf` files. The only PDF in the ZIP is `thesis/main.pdf`.
+* **Why it matters:** The repository overstates its bibliography artifact completeness. The local literature collection cannot be audited or reproduced from the submitted archive.
+* **Exact fix recommendation:** Either include the legally redistributable paper PDFs in `papers/` and regenerate the manifest, or rewrite the papers documentation to state that PDFs are not included and provide only bibliography/index metadata.
+* **Verification steps:** Run `find papers -name '*.pdf' | wc -l`; it should match the documented count, or the documentation should no longer claim local PDFs.
+
+### Issue 3 — Formal approval/signature page is omitted from the compiled thesis
+
+* **Severity:** critical
+* **File:** `thesis/main.tex`; `thesis/chapters/00_approval.tex`
+* **Location:** `thesis/main.tex:172-174`; `thesis/chapters/00_approval.tex:35-44`
+* **Problem:** `main.tex` explicitly omits the formal approval/signature page from the review build. The available approval page still contains placeholder committee entries and a blank examination date.
+* **Why it matters:** This is a final-submission blocker for a formal thesis. The compiled `thesis/main.pdf` cannot be considered institution-ready.
+* **Exact fix recommendation:** Fill in the final committee names and examination date in `00_approval.tex`, then add `\input{chapters/00_approval}` to the front matter in `main.tex` before acknowledgements or in the institutionally required position.
+* **Verification steps:** Rebuild `thesis/main.pdf`; confirm the approval page appears in the PDF text and rendered pages, and confirm the placeholders and `\dotfill` date are gone.
+
+### Issue 4 — Shipped edge pattern database files are incompatible with current edge database implementation
+
+* **Severity:** major
+* **File:** `src/korf/edge_database.py`; `data/pattern_databases/edge1_db.pkl`; `data/pattern_databases/edge2_db.pkl`
+* **Location:** `src/korf/edge_database.py:1-17`, `src/korf/edge_database.py:125-138`, `src/korf/edge_database.py:323-336`
+* **Problem:** Current code expects each default 6-edge database to have 42,577,920 states, but both shipped edge DB files load as legacy 23,040-state databases. Calling `create_edge_database(1)` or `create_edge_database(2)` raises `ValueError: Size mismatch: expected 42577920, got 23040`.
+* **Why it matters:** A checked-in data artifact is incompatible with the code that loads it. This undermines implementation accuracy and reproducibility for Korf/edge-PDB functionality.
+* **Exact fix recommendation:** Remove the obsolete edge DB files or replace them with databases generated by the current indexing scheme. Add a compatibility test that loads the shipped `edge1_db.pkl` and `edge2_db.pkl` and verifies their expected size before release.
+* **Verification steps:** Run:
+
+  ```bash
+  python - <<'PY'
+  from src.korf.edge_database import create_edge_database
+  create_edge_database(1, verbose=False)
+  create_edge_database(2, verbose=False)
+  print("edge DBs compatible")
+  PY
+  ```
+
+## 2. Thesis writing issues
+
+### Issue 5 — Introduction overclaims exact distance computation
+
+* **Severity:** major
+* **File:** `thesis/chapters/01_introduction.tex`
+* **Location:** `thesis/chapters/01_introduction.tex:52-58`, especially line 55
+* **Problem:** The thesis objective says the work implements an algorithm that receives a state and computes how many moves it is from the solution. Later text narrows this to exploratory estimates and exact results only for completed native/external searches.
+* **Why it matters:** This overstates mathematical/algorithmic coverage. Exact distance for arbitrary cube states is a much stronger claim than the implemented and benchmarked behavior.
+* **Exact fix recommendation:** Replace the line with wording such as: “Υλοποίηση μηχανισμών εκτίμησης απόστασης και ακριβούς απόστασης μόνο για τις περιπτώσεις όπου η native ή external exact αναζήτηση ολοκληρώνεται εντός ορίου.”
+* **Verification steps:** Re-read Chapters 1, 6, 7, and 9 after editing and ensure every “distance” claim distinguishes estimate, exact-if-completed, and external optimal backend.
+
+### Issue 6 — “PDBs are the optimal choice” is too absolute
+
+* **Severity:** major
+* **File:** `thesis/chapters/06_heuristics.tex`
+* **Location:** `thesis/chapters/06_heuristics.tex:75-82`; limiting caveat appears at `thesis/chapters/06_heuristics.tex:87-90`
+* **Problem:** The text says Pattern Databases are “τη βέλτιστη επιλογή” for IDA*. The same chapter later says implemented heuristics are normalized estimates and not strict admissible lower bounds for the benchmark path.
+* **Why it matters:** The statement is mathematically and experimentally too broad. PDB usefulness depends on memory budget, indexing correctness, abstraction, preprocessing cost, and benchmark constraints.
+* **Exact fix recommendation:** Change to “ισχυρή και κλασική επιλογή για admissible IDA* όταν το κόστος μνήμης και κατασκευής είναι αποδεκτό.”
+* **Verification steps:** Confirm the revised sentence no longer claims global optimality and is consistent with the caveats in lines 87-90 and 416-422.
+
+### Issue 7 — Conclusions generalize beyond the experimental evidence
+
+* **Severity:** major
+* **File:** `thesis/chapters/09_conclusions.tex`
+* **Location:** `thesis/chapters/09_conclusions.tex:34-38`, `thesis/chapters/09_conclusions.tex:126-128`
+* **Problem:** The conclusion says Kociemba is the best overall choice for real applications and that 100 scrambles are enough for reliable practical conclusions. The evaluation itself states the corpus is fixed, single-machine, not statistically exhaustive, and based on requested scramble length rather than exact depth.
+* **Why it matters:** This weakens academic rigor by overstating external validity.
+* **Exact fix recommendation:** Constrain the conclusion to the submitted benchmark corpus: “Στο συγκεκριμένο fixed corpus και στο συγκεκριμένο περιβάλλον εκτέλεσης, ο Kociemba προσφέρει την καλύτερη ισορροπία...”
+* **Verification steps:** Check that Chapter 9 mirrors the limitations in `thesis/chapters/07_evaluation.tex:318-327`.
+
+### Issue 8 — Greek academic prose mixes too much English terminology without consistent treatment
+
+* **Severity:** minor
+* **File:** `thesis/chapters/00_abstract_gr.tex`; `thesis/chapters/06_heuristics.tex`
+* **Location:** `thesis/chapters/00_abstract_gr.tex:14`, `thesis/chapters/00_abstract_gr.tex:21-25`, `thesis/chapters/00_abstract_gr.tex:33`, `thesis/chapters/00_abstract_gr.tex:37`; `thesis/chapters/06_heuristics.tex:416-425`
+* **Problem:** Terms such as `artifact`, `native`, `exact solver`, `benchmark`, `profile`, `experimental endpoint`, `publishable`, `solvers`, and `heuristic estimates` are mixed into Greek prose without a consistent glossary or typographic convention.
+* **Why it matters:** This harms formal academic tone and readability, especially in the abstract and thesis-facing chapters.
+* **Exact fix recommendation:** Create a consistent terminology policy: either translate recurring terms or introduce English terms once in parentheses and then use Greek equivalents. Keep unavoidable English technical terms in `\textlatin{}` or `\emph{}` consistently.
+* **Verification steps:** Search the Greek chapters for common English technical terms and normalize them chapter-wide.
+
+## 3. Technical/code issues
+
+### Issue 9 — Korf timeout rows are marked `optimal_guaranteed: true`
+
+* **Severity:** major
+* **File:** `src/evaluation/algorithm_comparison.py`; `results/benchmarks/thesis/thesis_results_combined.json`
+* **Location:** `src/evaluation/algorithm_comparison.py:485-503`; result examples at `results/benchmarks/thesis/thesis_results_combined.json:9580-9596`, `11529-11545`, `11817-11833`
+* **Problem:** When Korf times out, the result row has `solved: false`, `solution_length: null`, but still records `optimal_guaranteed: true`. The same rows also use `memory_mb: 0.0`, which reads like measured zero memory rather than missing/unreported memory.
+* **Why it matters:** Downstream analysis can misinterpret failed rows as optimality-certified. This is a semantic correctness problem in the experimental data schema.
+* **Exact fix recommendation:** On failure, set `optimal_guaranteed` to `false` or `null`, or rename it to `backend_guarantees_optimal_if_solved`. Set failed-run memory to `null` unless it is actually measured.
+* **Verification steps:** Regenerate benchmark JSON and assert every row with `solved: false` has no positive optimality guarantee and uses `null` for unmeasured metrics.
+
+### Issue 10 — Default fast test profile still includes unmarked long Kociemba tests
+
+* **Severity:** major
+* **File:** `pytest.ini`; `tests/unit/test_kociemba.py`; `src/kociemba/solver.py`
+* **Location:** `pytest.ini:1-7`; `tests/unit/test_kociemba.py:377-424`, `tests/unit/test_kociemba.py:451-465`; `src/kociemba/solver.py:77-82`, `src/kociemba/solver.py:137-139`, `src/kociemba/solver.py:252-265`
+* **Problem:** The default pytest profile excludes only `slow`, `external`, and `cache_building`, but the Kociemba performance/integration tests are unmarked. They solve multiple 15-20 move scrambles and use a soft timeout grace.
+* **Why it matters:** The README claims a fast default verification profile, but these tests can dominate runtime or hang in constrained environments. This undermines reproducibility and CI suitability.
+* **Exact fix recommendation:** Mark performance/integration tests as `slow`, reduce the default workload to deterministic shallow cases, and add hard per-test timeouts. Keep longer Kociemba performance tests opt-in.
+* **Verification steps:** Run `python -m pytest tests -q` in a clean environment and confirm it completes within the documented fast-profile budget.
+
+### Issue 11 — No standard Python packaging configuration
+
+* **Severity:** major
+* **File:** repository root; `verify_setup.py`; `scripts/thesis_workflow.py`
+* **Location:** root lacks `pyproject.toml`, `setup.py`, `setup.cfg`, `tox.ini`, and `noxfile.py`; examples of path injection at `verify_setup.py:259-266` and `scripts/thesis_workflow.py:21-23`
+* **Problem:** The codebase relies on running from the repository root and manually inserting the root into `sys.path`.
+* **Why it matters:** This makes imports fragile, blocks clean editable installs, and weakens reproducibility in CI or external review environments.
+* **Exact fix recommendation:** Add `pyproject.toml` with package metadata, dependencies, test configuration, and an editable-install workflow. Replace ad hoc `sys.path.insert` usage with package imports.
+* **Verification steps:** Run `python -m pip install -e .` and then run tests and scripts from outside the repository root.
+
+### Issue 12 — Legacy benchmark scripts still generate redundant scrambles
+
+* **Severity:** major
+* **File:** `src/cube/rubik_cube.py`; `scripts/run_comprehensive_tests.py`; `scripts/benchmarks/generate_thesis_data.py`; `scripts/benchmarks/generate_complete_thesis_data.py`; `src/evaluation/algorithm_comparison.py`
+* **Location:** `src/cube/rubik_cube.py:258-263`; `scripts/run_comprehensive_tests.py:272-276`; `scripts/benchmarks/generate_thesis_data.py:79-82`; `scripts/benchmarks/generate_complete_thesis_data.py:106-108`; current non-redundant path at `src/evaluation/algorithm_comparison.py:571-579`
+* **Problem:** The cube scramble default is `allow_redundant=True`. Several still-present scripts call `cube.scramble(...)` without disabling redundant same-face moves, while the current comparison path explicitly uses `allow_redundant=False`.
+* **Why it matters:** Different scripts can generate different corpus semantics while using the same “depth” language. This risks accidental regeneration of incompatible benchmark data.
+* **Exact fix recommendation:** Either set `allow_redundant=False` as the default for benchmark-facing scripts, or label all legacy scripts as historical and prevent them from writing canonical thesis outputs.
+* **Verification steps:** Grep for `cube.scramble` calls and confirm every benchmark-producing script explicitly sets `allow_redundant`.
+
+### Issue 13 — Webapp tests only check file existence
+
+* **Severity:** minor
+* **File:** `webapp/tests/smoke.test.mjs`
+* **Location:** `webapp/tests/smoke.test.mjs:8-17`
+* **Problem:** The only webapp test verifies that entrypoint files exist. It does not test cube move logic, inverse solution generation, timeout behavior, page rendering, or comparison output.
+* **Why it matters:** The webapp can break functionally while tests still pass.
+* **Exact fix recommendation:** Add unit tests for `webapp/src/lib/solver.ts`, including inverse scramble correctness, synthetic timeout behavior, invalid input handling, and algorithm metadata. Add at least one render-level smoke test for each page.
+* **Verification steps:** Run `cd webapp && npm test`; confirm tests fail if solver output or page behavior is intentionally broken.
+
+## 4. Research/experimental issues
+
+### Issue 14 — Benchmark corpus uses requested scramble length, not exact depth
+
+* **Severity:** major
+* **File:** `thesis/chapters/07_evaluation.tex`; `results/benchmarks/thesis/thesis_results_combined.json`
+* **Location:** `thesis/chapters/07_evaluation.tex:75-77`, `thesis/chapters/07_evaluation.tex:318-327`; `results/benchmarks/thesis/thesis_results_combined.json:112-119`
+* **Problem:** The thesis correctly discloses that the checked-in corpus is a legacy corpus with redundant moves and requested length rather than exact optimal depth. However, this substantially weakens any interpretation of results “by depth.”
+* **Why it matters:** Performance at requested scramble length 20 is not the same as performance on states at exact optimal depth 20.
+* **Exact fix recommendation:** Regenerate a canonical benchmark using non-redundant scrambles and report verified optimal-depth buckets where possible, or keep the legacy corpus but consistently label every result as requested scramble length.
+* **Verification steps:** Recompute benchmarks with stored scrambles and, separately, with `allow_redundant=False`; report the distribution of verified optimal depths.
+
+### Issue 15 — Table/figure labels still use “depth” language despite requested-length caveat
+
+* **Severity:** major
+* **File:** `thesis/chapters/07_evaluation.tex`; `src/evaluation/visualizations.py`
+* **Location:** `thesis/chapters/07_evaluation.tex:167`, `thesis/chapters/07_evaluation.tex:291-295`; `src/evaluation/visualizations.py:417-419`
+* **Problem:** The solution-length table header says `Βάθος`, and Figure 7 is generated with “Scramble Depth” labels, even though the thesis states these are requested scramble lengths, not guaranteed exact depths.
+* **Why it matters:** This can mislead readers into interpreting results as exact-depth experimental results.
+* **Exact fix recommendation:** Rename labels to “Ζητούμενο μήκος scramble” / “Requested scramble length (moves)” throughout tables, plots, UI, and generated reports.
+* **Verification steps:** Regenerate figures and rebuild the PDF; search for “Scramble Depth” and “Βάθος” in benchmark contexts and ensure only requested-length terminology remains.
+
+### Issue 16 — Main evaluation tables omit uncertainty/dispersion
+
+* **Severity:** major
+* **File:** `thesis/chapters/07_evaluation.tex`
+* **Location:** `thesis/chapters/07_evaluation.tex:161-175`, `thesis/chapters/07_evaluation.tex:213-227`, limitations at `thesis/chapters/07_evaluation.tex:318-327`
+* **Problem:** The thesis reports means for solution length and time but does not include standard deviation, median, IQR, confidence intervals, or per-depth timeout-aware summaries in the main tables.
+* **Why it matters:** With only 25 scrambles per requested length and high variance/timeouts, means alone are weak evidence.
+* **Exact fix recommendation:** Add median, standard deviation or IQR, and timeout counts to the main evaluation tables. For time, report successful-only and timeout-inclusive interpretations separately.
+* **Verification steps:** Extend `scripts/benchmarks/analyze_thesis_data.py` or `generate_latex_tables.py` to emit dispersion metrics; verify the PDF tables include them.
+
+### Issue 17 — Cold-start and warm-start timing are mixed
+
+* **Severity:** major
+* **File:** `thesis/chapters/07_evaluation.tex`; `results/benchmarks/thesis/thesis_results_combined.json`; `src/evaluation/algorithm_comparison.py`
+* **Location:** `thesis/chapters/07_evaluation.tex:10-20`, `thesis/chapters/07_evaluation.tex:318-324`; `results/benchmarks/thesis/thesis_results_combined.json:24-26`; `src/evaluation/algorithm_comparison.py:745-751`
+* **Problem:** The benchmark reuses solver instances but includes lazy-loading costs in first timed solves. The thesis discloses this, but the headline comparisons still mix initialization and steady-state solve time.
+* **Why it matters:** Solver comparisons can be distorted by one-time table loading rather than algorithmic search cost.
+* **Exact fix recommendation:** Add a documented warmup phase and report separate cold-start and warm-start timings. Keep current batch-amortized timings as a third category if desired.
+* **Verification steps:** Regenerate benchmark results with explicit warmup metadata and verify the thesis tables distinguish the timing categories.
+
+## 5. Citation/reference issues
+
+### Issue 18 — Local bibliography collection is not auditable as claimed
+
+* **Severity:** critical
+* **File:** `papers/README.md`; `papers/BIBLIOGRAPHY_INDEX.md`; `papers/DOWNLOAD_SUMMARY.txt`; `REPRODUCIBILITY_MANIFEST.json`
+* **Location:** `papers/README.md:5-7`; `papers/BIBLIOGRAPHY_INDEX.md:4-7`; `papers/DOWNLOAD_SUMMARY.txt:13-16`; `REPRODUCIBILITY_MANIFEST.json:13`
+* **Problem:** The repository claims a downloaded bibliography collection and hashes absent PDF files in the manifest, but those PDFs are not in the uploaded ZIP.
+* **Why it matters:** A reviewer cannot inspect the claimed literature artifact or verify that cited supporting files exist locally.
+* **Exact fix recommendation:** Decide whether `papers/` is a real artifact or only a bibliography index. If it is real, include files and hashes. If not, remove “Successfully Downloaded” language and remove absent PDFs from the manifest.
+* **Verification steps:** Run `find papers -type f` and compare the output against all paper paths listed in docs and the manifest.
+
+## 6. Reproducibility/setup issues
+
+### Issue 19 — Python version and install instructions are inconsistent
+
+* **Severity:** major
+* **File:** `README.md`; `thesis/chapters/appendix_a.tex`; `ui/app.py`; `agent_workflow/generated/validation.md`
+* **Location:** `README.md:24-44`; `thesis/chapters/appendix_a.tex:8-16`, `thesis/chapters/appendix_a.tex:22-38`; `ui/app.py:149-153`; `agent_workflow/generated/validation.md:5-18`
+* **Problem:** The root README says the tested local environment is Python 3.12 and recommends `requirements.lock`; Appendix A says Python 3.10+ and installs `requirements.txt`; UI says Python 3.10+; generated validation records Python 3.14.0.
+* **Why it matters:** Reproducibility requires one clear supported environment, especially because the lock file pins very new package versions.
+* **Exact fix recommendation:** Standardize all documentation on one supported Python version range and one reproducible install command. Put flexible developer installation in a separate subsection.
+* **Verification steps:** Search for `Python 3.10`, `Python 3.12`, `Python 3.14`, `requirements.txt`, and `requirements.lock`; confirm every occurrence matches the final policy.
+
+### Issue 20 — `requirements.lock` is not sufficient for “exact reproduction”
+
+* **Severity:** major
+* **File:** `README.md`; `requirements.lock`; `requirements.txt`
+* **Location:** `README.md:40-42`; `requirements.lock:93-95`, `requirements.lock:117-119`, `requirements.lock:133-135`; `requirements.txt:1-5`
+* **Problem:** The README calls `requirements.lock` exact reproduction, but the file is a flat pinned requirements list without hashes, platform markers, Python ABI constraints, or TeX/Node/toolchain locks.
+* **Why it matters:** Exact reproduction cannot be guaranteed across OS/Python versions or package index changes.
+* **Exact fix recommendation:** Use a hash-locked tool such as `pip-tools --generate-hashes`, `uv lock`, or equivalent. Add a separate environment manifest for Python, OS, TeX/Tectonic, Node, and npm versions.
+* **Verification steps:** Reinstall in a clean environment with hash checking enabled and run `python verify_setup.py`, tests, benchmark smoke, and thesis build.
+
+### Issue 21 — Checked-in generated validation/status are machine-specific but treated as current snapshot
+
+* **Severity:** major
+* **File:** `agent_workflow/generated/validation.md`; `agent_workflow/generated/status.md`; `README.md`
+* **Location:** `agent_workflow/generated/validation.md:3-24`; `agent_workflow/generated/status.md:50-56`; `README.md:112-118`
+* **Problem:** The validation artifact says it is not source of truth and is tied to `Alexs-Laptop.local`, macOS 26.2, and Python 3.14.0. It also reports missing local TeX tools while saying no blocking issues. The root README presents these generated artifacts as the “Current Verification Snapshot.”
+* **Why it matters:** Reviewers may rely on stale machine-specific generated files instead of reproducible CI output.
+* **Exact fix recommendation:** Move generated status/validation into a clearly historical artifact section, or regenerate them in a clean CI environment and include CI logs.
+* **Verification steps:** Re-run `python scripts/thesis_workflow.py validate` on a clean machine and compare the generated output to the checked-in artifact.
+
+### Issue 22 — Thesis build documentation overstates build readiness
+
+* **Severity:** major
+* **File:** `thesis/README.md`; `thesis/main.tex`
+* **Location:** `thesis/README.md:3`, `thesis/README.md:39-55`; omitted approval page at `thesis/main.tex:172-174`
+* **Problem:** `thesis/README.md` says the manuscript is complete and buildable, but the compiled review build intentionally omits the approval page, and build readiness depends on whichever of latexmk, xelatex, tectonic, or Docker happens to be available.
+* **Why it matters:** A submission package should clearly distinguish review-build status from final-submission status.
+* **Exact fix recommendation:** Change the README to “review build is available; final institutional front matter remains incomplete.” Add exact tool versions and a single preferred build path.
+* **Verification steps:** Build from a clean environment using the documented command and confirm the final PDF includes all required front matter.
+
+## 7. Submission polish issues
+
+### Issue 23 — PDF lacks metadata stream and tagging
+
+* **Severity:** minor
+* **File:** `thesis/main.pdf`; `thesis/main.tex`
+* **Location:** `thesis/main.pdf` metadata; no `pdftitle`, `pdfauthor`, `pdfsubject`, or `pdfkeywords` entries found in `thesis/main.tex`
+* **Problem:** `pdfinfo` reports `Custom Metadata: no`, `Metadata Stream: no`, and `Tagged: no`.
+* **Why it matters:** This is not a scientific blocker, but it weakens final submission polish, discoverability, and accessibility.
+* **Exact fix recommendation:** Add a full `\hypersetup{pdftitle=..., pdfauthor=..., pdfsubject=..., pdfkeywords=...}` block and, if institutionally required, use a tagged-PDF-capable workflow.
+* **Verification steps:** Rebuild and run `pdfinfo thesis/main.pdf`; confirm metadata fields are present.
+
+### Issue 24 — README test snapshot is not safely reproducible from the repository as written
+
+* **Severity:** major
+* **File:** `README.md`; `pytest.ini`; `tests/unit/test_kociemba.py`; `verify_setup.py`
+* **Location:** `README.md:112-118`; `pytest.ini:1-7`; `tests/unit/test_kociemba.py:377-424`; `verify_setup.py:340-360`
+* **Problem:** README claims `python -m pytest tests -q` reports `283 passed, 1 skipped, 7 deselected`, but the default profile still includes unmarked performance-style Kociemba tests. `verify_setup.py` repeats the same marker expression but does not protect against these unmarked long tests.
+* **Why it matters:** Reviewers following the README may not reproduce the claimed result reliably.
+* **Exact fix recommendation:** Make the default test profile genuinely fast by marking all long tests or by creating a separate `pytest -m smoke` path. Update README with the exact command and expected runtime range.
+* **Verification steps:** Run `python -m pytest tests -q` from a clean checkout and confirm the result, selected test count, and runtime match the README.
+
+## FIX_TARGETS
+
+[
+{
+"severity": "critical",
+"category": "reproducibility/setup",
+"file": "REPRODUCIBILITY_MANIFEST.json; scripts/generate_reproducibility_manifest.py",
+"location": "REPRODUCIBILITY_MANIFEST.json:12-13; scripts/generate_reproducibility_manifest.py:57-63",
+"issue": "The manifest claims 332 files, but the uploaded ZIP contains 273 files. The manifest references 60 files absent from the ZIP, including paper PDFs and LaTeX auxiliary outputs.",
+"exact_fix": "Regenerate REPRODUCIBILITY_MANIFEST.json from the exact final ZIP contents, or include every manifest-listed file in the archive. Update the manifest generator to exclude non-source LaTeX build artifacts unless intentionally submitted.",
+"verification_steps": "Recreate the ZIP, compare ZIP paths against file_hashes_sha256, and verify every listed file exists and every SHA-256 hash matches."
+},
+{
+"severity": "critical",
+"category": "citation/reference",
+"file": "papers/README.md; papers/BIBLIOGRAPHY_INDEX.md; papers/DOWNLOAD_SUMMARY.txt",
+"location": "papers/README.md:5-7,49-86,117-124; papers/BIBLIOGRAPHY_INDEX.md:4-7; papers/DOWNLOAD_SUMMARY.txt:13-16",
+"issue": "Documentation claims 51 PDFs plus 7 supporting documents, but the uploaded ZIP contains no papers/**/*.pdf files; only thesis/main.pdf exists.",
+"exact_fix": "Either include the legally redistributable PDFs and regenerate the manifest, or rewrite the papers documentation to say PDFs are not included and remove local-PDF availability claims.",
+"verification_steps": "Run find papers -name '*.pdf' | wc -l and confirm the count matches the documentation, or confirm the documentation no longer claims local PDFs."
+},
+{
+"severity": "critical",
+"category": "submission polish",
+"file": "thesis/main.tex; thesis/chapters/00_approval.tex",
+"location": "thesis/main.tex:172-174; thesis/chapters/00_approval.tex:35-44",
+"issue": "The formal approval/signature page is omitted from the compiled thesis, and the approval page file still has placeholder committee entries and a blank examination date.",
+"exact_fix": "Fill in final committee names and examination date in 00_approval.tex, then add \input{chapters/00_approval} to the front matter in main.tex.",
+"verification_steps": "Rebuild thesis/main.pdf and confirm the approval page appears with no placeholder committee entries or blank date."
+},
+{
+"severity": "major",
+"category": "technical/code",
+"file": "src/korf/edge_database.py; data/pattern_databases/edge1_db.pkl; data/pattern_databases/edge2_db.pkl",
+"location": "src/korf/edge_database.py:1-17,125-138,323-336",
+"issue": "Current edge database code expects 42,577,920 states per default 6-edge database, but the shipped edge1_db.pkl and edge2_db.pkl are legacy 23,040-state files and raise a size mismatch when loaded through create_edge_database.",
+"exact_fix": "Remove obsolete edge DB files or regenerate them using the current indexing scheme. Add a test that loads the shipped edge databases and checks their expected size.",
+"verification_steps": "Run create_edge_database(1, verbose=False) and create_edge_database(2, verbose=False); both must load without ValueError."
+},
+{
+"severity": "major",
+"category": "thesis writing",
+"file": "thesis/chapters/01_introduction.tex",
+"location": "thesis/chapters/01_introduction.tex:52-58",
+"issue": "The introduction says the work computes how many moves an arbitrary state is from the solution, but later chapters only support estimates and exact results for completed native/external searches.",
+"exact_fix": "Rewrite the objective to distinguish distance estimation from exact distance only when an exact solver completes within its configured limit.",
+"verification_steps": "Review Chapters 1, 6, 7, and 9 and confirm every distance claim distinguishes estimate, exact-if-completed, and external optimal backend."
+},
+{
+"severity": "major",
+"category": "thesis writing",
+"file": "thesis/chapters/06_heuristics.tex",
+"location": "thesis/chapters/06_heuristics.tex:75-82 and 87-90",
+"issue": "The text calls Pattern Databases the optimal choice for IDA*, which is too absolute and conflicts with later caveats about the implemented heuristics not being strict admissible lower bounds for the benchmark path.",
+"exact_fix": "Change the statement to say PDBs are a strong classical admissible option when memory and preprocessing costs are acceptable.",
+"verification_steps": "Confirm the revised wording no longer claims global optimality and remains consistent with the chapter caveats."
+},
+{
+"severity": "major",
+"category": "thesis writing",
+"file": "thesis/chapters/09_conclusions.tex",
+"location": "thesis/chapters/09_conclusions.tex:34-38 and 126-128",
+"issue": "The conclusion generalizes Kociemba as the best choice for real applications and says 100 scrambles are enough for reliable practical conclusions, despite fixed-corpus and single-machine limitations.",
+"exact_fix": "Limit the conclusion to the submitted fixed corpus and measured environment, and explicitly avoid general real-application claims beyond the evidence.",
+"verification_steps": "Check Chapter 9 against the limitations in thesis/chapters/07_evaluation.tex:318-327."
+},
+{
+"severity": "minor",
+"category": "thesis writing",
+"file": "thesis/chapters/00_abstract_gr.tex; thesis/chapters/06_heuristics.tex",
+"location": "thesis/chapters/00_abstract_gr.tex:14,21-25,33,37; thesis/chapters/06_heuristics.tex:416-425",
+"issue": "Greek thesis prose mixes many English terms such as artifact, native, exact solver, benchmark, profile, experimental endpoint, publishable, solvers, and heuristic estimates without a consistent terminology policy.",
+"exact_fix": "Introduce a glossary/terminology policy and either translate recurring terms or consistently mark unavoidable English terms typographically.",
+"verification_steps": "Search Greek chapters for English technical terms and normalize each recurring term consistently."
+},
+{
+"severity": "major",
+"category": "technical/code",
+"file": "src/evaluation/algorithm_comparison.py; results/benchmarks/thesis/thesis_results_combined.json",
+"location": "src/evaluation/algorithm_comparison.py:485-503; results/benchmarks/thesis/thesis_results_combined.json:9580-9596,11529-11545,11817-11833",
+"issue": "Korf timeout rows are unsolved with null solution length but still carry optimal_guaranteed: true and memory_mb: 0.0.",
+"exact_fix": "Set optimal_guaranteed to false/null on failed rows or rename it to backend_guarantees_optimal_if_solved. Use null for unmeasured memory on failures.",
+"verification_steps": "Regenerate benchmark JSON and assert every solved:false row has no positive optimality guarantee and no fake zero memory measurement."
+},
+{
+"severity": "major",
+"category": "technical/code",
+"file": "pytest.ini; tests/unit/test_kociemba.py; src/kociemba/solver.py",
+"location": "pytest.ini:1-7; tests/unit/test_kociemba.py:377-424,451-465; src/kociemba/solver.py:77-82,137-139,252-265",
+"issue": "The default fast pytest profile still includes unmarked long Kociemba performance/integration tests with multi-scramble solving and soft timeout grace.",
+"exact_fix": "Mark those tests as slow or reduce them to deterministic shallow smoke tests. Add hard per-test timeouts for performance tests.",
+"verification_steps": "Run python -m pytest tests -q in a clean environment and confirm it completes within the documented fast-profile budget."
+},
+{
+"severity": "major",
+"category": "technical/code",
+"file": "repository root; verify_setup.py; scripts/thesis_workflow.py",
+"location": "root missing pyproject.toml/setup.py/setup.cfg/tox.ini/noxfile.py; verify_setup.py:259-266; scripts/thesis_workflow.py:21-23",
+"issue": "The project is not packaged as an installable Python package and relies on sys.path insertion from scripts.",
+"exact_fix": "Add pyproject.toml with package metadata and editable-install support, then replace ad hoc sys.path insertion with standard package imports.",
+"verification_steps": "Run python -m pip install -e . from a clean environment and execute tests/scripts from outside the repository root."
+},
+{
+"severity": "major",
+"category": "technical/code",
+"file": "src/cube/rubik_cube.py; scripts/run_comprehensive_tests.py; scripts/benchmarks/generate_thesis_data.py; scripts/benchmarks/generate_complete_thesis_data.py; src/evaluation/algorithm_comparison.py",
+"location": "src/cube/rubik_cube.py:258-263; scripts/run_comprehensive_tests.py:272-276; scripts/benchmarks/generate_thesis_data.py:79-82; scripts/benchmarks/generate_complete_thesis_data.py:106-108; src/evaluation/algorithm_comparison.py:571-579",
+"issue": "Some still-present benchmark scripts generate redundant scrambles by default, while the current comparison path uses allow_redundant=False.",
+"exact_fix": "Explicitly pass allow_redundant=False in every benchmark-producing script or mark legacy scripts so they cannot regenerate canonical thesis outputs.",
+"verification_steps": "Grep all cube.scramble calls and confirm benchmark-facing scripts specify allow_redundant consistently."
+},
+{
+"severity": "minor",
+"category": "technical/code",
+"file": "webapp/tests/smoke.test.mjs",
+"location": "webapp/tests/smoke.test.mjs:8-17",
+"issue": "Webapp tests only verify that source entrypoint files exist; they do not test solver logic, inverse-scramble behavior, timeout behavior, or page rendering.",
+"exact_fix": "Add tests for webapp/src/lib/solver.ts and render-level smoke tests for solver/comparison pages.",
+"verification_steps": "Run cd webapp && npm test and confirm tests fail when solver output or page behavior is intentionally broken."
+},
+{
+"severity": "major",
+"category": "research/experimental",
+"file": "thesis/chapters/07_evaluation.tex; results/benchmarks/thesis/thesis_results_combined.json",
+"location": "thesis/chapters/07_evaluation.tex:75-77,318-327; results/benchmarks/thesis/thesis_results_combined.json:112-119",
+"issue": "The canonical benchmark corpus uses requested scramble length, not exact optimal depth, and is marked as a legacy corpus allowing redundant same-face moves.",
+"exact_fix": "Either regenerate a canonical non-redundant corpus and/or report verified optimal-depth buckets, or consistently frame all results as requested-length results only.",
+"verification_steps": "Regenerate benchmarks with allow_redundant=False and compare distributions of verified optimal depth against the legacy corpus."
+},
+{
+"severity": "major",
+"category": "research/experimental",
+"file": "thesis/chapters/07_evaluation.tex; src/evaluation/visualizations.py",
+"location": "thesis/chapters/07_evaluation.tex:167,291-295; src/evaluation/visualizations.py:417-419",
+"issue": "Table and figure labels still use depth/Scramble Depth language even though the corpus is requested scramble length rather than exact depth.",
+"exact_fix": "Rename benchmark labels to requested scramble length in Greek and English across LaTeX, generated figures, UI, and reports.",
+"verification_steps": "Regenerate figures, rebuild the PDF, and search for misleading Scramble Depth or Βάθος labels in benchmark contexts."
+},
+{
+"severity": "major",
+"category": "research/experimental",
+"file": "thesis/chapters/07_evaluation.tex",
+"location": "thesis/chapters/07_evaluation.tex:161-175,213-227,318-327",
+"issue": "Main evaluation tables report means without uncertainty or dispersion metrics despite small per-depth sample size and timeout/variance concerns.",
+"exact_fix": "Add median, standard deviation or IQR, confidence intervals where appropriate, and timeout-aware summaries to the main tables.",
+"verification_steps": "Extend analysis/table-generation scripts, rebuild the PDF, and confirm dispersion metrics appear in the evaluation tables."
+},
+{
+"severity": "major",
+"category": "research/experimental",
+"file": "thesis/chapters/07_evaluation.tex; results/benchmarks/thesis/thesis_results_combined.json; src/evaluation/algorithm_comparison.py",
+"location": "thesis/chapters/07_evaluation.tex:10-20,318-324; results/benchmarks/thesis/thesis_results_combined.json:24-26; src/evaluation/algorithm_comparison.py:745-751",
+"issue": "Benchmark timing mixes lazy-loading/cold-start effects with reused-solver batch timings.",
+"exact_fix": "Add explicit warmup and report cold-start, warm-start, and batch-amortized timings separately.",
+"verification_steps": "Regenerate benchmark JSON with warmup metadata and verify thesis tables distinguish the timing categories."
+},
+{
+"severity": "major",
+"category": "reproducibility/setup",
+"file": "README.md; thesis/chapters/appendix_a.tex; ui/app.py; agent_workflow/generated/validation.md",
+"location": "README.md:24-44; thesis/chapters/appendix_a.tex:8-16,22-38; ui/app.py:149-153; agent_workflow/generated/validation.md:5-18",
+"issue": "Python version and install instructions are inconsistent: README uses Python 3.12 and requirements.lock, Appendix A uses Python 3.10+ and requirements.txt, UI says Python 3.10+, and generated validation records Python 3.14.0.",
+"exact_fix": "Standardize all documentation on one supported Python version range and one reproducible install path; put flexible development setup in a separate section.",
+"verification_steps": "Search for Python version and requirements references and confirm all entries match the final environment policy."
+},
+{
+"severity": "major",
+"category": "reproducibility/setup",
+"file": "README.md; requirements.lock; requirements.txt",
+"location": "README.md:40-42; requirements.lock:93-95,117-119,133-135; requirements.txt:1-5",
+"issue": "requirements.lock is described as exact reproduction but is only a flat pinned list without hashes, Python/platform markers, or toolchain locks.",
+"exact_fix": "Use a hash-locked dependency workflow such as pip-tools --generate-hashes or uv lock, and document Python, OS, TeX/Tectonic, Node, and npm versions.",
+"verification_steps": "Perform a clean hash-checked install and run verify_setup.py, tests, benchmark smoke, and thesis build."
+},
+{
+"severity": "major",
+"category": "reproducibility/setup",
+"file": "agent_workflow/generated/validation.md; agent_workflow/generated/status.md; README.md",
+"location": "agent_workflow/generated/validation.md:3-24; agent_workflow/generated/status.md:50-56; README.md:112-118",
+"issue": "Checked-in generated validation/status files are machine-specific and explicitly not source of truth, but README presents them as the current verification snapshot.",
+"exact_fix": "Either regenerate these files in clean CI and include CI evidence, or move them to a historical/generated-artifact section and stop presenting them as authoritative.",
+"verification_steps": "Run scripts/thesis_workflow.py validate in a clean environment and compare output against the checked-in generated files."
+},
+{
+"severity": "major",
+"category": "reproducibility/setup",
+"file": "thesis/README.md; thesis/main.tex",
+"location": "thesis/README.md:3,39-55; thesis/main.tex:172-174",
+"issue": "Thesis README says the manuscript is complete and buildable, but the review build omits the formal approval page and build readiness depends on available local/Docker tools.",
+"exact_fix": "Revise README to distinguish review build from final submission build, document one exact build path, and include final front matter before declaring complete.",
+"verification_steps": "Build from a clean environment using the documented command and confirm the resulting PDF includes all required front matter."
+},
+{
+"severity": "minor",
+"category": "submission polish",
+"file": "thesis/main.pdf; thesis/main.tex",
+"location": "thesis/main.pdf metadata; thesis/main.tex has no pdftitle/pdfauthor/pdfsubject/pdfkeywords entries",
+"issue": "The compiled PDF lacks custom metadata, metadata stream, and tagging.",
+"exact_fix": "Add hypersetup metadata fields and use a tagged-PDF-capable workflow if required by the institution.",
+"verification_steps": "Rebuild and run pdfinfo thesis/main.pdf; confirm metadata fields are present."
+},
+{
+"severity": "major",
+"category": "submission polish",
+"file": "README.md; pytest.ini; tests/unit/test_kociemba.py; verify_setup.py",
+"location": "README.md:112-118; pytest.ini:1-7; tests/unit/test_kociemba.py:377-424; verify_setup.py:340-360",
+"issue": "README's current verification snapshot is not safely reproducible because the default profile still includes unmarked long Kociemba tests.",
+"exact_fix": "Make the default profile genuinely fast by marking long tests or creating a smoke profile, then update README with exact expected counts and runtime.",
+"verification_steps": "Run python -m pytest tests -q from a clean checkout and confirm result count and runtime match README."
+}
+]
+
+## Scores
+
+* **Overall thesis quality score:** 68/100
+* **Technical quality score:** 70/100
+* **Submission readiness score:** 38/100
