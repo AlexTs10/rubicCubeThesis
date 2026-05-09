@@ -19,6 +19,7 @@ the smaller coordinate bounds using `max(...)`.
 from __future__ import annotations
 
 from collections import deque
+import os
 from pathlib import Path
 import pickle
 from typing import Callable, Dict
@@ -37,6 +38,12 @@ from ..kociemba.moves import ALL_MOVE_NAMES, get_move_tables
 from .corner_database import DEFAULT_CORNER_DB_PATH, CornerPatternDatabase, create_corner_database
 
 
+def default_native_exact_cache_dir() -> str:
+    """Return the user cache path used when no repository cache is requested."""
+    base = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache"))
+    return str(base / "rubic_cube_thesis" / "native_exact")
+
+
 class NativeCoordinateHeuristic:
     """
     Admissible heuristic built from exact coordinate distance tables.
@@ -48,13 +55,13 @@ class NativeCoordinateHeuristic:
 
     def __init__(
         self,
-        cache_dir: str = "data/pattern_databases/native_exact",
+        cache_dir: str | None = None,
         *,
         corner_db: CornerPatternDatabase | None = None,
         corner_db_path: str | None = DEFAULT_CORNER_DB_PATH,
         load_corner_db_if_available: bool = True,
     ):
-        self.cache_dir = Path(cache_dir)
+        self.cache_dir = Path(cache_dir or default_native_exact_cache_dir())
         self.cache_dir.mkdir(parents=True, exist_ok=True)
         self.corner_db = corner_db
         self.corner_db_path = corner_db_path
@@ -149,7 +156,23 @@ class NativeCoordinateHeuristic:
             with open(path, "rb") as fh:
                 payload = pickle.load(fh)
             if payload.get("format_version") == self.FORMAT_VERSION:
-                return payload["distance_table"]
+                distance_table = payload.get("distance_table")
+                if payload.get("name") != name:
+                    raise ValueError(f"Cache {path} has wrong table name: {payload.get('name')!r}")
+                if not isinstance(distance_table, np.ndarray):
+                    raise ValueError(f"Cache {path} does not contain a numpy distance table")
+                if move_table is None and move_table_builder is not None:
+                    move_table = move_table_builder()
+                if move_table is not None and distance_table.shape != (move_table.shape[0],):
+                    raise ValueError(
+                        f"Cache {path} has shape {distance_table.shape}, "
+                        f"expected {(move_table.shape[0],)}"
+                    )
+                if distance_table.dtype.kind not in {"i", "u"}:
+                    raise ValueError(f"Cache {path} has non-integer dtype {distance_table.dtype}")
+                if np.any(distance_table < 0):
+                    raise ValueError(f"Cache {path} contains negative distances")
+                return distance_table
 
         if move_table is None:
             if move_table_builder is None:
@@ -230,7 +253,7 @@ class NativeCoordinateHeuristic:
 
 
 def create_native_coordinate_heuristic(
-    cache_dir: str = "data/pattern_databases/native_exact",
+    cache_dir: str | None = None,
     auto_generate: bool = True,
     *,
     corner_db: CornerPatternDatabase | None = None,

@@ -348,7 +348,16 @@ def _load_or_build_corner_permutation_all_move_table(
     if cache_path.exists():
         with open(cache_path, "rb") as fh:
             payload = pickle.load(fh)
-        return np.asarray(payload["move_table"], dtype=np.int32)
+        move_table = np.asarray(payload.get("move_table"), dtype=np.int32)
+        if move_table.shape != (CORNER_PERMUTATION_STATES, len(ALL_MOVE_NAMES)):
+            raise ValueError(
+                f"Corner permutation move-table cache {cache_path} has shape "
+                f"{move_table.shape}, expected "
+                f"{(CORNER_PERMUTATION_STATES, len(ALL_MOVE_NAMES))}"
+            )
+        if move_table.min(initial=0) < 0 or move_table.max(initial=0) >= CORNER_PERMUTATION_STATES:
+            raise ValueError(f"Corner permutation move-table cache {cache_path} has out-of-range entries")
+        return move_table
 
     if verbose:
         print("  Building corner permutation move table (40320 x 18)...")

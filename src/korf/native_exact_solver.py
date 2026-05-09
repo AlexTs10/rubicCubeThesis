@@ -71,7 +71,7 @@ class NativeExactSolver:
         max_depth: int = 20,
         timeout: float = 60.0,
         move_order: Optional[Sequence[str]] = None,
-        heuristic_cache_dir: str = "data/pattern_databases/native_exact",
+        heuristic_cache_dir: str | None = None,
     ):
         """
         Initialize the native exact solver.

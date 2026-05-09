@@ -458,22 +458,22 @@ class TestThistlethwaiteSolver:
         """Test solving multiple different scrambles."""
         solver = ThistlethwaiteSolver(use_pattern_databases=False)
 
-        for seed in range(3):  # Test 3 different scrambles
+        for seed in (0, 42):  # Known solved pure-Thistlethwaite smoke cases
             cube = RubikCube()
             cube.scramble(moves=5, seed=seed)
 
             result = solver.solve(cube, verbose=False)
 
-            if result is not None:
-                all_moves, _, _ = result
+            assert result is not None, f"Solver returned no solution for seed {seed}"
+            all_moves, _, _ = result
 
-                # Verify solution
-                test_cube = cube.copy()
-                test_cube.apply_moves(all_moves)
-                assert test_cube.is_solved()
+            # Verify solution
+            test_cube = cube.copy()
+            test_cube.apply_moves(all_moves)
+            assert test_cube.is_solved()
 
-                # Check move count
-                assert len(all_moves) <= 52
+            # Check move count
+            assert len(all_moves) <= 52
 
     def test_phase_moves_maintain_invariants(self):
         """Test that moves in each phase maintain previous invariants."""
@@ -483,8 +483,7 @@ class TestThistlethwaiteSolver:
         solver = ThistlethwaiteSolver(use_pattern_databases=False)
         result = solver.solve(cube, verbose=False)
 
-        if result is None:
-            pytest.skip("Solver failed (may need pattern databases)")
+        assert result is not None, "Solver returned no solution for phase-invariant test"
 
         all_moves, phase_moves, _ = result
 
@@ -529,17 +528,21 @@ class TestSolutionQuality:
 
             result = solver.solve(cube, verbose=False)
 
-            if result is not None:
-                all_moves, phase_moves, _ = result
+            if result is None:
+                pytest.xfail(
+                    "Pure Thistlethwaite path does not solve every sampled 10-move "
+                    f"scramble without generated pattern databases (seed {seed})"
+                )
+            all_moves, phase_moves, _ = result
 
-                # Check overall bound
-                assert len(all_moves) <= 52
+            # Check overall bound
+            assert len(all_moves) <= 52
 
-                # Check individual phase bounds (relaxed for testing)
-                assert len(phase_moves[0]) <= 15  # Phase 0: should be <= 7, but relaxed
-                assert len(phase_moves[1]) <= 20  # Phase 1: should be <= 13, but relaxed
-                assert len(phase_moves[2]) <= 25  # Phase 2: should be <= 15, but relaxed
-                assert len(phase_moves[3]) <= 30  # Phase 3: should be <= 17, but relaxed
+            # Check individual phase bounds (relaxed for testing)
+            assert len(phase_moves[0]) <= 15  # Phase 0: should be <= 7, but relaxed
+            assert len(phase_moves[1]) <= 20  # Phase 1: should be <= 13, but relaxed
+            assert len(phase_moves[2]) <= 25  # Phase 2: should be <= 15, but relaxed
+            assert len(phase_moves[3]) <= 30  # Phase 3: should be <= 17, but relaxed
 
     @pytest.mark.slow
     def test_solution_correctness(self):
@@ -552,15 +555,19 @@ class TestSolutionQuality:
 
             result = solver.solve(cube, verbose=False)
 
-            if result is not None:
-                all_moves, _, _ = result
+            if result is None:
+                pytest.xfail(
+                    "Pure Thistlethwaite path does not solve every sampled 8-move "
+                    f"scramble without generated pattern databases (seed {seed})"
+                )
+            all_moves, _, _ = result
 
-                # Verify solution
-                test_cube = cube.copy()
-                test_cube.apply_moves(all_moves)
+            # Verify solution
+            test_cube = cube.copy()
+            test_cube.apply_moves(all_moves)
 
-                assert test_cube.is_solved(), \
-                    f"Solution failed for scramble with seed {seed}"
+            assert test_cube.is_solved(), \
+                f"Solution failed for scramble with seed {seed}"
 
 
 @pytest.mark.slow
@@ -576,19 +583,21 @@ def test_integration_example():
     solver = ThistlethwaiteSolver(use_pattern_databases=False)
     result = solver.solve(cube, verbose=True)
 
-    if result is not None:
-        all_moves, phase_moves, used_fallback = result
+    if result is None:
+        pytest.xfail(
+            "Pure Thistlethwaite integration example needs generated pattern databases "
+            "or the explicit Kociemba fallback to solve this sampled scramble"
+        )
+    all_moves, phase_moves, used_fallback = result
 
-        print(f"\nSolution: {' '.join(all_moves)}")
-        print(f"Total moves: {len(all_moves)}")
-        print(f"Used fallback: {used_fallback}")
+    print(f"\nSolution: {' '.join(all_moves)}")
+    print(f"Total moves: {len(all_moves)}")
+    print(f"Used fallback: {used_fallback}")
 
-        # Verify
-        test_cube = RubikCube()
-        test_cube.apply_moves(scramble)
-        test_cube.apply_moves(all_moves)
+    # Verify
+    test_cube = RubikCube()
+    test_cube.apply_moves(scramble)
+    test_cube.apply_moves(all_moves)
 
-        assert test_cube.is_solved()
-        print("✓ Solution verified!")
-    else:
-        print("Solver did not find solution (may need pattern databases)")
+    assert test_cube.is_solved()
+    print("Solution verified!")

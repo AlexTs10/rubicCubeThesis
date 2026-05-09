@@ -21,9 +21,11 @@ near-optimal practical solver and reports corpus-dependent means up to about
 """
 
 import multiprocessing
+import os
 import signal
 import threading
 import time
+from pathlib import Path
 from contextlib import contextmanager
 from typing import List, Optional, Tuple
 from ..cube.rubik_cube import RubikCube
@@ -41,6 +43,12 @@ except ImportError:  # pragma: no cover - optional dependency
 
 class _NativeKociembaTimeout(RuntimeError):
     """Raised when the optional PyPI/native-extension backend exceeds its budget."""
+
+
+def default_kociemba_cache_dir() -> str:
+    """Return the user cache path used when no repository cache is requested."""
+    base = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache"))
+    return str(base / "rubic_cube_thesis" / "kociemba")
 
 
 def _native_kociemba_worker(cube_string: str, max_depth: int, conn) -> None:
@@ -78,7 +86,7 @@ class KociembaSolver:
 
     def __init__(
         self,
-        cache_dir: str = "data/kociemba",
+        cache_dir: str | None = None,
         timeout_grace: float = 10.0,
         backend: str = "auto",
         native_timeout_threshold: float = 10.0,
@@ -89,7 +97,8 @@ class KociembaSolver:
         Initialize Kociemba solver.
 
         Args:
-            cache_dir: Directory to cache move and pruning tables
+            cache_dir: Directory to cache move and pruning tables. Defaults to
+                an external user cache so ordinary tests do not dirty `data/`.
             timeout_grace: Extra seconds allowed beyond requested timeout
                 before aborting search (softens strict cutoff)
             backend: One of 'auto', 'internal', or 'native'
@@ -103,7 +112,7 @@ class KociembaSolver:
         if backend not in {"auto", "internal", "native"}:
             raise ValueError("backend must be one of: auto, internal, native")
 
-        self.cache_dir = cache_dir
+        self.cache_dir = cache_dir or default_kociemba_cache_dir()
         self.timeout_grace = timeout_grace
         self.backend = backend
         self.native_timeout_threshold = native_timeout_threshold
@@ -137,6 +146,15 @@ class KociembaSolver:
         self._initialized = True
         if verbose:
             print("Kociemba solver initialized!")
+
+    @staticmethod
+    def _prunes_opposite_face_order(last_face: str, current_face: str) -> bool:
+        """Return True for opposite-face orders pruned by this solver."""
+        return (
+            (last_face == 'U' and current_face == 'D')
+            or (last_face == 'F' and current_face == 'B')
+            or (last_face == 'L' and current_face == 'R')
+        )
 
     def _timed_out(self, start_time: float, timeout: float) -> bool:
         """Check whether the elapsed time exceeded the soft timeout."""
@@ -590,10 +608,9 @@ class KociembaSolver:
                 last_face = last_move[0]
                 if move[0] == last_face:
                     continue
-                # Prune opposite faces in wrong order (U before D, F before B, L before R)
-                if (last_face == 'U' and move[0] == 'D') or \
-                   (last_face == 'F' and move[0] == 'B') or \
-                   (last_face == 'L' and move[0] == 'R'):
+                # Prune opposite faces in non-canonical order.
+                # The retained representatives are D before U, B before F, and R before L.
+                if self._prunes_opposite_face_order(last_face, move[0]):
                     continue
 
             # Apply move
@@ -722,8 +739,8 @@ class KociembaSolver:
                 last_face = last_move[0]
                 if move[0] == last_face:
                     continue
-                if (last_face == 'U' and move[0] == 'D') or \
-                   (last_face == 'L' and move[0] == 'R'):
+                # The retained representatives are D before U, B before F, and R before L.
+                if self._prunes_opposite_face_order(last_face, move[0]):
                     continue
 
             # Apply move

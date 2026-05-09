@@ -50,12 +50,15 @@ EXCLUDED_SUFFIXES = {
 
 EXCLUDED_PATH_SUFFIXES = {
     ".DS_Store",
+    ".coverage",
+    ".coverage.json",
     "conj_twist",
     "thesis/main-blx.bib",
 }
 
 EXCLUDED_PATH_PREFIXES = {
     "agent_workflow/generated/",
+    "htmlcov/",
 }
 
 

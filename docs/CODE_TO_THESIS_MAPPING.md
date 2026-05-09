@@ -36,7 +36,7 @@ Quick reference: what code to cite for each thesis section.
 | Pattern tables | `src/thistlethwaite/tables.py` | Table generation functions |
 
 **Test data:**
-- `tests/unit/test_thistlethwaite.py` - 35 test cases
+- `tests/unit/test_thistlethwaite.py` - run `python -m pytest tests/unit/test_thistlethwaite.py --collect-only -q -o addopts=` for the current count
 
 ---
 
@@ -61,7 +61,7 @@ def is_phase1_solved(coord_cube):
 ```
 
 **Test data:**
-- `tests/unit/test_kociemba.py` - 25 test cases
+- `tests/unit/test_kociemba.py` - run `python -m pytest tests/unit/test_kociemba.py --collect-only -q -o addopts=` for the current count
 
 ---
 
@@ -121,8 +121,8 @@ class CompositeHeuristic:
 ```
 
 **Test data:**
-- `tests/unit/test_composite_heuristic.py` - 25 test cases
-- `tests/unit/test_distance_estimator.py` - 21 test cases
+- `tests/unit/test_composite_heuristic.py` - run `python -m pytest tests/unit/test_composite_heuristic.py --collect-only -q -o addopts=` for the current count
+- `tests/unit/test_distance_estimator.py` - run `python -m pytest tests/unit/test_distance_estimator.py --collect-only -q -o addopts=` for the current count
 
 ---
 

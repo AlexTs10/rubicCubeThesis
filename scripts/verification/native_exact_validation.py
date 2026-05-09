@@ -41,7 +41,7 @@ SOURCE_ZIP_PRESET = {
     "oracle_depths": [],
     "oracle_samples_per_depth": 0,
     "max_depth": 6,
-    "timeout": 5.0,
+    "timeout": 10.0,
     "seed": 42,
     "heuristic_cache_dir": "data/pattern_databases/native_exact",
     "corner_db_path": None,

@@ -3,7 +3,9 @@
 
 \section{Μεθοδολογία}
 
-Η πειραματική αξιολόγηση έχει ως στόχο τη σύγκριση δύο εγγενών επιλυτών του αποθετηρίου, του Thistlethwaite και του Kociemba, με μία περιβαλλόμενη εξωτερική exact benchmark διαδρομή για τον Korf-style optimal baseline. Η βασική αρχή του πειραματικού σχεδιασμού είναι ότι κάθε scramble επιλύεται από τις ίδιες τρεις καταγεγραμμένες διαδρομές εκτέλεσης, ώστε οι διαφορές στην απόδοση να ερμηνεύονται σε σχέση με τον αλγοριθμικό σχεδιασμό, τα backend choices και τα κοινά inputs \cite{mcgeoch2001experimental,barr1995designing,johnson2002theoreticians}.
+Η πειραματική αξιολόγηση έχει ως στόχο τη σύγκριση δύο εγγενών επιλυτών του αποθετηρίου, του Thistlethwaite και του Kociemba, με μία περιβαλλόμενη εξωτερική διαδρομή ακριβούς επίλυσης για τον Korf-style optimal baseline. Η βασική αρχή του πειραματικού σχεδιασμού είναι ότι κάθε scramble επιλύεται από τις ίδιες τρεις καταγεγραμμένες διαδρομές εκτέλεσης, ώστε οι διαφορές στην απόδοση να ερμηνεύονται σε σχέση με τον αλγοριθμικό σχεδιασμό, τις επιλογές backend και τα κοινά δεδομένα εισόδου \cite{mcgeoch2001experimental,barr1995designing,johnson2002theoreticians}.
+
+Όπου το κεφάλαιο διατηρεί αγγλικούς τεχνικούς όρους, αυτοί είτε εμφανίζονται ως ονόματα πεδίων των JSON artifacts σε \texttt{monospace} είτε ως καθιερωμένοι όροι υλοποίησης όπως \emph{backend}, \emph{scramble}, \emph{timeout} και \emph{warm start}. Σε όλες τις υπόλοιπες περιπτώσεις προτιμώνται ελληνικές αποδόσεις ώστε η τεχνική ορολογία να παραμένει συνεπής.
 
 \subsection{Περιβάλλον Εκτέλεσης}
 
@@ -22,16 +24,16 @@ batch-amortized timings και όχι ως καθαρά steady-state solve times
 Για κάθε αλγόριθμο χρησιμοποιήθηκαν τα ακόλουθα όρια:
 \begin{itemize}
     \item \textbf{Thistlethwaite}: timeout 30 s
-    \item \textbf{Kociemba}: ζητούμενο timeout 60 s με επιπλέον soft grace 10 s στο implementation
-    \item \textbf{Εξωτερικός exact backend}: timeout 120 s, μέγιστο όριο αναζήτησης 20 κινήσεων
+    \item \textbf{Kociemba}: ζητούμενο \emph{timeout} 60 s με επιπλέον περίοδο χάριτος 10 s στην υλοποίηση
+    \item \textbf{Εξωτερικό backend ακριβούς επίλυσης}: \emph{timeout} 120 s, μέγιστο όριο αναζήτησης 20 κινήσεων
 \end{itemize}
 
 Για τον Kociemba αυτό σημαίνει ότι η ακύρωση μιας αναζήτησης δεν είναι αυστηρό
-hard cutoff στα 60 s, αλλά soft cutoff περίπου στα 70 s. Για αυτόν τον λόγο
+αυστηρή διακοπή στα 60 s, αλλά ήπια διακοπή περίπου στα 70 s. Για αυτόν τον λόγο
 στο benchmark corpus εμφανίζονται μεμονωμένες επιτυχείς εκτελέσεις λίγο πάνω
 από τα 60 s χωρίς να πρόκειται για ασυνέπεια των καταγεγραμμένων αποτελεσμάτων.
 
-Στην περίπτωση της benchmark διαδρομής βέλτιστης επίλυσης, η επίσημη ροή χρησιμοποιεί τον
+Στην περίπτωση της διαδρομής βέλτιστης επίλυσης, η επίσημη ροή χρησιμοποιεί τον
 εξωτερικό \emph{optimal backend} \texttt{RubiksCube-OptimalSolver} του Herbert
 Kociemba \cite{kociemba_rubiks_optimal}, ο οποίος ενσωματώνεται μέσω του
 \filepath{src/korf/optimal_solver.py}. Η περιβάλλουσα διεπαφή του έργου επιβάλλει ρητά το
@@ -39,9 +41,9 @@ Kociemba \cite{kociemba_rubiks_optimal}, ο οποίος ενσωματώνετ�
 κόμβων, ώστε τα αναφερόμενα αποτελέσματα να παραμένουν συγκρίσιμα και
 αναπαραγώγιμα.
 
-Για τους τρεις solvers, το πεδίο \texttt{backend} καταγράφεται ρητά σε κάθε εγγραφή του benchmark JSON. Στο τρέχον corpus, και τα 100 αποτελέσματα του Kociemba φέρουν \texttt{backend: kociemba\_internal} και \texttt{used\_fallback: null}, δηλαδή προέρχονται αποκλειστικά από την εγγενή υλοποίηση δύο φάσεων του παρόντος αποθετηρίου, χωρίς εφεδρική κλήση στο εξωτερικό \texttt{kociemba} package. Αντίστοιχα, και τα 100 αποτελέσματα του Korf φέρουν \texttt{backend: optimal\_external}, διαχωρίζοντας ρητά τη βαθιά benchmark διαδρομή από τον εγγενή cubie-level exact solver του \filepath{src/korf/native_exact_solver.py}.
+Για τις τρεις διαδρομές επίλυσης, το πεδίο \texttt{backend} καταγράφεται ρητά σε κάθε εγγραφή του benchmark JSON. Στο τρέχον corpus, και τα 100 αποτελέσματα του Kociemba φέρουν \texttt{backend: kociemba\_internal} και \texttt{used\_fallback: null}, δηλαδή προέρχονται αποκλειστικά από την εγγενή υλοποίηση δύο φάσεων του παρόντος αποθετηρίου, χωρίς εφεδρική κλήση στο εξωτερικό \texttt{kociemba} package. Αντίστοιχα, και τα 100 αποτελέσματα του Korf φέρουν \texttt{backend: optimal\_external}, διαχωρίζοντας ρητά τη βαθιά benchmark διαδρομή από τον εγγενή cubie-level exact solver του \filepath{src/korf/native_exact_solver.py}.
 
-Στο υπόλοιπο κεφάλαιο, ο όρος \emph{εξωτερικός exact backend} αναφέρεται αποκλειστικά σε αυτή τη διαδρομή benchmark και όχι στην εγγενή διαδρομή του \filepath{src/korf/native_exact_solver.py}.
+Στο υπόλοιπο κεφάλαιο, ο όρος \emph{εξωτερικό backend ακριβούς επίλυσης} αναφέρεται αποκλειστικά σε αυτή τη benchmark διαδρομή και όχι στην εγγενή διαδρομή του \filepath{src/korf/native_exact_solver.py}.
 
 \subsection{Σύνολο Δοκιμών}
 
@@ -128,7 +130,7 @@ artifact του thesis benchmark. Για την αποφυγή υπερ-ερμη
 πρέπει να διαβάζονται μαζί με τα boxplots/ιστογράμματα των σχημάτων, τους
 ρητούς timeout περιορισμούς και τις robust περιγραφικές μετρικές του
 Πίνακα~\ref{tab:eval_robust_summary}. Το artifact δεν περιέχει επαναλήψεις
-ανά scramble, confidence intervals ή χωριστές cold/warm χρονομετρήσεις· οι
+ανά scramble, διαστήματα εμπιστοσύνης ή χωριστές cold/warm χρονομετρήσεις· οι
 μετρήσεις χρόνου είναι single-run, batch-amortized παρατηρήσεις για το
 συγκεκριμένο περιβάλλον. Επίσης, το αρχικό JSON artifact δεν αποθηκεύει πλήρες
 snapshot πακέτων, kernel/process metadata ή digest του εξωτερικού backend· η
@@ -387,7 +389,7 @@ baseline αυτή μετράται μέσω του εξωτερικού backend
     \item \textbf{One-time preprocessing}: οι αναφερόμενοι χρόνοι είναι single-run
     batch παρατηρήσεις και εξακολουθούν να περιλαμβάνουν το αρχικό κόστος
     φόρτωσης για τους solvers που κάνουν lazy loading, άρα αναμιγνύουν cold-start
-    και warm-start επιδράσεις. Δεν αποτελούν confidence intervals ούτε
+	    και warm-start επιδράσεις. Δεν αποτελούν διαστήματα εμπιστοσύνης ούτε
     στατιστική γενίκευση· μια αυστηρότερη μελλοντική εκτέλεση πρέπει να αναφέρει
     χωριστά cold-start και warm-start timings ή να εκτελεί τεκμηριωμένο warmup
     πριν από τις χρονομετρήσεις.

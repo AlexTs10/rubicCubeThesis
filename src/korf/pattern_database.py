@@ -204,6 +204,11 @@ class PatternDatabase:
         with open(filepath, 'rb') as f:
             data_dict = pickle.load(f)
 
+        required = {'name', 'size'}
+        missing = required - set(data_dict)
+        if missing:
+            raise ValueError(f"Pattern database {filepath} is missing keys: {sorted(missing)}")
+
         db = cls(data_dict['name'], data_dict['size'])
 
         if data_dict.get('format_version') == cls.FORMAT_VERSION:
@@ -212,6 +217,18 @@ class PatternDatabase:
             db.data = data_dict['data']
             db.max_depth = data_dict['max_depth']
             db.states_at_depth = data_dict['states_at_depth']
+            if not isinstance(db.data, np.ndarray):
+                raise ValueError(f"Pattern database {filepath} stores data as {type(db.data)!r}, expected ndarray")
+            if db.data.shape != (db.size,):
+                raise ValueError(
+                    f"Pattern database {filepath} has shape {db.data.shape}, expected {(db.size,)}"
+                )
+            if db.data.dtype.kind not in {"i", "u"}:
+                raise ValueError(f"Pattern database {filepath} has non-integer dtype {db.data.dtype}")
+            if np.any(db.data < 0):
+                raise ValueError(f"Pattern database {filepath} contains negative distances")
+            if np.any(db.data > db.uninitialized_value):
+                raise ValueError(f"Pattern database {filepath} contains values above its sentinel")
             return db
 
         db._load_legacy_nibble_payload(data_dict)

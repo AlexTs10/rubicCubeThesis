@@ -63,9 +63,10 @@
     "description": "Historical exploratory outputs kept for traceability. They predate the richer report schema and should not be cited as the final thesis evidence when a canonical report exists."
   },
   "thesis_claims_supported": [
-    "The native exact solver is validated on a reproducible 3513-case corpus.",
-    "Enabling the full native corner PDB reduces failures under a 20-second limit from 3 to 1.",
-    "One edge-dominated depth-8 timeout remains in the corner-PDB-enabled run."
+    "The checked-in JSON artifacts preserve the archived 3513-case native exact validation evidence.",
+    "The 3513-case canonical corpus is not source-ZIP reproducible without the generated corner_db.pkl companion cache and the optional RubikOptimal external oracle.",
+    "Enabling the full native corner PDB reduced failures under a 20-second limit from 3 to 1 in the archived canonical comparison.",
+    "One edge-dominated depth-8 timeout remains in the corner-PDB-enabled archived run."
   ],
   "config": {
     "corner_db_loaded": true,

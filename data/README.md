@@ -1,6 +1,6 @@
 # Data Directory
 
-This directory documents generated caches and lookup tables used by the solver implementations. In the source audit ZIP, `data/README.md` is intentionally the only file under `data/`; cache trees are generated locally or supplied as separate artifacts.
+This directory documents generated caches and lookup tables used by the solver implementations. In the source audit ZIP, `data/README.md` is intentionally the only file under `data/`; cache trees are generated locally or supplied as separate artifacts. Ordinary solver construction now writes runtime caches to a user cache directory such as `$XDG_CACHE_HOME/rubic_cube_thesis/`, so this repository directory stays read-only unless an explicit artifact-generation command targets it.
 
 ## Expected Generated Structure After Cache Creation
 

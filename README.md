@@ -157,6 +157,7 @@ the commands below in a clean Python 3.12 environment for the current machine.
 - `python -m pytest tests --collect-only -q` reports the collected test count for the current checkout; the default fast profile excludes `slow`, `external`, and `cache_building`
 - `python -m pytest tests -q` runs the supported fast profile; heavyweight solver-quality, external-backend, and cache-generation checks are opt-in marker profiles
 - `python -m pytest tests -q --cov=src --cov-report=term-missing:skip-covered --cov-fail-under=49` is the conservative coverage gate for the current source tree; raise the threshold only after adding tests for the low-coverage evaluation and generated-table modules
+- Runtime-generated solver tables default to a user cache such as `$XDG_CACHE_HOME/rubic_cube_thesis/`; repository `data/` remains read-only unless an explicit cache-generation command is run.
 - `python verify_setup.py` runs the Python setup profile and fast tests by default; use `--full` for heavyweight Python tests and `--all-artifacts` when local TeX/Docker plus webapp dependencies are available
 - `cd webapp && npm ci && npm run build` succeeds from a clean dependency install
 - `python scripts/thesis_workflow.py build --mode auto` rebuilds `thesis/main.pdf` with local TeX/Tectonic when available, or with the repo-local Docker image from `docker/thesis.Dockerfile` when Docker is running; the Dockerfile pins `debian:bookworm-slim` by digest

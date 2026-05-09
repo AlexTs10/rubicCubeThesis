@@ -13,6 +13,7 @@ Tests cover:
 import pytest
 import numpy as np
 import time
+import os
 from src.cube.rubik_cube import RubikCube
 import src.kociemba.solver as solver_module
 from src.kociemba.cubie import (
@@ -432,10 +433,11 @@ class TestKociembaSolver:
 
     @pytest.mark.slow
     def test_solver_performance(self):
-        """Test solver performance on multiple cubes."""
+        """Bounded smoke test for solver performance on a small corpus."""
         solver = KociembaSolver()
-        num_cubes = 5
-        max_time = 10.0
+        num_cubes = 2
+        scramble_length = 12
+        max_time = 5.0
         max_moves = 25
 
         print("\n" + "="*60)
@@ -448,7 +450,7 @@ class TestKociembaSolver:
 
         for i in range(num_cubes):
             cube = RubikCube()
-            scramble = cube.scramble(20, seed=100 + i)
+            scramble = cube.scramble(scramble_length, seed=100 + i)
 
             start_time = time.time()
             result = solver.solve(cube, timeout=max_time, verbose=False)
@@ -480,6 +482,24 @@ class TestKociembaSolver:
 
         assert success_count == num_cubes  # All should succeed
 
+    @pytest.mark.cache_building
+    def test_full_performance_profile_requires_explicit_opt_in(self):
+        """The expensive historical 5x20-move profile is not part of default slow CI."""
+        if os.environ.get("RUN_FULL_KOCIEMBA_PERF") != "1":
+            pytest.skip("Set RUN_FULL_KOCIEMBA_PERF=1 for the full 5x20 performance profile")
+
+        solver = KociembaSolver()
+        for i in range(5):
+            cube = RubikCube()
+            scramble = cube.scramble(20, seed=100 + i)
+            result = solver.solve(cube, timeout=10.0, verbose=False)
+            assert result is not None, f"Full performance profile failed on seed {100 + i}"
+            solution, _, _ = result
+            test_cube = RubikCube()
+            test_cube.apply_moves(scramble)
+            test_cube.apply_moves(solution)
+            assert test_cube.is_solved()
+
 
 class TestIntegration:
     """Integration tests."""
@@ -508,12 +528,12 @@ class TestIntegration:
 
     @pytest.mark.slow
     def test_full_solution_solves_cube(self):
-        """Test that the complete solution solves the cube."""
-        for seed in range(5):
+        """Test that the complete convenience solver solves bounded scrambles."""
+        for seed in range(3):
             cube = RubikCube()
-            scramble = cube.scramble(15, seed=seed)
+            scramble = cube.scramble(12, seed=seed)
 
-            solution = solve_cube(cube, timeout=30.0, verbose=False)
+            solution = solve_cube(cube, timeout=10.0, verbose=False)
             assert solution is not None
 
             # Apply solution

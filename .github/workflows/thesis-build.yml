@@ -4,12 +4,74 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
+      - "data/**"
+      - "docs/**"
+      - "results/**"
+      - "src/**"
+      - "tests/**"
       - "thesis/**"
+      - "webapp/**"
+      - "pyproject.toml"
+      - "pytest.ini"
+      - "requirements.lock"
+      - "verify_setup.py"
+      - "scripts/**"
       - "scripts/thesis_workflow.py"
       - "docker/thesis.Dockerfile"
       - ".github/workflows/thesis-build.yml"
 
 jobs:
+  python-validation:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --require-hashes -r requirements.lock
+          python -m pip install --no-deps -e .
+
+      - name: Run fast Python tests
+        run: python -m pytest tests -q
+
+      - name: Run coverage gate
+        run: python -m pytest tests -q --cov=src --cov-report=term-missing:skip-covered --cov-fail-under=49
+
+      - name: Run source-ZIP native exact smoke validation
+        run: python scripts/verification/native_exact_validation.py --preset source-zip --output-dir /tmp/native_exact_source_zip
+
+  webapp-validation:
+    runs-on: ubuntu-24.04
+    defaults:
+      run:
+        working-directory: webapp
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: webapp/package-lock.json
+
+      - name: Install webapp dependencies
+        run: npm ci
+
+      - name: Run webapp tests
+        run: npm test
+
+      - name: Build webapp
+        run: npm run build
+
   build-thesis:
     runs-on: ubuntu-24.04
     steps:
