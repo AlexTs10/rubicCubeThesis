@@ -184,12 +184,6 @@ Kociemba επιλύουν επιτυχώς \emph{όλα} τα 100 scrambles το
 \end{tabular}
 \end{table}
 
-Ο Πίνακας~\ref{tab:eval_times} αναφέρει batch-amortized χρόνους επιτυχών
-εκτελέσεων. Δεν διαχωρίζει πλήρως cold-start και warm-start timings, επειδή το
-τρέχον benchmark artifact δεν περιλαμβάνει τεκμηριωμένο warmup στάδιο. Για τον
-λόγο αυτό οι τιμές χρησιμοποιούνται για συγκριτική εικόνα στο συγκεκριμένο
-corpus και όχι ως καθαρή μέτρηση steady-state latency.
-
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=0.82\textwidth]{figures/fig4_success_rate.png}
@@ -273,6 +267,12 @@ Thistlethwaite είναι σημαντικά μακρύτερες, κάτι αν
 \bottomrule
 \end{tabular}
 \end{table}
+
+Ο Πίνακας~\ref{tab:eval_times} αναφέρει batch-amortized χρόνους επιτυχών
+εκτελέσεων. Δεν διαχωρίζει πλήρως cold-start και warm-start timings, επειδή το
+τρέχον benchmark artifact δεν περιλαμβάνει τεκμηριωμένο warmup στάδιο. Για τον
+λόγο αυτό οι τιμές χρησιμοποιούνται για συγκριτική εικόνα στο συγκεκριμένο
+corpus και όχι ως καθαρή μέτρηση steady-state latency.
 
 \begin{table}[htbp]
 \centering

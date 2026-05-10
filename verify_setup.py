@@ -659,8 +659,9 @@ def main():
             print(f"\n{Colors.GREEN}{Colors.BOLD}✓ Full repository artifact verification passed.{Colors.RESET}")
         else:
             print(
-                f"\n{Colors.GREEN}{Colors.BOLD}✓ Python setup profile passed. "
-                f"Run --all-artifacts to verify thesis and webapp builds.{Colors.RESET}"
+                f"\n{Colors.GREEN}{Colors.BOLD}✓ Python-only setup profile passed.{Colors.RESET}\n"
+                f"{Colors.YELLOW}{Colors.BOLD}⚠ Thesis PDF and webapp artifact builds were not checked. "
+                f"Run --all-artifacts when local TeX/Docker and webapp dependencies are available.{Colors.RESET}"
             )
         return 0
     else:

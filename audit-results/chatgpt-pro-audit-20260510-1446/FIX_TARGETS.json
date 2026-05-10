@@ -1,0 +1,137 @@
+[
+  {
+    "severity": "Critical",
+    "category": "submission_polish",
+    "file": "thesis/chapters/00_approval.tex",
+    "location": "lines 34-37, 43-45, 51",
+    "issue": "The final institutional approval page is still a template with placeholder committee rows and blank examination date.",
+    "exact_fix": "Replace the two placeholder committee rows with official names/titles and replace the dotted examination date with the official date, or replace the generated page with the official signed approval page if required.",
+    "verification_steps": "Rebuild thesis/main.pdf and inspect the approval page; confirm there are no placeholder committee names or blank date fields."
+  },
+  {
+    "severity": "Medium",
+    "category": "thesis_writing_formatting",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "lines 187-191, 210-224, 261-275",
+    "issue": "Chapter 7 discusses the timing table before the solution-length table sequence finishes, creating confusing table order in the compiled PDF.",
+    "exact_fix": "Move the timing-table narrative closer to the timing subsection after the solution-length discussion/table, or use float barriers after each result subsection.",
+    "verification_steps": "Rebuild the PDF and run pdftotext -layout thesis/main.pdf; confirm Table 7.5 appears and is discussed before Table 7.6."
+  },
+  {
+    "severity": "Low",
+    "category": "submission_polish_formatting",
+    "file": "thesis/chapters/05_korf.tex",
+    "location": "lines 313-320",
+    "issue": "PDF pseudocode renders None poorly as split math text because the source uses $None$.",
+    "exact_fix": "Replace $None$ with \\texttt{None} or a semantic failure token such as \\textsc{Failure}.",
+    "verification_steps": "Rebuild the PDF and inspect Algorithm 5.2; confirm None is rendered as one unbroken token."
+  },
+  {
+    "severity": "Low",
+    "category": "submission_polish_formatting",
+    "file": "thesis/chapters/05_korf.tex",
+    "location": "lines 293-295",
+    "issue": "Long file paths wrap badly in the compiled PDF.",
+    "exact_fix": "Put long paths in displayed \\path/\\filepath blocks, use smaller text, or add safe discretionary breaks.",
+    "verification_steps": "Rebuild the PDF and inspect the Chapter 5 implementation section; confirm file paths do not split inside words."
+  },
+  {
+    "severity": "High",
+    "category": "technical_code_quality",
+    "file": ".github/workflows/thesis-build.yml; README.md",
+    "location": "workflow lines 44-45; README lines 157-160",
+    "issue": "The coverage gate is only --cov-fail-under=49, and important evaluation/statistics/validation/visualization modules remain weakly covered.",
+    "exact_fix": "Add tests for evaluation statistics, validation dataset handling, visualization generation, generated table behavior, and related solver support modules; raise the threshold gradually.",
+    "verification_steps": "Run python -m pytest tests -q --cov=src --cov-report=term-missing:skip-covered --cov-fail-under=65, then update CI once passing."
+  },
+  {
+    "severity": "Medium",
+    "category": "technical_code_quality_validation",
+    "file": "src/korf/validation.py",
+    "location": "lines 372-413",
+    "issue": "load_cube20_data() advertises cube20.org validation data loading but always raises NotImplementedError.",
+    "exact_fix": "Implement format detection for supported cube20/state formats, convert to the project cube representation, and add fixtures with a small curated known-distance sample.",
+    "verification_steps": "Add tests under tests/unit/test_validation_dataset.py that load a real sample fixture and verify known optimal distances where feasible."
+  },
+  {
+    "severity": "Medium",
+    "category": "technical_code_quality",
+    "file": "webapp/package.json",
+    "location": "lines 5-8",
+    "issue": "The webapp runtime pins exact Node/npm versions, which is brittle for CI/build reproducibility.",
+    "exact_fix": "Relax engines to tested semver ranges such as >=24.9 <25 and >=11.6 <12, or document why exact versions are required.",
+    "verification_steps": "Run corepack prepare npm@11.6.0 --activate && cd webapp && npm ci && npm test && npm run build."
+  },
+  {
+    "severity": "High",
+    "category": "research_experimental_validity",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "lines 48-56, 128-139, 383-399",
+    "issue": "The main benchmark corpus is small and lacks repeated runs, confidence intervals, cold/warm timing split, and full original runtime provenance.",
+    "exact_fix": "Add an expanded benchmark appendix or supplemental artifact with repeated runs, warmup separation, statistical intervals, and runtime/package metadata.",
+    "verification_steps": "Regenerate benchmark JSON and tables; confirm Chapter 7 includes repeated-run statistics or explicitly labels the current benchmark as a fixed-corpus case study."
+  },
+  {
+    "severity": "Medium",
+    "category": "research_experimental_validity",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "lines 91-93, 396-397",
+    "issue": "Requested scramble length is not actual optimal depth, so depth-based conclusions remain limited.",
+    "exact_fix": "Add a second analysis grouped by verified_scramble_depth for the exact-completed cases, and generate a non-redundant or verified-depth corpus for future experiments.",
+    "verification_steps": "Add a table/figure grouped by verified_scramble_depth and confirm Chapter 7 clearly separates requested length from verified depth."
+  },
+  {
+    "severity": "High",
+    "category": "research_experimental_validity_reproducibility",
+    "file": "thesis/chapters/00_abstract_en.tex; results/validation/native_exact/README.md; results/validation/native_exact/MANIFEST.json",
+    "location": "abstract line 27; validation README lines 25-31; manifest lines 24-28",
+    "issue": "Canonical native-exact validation cannot be regenerated from the source ZIP alone because it requires omitted cache/oracle artifacts.",
+    "exact_fix": "Include a separate downloadable artifact/hash for corner_db.pkl, add deterministic cache generation with expected runtime/storage, or demote abstract wording to archived validation evidence rather than fully source-ZIP reproducible evidence.",
+    "verification_steps": "On a clean source ZIP, run python scripts/verification/native_exact_validation.py --preset canonical --output-dir /tmp/native; confirm it regenerates from documented inputs or the thesis labels it as external-cache evidence."
+  },
+  {
+    "severity": "Medium",
+    "category": "citation_reference_reproducibility",
+    "file": "thesis/chapters/07_evaluation.tex; README.md",
+    "location": "Chapter 7 lines 135-139; README lines 126-129",
+    "issue": "External backend provenance is not fully embedded in the benchmark artifact.",
+    "exact_fix": "Add a provenance block to results/benchmarks/thesis/thesis_results_combined.json with package name/version, import module, source URL, license status, file hashes, Python version, OS/kernel, CPU, and benchmark script hash.",
+    "verification_steps": "Regenerate or patch benchmark JSON, then update Chapter 7 and Appendix A to cite the embedded provenance fields directly."
+  },
+  {
+    "severity": "Low",
+    "category": "documentation_hygiene",
+    "file": "docs/THESIS_OUTLINE.md; docs/PATH_A_NATIVE_EXACT_PLAN.md",
+    "location": "docs/THESIS_OUTLINE.md lines 1-4, 25-37; docs/PATH_A_NATIVE_EXACT_PLAN.md lines 3-8, 52-55",
+    "issue": "Historical planning documents remain in docs/ with outdated source references and pre-implementation planning language.",
+    "exact_fix": "Move historical planning documents to docs/archive/ or add stronger top-level warnings that they are not current evidence and must not be cited for final thesis claims.",
+    "verification_steps": "Search docs/ for historical planning notes and confirm current evidence docs are clearly separated from archived planning material."
+  },
+  {
+    "severity": "High",
+    "category": "reproducibility_setup",
+    "file": "README.md; thesis/README.md; scripts/thesis_workflow.py",
+    "location": "README lines 28-39, 60-69; thesis README lines 34-75; workflow lines 1044-1062",
+    "issue": "The documented review build requires local TeX/Tectonic or a running Docker daemon.",
+    "exact_fix": "Make the container-first path the primary reproducibility path, document image build/pull instructions, and make missing-tool output explicit.",
+    "verification_steps": "On a clean machine with Docker only, run python scripts/thesis_workflow.py build --mode docker and verify the thesis/main.pdf hash."
+  },
+  {
+    "severity": "Medium",
+    "category": "reproducibility_setup",
+    "file": "verify_setup.py; README.md",
+    "location": "verify_setup.py lines 600-631, 657-664; README lines 152-163",
+    "issue": "The default verify_setup.py profile does not verify thesis/webapp artifacts.",
+    "exact_fix": "Rename the default result message to Python-only verification passed and add a final warning when --all-artifacts was not run.",
+    "verification_steps": "Run python verify_setup.py and confirm the final message clearly states that thesis PDF/webapp artifact builds were not checked."
+  },
+  {
+    "severity": "Critical",
+    "category": "submission_polish",
+    "file": "README.md",
+    "location": "lines 7-8",
+    "issue": "Administrative completion is still pending, so the repository is technical-review-ready but not final-submission-ready.",
+    "exact_fix": "After official approval details are available, update README.md and thesis/chapters/00_approval.tex to remove pending-status language.",
+    "verification_steps": "Search for pending, template, Ονοματεπώνυμο μέλους, and Ημερομηνία εξέτασης; final submission ZIP should not contain unresolved administrative placeholders."
+  }
+]

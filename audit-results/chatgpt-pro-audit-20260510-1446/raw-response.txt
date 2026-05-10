@@ -1,0 +1,49 @@
+ChatGPT Pro external audit response, captured from https://chatgpt.com/c/6a006d42-afcc-83eb-b8be-18c59bfbf174 on 2026-05-10 14:46 Europe/Athens.
+
+The browser copy controls failed with "Failed to copy to clipboard"; this is a manual transcription from the visible completed response.
+
+I audited the uploaded ZIP only. I extracted and inspected the archive, LaTeX thesis sources, checked-in PDF, benchmark JSON, validation artifacts, Python/package config, CI workflow, Dockerfile, README/setup docs, tests, and representative code paths.
+
+Checks reported:
+- python -m pytest tests -q: 289 passed, 30 deselected.
+- python scripts/verification/native_exact_validation.py --preset source-zip --output-dir /tmp/native_exact_source_zip: 261 cases, 0 failures.
+- python scripts/verify_notebooks.py: all 6 notebooks passed source smoke check.
+- python scripts/thesis_workflow.py validate: failed on the audit host because no complete thesis build path was ready: local bibtex missing, tectonic missing, Docker unavailable.
+- cd thesis && make: failed for the same build-path reason.
+- PDF inspection: thesis/main.pdf exists, 112 pages, embedded fonts, no form fields.
+
+Critical blockers:
+1. thesis/chapters/00_approval.tex, lines 34-37, 43-45, 51: final institutional approval page is still a template, with placeholder committee member rows and blank examination date. Replace with official names/titles/date or signed institutional page.
+
+Thesis writing issues:
+1. thesis/chapters/07_evaluation.tex, lines 187-191, 210-224, 261-275: Chapter 7 table narrative is out of order in the compiled PDF. Table 7.6 is discussed before Table 7.5. Move the paragraph or use float barriers.
+2. thesis/chapters/05_korf.tex, lines 313-320: PDF pseudocode renders None poorly as split math text because the source uses $None$. Use \texttt{None} or a semantic failure token.
+3. thesis/chapters/05_korf.tex, lines 293-295: long file paths wrap badly in the compiled PDF. Use displayed path or safer path formatting.
+
+Technical/code issues:
+1. .github/workflows/thesis-build.yml and README.md: coverage gate is only --cov-fail-under=49, and important evaluation/statistics/validation/visualization modules remain weakly covered.
+2. src/korf/validation.py, lines 372-413: load_cube20_data() advertises cube20.org validation data loading but always raises NotImplementedError.
+3. webapp/package.json, lines 5-8: exact Node/npm engine pins are brittle for CI/build reproducibility. Use a tested semver range or document why the exact versions are required.
+
+Research/experimental issues:
+1. thesis/chapters/07_evaluation.tex, lines 48-56, 128-139, 383-399: the main benchmark corpus is small and not statistically strong enough for broad claims.
+2. thesis/chapters/07_evaluation.tex, lines 91-93, 396-397: requested scramble length is not actual optimal depth.
+3. thesis/chapters/00_abstract_en.tex, results/validation/native_exact/README.md, and results/validation/native_exact/MANIFEST.json: canonical native-exact validation cannot be regenerated from the source ZIP alone.
+
+Citation/reference issues:
+1. thesis/chapters/07_evaluation.tex and README.md: external backend provenance is not fully embedded in the benchmark artifact.
+2. docs/THESIS_OUTLINE.md and docs/PATH_A_NATIVE_EXACT_PLAN.md: historical/supporting docs still contain outdated planning references.
+
+Reproducibility/setup issues:
+1. README.md, thesis/README.md, and scripts/thesis_workflow.py: documented review build is not source-only reproducible on a host without TeX/Tectonic/Docker.
+2. verify_setup.py and README.md: default verify_setup.py profile does not verify thesis/webapp artifacts.
+
+Submission polish issues:
+1. README.md, lines 7-8: administrative completion is still pending and must be resolved before final submission.
+
+Scores:
+- Overall thesis quality score: 82/100
+- Technical quality score: 78/100
+- Submission readiness score: 70/100
+
+There are still critical blockers because the approval/signature page is not final. Technical quality and submission readiness are also below 90.

@@ -1,6 +1,8 @@
 # Thesis Outline: Αλγόριθμοι Επίλυσης και Βέλτιστης Αναζήτησης για τον Κύβο του Rubik
 
-> Historical planning outline. Some fallback, admissibility, and benchmark-number notes below predate the March 2026 verification pass and should not be cited as final thesis truth.
+> Historical planning outline. This is not current thesis evidence and must not
+> be cited for final thesis claims. Some fallback, admissibility, and
+> benchmark-number notes below predate the March 2026 verification pass.
 
 **Επίπεδο**: Διπλωματική Εργασία (Undergraduate Thesis)
 **Πανεπιστήμιο Πατρών** - Τμήμα Ηλεκτρολόγων Μηχανικών και Τεχνολογίας Υπολογιστών

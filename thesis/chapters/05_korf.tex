@@ -291,8 +291,11 @@ Corner PDB only & Υψηλή για γωνίες & Μέτρια & περίπου
 \subsection{Κύριος Αλγόριθμος}
 
 Η παραγωγική εγγενής exact υλοποίηση IDA* βρίσκεται στο αρχείο
-\filepath{src/korf/native_exact_solver.py}. Το \filepath{src/korf/a_star.py}
-διατηρείται ως εκπαιδευτικό και συγκριτικό module για τα experiments A*/IDA*.
+\begin{center}
+\filepath{src/korf/native_exact_solver.py}
+\end{center}
+Το \filepath{src/korf/a_star.py} διατηρείται ως εκπαιδευτικό και συγκριτικό
+module για τα experiments A*/IDA*.
 
 \begin{algorithm}[H]
 \caption{IDA* για Rubik's Cube}
@@ -311,13 +314,13 @@ Corner PDB only & Υψηλή για γωνίες & Μέτρια & περίπου
         \If{$result$ είναι λίστα κινήσεων}
             \State \Return $result$ \Comment{Βρέθηκε λύση}
         \ElsIf{$result = \infty$}
-            \State \Return $None$ \Comment{Μη ολοκληρωμένη αναζήτηση ή depth limit}
+            \State \Return \texttt{None} \Comment{Μη ολοκληρωμένη αναζήτηση ή depth limit}
         \Else
             \State $bound \gets result$ \Comment{Νέο όριο}
         \EndIf
     \EndWhile
 
-    \State \Return $None$
+    \State \Return \texttt{None}
 \EndFunction
 \end{algorithmic}
 \end{algorithm}

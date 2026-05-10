@@ -1,10 +1,19 @@
 # Path A Native Exact Solver Plan
 
 Date: 2026-03-22
-Status: Historical execution plan with current-state notes
+Status: Historical execution plan with current-state notes; not current thesis evidence
 Scope: Build a native exact Rubik's Cube solver path inside this repository and use it to support an exact move-distance recognizer, without relying on the current external optimal-solver wrapper for the final claim.
 
-Current-state note: this document began as a pre-implementation plan. The repository now contains a native exact solver path in `src/korf/native_exact_solver.py`, native admissible coordinate heuristics in `src/korf/native_coordinate_heuristic.py`, focused tests under `tests/unit/test_native_exact_solver.py` and `tests/unit/test_native_coordinate_heuristic.py`, oracle agreement coverage in `tests/integration/test_native_exact_oracle_agreement.py`, and validation artifacts under `results/validation/native_exact/`. Keep the plan below as historical scope control, not as proof that the current checkout still lacks those files.
+Current-state note: this document began as a pre-implementation plan and is not
+current evidence for final thesis claims. The repository now contains a native
+exact solver path in `src/korf/native_exact_solver.py`, native admissible
+coordinate heuristics in `src/korf/native_coordinate_heuristic.py`, focused
+tests under `tests/unit/test_native_exact_solver.py` and
+`tests/unit/test_native_coordinate_heuristic.py`, oracle agreement coverage in
+`tests/integration/test_native_exact_oracle_agreement.py`, and validation
+artifacts under `results/validation/native_exact/`. Keep the plan below as
+historical scope control, not as proof that the current checkout still lacks
+those files.
 
 ## 1. Objective
 
