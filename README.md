@@ -5,7 +5,7 @@
 **Institution:** University of Patras
 
 **Project Type:** Undergraduate / Bachelor's thesis in ECE
-**Current State:** Technical review-ready manuscript, codebase, benchmarks, and local build workflow are present. Administrative signature-page completion is still pending: the approval/signature page is included as a formal template, but the final signed institutional copy still requires the remaining committee names and examination date from the University of Patras.
+**Current State:** Technical review package. The manuscript, codebase, benchmarks, and local build workflow are present, but this is not yet a final submission bundle: the approval/signature page still requires the remaining committee names and examination date from the University of Patras.
 
 This repository contains the implementation, evaluation, and thesis manuscript for a comparative study of three classical Rubik's Cube solving algorithms:
 
@@ -162,6 +162,8 @@ as a companion artifact.
 
 ## Reproduction Tiers
 
+For a checklist organized by claim tier, see [`REPRODUCIBILITY.md`](REPRODUCIBILITY.md).
+
 | Tier | Commands | Required external artifacts/backends | Claims covered |
 | --- | --- | --- | --- |
 | Minimal source-contained review | `python verify_setup.py`, `python -m pytest tests -q`, `python scripts/verification/native_exact_validation.py --preset source-zip` | None beyond the Python lockfile | Fast regression health and source-ZIP native-exact smoke validation |
@@ -207,7 +209,7 @@ the commands below in a clean Python 3.12 environment for the current machine.
 - `python scripts/thesis_workflow.py build --mode auto` rebuilds `thesis/main.pdf` with local TeX/Tectonic when available, or with the repo-local Docker image from `docker/thesis.Dockerfile` when Docker is running; the Dockerfile pins `debian:bookworm-slim` by digest
 - the manuscript chapters and appendices are present in `thesis/chapters/`
 
-There is no active top-level `TESTING_REPORT.md` in this checkout. Treat any older testing report copied from another branch or artifact bundle as historical unless it is regenerated from the commands above.
+There is no active top-level `TESTING_REPORT.md` in this checkout. Treat any older testing report copied from another branch or artifact bundle as historical unless it is regenerated from the commands above. This repository should be called final-submission ready only after the University approval/signature page has the official committee metadata and examination date.
 
 ## Next.js Preview
 

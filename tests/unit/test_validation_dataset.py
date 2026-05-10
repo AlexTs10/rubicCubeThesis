@@ -1,8 +1,7 @@
 """Tests for reproducible validation dataset generation and persistence."""
 
-import pytest
-
-from src.korf.validation import ValidationDataset, load_cube20_data
+from src.korf import validation as validation_module
+from src.korf.validation import ValidationDataset
 
 
 def _state_keys(dataset):
@@ -35,9 +34,5 @@ def test_validation_dataset_save_load_round_trip(tmp_path):
     assert [distance for _cube, distance in loaded] == [2, 2]
 
 
-def test_cube20_loader_fails_loudly_for_unsupported_format(tmp_path):
-    cube20_file = tmp_path / "distance20.txt"
-    cube20_file.write_text("placeholder unsupported cube20 payload\n")
-
-    with pytest.raises(NotImplementedError):
-        load_cube20_data(str(cube20_file))
+def test_cube20_loader_is_not_public_api():
+    assert not hasattr(validation_module, "load_cube20_data")

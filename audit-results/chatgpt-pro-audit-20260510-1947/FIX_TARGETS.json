@@ -1,0 +1,128 @@
+[
+  {
+    "severity": "Critical",
+    "category": "Submission / administrative blocker",
+    "file": "thesis/chapters/00_approval.tex",
+    "location": "lines 31-52",
+    "issue": "Final approval page still contains committee-name placeholders and a blank examination date.",
+    "exact_fix": "Replace the two placeholder committee rows with official committee names/titles and replace the blank examination date with the official date, or remove the approval page from the technical-review PDF and keep it only for the signed institutional copy.",
+    "verification_steps": "Rebuild thesis/main.pdf and run: pdftotext thesis/main.pdf - | grep -n \"Ονοματεπώνυμο\\|Ημερομηνία εξέτασης\". No placeholder committee names should remain."
+  },
+  {
+    "severity": "Medium",
+    "category": "Thesis writing / academic tone",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "lines 6-8, 31-46, 128-139, 365",
+    "issue": "Greek academic prose still contains dense English/Greek code-switching for terms such as backend, scramble, timeout, warm start, fixed corpus, and runtime lock.",
+    "exact_fix": "Translate repeated prose terms consistently and leave only JSON field names or command names in monospace. Optionally add a terminology table for unavoidable English terms.",
+    "verification_steps": "Run grep -RInE \"backend|scramble|timeout|warm|fixed|runtime\" thesis/chapters/*.tex and confirm remaining occurrences are deliberate field names, commands, or glossary-defined terms."
+  },
+  {
+    "severity": "Medium",
+    "category": "Thesis writing / style",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "lines 132-139",
+    "issue": "A methodology paragraph reads like repository/audit commentary rather than polished thesis prose.",
+    "exact_fix": "Move artifact-specific limitations to Appendix A and keep Chapter 7 focused on experimental methodology, summarizing only the statistical limitation in thesis prose.",
+    "verification_steps": "Review Chapter 7 without repository context and confirm that implementation-specific artifact caveats are either footnoted or moved to the appendix."
+  },
+  {
+    "severity": "High",
+    "category": "Technical/code quality",
+    "file": ".github/workflows/thesis-build.yml",
+    "location": "lines 55-56",
+    "issue": "CI coverage gate is only 49%, while several evaluation and visualization modules have 0% coverage in the documented coverage run.",
+    "exact_fix": "Add targeted tests for evaluation/statistics, validation, visualization, and benchmark summary paths, then raise the CI threshold first to 60% and later to 70%.",
+    "verification_steps": "Run python -m pytest tests -q --cov=src --cov-report=term-missing:skip-covered --cov-fail-under=60 and confirm it passes."
+  },
+  {
+    "severity": "Medium",
+    "category": "Technical/code / validation completeness",
+    "file": "src/korf/validation.py",
+    "location": "lines 374-416",
+    "issue": "load_cube20_data() is exposed as a loader but always raises NotImplementedError.",
+    "exact_fix": "Implement cube20.org format parsing into ValidationDataset or remove the function from the public validation path and document it as future work only.",
+    "verification_steps": "Add a small cube20-format fixture and assert that load_cube20_data() returns the expected states and distances instead of raising NotImplementedError."
+  },
+  {
+    "severity": "High",
+    "category": "Technical/code / validation reproducibility",
+    "file": "data/README.md",
+    "location": "lines 36-71",
+    "issue": "Canonical native-exact validation requires omitted generated cache artifacts and an optional external oracle; source ZIP only supports a smaller smoke validation.",
+    "exact_fix": "Ship a companion artifact manifest with SHA-256 for corner_db.pkl or provide a deterministic cache-generation target that records generation metadata and hash.",
+    "verification_steps": "Run python scripts/verification/native_exact_validation.py --preset canonical and confirm it completes 3513 cases with the supplied/generated cache and external oracle."
+  },
+  {
+    "severity": "High",
+    "category": "Research/experimental validity",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "lines 50-65, 128-139, 383-399",
+    "issue": "Benchmark evidence is based on 100 scrambles, single-run timing, no repeated trials, no confidence intervals, and one machine.",
+    "exact_fix": "Regenerate benchmarks with repeated runs per scramble after documented warmup; report median, IQR, and confidence intervals separately for cold-start and warm-start timings.",
+    "verification_steps": "Confirm regenerated benchmark JSON stores repeat index, warmup status, environment metadata, and per-run timings; update Chapter 7 tables accordingly."
+  },
+  {
+    "severity": "Medium",
+    "category": "Research/experimental design",
+    "file": "results/benchmarks/thesis/thesis_results_combined.json",
+    "location": "lines 117-119",
+    "issue": "Canonical benchmark corpus uses legacy redundant scrambles while current generator avoids consecutive same-face moves.",
+    "exact_fix": "Regenerate a new canonical corpus with random_no_consecutive_same_face_moves and mark the current corpus as legacy-only if kept for comparison.",
+    "verification_steps": "Confirm JSON metadata records scramble_generation: random_no_consecutive_same_face_moves and add a validation check rejecting adjacent same-face moves."
+  },
+  {
+    "severity": "High",
+    "category": "Research/experimental reproducibility",
+    "file": "results/benchmarks/thesis/thesis_results_combined.json",
+    "location": "lines 121, 143, 156",
+    "issue": "External exact backend provenance is incomplete: original benchmark did not record full metadata and upstream commit is null.",
+    "exact_fix": "Record exact wheel hash, source archive hash, package index URL, and upstream commit/tag during benchmark generation rather than post hoc.",
+    "verification_steps": "Regenerate benchmarks and confirm external_exact_backend_provenance includes a non-null upstream_commit or source_archive_sha256."
+  },
+  {
+    "severity": "Medium",
+    "category": "Citation/reference quality",
+    "file": "thesis/references.bib",
+    "location": "lines 25-31, 130-168, 225-232",
+    "issue": "Several key references rely on mutable web/GitHub resources rather than stable archival identifiers.",
+    "exact_fix": "Keep web references only as implementation/historical notes and add primary archival sources, release tags, source archive hashes, DOI, ISBN, or arXiv identifiers where possible.",
+    "verification_steps": "Review every @misc entry and confirm each important source has a stable identifier or archived artifact."
+  },
+  {
+    "severity": "High",
+    "category": "Reproducibility/setup",
+    "file": "README.md",
+    "location": "lines 163-172",
+    "issue": "Full reproduction tiers require external artifacts/backends; the uploaded source ZIP alone does not reproduce all thesis evidence.",
+    "exact_fix": "Add a REPRODUCIBILITY.md matrix labeling each claim as source-ZIP reproducible, cache-required, external-backend-required, or CI-only, with expected hashes and runtimes.",
+    "verification_steps": "A clean reviewer should be able to run each tier command and either match the documented artifact hash or see the documented prerequisite failure."
+  },
+  {
+    "severity": "Medium",
+    "category": "Reproducibility/setup",
+    "file": "scripts/thesis_workflow.py",
+    "location": "lines 485-512, 887, 1061-1080",
+    "issue": "Thesis build validation can fail when local TeX/tectonic/Docker prerequisites are missing, even though source files are present.",
+    "exact_fix": "Make Docker the official final build route, add an explicit preflight for Docker availability, and publish the CI-generated thesis/main.pdf SHA-256.",
+    "verification_steps": "Run python scripts/thesis_workflow.py build --mode docker on a clean Docker-enabled machine and compare shasum -a 256 thesis/main.pdf to the documented hash."
+  },
+  {
+    "severity": "Low",
+    "category": "Submission polish / accessibility",
+    "file": "thesis/main.pdf",
+    "location": "PDF metadata",
+    "issue": "Compiled PDF is not tagged for accessibility.",
+    "exact_fix": "If required by the university/library, add a tagged-PDF capable build path or provide an accessible PDF variant.",
+    "verification_steps": "Run pdfinfo thesis/main.pdf | grep Tagged and confirm the final requirement accepts the output."
+  },
+  {
+    "severity": "Medium",
+    "category": "Submission polish",
+    "file": "README.md",
+    "location": "lines 7-8",
+    "issue": "README describes the package as technical-review ready and says administrative signature-page completion is pending.",
+    "exact_fix": "After official committee/date completion, update the README to state final-submission readiness and remove pending/template language.",
+    "verification_steps": "Run grep -RIn \"pending\\|technical review-ready\\|template\" README.md thesis/chapters and confirm no final-submission contradictions remain."
+  }
+]

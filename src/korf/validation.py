@@ -6,7 +6,7 @@ by comparing estimates against known optimal distances.
 
 Features:
 - Generate test positions with reproducible approximate distances
-- Fail loudly for unsupported external cube20.org data
+- Persist and reload repository-native JSON validation datasets
 - Calculate Mean Absolute Error (MAE)
 - Compare multiple estimation methods
 - Generate accuracy reports
@@ -18,9 +18,8 @@ IMPLEMENTATION STATUS:
     ⚠️ Advanced features: Partial implementation
 
 UNSUPPORTED EXTERNAL DATA:
-    - cube20.org format parsing is intentionally not implemented for this thesis
-      package; use JSON ValidationDataset files or self-generated fixtures.
-      The loader below fails loudly if a caller attempts cube20 ingestion.
+    - cube20.org format parsing is intentionally outside this thesis package.
+      Use JSON ValidationDataset files or self-generated fixtures instead.
     - Large-scale validation datasets
     - Automated regression testing
 
@@ -28,7 +27,7 @@ DESIGN DECISIONS:
     For thesis scope, we prioritize:
     1. Core algorithm correctness over advanced validation
     2. Self-contained test generation over external datasets
-    3. Explicit unsupported-format failures over silent empty datasets
+    3. Keeping unsupported external formats out of the public validation API
 
     These decisions can be revisited post-thesis if needed.
 
@@ -369,48 +368,3 @@ def create_test_dataset(seed: int = 42) -> ValidationDataset:
     )
 
     return dataset
-
-
-def load_cube20_data(filepath: str) -> ValidationDataset:
-    """
-    Load validation data from cube20.org dataset.
-
-    The cube20.org dataset contains positions with known optimal distances,
-    particularly useful for distance-20 positions.
-
-    Args:
-        filepath: Path to cube20.org data file
-
-    Returns:
-        Validation dataset
-
-    Note:
-        Data can be downloaded from http://www.cube20.org/distance20s
-    """
-    if not os.path.exists(filepath):
-        raise FileNotFoundError(
-            f"Cube20 data not found at {filepath}. "
-            f"Download from http://www.cube20.org/distance20s"
-        )
-
-    # FUTURE ENHANCEMENT: cube20.org Format Parser
-    # The cube20.org project uses standardized notation for cube states.
-    # Implementing this parser would enable validation against known optimal solutions.
-    #
-    # Format details:
-    #   - Facelet strings (54 characters)
-    #   - Or cubie notation (space-separated)
-    #   - Requires format detection and conversion
-    #
-    # Design decision: Deferred for thesis scope. The function fails loudly
-    # instead of returning an empty dataset that could be mistaken for loaded
-    # optimal-distance evidence.
-    #
-    # References:
-    #   - http://cube20.org/ (when accessible)
-    #   - Korf's original dataset format
-    raise NotImplementedError(
-        "cube20.org parser is not implemented. Use create_test_dataset() for "
-        "self-generated validation data or provide a supported JSON validation "
-        "dataset with ValidationDataset.load_from_file()."
-    )
