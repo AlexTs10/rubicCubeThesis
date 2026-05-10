@@ -29,8 +29,9 @@ python scripts/verification/native_exact_validation.py --preset canonical
 ```
 
 `data/pattern_databases/corner_db.pkl` is intentionally omitted from source
-audit ZIPs. Final archival reruns should either generate it locally or receive
-it as a companion artifact with a SHA-256 manifest entry.
+audit ZIPs, so the source ZIP alone cannot reproduce the archived canonical
+3,513-case run exactly. Final archival reruns should either generate the cache
+locally or receive it as a companion artifact with a SHA-256 manifest entry.
 
 ## Requires External Backend
 
@@ -43,10 +44,10 @@ python scripts/benchmarks/regenerate_thesis_benchmarks.py
 ```
 
 The checked-in thesis benchmark JSON remains the authoritative evidence for the
-submitted Chapter 7 numbers. A fresh rerun may differ in timing because the
-original campaign did not record repeated trials, confidence intervals,
-complete kernel/process metadata, or an upstream source commit for the external
-exact backend.
+Chapter 7 numbers in this technical review package. A fresh rerun may differ in
+timing because the original campaign did not record repeated trials, confidence
+intervals, complete kernel/process metadata, or an upstream source commit for
+the external exact backend.
 
 ## Thesis PDF Build
 

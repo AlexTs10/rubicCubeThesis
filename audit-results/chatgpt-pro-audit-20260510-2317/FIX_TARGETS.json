@@ -1,0 +1,83 @@
+[
+  {
+    "severity": "critical",
+    "category": "submission_readiness",
+    "file": "thesis/chapters/00_approval.tex",
+    "location": "lines 34-37, 43-45, 51",
+    "issue": "The approval/signature page still contains placeholder committee member names/titles and an empty examination date, and the file explicitly says these must be completed before final deposit.",
+    "exact_fix": "Replace the two placeholder committee rows with the official committee member names and titles from the University of Patras record, replace the dotted examination date with the official date, and remove or rewrite the note that says the information is still pending.",
+    "verification_steps": "Rebuild thesis/main.pdf and manually inspect the approval page. Then grep thesis/chapters/00_approval.tex for 'Ονοματεπώνυμο', 'ιδιότητα', and '\\dotfill' to confirm no placeholder approval metadata remains."
+  },
+  {
+    "severity": "critical",
+    "category": "reproducibility_tests",
+    "file": "tests/unit/test_a_star_solvers.py",
+    "location": "lines 271-282",
+    "issue": "The documented default fast test command could not be verified because the full pytest run stalled at the IDA* memory-efficiency test. The test uses an unseeded scramble and invokes a potentially expensive IDA* search.",
+    "exact_fix": "Make the test deterministic and bounded: use a fixed seed, reduce max_depth, use a trivial known scramble, or mark the test as slow if it is intended to exercise expensive search. Add a per-test timeout and ensure it completes reliably in the default fast profile.",
+    "verification_steps": "Run python -m pytest tests -q three times from a clean environment and confirm each run completes within the expected fast-test budget. Also run python -m pytest tests/unit/test_a_star_solvers.py -q to verify the targeted file is stable."
+  },
+  {
+    "severity": "major",
+    "category": "solver_timeout_handling",
+    "file": "src/korf/a_star.py",
+    "location": "lines 317-323, 424-427",
+    "issue": "IDAStarSolver has a 300s default timeout and only checks recursive timeout every 10000 explored nodes, which can make external verification slow or appear hung.",
+    "exact_fix": "Reduce the default timeout for test-facing/demo usage or make tests pass explicit small timeouts. Check timeout more frequently inside _search, ideally on every recursive call or at a much smaller node interval. Preserve a configurable high timeout only for explicit benchmark runs.",
+    "verification_steps": "Add a regression test using a hard scramble and a tiny timeout. Verify solve() returns None with timed_out true close to the requested timeout rather than exceeding it substantially."
+  },
+  {
+    "severity": "major",
+    "category": "canonical_reproducibility",
+    "file": "REPRODUCIBILITY.md",
+    "location": "lines 31-49",
+    "issue": "The full canonical native-exact validation and full benchmark campaign cannot be reproduced from the source ZIP alone because the corner pattern database and optional external exact backend are required.",
+    "exact_fix": "For final archival submission, provide a companion artifact containing data/pattern_databases/corner_db.pkl, SHA-256 checksums, external backend wheel/source archive, exact package metadata, and the command logs used to regenerate the canonical reports.",
+    "verification_steps": "On a clean machine, install from the lockfile plus companion artifacts, run python scripts/verification/native_exact_validation.py --preset canonical, then compare produced report counts and hashes against results/validation/native_exact/MANIFEST.json."
+  },
+  {
+    "severity": "major",
+    "category": "benchmark_methodology",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "lines 96-98, 137-140, 388-404",
+    "issue": "The evaluation is based on one fixed 100-case corpus without repeated trials, confidence intervals, or cold/warm isolation, and requested scramble length is not the same as optimal depth.",
+    "exact_fix": "Either add a repeated-trial benchmark with confidence intervals and cold/warm timing separation, or further narrow the wording of all performance conclusions to state that they apply only to the fixed checked-in corpus and single-run environment.",
+    "verification_steps": "Regenerate Chapter 7 tables and figures after either adding repeated benchmark artifacts or editing claims. Confirm the text no longer implies statistically generalizable performance beyond the documented corpus."
+  },
+  {
+    "severity": "moderate",
+    "category": "api_correctness",
+    "file": "src/kociemba/cubie.py",
+    "location": "lines 162-187, 432-499",
+    "issue": "to_facelet_cube converts a CubieCube without validating global cubie invariants, even though the invariant checker exists in the same module.",
+    "exact_fix": "Call _validate_cubie_state(cubie) at the start of to_facelet_cube, or explicitly document to_facelet_cube as an unsafe low-level serializer and add a safe public wrapper for normal use.",
+    "verification_steps": "Update tests/test_facelet_cubie_conversion.py so invalid cubie states raise at to_facelet_cube if the safe behavior is chosen. Run python -m pytest tests/test_facelet_cubie_conversion.py -q."
+  },
+  {
+    "severity": "moderate",
+    "category": "webapp_reproducibility",
+    "file": "webapp/package.json",
+    "location": "lines 5-9",
+    "issue": "The webapp requires a very strict Node/npm toolchain, and npm ci fails under common Node LTS environments while engine-strict is enabled.",
+    "exact_fix": "Either keep the strict Node 24.9/npm 11.6 requirement and make the Docker path the primary review path, or relax engines to the current supported Node LTS range if the app builds there. Document the chosen support policy in README.md.",
+    "verification_steps": "Run nvm install && nvm use && corepack prepare npm@11.6.0 --activate && cd webapp && npm ci && npm test && npm run build. Also run the docker/webapp.Dockerfile path from a clean host."
+  },
+  {
+    "severity": "moderate",
+    "category": "writing_polish",
+    "file": "thesis/chapters/08_implementation.tex",
+    "location": "lines 184-194",
+    "issue": "The Greek academic prose mixes many English technical fragments, including native, corner PDB support, generated-length-9, timeout, oracle, and report.",
+    "exact_fix": "Add a terminology convention or glossary, then standardize whether technical terms remain in English monospace or are translated consistently in Greek prose.",
+    "verification_steps": "Review Chapters 7 and 8 after editing and search for inconsistent unformatted English technical terms. Confirm all unavoidable English identifiers are either code identifiers or defined terminology."
+  },
+  {
+    "severity": "minor",
+    "category": "submission_packaging",
+    "file": "README.md",
+    "location": "lines 7-8, 212",
+    "issue": "The package labels itself as a technical review package and explicitly says it is not final-submission ready until approval metadata is complete.",
+    "exact_fix": "After completing the approval page and final PDF build, update the Current State and final-readiness language so the README accurately describes the ZIP as a final university submission package.",
+    "verification_steps": "Search README.md and REPRODUCIBILITY.md for 'technical review package', 'not yet a final submission', and similar wording. Confirm the wording matches the final deposited state."
+  }
+]

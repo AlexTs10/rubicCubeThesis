@@ -51,7 +51,7 @@ def test_from_facelet_cube_rejects_single_twisted_corner():
     cubie.corner_orient[0] = 1
 
     with pytest.raises(ValueError, match="corner orientation sum must be divisible by 3"):
-        from_facelet_cube(to_facelet_cube(cubie))
+        to_facelet_cube(cubie)
 
 
 def test_from_facelet_cube_rejects_single_flipped_edge():
@@ -59,7 +59,7 @@ def test_from_facelet_cube_rejects_single_flipped_edge():
     cubie.edge_orient[0] = 1
 
     with pytest.raises(ValueError, match="edge orientation sum must be even"):
-        from_facelet_cube(to_facelet_cube(cubie))
+        to_facelet_cube(cubie)
 
 
 def test_from_facelet_cube_rejects_permutation_parity_mismatch():
@@ -67,4 +67,15 @@ def test_from_facelet_cube_rejects_permutation_parity_mismatch():
     cubie.edge_perm[[0, 1]] = cubie.edge_perm[[1, 0]]
 
     with pytest.raises(ValueError, match="permutation parity must match"):
-        from_facelet_cube(to_facelet_cube(cubie))
+        to_facelet_cube(cubie)
+
+
+def test_to_facelet_cube_rejects_duplicate_corner_permutation():
+    cubie = CubieCube()
+    cubie.corner_perm[1] = cubie.corner_perm[0]
+
+    with pytest.raises(
+        ValueError,
+        match="corner permutation must contain each corner exactly once",
+    ):
+        to_facelet_cube(cubie)

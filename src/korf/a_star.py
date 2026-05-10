@@ -313,6 +313,7 @@ class IDAStarSolver:
     """
 
     ALL_MOVES = AStarSolver.ALL_MOVES
+    TIMEOUT_CHECK_INTERVAL = 256
 
     def __init__(
         self,
@@ -354,7 +355,7 @@ class IDAStarSolver:
         Returns:
             List of moves to solve, or None if no solution found
         """
-        self.start_time = time.time()
+        self.start_time = time.monotonic()
         self.nodes_explored = 0
         self.timed_out = False
         self.depth_limit_reached = False
@@ -372,7 +373,7 @@ class IDAStarSolver:
         # Iterative deepening loop
         while bound <= self.max_depth:
             # Check timeout
-            if time.time() - self.start_time > self.timeout:
+            if self._deadline_exceeded():
                 self.timed_out = True
                 return None
 
@@ -421,10 +422,11 @@ class IDAStarSolver:
         """
         self.nodes_explored += 1
 
-        # Check timeout periodically
-        if self.nodes_explored % 10000 == 0:
-            if time.time() - self.start_time > self.timeout:
-                return _IDA_TIMEOUT
+        if (
+            self.timeout <= 0
+            or self.nodes_explored % self.TIMEOUT_CHECK_INTERVAL == 0
+        ) and self._deadline_exceeded():
+            return _IDA_TIMEOUT
 
         # Calculate f = g + h
         h = self.heuristic(cube)
@@ -479,9 +481,13 @@ class IDAStarSolver:
 
         return False
 
+    def _deadline_exceeded(self) -> bool:
+        """Return whether the configured wall-clock budget has expired."""
+        return time.monotonic() - self.start_time >= self.timeout
+
     def get_statistics(self) -> Dict[str, Any]:
         """Get performance statistics."""
-        elapsed_time = time.time() - self.start_time if self.start_time > 0 else 0
+        elapsed_time = time.monotonic() - self.start_time if self.start_time > 0 else 0
 
         return {
             'nodes_explored': self.nodes_explored,

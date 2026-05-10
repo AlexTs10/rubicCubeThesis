@@ -271,22 +271,26 @@ class TestIDAStarSolver:
     def test_memory_efficiency(self):
         """Test that IDA* uses minimal memory."""
         cube = RubikCube()
-        cube.scramble(moves=5)
+        scramble = ['U', 'R', 'F']
+        for move in scramble:
+            cube.apply_move(move)
 
-        solver = IDAStarSolver(heuristic=manhattan_distance, max_depth=15, timeout=30.0)
+        solver = IDAStarSolver(heuristic=manhattan_distance, max_depth=8, timeout=2.0)
         solution = solver.solve(cube)
 
         stats = solver.get_statistics()
 
+        assert solution is not None
         # IDA* should report minimal memory usage
         assert stats['estimated_memory_mb'] < 1.0  # Less than 1MB
 
     def test_timeout_handling(self):
         """Test that timeout is respected."""
         cube = RubikCube()
-        cube.scramble(moves=10)
+        for move in ['U', 'R', 'F', 'L', 'B']:
+            cube.apply_move(move)
 
-        # Zero timeout makes this deterministic even if the random scramble is shallow.
+        # Zero timeout makes this deterministic and verifies the immediate deadline path.
         solver = IDAStarSolver(heuristic=manhattan_distance, max_depth=20, timeout=0.0)
 
         start_time = time.time()
@@ -299,6 +303,23 @@ class TestIDAStarSolver:
         assert stats['timed_out'] is True
         assert stats['solution_found'] is False
         assert stats['depth_limit_reached'] is False
+
+    def test_tiny_timeout_checked_during_recursive_search(self):
+        """Test that IDA* notices tiny deadlines inside the recursive search."""
+        cube = RubikCube()
+        for move in ['U', 'R', 'F', 'L', 'B', 'D', 'U2', 'R2']:
+            cube.apply_move(move)
+
+        solver = IDAStarSolver(heuristic=manhattan_distance, max_depth=20, timeout=1e-9)
+
+        start_time = time.time()
+        solution = solver.solve(cube)
+        elapsed_time = time.time() - start_time
+
+        assert solution is None
+        assert elapsed_time < 1.0
+        stats = solver.get_statistics()
+        assert stats['timed_out'] is True
 
 
 class TestSolverComparison:

@@ -1,0 +1,219 @@
+repo-audit-20260510-2156.zip
+Zip Archive
+You are acting as a strict thesis supervisor, senior software architect, academic reviewer, and reproducibility auditor.Use ONLY the uploaded ZIP. Do not use GitHub or any external repository. Extract and inspect the actual uploaded archive before answering. Do not hallucinate file paths or contents.Task: perform a complete external audit of this Rubik's Cube thesis repository and source package. Audit thesis writing quality, grammar, academic tone, citations/references, technical correctness, mathematical correctness, code quality, tests, reproducibility, packaging, submission readiness, and whether previous blocker classes appear resolved.Be strict. Prioritize issues that would block or weaken final university submission or technical review. For every finding, cite concrete file paths and line numbers or artifact paths from the uploaded ZIP.Return your response in this structure:1. Critical blockers2. Thesis writing issues3. Technical/code issues4. Reproducibility/setup issues5. Citation/reference issues6. Submission polish issues7. Verification you ran or could not run8. FIX_TARGETS9. ScoresThe FIX_TARGETS section must be a single valid JSON array, with no comments and no markdown inside the JSON. Each target object must contain:- severity: critical | major | moderate | minor- category- file- location- issue- exact_fix- verification_stepsScores must include:- Overall thesis quality score /100- Technical quality score /100- Submission readiness score /100Explicitly state whether any critical blockers remain and whether technical quality and submission readiness are each >= 90.
+Show more
+
+I’ll treat the ZIP as the only source of truth, extract it, inventory the thesis/source/package files, then verify claims by reading actual files and running any safe local checks available.
+
+Thought for 15m 7s
+
+I used only the uploaded ZIP extracted locally from /mnt/data/repo-audit-20260510-2156.zip. I did not use GitHub or any external repository.
+
+1. Critical blockers
+
+Critical blockers remain: Yes.
+
+The thesis is explicitly not final-submission ready because the approval/signature page still contains placeholders.
+thesis/chapters/00_approval.tex:34-37 says the two remaining committee members and examination date must be filled before final deposit. The actual placeholders remain at thesis/chapters/00_approval.tex:43-45, and the exam date is still \dotfill at thesis/chapters/00_approval.tex:51. This is reinforced by README.md:7-8, README.md:212, and REPRODUCIBILITY.md:65-70. This alone blocks a final university submission bundle.
+
+The documented default fast test command could not be verified as completing in this audit environment.
+The repository tells reviewers to run python -m pytest tests -q in README.md:34-38 and repeats it as the supported fast profile in README.md:203-205; CI also runs it at .github/workflows/thesis-build.yml:52-56. In my run, collection succeeded, but the full default test run timed out; the verbose run stalled at tests/unit/test_a_star_solvers.py::TestIDAStarSolver::test_memory_efficiency. That test uses an unseeded 5-move scramble and a 30s IDA* timeout at tests/unit/test_a_star_solvers.py:271-282, while the solver checks recursive timeout only every 10,000 nodes at src/korf/a_star.py:424-427. This is a reproducibility blocker for an external reviewer unless fixed or clearly marked slow/flaky.
+
+2. Thesis writing issues
+
+The manuscript is much more candid than earlier blocker-prone versions, but it still reads like a technical review package rather than a final deposit.
+The top-level README explicitly labels the package “Technical review package” at README.md:7-8, and the reproducibility checklist says not to label it final while placeholders remain at REPRODUCIBILITY.md:65-70. This is correct honesty, but it confirms the final-submission framing is not complete.
+
+Some Greek academic prose still mixes English technical labels heavily.
+This is acceptable in code-facing sections, but terms such as native, corner PDB support, generated-length-9, timeout, oracle, and report appear in Greek prose at thesis/chapters/08_implementation.tex:184-194. The evaluation section also uses English backend terminology extensively at thesis/chapters/07_evaluation.tex:41-51. A final Greek thesis would benefit from a short terminology table or more consistent Greek/English convention.
+
+The evaluation chapter is honest about limitations, but the limitation density weakens the strength of the claims.
+The thesis correctly states that requested scramble length is not equal to optimal depth at thesis/chapters/07_evaluation.tex:96-98, and that there are no repeated trials, confidence intervals, or cold/warm isolation at thesis/chapters/07_evaluation.tex:137-140. This is academically responsible, but the final claims should stay corpus-specific rather than sounding generally conclusive.
+
+3. Technical/code issues
+
+The IDA test/runtime boundary is still fragile.*
+IDAStarSolver defaults to a 300s timeout at src/korf/a_star.py:317-323, and recursive timeout checks happen only every 10,000 explored nodes at src/korf/a_star.py:424-427. Combined with unseeded or expensive test cases such as tests/unit/test_a_star_solvers.py:271-282, this creates reviewer-visible test instability.
+
+The to_facelet_cube API serializes invalid cubie states without validating invariants first.
+The invariant checker exists at src/kociemba/cubie.py:162-187, but to_facelet_cube starts converting directly at src/kociemba/cubie.py:432-499 without calling it. Tests currently rely on round-tripping invalid cubies and having from_facelet_cube reject them later at tests/test_facelet_cubie_conversion.py:49-70. That is acceptable for a low-level helper only if documented; otherwise, it is a correctness/API sharp edge.
+
+The exact benchmark path depends on an external backend, not only the repository-native Korf implementation.
+The thesis now states this clearly at thesis/chapters/07_evaluation.tex:41-51, and the README repeats it at README.md:141-150. This resolves the previous “misrepresented native optimal solver” class, but it still means the deepest benchmark claims are not purely source-contained.
+
+The Next.js webapp is correctly downgraded to a synthetic demo, but it should not be treated as technical solver evidence.
+The README says the webapp is a synthetic preview at README.md:20 and README.md:214-236; the thesis repeats this at thesis/chapters/08_implementation.tex:212-222. This previous blocker class appears resolved, provided the university submission does not present the webapp as live solver telemetry.
+
+4. Reproducibility/setup issues
+
+Full canonical native-exact validation is not source-ZIP reproducible.
+REPRODUCIBILITY.md:31-33 says data/pattern_databases/corner_db.pkl is intentionally omitted. results/validation/native_exact/README.md:25-31 says the canonical command also requires the optional RubikOptimal external exact backend. This is documented honestly, but it prevents a reviewer from regenerating the full canonical native-exact evidence from the ZIP alone.
+
+Full benchmark reproduction depends on external packages and incomplete original environment metadata.
+REPRODUCIBILITY.md:35-49 says full thesis benchmark reproduction requires optional external solver packages and that fresh reruns may differ because the original campaign did not record repeated trials, confidence intervals, complete kernel/process metadata, or an upstream source commit for the external exact backend. This is a major reproducibility limitation.
+
+The webapp toolchain is very strict and failed under the container’s available Node/npm.
+The project requires Node >=24.9 <25 and npm >=11.6 <12 at webapp/package.json:5-9, with engine-strict=true at webapp/.npmrc:1 and .nvmrc:1. This is properly documented in README.md:42-60, but it makes external review less forgiving unless the Docker route is used.
+
+The PDF build path is well documented, but I could not verify it locally here.
+The Docker PDF path is documented at README.md:80-89, REPRODUCIBILITY.md:51-63, .github/workflows/thesis-build.yml:155-170, and docker/thesis.Dockerfile:1-17. In this audit environment, local BibTeX/Docker/Tectonic were unavailable, so I could not independently rebuild thesis/main.pdf.
+
+5. Citation/reference issues
+
+No missing or unused citation keys were found in the source check I ran.
+I found 115 citation references, 31 unique citation keys, and 31 bibliography entries, with no missing or unused keys.
+
+Third-party exact backend provenance remains a citation/provenance weakness.
+The README records RubikOptimal>=1.1.0, wheel metadata hashes, and notes that the upstream commit/tag is unknown at README.md:154-160. This is honest and much better than hiding the dependency, but a final archival submission should include the exact source archive/commit or companion provenance artifact.
+
+6. Submission polish issues
+
+The package itself says it should not yet be called final-submission ready.
+README.md:212 explicitly states the repository should be called final-submission ready only after the approval/signature page has official committee metadata and examination date.
+
+The reproducibility tiering is good, but the final ZIP should include a short reviewer-facing “what can be reproduced from ZIP only” note near the thesis PDF.
+The detailed tiering exists in REPRODUCIBILITY.md:6-20, REPRODUCIBILITY.md:22-49, and results/validation/native_exact/README.md:59-68; for final submission, this should be summarized in one visible README section or appendix paragraph.
+
+The benchmark limitations are now mostly disclosed, which is a major improvement.
+The evaluation chapter clearly states requested length vs optimal depth at thesis/chapters/07_evaluation.tex:96-98, single-run limitations at thesis/chapters/07_evaluation.tex:137-140, and broader limitations at thesis/chapters/07_evaluation.tex:388-404. This previous blocker class appears largely resolved.
+
+7. Verification you ran or could not run
+
+Ran successfully:
+
+Extracted and inventoried the uploaded ZIP only.
+
+python --version → Python 3.13.5 in this audit container.
+
+python -m pytest tests --collect-only -q → collected tests successfully: 294 selected / 324 total, 30 deselected.
+
+Citation key check over thesis/chapters/*.tex and thesis/references.bib → no missing/unused citation keys detected.
+
+Several targeted tests passed, including:
+
+tests/integration/test_workflows.py
+
+tests/test_facelet_cubie_conversion.py
+
+tests/unit/test_algorithm_comparison.py
+
+tests/unit/test_algorithm_comparison_cli.py
+
+tests/unit/test_benchmark_artifacts.py
+
+selected Kociemba and Thistlethwaite unit tests.
+
+Could not fully verify:
+
+python -m pytest tests -q did not complete in this environment; verbose execution stalled at tests/unit/test_a_star_solvers.py::TestIDAStarSolver::test_memory_efficiency.
+
+cd webapp && npm ci could not run because this environment has Node/npm below the strict required versions in webapp/package.json:5-9.
+
+python scripts/thesis_workflow.py validate/build could not fully rebuild the PDF because local BibTeX/Docker/Tectonic were unavailable in this environment.
+
+Full canonical native-exact validation could not be reproduced from source ZIP alone because data/pattern_databases/corner_db.pkl is intentionally omitted and the external oracle/backend is required, as documented in REPRODUCIBILITY.md:31-49 and results/validation/native_exact/README.md:25-31.
+
+8. FIX_TARGETS
+
+[
+{
+"severity": "critical",
+"category": "submission_readiness",
+"file": "thesis/chapters/00_approval.tex",
+"location": "lines 34-37, 43-45, 51",
+"issue": "The approval/signature page still contains placeholder committee member names/titles and an empty examination date, and the file explicitly says these must be completed before final deposit.",
+"exact_fix": "Replace the two placeholder committee rows with the official committee member names and titles from the University of Patras record, replace the dotted examination date with the official date, and remove or rewrite the note that says the information is still pending.",
+"verification_steps": "Rebuild thesis/main.pdf and manually inspect the approval page. Then grep thesis/chapters/00_approval.tex for 'Ονοματεπώνυμο', 'ιδιότητα', and '\dotfill' to confirm no placeholder approval metadata remains."
+},
+{
+"severity": "critical",
+"category": "reproducibility_tests",
+"file": "tests/unit/test_a_star_solvers.py",
+"location": "lines 271-282",
+"issue": "The documented default fast test command could not be verified because the full pytest run stalled at the IDA* memory-efficiency test. The test uses an unseeded scramble and invokes a potentially expensive IDA* search.",
+"exact_fix": "Make the test deterministic and bounded: use a fixed seed, reduce max_depth, use a trivial known scramble, or mark the test as slow if it is intended to exercise expensive search. Add a per-test timeout and ensure it completes reliably in the default fast profile.",
+"verification_steps": "Run python -m pytest tests -q three times from a clean environment and confirm each run completes within the expected fast-test budget. Also run python -m pytest tests/unit/test_a_star_solvers.py -q to verify the targeted file is stable."
+},
+{
+"severity": "major",
+"category": "solver_timeout_handling",
+"file": "src/korf/a_star.py",
+"location": "lines 317-323, 424-427",
+"issue": "IDAStarSolver has a 300s default timeout and only checks recursive timeout every 10000 explored nodes, which can make external verification slow or appear hung.",
+"exact_fix": "Reduce the default timeout for test-facing/demo usage or make tests pass explicit small timeouts. Check timeout more frequently inside _search, ideally on every recursive call or at a much smaller node interval. Preserve a configurable high timeout only for explicit benchmark runs.",
+"verification_steps": "Add a regression test using a hard scramble and a tiny timeout. Verify solve() returns None with timed_out true close to the requested timeout rather than exceeding it substantially."
+},
+{
+"severity": "major",
+"category": "canonical_reproducibility",
+"file": "REPRODUCIBILITY.md",
+"location": "lines 31-49",
+"issue": "The full canonical native-exact validation and full benchmark campaign cannot be reproduced from the source ZIP alone because the corner pattern database and optional external exact backend are required.",
+"exact_fix": "For final archival submission, provide a companion artifact containing data/pattern_databases/corner_db.pkl, SHA-256 checksums, external backend wheel/source archive, exact package metadata, and the command logs used to regenerate the canonical reports.",
+"verification_steps": "On a clean machine, install from the lockfile plus companion artifacts, run python scripts/verification/native_exact_validation.py --preset canonical, then compare produced report counts and hashes against results/validation/native_exact/MANIFEST.json."
+},
+{
+"severity": "major",
+"category": "benchmark_methodology",
+"file": "thesis/chapters/07_evaluation.tex",
+"location": "lines 96-98, 137-140, 388-404",
+"issue": "The evaluation is based on one fixed 100-case corpus without repeated trials, confidence intervals, or cold/warm isolation, and requested scramble length is not the same as optimal depth.",
+"exact_fix": "Either add a repeated-trial benchmark with confidence intervals and cold/warm timing separation, or further narrow the wording of all performance conclusions to state that they apply only to the fixed checked-in corpus and single-run environment.",
+"verification_steps": "Regenerate Chapter 7 tables and figures after either adding repeated benchmark artifacts or editing claims. Confirm the text no longer implies statistically generalizable performance beyond the documented corpus."
+},
+{
+"severity": "moderate",
+"category": "api_correctness",
+"file": "src/kociemba/cubie.py",
+"location": "lines 162-187, 432-499",
+"issue": "to_facelet_cube converts a CubieCube without validating global cubie invariants, even though the invariant checker exists in the same module.",
+"exact_fix": "Call _validate_cubie_state(cubie) at the start of to_facelet_cube, or explicitly document to_facelet_cube as an unsafe low-level serializer and add a safe public wrapper for normal use.",
+"verification_steps": "Update tests/test_facelet_cubie_conversion.py so invalid cubie states raise at to_facelet_cube if the safe behavior is chosen. Run python -m pytest tests/test_facelet_cubie_conversion.py -q."
+},
+{
+"severity": "moderate",
+"category": "webapp_reproducibility",
+"file": "webapp/package.json",
+"location": "lines 5-9",
+"issue": "The webapp requires a very strict Node/npm toolchain, and npm ci fails under common Node LTS environments while engine-strict is enabled.",
+"exact_fix": "Either keep the strict Node 24.9/npm 11.6 requirement and make the Docker path the primary review path, or relax engines to the current supported Node LTS range if the app builds there. Document the chosen support policy in README.md.",
+"verification_steps": "Run nvm install && nvm use && corepack prepare npm@11.6.0 --activate && cd webapp && npm ci && npm test && npm run build. Also run the docker/webapp.Dockerfile path from a clean host."
+},
+{
+"severity": "moderate",
+"category": "writing_polish",
+"file": "thesis/chapters/08_implementation.tex",
+"location": "lines 184-194",
+"issue": "The Greek academic prose mixes many English technical fragments, including native, corner PDB support, generated-length-9, timeout, oracle, and report.",
+"exact_fix": "Add a terminology convention or glossary, then standardize whether technical terms remain in English monospace or are translated consistently in Greek prose.",
+"verification_steps": "Review Chapters 7 and 8 after editing and search for inconsistent unformatted English technical terms. Confirm all unavoidable English identifiers are either code identifiers or defined terminology."
+},
+{
+"severity": "minor",
+"category": "submission_packaging",
+"file": "README.md",
+"location": "lines 7-8, 212",
+"issue": "The package labels itself as a technical review package and explicitly says it is not final-submission ready until approval metadata is complete.",
+"exact_fix": "After completing the approval page and final PDF build, update the Current State and final-readiness language so the README accurately describes the ZIP as a final university submission package.",
+"verification_steps": "Search README.md and REPRODUCIBILITY.md for 'technical review package', 'not yet a final submission', and similar wording. Confirm the wording matches the final deposited state."
+}
+]
+
+9. Scores
+
+Overall thesis quality score: 82/100
+
+Technical quality score: 84/100
+
+Submission readiness score: 68/100
+
+Technical quality >= 90: No.
+Submission readiness >= 90: No.
+
+Previous blocker classes appear partially resolved: benchmark/backend separation, requested-vs-optimal-depth clarification, citation consistency, synthetic webapp labeling, and reproducibility tiering are much improved. The remaining blockers are final approval metadata and default fast-test reproducibility.
+
+3/3
+Is this conversation helpful so far?
+
+Thinking
+ChatGPT can make mistakes. Check important info. See Cookie Preferences.

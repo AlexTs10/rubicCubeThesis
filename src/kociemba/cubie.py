@@ -439,6 +439,8 @@ def to_facelet_cube(cubie: CubieCube) -> RubikCube:
     Returns:
         Facelet representation
     """
+    _validate_cubie_state(cubie)
+
     cube = RubikCube()
 
     facelet_state = cube.state.copy()
