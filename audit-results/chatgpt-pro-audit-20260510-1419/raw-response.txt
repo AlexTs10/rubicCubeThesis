@@ -1,0 +1,124 @@
+ChatGPT Pro audit response captured from Chrome accessibility output on 2026-05-10 14:19 Europe/Athens.
+
+Source: ChatGPT Pro clean thread for repo-audit-20260510-0045.zip.
+
+Browser copy controls failed with "Failed to copy to clipboard", so this file preserves the visible response transcribed from the accessibility tree. The structured target list is preserved in FIX_TARGETS.json.
+
+I audited the extracted ZIP only. I verified:
+
+- python -m pytest -q -> 289 passed, 30 deselected
+- python scripts/verify_notebooks.py -> all notebooks passed structural verification
+- python scripts/verification/native_exact_validation.py --preset source-zip -> 261 cases, 0 failures
+- REPRODUCIBILITY_MANIFEST.json hashes -> matched checked-in files
+- webapp npm ci under the available non-pinned Node/npm -> fails with EBADENGINE, and CI is also configured to use the wrong Node major for the package's own engine pin.
+
+1. Critical blockers
+
+Local repository blocker - Webapp CI cannot satisfy its own pinned Node/npm engine
+
+- Severity: Critical
+- Exact file: .github/workflows/thesis-build.yml
+- Exact location: lines 59-63
+- Problem: The GitHub Actions workflow uses Node 20, but the webapp requires Node 24.9.0 and npm 11.6.0 with engine-strict=true.
+- Why it matters: The webapp validation job is expected to fail at npm ci before tests/build run, so the repository's CI reproducibility claim is broken.
+- Supporting files: .nvmrc:1, webapp/.npmrc:1, webapp/package.json:5-8.
+- Exact fix recommendation: Change the workflow Node setup to use .nvmrc or explicit 24.9.0, enable Corepack/npm 11.6.0, then run npm ci, npm test, and npm run build.
+- Verification steps: Run cd webapp && npm ci && npm test && npm run build under Node 24.9.0 / npm 11.6.0, then confirm the webapp-validation CI job passes.
+
+Non-local institutional blocker - final approval/signature data is still missing
+
+- Severity: Critical
+- Exact file: thesis/chapters/00_approval.tex
+- Exact location: lines 33-35, 42-50
+- Problem: The approval page still contains placeholder committee members and an unfilled examination date.
+- Why it matters: This may be acceptable for review, but it is not final-submission ready until the University/committee information is supplied.
+- Exact fix recommendation: Replace both placeholder committee rows and the dotted examination date with the official names, titles, and exam date from the institutional record.
+- Verification steps: Rebuild thesis/main.pdf and visually confirm the approval page has no placeholder text or blank date.
+
+2. Thesis writing issues
+
+Greek grammar error in evaluation methodology
+
+- Severity: Medium
+- Exact file: thesis/chapters/07_evaluation.tex
+- Exact location: lines 31-34
+- Problem: The phrase "δεν είναι αυστηρό αυστηρή διακοπή" has duplicated/mismatched adjective agreement.
+- Why it matters: It is a visible grammar error in a core methodology section.
+- Exact fix recommendation: Replace with: "δεν είναι αυστηρή διακοπή στα 60 s, αλλά ήπια διακοπή περίπου στα 70 s."
+- Verification steps: Rebuild the PDF and search the source/PDF for "αυστηρό αυστηρή" to confirm it no longer exists.
+
+3. Technical/code issues
+
+Test coverage gate is too low for a thesis codebase with evaluation claims
+
+- Severity: High
+- Exact file: README.md
+- Exact location: lines 157-159
+- Problem: The documented coverage gate is only --cov-fail-under=49. The verified run reached only 49.48%, with entire thesis-relevant modules effectively untested, including src/evaluation/statistics.py, src/evaluation/validation.py, src/evaluation/visualizations.py, and src/cube/visualization.py.
+- Why it matters: The thesis depends on benchmark/statistical/evaluation tooling, but the default gate allows major analysis modules to remain untested.
+- Exact fix recommendation: Add focused unit tests for evaluation statistics, validation reporting, visualization data preparation, and benchmark export logic; raise the gate in stages, for example 60% -> 70% -> 80%.
+- Verification steps: Run python -m pytest tests -q --cov=src --cov-report=term-missing:skip-covered --cov-fail-under=<new threshold> and confirm thesis-relevant modules have meaningful coverage.
+
+4. Research/experimental issues
+
+Canonical benchmark corpus allows redundant same-face moves and cancellations
+
+- Severity: High
+- Exact file: results/benchmarks/thesis/thesis_results_combined.json
+- Exact location: lines 117-119
+- Problem: The canonical corpus is marked legacy_random_all_moves_redundant_allowed, and the metadata states that some sequences contain adjacent same-face moves and cancellations.
+- Why it matters: Requested scramble length 5/10/15/20 is not a clean proxy for actual distance or difficulty. The thesis does disclose this, but the main experimental design is still weaker than a regenerated no-redundant corpus or a verified-depth corpus.
+- Exact fix recommendation: Either regenerate the canonical benchmark with random_no_consecutive_same_face_moves and update Chapter 7/tables/figures, or add a second benchmark stratified by verified optimal distance.
+- Verification steps: Regenerate benchmark artifacts, confirm metadata no longer says legacy_random_all_moves_redundant_allowed, and verify Chapter 7 tables match the new JSON.
+
+Timing methodology is single-run and partly cold-start contaminated
+
+- Severity: Medium
+- Exact file: results/benchmarks/thesis/thesis_results_combined.json
+- Exact location: lines 24-26, 120-145
+- Problem: The artifact states solver instances are reused, no warm start was performed, lazy-loading cost may be included, and environment metadata was added post hoc.
+- Why it matters: Runtime conclusions are useful as engineering observations, but they are not strong statistical performance claims.
+- Exact fix recommendation: Add a repeatable warmup phase, multiple repetitions per scramble, full environment/package snapshot at run time, and confidence intervals or at least medians/IQRs generated directly from repeated runs.
+- Verification steps: Produce a new benchmark artifact with recorded warmup policy, repetitions, package lock digest, hardware metadata, and statistical intervals; update Chapter 7 accordingly.
+
+5. Citation/reference issues
+
+External exact backend provenance is incomplete for formal reproducibility/licensing
+
+- Severity: Medium
+- Exact file: results/benchmarks/thesis/thesis_results_combined.json
+- Exact location: lines 136-157
+- Problem: The external backend records hashes and PyPI metadata, but upstream_commit is null, the license metadata field is null, and the artifact says the wheel hash/upstream commit were not recorded during the original run.
+- Why it matters: The thesis relies on the external exact backend as the optimal reference; formal reproducibility is weaker without exact upstream revision and license clarity.
+- Exact fix recommendation: Record the wheel filename/hash, PyPI artifact URL/version, upstream commit or release tag, and formal license evidence in the benchmark metadata and bibliography notes.
+- Verification steps: Re-run or re-archive the benchmark environment and confirm upstream_commit, wheel hash, and license fields are populated.
+
+6. Reproducibility/setup issues
+
+Full native-exact validation claim is not reproducible from the source ZIP alone
+
+- Severity: High
+- Exact file: results/validation/native_exact/README.md
+- Exact location: lines 25-31, 61-68
+- Problem: The canonical 3,513-case native-exact validation requires data/pattern_databases/corner_db.pkl and the optional RubikOptimal backend, neither of which is embedded in the source ZIP.
+- Why it matters: The source ZIP can run only the smaller source-zip smoke validation, not the full canonical validation supporting the native-exact claims.
+- Exact fix recommendation: Provide a documented way to regenerate corner_db.pkl from source within a bounded command, publish the cache as an external artifact with SHA-256, or reduce thesis claims to what the source ZIP can reproduce.
+- Verification steps: From a clean source ZIP, run the documented canonical command and confirm it either regenerates the cache deterministically or downloads/verifies the cache by hash before producing the 3,513-case report.
+
+7. Submission polish issues
+
+Approval/signature page splits awkwardly across two PDF pages
+
+- Severity: Medium
+- Exact file: thesis/chapters/00_approval.tex
+- Exact location: lines 8, 14, 28, 38, 48-55
+- Problem: The rendered approval page places the examination date alone on the next page, caused by excessive vertical spacing and \vfill.
+- Why it matters: Even before institutional details are filled in, the front matter looks unfinished and unpolished.
+- Exact fix recommendation: Wrap the approval page in a tighter samepage/minipage layout, reduce vertical spacing, and keep committee rows plus examination date on one page.
+- Verification steps: Render thesis/main.pdf and visually confirm the full approval/signature block fits on one page.
+
+Scores:
+
+- Overall thesis quality score: 82/100
+- Technical quality score: 78/100
+- Submission readiness score: 68/100

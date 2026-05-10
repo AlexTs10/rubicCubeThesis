@@ -1,0 +1,83 @@
+[
+  {
+    "severity": "Critical",
+    "category": "technical/code issues",
+    "file": ".github/workflows/thesis-build.yml",
+    "location": "lines 59-63; related: .nvmrc:1, webapp/.npmrc:1, webapp/package.json:5-8",
+    "issue": "The webapp CI job uses Node 20 while the webapp requires Node 24.9.0 and npm 11.6.0 with engine-strict=true.",
+    "exact_fix": "Update the workflow to install Node from .nvmrc or explicitly use 24.9.0, enable Corepack/npm 11.6.0, then run npm ci, npm test, and npm run build.",
+    "verification_steps": "Run cd webapp && npm ci && npm test && npm run build under Node 24.9.0 / npm 11.6.0, then confirm the webapp-validation CI job passes."
+  },
+  {
+    "severity": "Critical",
+    "category": "non-local institutional blocker",
+    "file": "thesis/chapters/00_approval.tex",
+    "location": "lines 33-35, 42-50",
+    "issue": "The final approval page still contains placeholder committee members and an unfilled examination date.",
+    "exact_fix": "Replace both placeholder committee rows and the dotted examination date with official names, titles, and exam date from the institutional record.",
+    "verification_steps": "Rebuild thesis/main.pdf and visually confirm the approval page has no placeholder text or blank date."
+  },
+  {
+    "severity": "Medium",
+    "category": "thesis writing issues",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "lines 31-34",
+    "issue": "The phrase \"δεν είναι αυστηρό αυστηρή διακοπή\" has duplicated/mismatched adjective agreement.",
+    "exact_fix": "Replace with \"δεν είναι αυστηρή διακοπή στα 60 s, αλλά ήπια διακοπή περίπου στα 70 s.\"",
+    "verification_steps": "Rebuild the PDF and search the source/PDF for \"αυστηρό αυστηρή\" to confirm it no longer exists."
+  },
+  {
+    "severity": "High",
+    "category": "technical/code issues",
+    "file": "README.md",
+    "location": "lines 157-159",
+    "issue": "The documented coverage gate is only --cov-fail-under=49, while several thesis-relevant evaluation and visualization modules remain effectively untested.",
+    "exact_fix": "Add focused tests for evaluation statistics, validation reporting, visualization data preparation, and benchmark export logic; raise the coverage gate in stages.",
+    "verification_steps": "Run python -m pytest tests -q --cov=src --cov-report=term-missing:skip-covered --cov-fail-under=<new threshold> and confirm thesis-relevant modules have meaningful coverage."
+  },
+  {
+    "severity": "High",
+    "category": "research/experimental issues",
+    "file": "results/benchmarks/thesis/thesis_results_combined.json",
+    "location": "lines 117-119",
+    "issue": "The canonical corpus is marked legacy_random_all_moves_redundant_allowed, so requested scramble length is not a clean proxy for actual distance or difficulty.",
+    "exact_fix": "Regenerate the canonical benchmark with random_no_consecutive_same_face_moves and update Chapter 7/tables/figures, or add a second benchmark stratified by verified optimal distance.",
+    "verification_steps": "Regenerate benchmark artifacts, confirm metadata no longer says legacy_random_all_moves_redundant_allowed, and verify Chapter 7 tables match the new JSON."
+  },
+  {
+    "severity": "Medium",
+    "category": "research/experimental issues",
+    "file": "results/benchmarks/thesis/thesis_results_combined.json",
+    "location": "lines 24-26, 120-145",
+    "issue": "Timing methodology is single-run and partly cold-start contaminated, with no warm start, possible lazy-loading cost, and post-hoc environment metadata.",
+    "exact_fix": "Add a repeatable warmup phase, multiple repetitions per scramble, full environment/package snapshot at run time, and confidence intervals or medians/IQRs generated directly from repeated runs.",
+    "verification_steps": "Produce a new benchmark artifact with recorded warmup policy, repetitions, package lock digest, hardware metadata, and statistical intervals; update Chapter 7 accordingly."
+  },
+  {
+    "severity": "Medium",
+    "category": "citation/reference issues",
+    "file": "results/benchmarks/thesis/thesis_results_combined.json",
+    "location": "lines 136-157",
+    "issue": "External exact backend provenance is incomplete: upstream_commit is null, license metadata is null, and original benchmark wheel hash/upstream commit were not recorded.",
+    "exact_fix": "Record wheel filename/hash, PyPI artifact URL/version, upstream commit or release tag, and formal license evidence in benchmark metadata and bibliography notes.",
+    "verification_steps": "Re-run or re-archive the benchmark environment and confirm upstream_commit, wheel hash, and license fields are populated."
+  },
+  {
+    "severity": "High",
+    "category": "reproducibility/setup issues",
+    "file": "results/validation/native_exact/README.md",
+    "location": "lines 25-31, 61-68",
+    "issue": "Full native-exact validation is not reproducible from the source ZIP alone because the canonical 3,513-case run requires corner_db.pkl and the optional RubikOptimal backend.",
+    "exact_fix": "Provide a bounded source regeneration path for corner_db.pkl, publish the cache as an external SHA-256-verified artifact, or reduce thesis claims to what the source ZIP can reproduce.",
+    "verification_steps": "From a clean source ZIP, run the documented canonical command and confirm it either regenerates the cache deterministically or downloads/verifies the cache by hash before producing the 3,513-case report."
+  },
+  {
+    "severity": "Medium",
+    "category": "submission polish issues",
+    "file": "thesis/chapters/00_approval.tex",
+    "location": "lines 8, 14, 28, 38, 48-55",
+    "issue": "The rendered approval page places the examination date alone on the next page due to excessive vertical spacing and \\vfill.",
+    "exact_fix": "Wrap the approval page in a tighter samepage/minipage layout, reduce vertical spacing, and keep committee rows plus examination date on one page.",
+    "verification_steps": "Render thesis/main.pdf and visually confirm the full approval/signature block fits on one page."
+  }
+]

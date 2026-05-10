@@ -59,9 +59,14 @@ jobs:
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version-file: .nvmrc
           cache: npm
           cache-dependency-path: webapp/package-lock.json
+
+      - name: Enable pinned npm
+        run: |
+          corepack enable
+          corepack prepare npm@11.6.0 --activate
 
       - name: Install webapp dependencies
         run: npm ci
