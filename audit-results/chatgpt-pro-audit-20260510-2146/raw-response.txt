@@ -1,0 +1,199 @@
+repo-audit-20260510-2131.zip
+Zip Archive
+You are acting as a strict thesis supervisor, senior software architect, academic reviewer, and reproducibility auditor.Use ONLY the uploaded ZIP. Do not use GitHub or any external repository. Extract and inspect the actual uploaded archive before answering. Do not hallucinate file paths or contents.Task: perform a complete external audit of this Rubik's Cube thesis repository and source package. Audit thesis writing quality, grammar, academic tone, citations/references, technical correctness, mathematical correctness, code quality, tests, reproducibility, packaging, submission readiness, and whether previous blocker classes appear resolved.Be strict. Prioritize issues that would block or weaken final university submission or technical review. For every finding, cite concrete file paths and line numbers or artifact paths from the uploaded ZIP.Return your response in this structure:1. Critical blockers2. Thesis writing issues3. Technical/code issues4. Reproducibility/setup issues5. Citation/reference issues6. Submission polish issues7. Verification you ran or could not run8. FIX_TARGETS9. ScoresThe FIX_TARGETS section must be a single valid JSON array, with no comments and no markdown inside the JSON. Each target object must contain:- severity: critical | major | moderate | minor- category- file- location- issue- exact_fix- verification_stepsScores must include:- Overall thesis quality score /100- Technical quality score /100- Submission readiness score /100Explicitly state whether any critical blockers remain and whether technical quality and submission readiness are each >= 90.
+Show more
+
+I’ll inspect the uploaded ZIP directly, extract it, map the repository structure, then verify thesis/source/test/setup artifacts before writing findings with concrete paths and line references.
+
+The Python test suite is healthy in the default profile: 289 passed, 30 deselected. One reproducibility issue already surfaced: the webapp install/test path is intentionally pinned to Node 24.9/npm 11.6, so it fails on the available Node 22/npm 10 environment under engine-strict.
+
+Thought for 4m 33s
+
+I audited only the uploaded ZIP at /mnt/data/repo-audit-20260510-2131.zip. I extracted and inspected the source tree, thesis files, benchmark artifacts, tests, setup files, and packaged PDF. I did not use GitHub or any external repository.
+
+1. Critical blockers
+
+Critical blockers remain: yes.
+
+Critical — final university submission is still blocked by institutional approval placeholders
+
+The repository itself says it is “not yet a final submission bundle” because the approval/signature page still needs remaining committee names and the examination date: README.md:8, README.md:212, REPRODUCIBILITY.md:65-70.
+
+The actual thesis approval page still contains placeholder committee members and a blank examination date: thesis/chapters/00_approval.tex:34-37, thesis/chapters/00_approval.tex:43-51.
+
+This is a real final-submission blocker, even though it is not a technical/code blocker.
+
+2. Thesis writing issues
+Moderate — some wording still reads like a technical review package, not a final thesis package
+
+The README and reproducibility docs correctly disclose the non-final status, but that means the package is not yet submission-ready as-is. The approval/signature limitation is repeated in README.md:8, README.md:212, and REPRODUCIBILITY.md:65-70.
+
+Fix: after receiving the official committee names/titles and examination date, update the approval page and remove “technical review package / not final submission bundle” wording from submission-facing docs.
+
+Minor — English/Greek terminology is mostly controlled, but some hybrid technical phrasing remains
+
+Chapter 7 explicitly explains that English technical terms are retained for JSON fields and packages: thesis/chapters/07_evaluation.tex:8. That is acceptable, but lines such as the methodology sentence using “benchmark”, “backend”, “Korf-style”, and “JSON artifacts” remain dense for a Greek university thesis audience: thesis/chapters/07_evaluation.tex:6-8, thesis/chapters/07_evaluation.tex:41-51.
+
+Fix: keep code/package identifiers in monospace, but slightly reduce English narrative terms where natural Greek equivalents exist.
+
+3. Technical/code issues
+Major — test coverage gate is too low for a final technical thesis artifact
+
+The CI coverage gate is only --cov-fail-under=49: .github/workflows/thesis-build.yml:55-56. I ran the same coverage command successfully, but total coverage was only about 49.50%, with important modules reported as very low or untested in the command output, including src/evaluation/statistics.py, src/evaluation/validation.py, and src/evaluation/visualizations.py at 0%.
+
+This does not invalidate the implementation, but it weakens the technical review position for a solver/evaluation thesis.
+
+Fix: add focused tests for evaluation/statistics/visualization/reporting paths and raise the CI threshold gradually, at least to 60–70% before final submission.
+
+Moderate — webapp is clearly synthetic, but it must remain excluded from technical claims
+
+The Next.js solver generates inverse-scramble demo solutions rather than running the Python solvers: webapp/src/lib/solver.ts:129-132, webapp/src/lib/solver.ts:220-230. The UI does disclose this clearly: webapp/src/app/solver/page.tsx:132-139.
+
+This is not a blocker because it is documented, but it would become a review problem if the webapp screenshots or demo are presented as real solver telemetry.
+
+Fix: keep the webapp framed as a presentation/demo layer only; cite Streamlit/Python benchmark artifacts for real execution.
+
+4. Reproducibility/setup issues
+Major — full benchmark reproducibility is still partly archival, not fully replayable from the source ZIP alone
+
+The benchmark artifact admits that environment metadata was added post-hoc and the original run did not record full hardware/package metadata: results/benchmarks/thesis/thesis_results_combined.json:120-126. It also states that the original benchmark did not record a wheel hash or upstream commit hash for the external exact backend: results/benchmarks/thesis/thesis_results_combined.json:136-143, and upstream_commit is explicitly null: results/benchmarks/thesis/thesis_results_combined.json:147-157.
+
+REPRODUCIBILITY.md correctly discloses that the original campaign did not record repeated trials, confidence intervals, complete kernel/process metadata, or an upstream source commit: REPRODUCIBILITY.md:45-49.
+
+Fix: for final archival quality, add a fresh reproducibility appendix or rerun log that records OS build, Python, lockfile hash, exact external wheel hash, upstream commit/release if available, CPU governor/power state if possible, and full command transcript.
+
+Moderate — canonical native-exact validation depends on a missing companion cache
+
+The canonical native validation requires data/pattern_databases/corner_db.pkl, which is intentionally omitted from the source ZIP: REPRODUCIBILITY.md:22-33. The manifest repeats that the canonical 3,513-case validation is not source-ZIP reproducible without that generated cache and optional oracle: results/validation/native_exact/MANIFEST.json:24-28, results/validation/native_exact/MANIFEST.json:65-69.
+
+This is disclosed properly, so it is not a hidden blocker, but it weakens standalone reproducibility.
+
+Fix: either include the cache as an external companion artifact with SHA-256, or provide a documented command log showing regeneration time, hardware, and resulting hash.
+
+Moderate — local thesis PDF rebuild was not possible in my environment
+
+python scripts/thesis_workflow.py validate failed because this environment had latexmk and xelatex, but no bibtex, no tectonic, and no Docker daemon. The repository has a Docker thesis build path: docker/thesis.Dockerfile:1-17, and CI uses Docker for PDF build: .github/workflows/thesis-build.yml:155-160.
+
+This is an environment limitation, not necessarily a repository defect. But final submission should include a fresh CI artifact/hash or a local rebuild log.
+
+5. Citation/reference issues
+No missing citation keys found by repository tooling
+
+python scripts/thesis_workflow.py status reported 31 bibliography entries, 31 cited keys, 0 missing keys, and 0 unused entries. The thesis evaluation chapter cites benchmark methodology and algorithmic complexity where needed, for example thesis/chapters/07_evaluation.tex:6, thesis/chapters/07_evaluation.tex:172-173, and thesis/chapters/07_evaluation.tex:297-303.
+
+Moderate — external backend license/provenance is still incomplete
+
+The benchmark metadata records license_metadata_field: null and says the installed PyPI distribution does not expose a formal license field: results/benchmarks/thesis/thesis_results_combined.json:136-143, results/benchmarks/thesis/thesis_results_combined.json:147-157.
+
+Fix: do not make a stronger license claim than the artifact supports. Add an appendix note stating exactly what was inspected and what remains unknown.
+
+6. Submission polish issues
+Critical — approval page must be finalized
+
+Same blocker as above: thesis/chapters/00_approval.tex:34-37, thesis/chapters/00_approval.tex:43-51.
+
+Minor — README still positions the package as technical-review, not final submission
+
+README.md:8 and README.md:212 are correct for review, but should be revised for the final archived submission after institutional data is filled.
+
+Minor — checked-in PDF exists and is inspectable, but final hash should be regenerated after approval changes
+
+The packaged PDF exists at thesis/main.pdf, has 113 pages, and includes the placeholder approval page. Any update to 00_approval.tex requires rebuilding and re-hashing the PDF.
+
+7. Verification you ran or could not run
+
+Ran successfully:
+
+Extracted /mnt/data/repo-audit-20260510-2131.zip.
+
+pytest -q → 289 passed, 30 deselected.
+
+python scripts/verification/native_exact_validation.py --preset source-zip → 261 cases, 0 failures.
+
+python scripts/verify_notebooks.py → all 6 notebooks passed structural verification.
+
+python -m pytest tests -q --cov=src --cov-report=term-missing:skip-covered --cov-fail-under=49 → passed at about 49.50% total coverage.
+
+Inspected thesis/main.pdf with pdfinfo/pdftotext; PDF is 113 pages and includes the approval placeholders.
+
+Could not fully run:
+
+python scripts/thesis_workflow.py validate failed in this environment because no complete PDF build path was available: missing bibtex, missing tectonic, and no Docker CLI/daemon.
+
+webapp/npm ci could not run here because the available Node/npm were v22.16.0/10.9.2, while the project enforces Node >=24.9 <25 and npm >=11.6 <12: webapp/package.json:5-9, webapp/.npmrc:1.
+
+Expanded slow/external/cache-building tests timed out in this environment; the default supported fast profile passed.
+
+8. FIX_TARGETS
+
+[
+{
+"severity": "critical",
+"category": "submission_polish",
+"file": "thesis/chapters/00_approval.tex",
+"location": "lines 34-37, 43-51",
+"issue": "The approval/signature page still contains placeholder committee members and a blank examination date, so the package is not final-submission ready.",
+"exact_fix": "Replace the two placeholder committee rows with the official committee member names and titles, fill the official examination date, and remove explanatory placeholder text that says the page will be completed later.",
+"verification_steps": "Run a text search for 'Ονοματεπώνυμο μέλους επιτροπής' and 'Ημερομηνία εξέτασης: \dotfill'; rebuild thesis/main.pdf; inspect the first pages of the PDF to confirm no placeholders remain."
+},
+{
+"severity": "major",
+"category": "reproducibility_setup",
+"file": "results/benchmarks/thesis/thesis_results_combined.json",
+"location": "lines 120-157",
+"issue": "The benchmark metadata is partly post-hoc and the external exact backend has no recorded upstream commit or original wheel hash, weakening full benchmark reproducibility.",
+"exact_fix": "Add a final benchmark provenance record that includes exact command, OS build, Python version, dependency lock hash, external wheel hash, upstream release or commit if available, hardware details, and benchmark log timestamp.",
+"verification_steps": "Open thesis_results_combined.json and confirm environment/provenance fields no longer say the original run lacked full metadata or upstream commit; rerun the benchmark or attach a signed archival reproduction log."
+},
+{
+"severity": "major",
+"category": "technical_code",
+"file": ".github/workflows/thesis-build.yml",
+"location": "lines 55-56",
+"issue": "The CI coverage gate is only 49%, which is weak for a final technical thesis repository and allows large evaluation/visualization paths to remain effectively untested.",
+"exact_fix": "Add unit tests for src/evaluation/statistics.py, src/evaluation/validation.py, src/evaluation/visualizations.py, and benchmark-reporting paths, then raise --cov-fail-under gradually to at least 60-70%.",
+"verification_steps": "Run python -m pytest tests -q --cov=src --cov-report=term-missing:skip-covered and confirm the new threshold passes with meaningful coverage improvements in evaluation modules."
+},
+{
+"severity": "moderate",
+"category": "reproducibility_setup",
+"file": "results/validation/native_exact/MANIFEST.json",
+"location": "lines 24-28, 65-69",
+"issue": "Canonical native-exact validation requires the omitted corner_db.pkl companion cache, so the full 3,513-case validation is not reproducible from the source ZIP alone.",
+"exact_fix": "Provide data/pattern_databases/corner_db.pkl as a companion artifact with SHA-256, or add a documented regeneration transcript with hardware/time/hash details.",
+"verification_steps": "Run python scripts/verification/native_exact_validation.py --preset canonical after supplying or generating corner_db.pkl and compare the generated report summary with MANIFEST.json."
+},
+{
+"severity": "moderate",
+"category": "technical_code",
+"file": "webapp/src/lib/solver.ts",
+"location": "lines 129-132, 220-230",
+"issue": "The Next.js app uses synthetic inverse-scramble preview logic rather than live solver execution, which must not be confused with technical solver evidence.",
+"exact_fix": "Keep current UI disclaimers and add a short README note inside webapp/ stating that this app is excluded from benchmark and solver correctness claims.",
+"verification_steps": "Search webapp/ for 'synthetic preview' and confirm every user-facing solver/comparison page contains a visible disclaimer; ensure thesis claims cite Python artifacts instead."
+},
+{
+"severity": "minor",
+"category": "thesis_writing",
+"file": "thesis/chapters/07_evaluation.tex",
+"location": "lines 6-8, 41-51",
+"issue": "Some Greek thesis prose remains dense with English technical terminology, which is acceptable for identifiers but slightly weakens academic readability.",
+"exact_fix": "Rewrite only narrative English terms into Greek where natural, while keeping package names, JSON fields, and file paths in monospace.",
+"verification_steps": "Re-read Chapter 7 after editing and confirm code identifiers remain exact while Greek explanatory prose is smoother."
+}
+]
+
+9. Scores
+
+Overall thesis quality score: 86/100
+
+Technical quality score: 88/100
+
+Submission readiness score: 82/100
+
+Technical quality >= 90? No. It is close, but the low coverage gate and partial benchmark provenance keep it below 90.
+
+Submission readiness >= 90? No. The approval/signature placeholders are a real final-submission blocker.
+
+Thinking
+ChatGPT can make mistakes. Check important info. See Cookie Preferences.

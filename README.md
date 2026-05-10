@@ -202,7 +202,7 @@ the commands below in a clean Python 3.12 environment for the current machine.
 
 - `python -m pytest tests --collect-only -q` reports the collected test count for the current checkout; the default fast profile excludes `slow`, `external`, and `cache_building`
 - `python -m pytest tests -q` runs the supported fast profile; heavyweight solver-quality, external-backend, and cache-generation checks are opt-in marker profiles
-- `python -m pytest tests -q --cov=src --cov-report=term-missing:skip-covered --cov-fail-under=49` is the conservative coverage gate for the current source tree; raise the threshold only after adding tests for the low-coverage evaluation and generated-table modules
+- `python -m pytest tests -q --cov=src --cov-report=term-missing:skip-covered --cov-fail-under=60` is the current coverage gate after adding focused tests for the evaluation statistics, validation, and visualization modules; continue raising the threshold only after broadening coverage for the remaining low-coverage generated-table paths
 - Runtime-generated solver tables default to a user cache such as `$XDG_CACHE_HOME/rubic_cube_thesis/`; repository `data/` remains read-only unless an explicit cache-generation command is run.
 - `python verify_setup.py` runs the Python-only setup profile and fast tests by default; it does not verify thesis PDF or webapp artifacts unless `--all-artifacts` is supplied. Use `--full` for heavyweight Python tests and `--all-artifacts` when local TeX/Docker plus webapp dependencies are available
 - `cd webapp && npm ci && npm run build` succeeds from a clean dependency install

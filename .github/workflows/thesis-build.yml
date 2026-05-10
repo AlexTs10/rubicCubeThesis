@@ -53,7 +53,7 @@ jobs:
         run: python -m pytest tests -q
 
       - name: Run coverage gate
-        run: python -m pytest tests -q --cov=src --cov-report=term-missing:skip-covered --cov-fail-under=49
+        run: python -m pytest tests -q --cov=src --cov-report=term-missing:skip-covered --cov-fail-under=60
 
       - name: Run source-ZIP native exact smoke validation
         run: python scripts/verification/native_exact_validation.py --preset source-zip --output-dir /tmp/native_exact_source_zip

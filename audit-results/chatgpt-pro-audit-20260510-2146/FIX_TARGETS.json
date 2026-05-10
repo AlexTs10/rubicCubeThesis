@@ -1,0 +1,56 @@
+[
+  {
+    "severity": "critical",
+    "category": "submission_polish",
+    "file": "thesis/chapters/00_approval.tex",
+    "location": "lines 34-37, 43-51",
+    "issue": "The approval/signature page still contains placeholder committee members and a blank examination date, so the package is not final-submission ready.",
+    "exact_fix": "Replace the two placeholder committee rows with the official committee member names and titles, fill the official examination date, and remove explanatory placeholder text that says the page will be completed later.",
+    "verification_steps": "Run a text search for 'Ονοματεπώνυμο μέλους επιτροπής' and 'Ημερομηνία εξέτασης: \\dotfill'; rebuild thesis/main.pdf; inspect the first pages of the PDF to confirm no placeholders remain."
+  },
+  {
+    "severity": "major",
+    "category": "reproducibility_setup",
+    "file": "results/benchmarks/thesis/thesis_results_combined.json",
+    "location": "lines 120-157",
+    "issue": "The benchmark metadata is partly post-hoc and the external exact backend has no recorded upstream commit or original wheel hash, weakening full benchmark reproducibility.",
+    "exact_fix": "Add a final benchmark provenance record that includes exact command, OS build, Python version, dependency lock hash, external wheel hash, upstream release or commit if available, hardware details, and benchmark log timestamp.",
+    "verification_steps": "Open thesis_results_combined.json and confirm environment/provenance fields no longer say the original run lacked full metadata or upstream commit; rerun the benchmark or attach a signed archival reproduction log."
+  },
+  {
+    "severity": "major",
+    "category": "technical_code",
+    "file": ".github/workflows/thesis-build.yml",
+    "location": "lines 55-56",
+    "issue": "The CI coverage gate is only 49%, which is weak for a final technical thesis repository and allows large evaluation/visualization paths to remain effectively untested.",
+    "exact_fix": "Add unit tests for src/evaluation/statistics.py, src/evaluation/validation.py, src/evaluation/visualizations.py, and benchmark-reporting paths, then raise --cov-fail-under gradually to at least 60-70%.",
+    "verification_steps": "Run python -m pytest tests -q --cov=src --cov-report=term-missing:skip-covered and confirm the new threshold passes with meaningful coverage improvements in evaluation modules."
+  },
+  {
+    "severity": "moderate",
+    "category": "reproducibility_setup",
+    "file": "results/validation/native_exact/MANIFEST.json",
+    "location": "lines 24-28, 65-69",
+    "issue": "Canonical native-exact validation requires the omitted corner_db.pkl companion cache, so the full 3,513-case validation is not reproducible from the source ZIP alone.",
+    "exact_fix": "Provide data/pattern_databases/corner_db.pkl as a companion artifact with SHA-256, or add a documented regeneration transcript with hardware/time/hash details.",
+    "verification_steps": "Run python scripts/verification/native_exact_validation.py --preset canonical after supplying or generating corner_db.pkl and compare the generated report summary with MANIFEST.json."
+  },
+  {
+    "severity": "moderate",
+    "category": "technical_code",
+    "file": "webapp/src/lib/solver.ts",
+    "location": "lines 129-132, 220-230",
+    "issue": "The Next.js app uses synthetic inverse-scramble preview logic rather than live solver execution, which must not be confused with technical solver evidence.",
+    "exact_fix": "Keep current UI disclaimers and add a short README note inside webapp/ stating that this app is excluded from benchmark and solver correctness claims.",
+    "verification_steps": "Search webapp/ for 'synthetic preview' and confirm every user-facing solver/comparison page contains a visible disclaimer; ensure thesis claims cite Python artifacts instead."
+  },
+  {
+    "severity": "minor",
+    "category": "thesis_writing",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "lines 6-8, 41-51",
+    "issue": "Some Greek thesis prose remains dense with English technical terminology, which is acceptable for identifiers but slightly weakens academic readability.",
+    "exact_fix": "Rewrite only narrative English terms into Greek where natural, while keeping package names, JSON fields, and file paths in monospace.",
+    "verification_steps": "Re-read Chapter 7 after editing and confirm code identifiers remain exact while Greek explanatory prose is smoother."
+  }
+]
