@@ -148,6 +148,10 @@ def check_required_packages(requirements_path: Path) -> bool:
     print_section("2. Required Packages Check")
 
     print(f"Checking packages from: {requirements_path}")
+    print(
+        "Prerequisite: this check expects the locked environment to be installed with "
+        f"`python -m pip install --require-hashes -r {requirements_path.name}`."
+    )
     required_packages = list(iter_requirements(requirements_path))
 
     all_installed = True

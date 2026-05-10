@@ -1,0 +1,110 @@
+[
+  {
+    "severity": "critical",
+    "category": "submission_readiness",
+    "file": "thesis/chapters/00_approval.tex",
+    "location": "lines 34-37, 43-45, 51",
+    "issue": "Approval/signature page still contains committee-member placeholders and an empty examination-date placeholder.",
+    "exact_fix": "Replace both committee placeholder rows with official committee names/titles, replace the examination-date dotfill with the official date, and remove the explanatory text saying the page is only a template.",
+    "verification_steps": "Run grep -RIn \"Ονοματεπώνυμο\\|dotfill\\|πρότυπο υπογραφών\" thesis/chapters/00_approval.tex and confirm no unresolved final-submission placeholders remain."
+  },
+  {
+    "severity": "critical",
+    "category": "submission_readiness",
+    "file": "README.md; REPRODUCIBILITY.md",
+    "location": "README.md line 8 and line 212; REPRODUCIBILITY.md lines 65-70",
+    "issue": "Repository documentation explicitly says the package is not yet a final submission bundle.",
+    "exact_fix": "After completing the official approval metadata, update or remove the technical-review-only/final-submission warning language.",
+    "verification_steps": "Search for \"technical review package\", \"not yet a final submission\", and \"placeholders\" and confirm no final-submission-blocking language remains."
+  },
+  {
+    "severity": "major",
+    "category": "thesis_writing",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "lines 51-57 and 179-181",
+    "issue": "The Chapter 7 success-rate table omits the depth-10 row even though the benchmark corpus has depths 5, 10, 15, and 20.",
+    "exact_fix": "Add the missing row: 10 & 25/25 (100\\%) & 25/25 (100\\%) & 25/25 (100\\%) \\\\.",
+    "verification_steps": "Rebuild the PDF and confirm tab:eval_success contains rows for 5, 10, 15, and 20."
+  },
+  {
+    "severity": "major",
+    "category": "technical_code_quality",
+    "file": ".github/workflows/thesis-build.yml; README.md",
+    "location": ".github/workflows/thesis-build.yml line 56; README.md line 205",
+    "issue": "The CI coverage gate is only 49%, and important evaluation/statistics/visualization modules remain weakly covered or uncovered.",
+    "exact_fix": "Add tests for evaluation/statistics/visualization and generated-table logic, then raise the coverage gate to at least 60% initially.",
+    "verification_steps": "Run python -m pytest tests -q --cov=src --cov-report=term-missing:skip-covered --cov-fail-under=60 and confirm it passes."
+  },
+  {
+    "severity": "major",
+    "category": "benchmark_methodology",
+    "file": "src/evaluation/algorithm_comparison.py; thesis/chapters/07_evaluation.tex",
+    "location": "src/evaluation/algorithm_comparison.py lines 263-269; thesis/chapters/07_evaluation.tex lines 125 and 397",
+    "issue": "Memory measurement is shared-process RSS delta clamped at zero, not isolated peak memory per solver.",
+    "exact_fix": "Measure each solver in a separate child process and record peak RSS, or remove memory from main comparative claims and keep it as a qualitative diagnostic only.",
+    "verification_steps": "Run a regenerated benchmark that records per-solver isolated peak RSS and compare the new fields against the existing memory_mb fields."
+  },
+  {
+    "severity": "major",
+    "category": "reproducibility",
+    "file": "results/benchmarks/thesis/thesis_results_combined.json; thesis/chapters/07_evaluation.tex",
+    "location": "results/benchmarks/thesis/thesis_results_combined.json lines 120-122; thesis/chapters/07_evaluation.tex lines 12-13",
+    "issue": "Benchmark environment metadata is post-hoc, while Chapter 7 states the execution environment as if fully captured during the original run.",
+    "exact_fix": "Rerun the canonical benchmark with environment capture built into the harness, or explicitly state in Chapter 7 that environment metadata is post-hoc archival context.",
+    "verification_steps": "Confirm regenerated benchmark JSON records OS, Python, CPU, package versions, command line, source manifest hash, and backend hashes at run time."
+  },
+  {
+    "severity": "major",
+    "category": "experimental_validity",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "lines 129-137 and 384-397",
+    "issue": "The benchmark has no repeated trials per scramble, no confidence intervals, and no separated cold-start/warm-start timings.",
+    "exact_fix": "Add repeated trials, warmup policy, and confidence/interval estimates, or lower the strength of performance generalization claims in abstract/conclusion.",
+    "verification_steps": "Regenerate benchmark artifacts with trial-level records and update Chapter 7 tables to include intervals or clearly limited single-run results."
+  },
+  {
+    "severity": "major",
+    "category": "reproducibility",
+    "file": "results/validation/native_exact/MANIFEST.json; REPRODUCIBILITY.md",
+    "location": "results/validation/native_exact/MANIFEST.json lines 24-33; REPRODUCIBILITY.md lines 22-33",
+    "issue": "The canonical 3,513-case native-exact validation cannot be reproduced from the source ZIP alone because the full corner_db.pkl cache is omitted.",
+    "exact_fix": "Provide corner_db.pkl as a companion artifact with SHA-256 and generation instructions, or restrict source-ZIP claims to the 261-case smoke validation.",
+    "verification_steps": "On a clean machine, supply or generate data/pattern_databases/corner_db.pkl and run python scripts/verification/native_exact_validation.py --preset canonical."
+  },
+  {
+    "severity": "major",
+    "category": "citation_reference_reproducibility",
+    "file": "results/benchmarks/thesis/thesis_results_combined.json; README.md",
+    "location": "results/benchmarks/thesis/thesis_results_combined.json lines 136-143; README.md lines 156-160",
+    "issue": "The external optimal backend is central to benchmark optimality claims, but the original run lacks upstream commit/tag and wheel/source archive provenance.",
+    "exact_fix": "Archive the exact RubikOptimal wheel/source distribution used, record SHA-256, license file, and upstream commit/tag when available.",
+    "verification_steps": "Add the backend artifact hash to REPRODUCIBILITY_MANIFEST.json and confirm a clean benchmark install uses the same backend artifact."
+  },
+  {
+    "severity": "moderate",
+    "category": "experimental_validity",
+    "file": "results/benchmarks/thesis/thesis_results_combined.json; src/cube/rubik_cube.py; thesis/chapters/07_evaluation.tex",
+    "location": "results/benchmarks/thesis/thesis_results_combined.json lines 117-119; src/cube/rubik_cube.py lines 305-307 and 322-327; thesis/chapters/07_evaluation.tex line 92",
+    "issue": "The canonical benchmark corpus is a legacy redundant-allowed scramble corpus, while the current generator prevents consecutive same-face moves.",
+    "exact_fix": "Regenerate canonical benchmarks with the current no-consecutive-same-face generator, or label the current benchmark corpus as legacy in the abstract, Chapter 7, and conclusion.",
+    "verification_steps": "Regenerate all thesis_bench_d*.json files and compare success rate, solution length, time, and timeout behavior against the current legacy corpus."
+  },
+  {
+    "severity": "moderate",
+    "category": "setup_reproducibility",
+    "file": "scripts/thesis_workflow.py; README.md",
+    "location": "scripts/thesis_workflow.py lines 883-887 and 923-929; README.md lines 80-97",
+    "issue": "Thesis build validation fails without local BibTeX/Tectonic or Docker, so source-ZIP PDF rebuildability depends on external tooling availability.",
+    "exact_fix": "Add clearer validation states separating source validity from local toolchain availability, and include CI/Docker hash evidence for the final PDF.",
+    "verification_steps": "Run python scripts/thesis_workflow.py build --mode docker on a Docker-enabled machine and compare shasum -a 256 thesis/main.pdf against the expected artifact."
+  },
+  {
+    "severity": "minor",
+    "category": "academic_tone",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "lines 8, 133-137, 244-256, 324-329, 339-346, 382-398",
+    "issue": "Greek prose still contains many English phrases beyond strict package names or JSON field names.",
+    "exact_fix": "Translate recurring English prose terms consistently while keeping exact code/package/JSON names in monospace.",
+    "verification_steps": "Search Chapter 7 for recurring English prose terms and confirm remaining English tokens are algorithm names, package names, code names, or JSON field names."
+  }
+]

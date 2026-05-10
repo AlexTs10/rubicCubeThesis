@@ -884,7 +884,10 @@ def validation_issues(data: dict[str, Any]) -> list[str]:
 
     if not local_tex_ready and not docker_ready:
         issues.append(
-            f"No thesis build path is ready. Install `latexmk` + `xelatex` + `{backend}`, install `tectonic`, or start Docker Desktop and use Docker mode."
+            "No thesis build path is ready. Source checks can still pass, "
+            "but this machine cannot rebuild the thesis PDF: "
+            f"install `latexmk` + `xelatex` + `{backend}`, install `tectonic`, "
+            "or start Docker Desktop and use Docker mode."
         )
     elif not local_tex_ready and docker_ready:
         issues.append("Local TeX tooling is missing, but Docker mode can still build the final thesis PDF.")
@@ -926,7 +929,10 @@ def format_validation_markdown(data: dict[str, Any]) -> str:
         f"- Local `tectonic`: {'pass' if data['toolchain']['tectonic'] else 'fail'}",
         f"- Docker CLI available: {'pass' if data['toolchain']['docker_cli'] else 'fail'}",
         f"- Docker daemon ready: {'pass' if data['toolchain']['docker_daemon'] else 'fail'}",
-        f"- Thesis build path ready: {'pass' if (local_tex_ready or docker_ready) else 'fail'}",
+        f"- Thesis source checks ready: {'pass' if (not data['bibliography']['missing_keys'] and not data['remaining_targets']) else 'fail'}",
+        f"- Local PDF build path ready: {'pass' if local_tex_ready else 'fail'}",
+        f"- Docker PDF build path ready: {'pass' if docker_ready else 'fail'}",
+        f"- Any PDF build path ready: {'pass' if (local_tex_ready or docker_ready) else 'fail'}",
         f"- Benchmark JSON files present: {'pass' if data['benchmarks']['files'] else 'fail'}",
         f"- Missing citation keys: {'pass' if not data['bibliography']['missing_keys'] else 'fail'}",
         f"- Open workflow targets: {'pass' if not data['remaining_targets'] else 'fail'}",
