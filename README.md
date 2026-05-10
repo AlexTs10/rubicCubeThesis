@@ -68,6 +68,15 @@ The editable package keeps only core solver dependencies in base
 
 The default pytest/verification profile is intentionally the fast reproducibility profile. It excludes tests marked `slow`, `external`, or `cache_building`; run those markers explicitly only when validating generated caches or external backends. Generated workflow snapshots may be written under `agent_workflow/generated/` during local work, but that directory is intentionally excluded from source audit ZIPs.
 
+GitHub Actions keeps that fast profile on pull requests and adds an opt-in
+expanded profile for heavier solver validation. Run the `thesis-build`
+workflow manually with `run-expanded-validation=true`, or use the weekly
+scheduled run, to execute tests marked `slow`, `external`, or
+`cache_building` with `pytest -o addopts='' -m "slow or external or
+cache_building"`. The workflow uploads collection, test, and canonical
+native-exact logs as artifacts; canonical native-exact validation is skipped
+unless the companion `data/pattern_databases/corner_db.pkl` cache is supplied.
+
 The thesis build workflow now has a source-defined Docker fallback. If local
 `latexmk`/`xelatex`/bibliography tooling and `tectonic` are absent but Docker is
 running, `python scripts/thesis_workflow.py build --mode auto` switches to
@@ -158,6 +167,7 @@ as a companion artifact.
 | Minimal source-contained review | `python verify_setup.py`, `python -m pytest tests -q`, `python scripts/verification/native_exact_validation.py --preset source-zip` | None beyond the Python lockfile | Fast regression health and source-ZIP native-exact smoke validation |
 | Thesis PDF rebuild | `python scripts/thesis_workflow.py build --mode auto` or `--mode docker` | Local TeX/Tectonic or Docker | Manuscript build and PDF hash generation |
 | Web preview rebuild | `nvm install && nvm use`, `corepack prepare npm@11.6.0 --activate`, `cd webapp && npm ci && npm test && npm run build` | Node 24.9.x/npm 11.6.x | Synthetic Next.js preview only |
+| Containerized web preview rebuild | `docker build -f docker/webapp.Dockerfile -t rubic-cube-thesis-webapp .` then `docker run --rm rubic-cube-thesis-webapp` | Docker and the source tree | Synthetic Next.js preview tests/build without host Node guessing |
 | Full benchmark reproduction | `python -m pip install ".[external-exact]"`, `python scripts/benchmarks/regenerate_thesis_benchmarks.py` | `RubikOptimal` and optional native solver backends | Chapter 7 benchmark artifacts |
 | Canonical native-exact validation | `python scripts/generate_corner_database.py --output data/pattern_databases/corner_db.pkl`, then `python scripts/verification/native_exact_validation.py --preset canonical` | Generated `corner_db.pkl` companion cache and `RubikOptimal` oracle | Archived 3,513-case native-exact comparison |
 
@@ -212,6 +222,13 @@ corepack prepare npm@11.6.0 --activate
 npm ci
 npm run build
 npm run dev
+```
+
+For a host-independent reviewer path, run from the repository root:
+
+```bash
+docker build -f docker/webapp.Dockerfile -t rubic-cube-thesis-webapp .
+docker run --rm rubic-cube-thesis-webapp
 ```
 
 Use this only for the synthetic demo frontend. The authoritative execution path remains the Streamlit UI in `ui/` and the Python benchmark pipeline.

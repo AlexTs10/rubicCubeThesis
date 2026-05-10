@@ -67,6 +67,10 @@ installation.
 The same Docker build path is encoded in `.github/workflows/thesis-build.yml`
 for CI review. The workflow validates the thesis sources, builds
 `thesis/main.pdf`, records its SHA-256 hash, and uploads both as artifacts.
+It also exposes an opt-in expanded validation mode for heavyweight solver tests;
+run the workflow manually with `run-expanded-validation=true` or inspect the
+weekly scheduled run artifacts when reviewing slow/external/cache-building
+coverage.
 
 The Docker route requires Docker Engine/OrbStack/Colima to be installed and the
 daemon to be running before `build --mode docker` is invoked. A machine without

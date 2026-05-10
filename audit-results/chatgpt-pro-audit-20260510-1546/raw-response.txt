@@ -1,0 +1,153 @@
+I extracted and inspected only /mnt/data/repo-audit-20260510-1525.zip. No GitHub or external repository was used.
+
+Confirmed audit checks run from the ZIP:
+- python -m pytest tests -q -> 289 passed, 30 deselected
+- python scripts/verification/native_exact_validation.py --preset source-zip -> 261 cases, 0 failures
+- python scripts/verify_notebooks.py -> all 6 notebooks passed
+- python -m compileall -q src tests scripts demos ui verify_setup.py -> passed
+- Coverage run -> 49.48% total, passing only because the gate is 49%
+- Chapter 7 benchmark tables were checked against results/benchmarks/thesis/thesis_results_combined.json; I did not find a numeric mismatch in the main reported success/move/time/node tables.
+
+# 1. Critical blockers
+
+## 1.1 Approval/signature page is still incomplete
+
+- Severity: Critical
+- Category: Submission polish / thesis front matter
+- Files / locations:
+  - README.md:8
+  - thesis/README.md:3
+  - thesis/chapters/00_approval.tex:34-37
+  - thesis/chapters/00_approval.tex:41-46
+  - thesis/chapters/00_approval.tex:51
+- Problem: The thesis still contains explicit administrative placeholders for committee members and examination date. The approval page has placeholder text for two committee members and `Ημερομηνία εξέτασης: \dotfill`.
+- Why it matters: This is a direct submission blocker. Even if the technical work is correct, the submitted PDF is not a final signed institutional thesis copy.
+- Exact fix: Replace the two committee-member placeholders and the examination-date placeholder with the final approved names, titles, and date. Remove the template warning text once the institutional information is final.
+- Verification steps: Rebuild `thesis/main.pdf`, open the approval page, and confirm there is no `\dotfill`, no `Ονοματεπώνυμο μέλους επιτροπής` placeholder, and no note saying the page is still a template.
+
+# 2. Thesis writing issues
+
+No additional grammar, tone, or thesis-writing defect was strong enough to list as a confirmed issue beyond the incomplete approval/front-matter blocker above. The thesis is generally cautious about limitations and does not obviously overclaim the benchmark results in Chapter 7.
+
+# 3. Technical/code issues
+
+## 3.1 CI coverage gate is too low for a thesis-grade codebase
+
+- Severity: High
+- Category: Technical/code quality
+- File / location: `.github/workflows/thesis-build.yml:44-45`
+- Problem: The CI coverage gate is only `--cov-fail-under=49`. The audited coverage run passed at 49.48%, while important modules remain weakly or completely untested, including `src/evaluation/statistics.py`, `src/evaluation/validation.py`, `src/evaluation/visualizations.py`, `src/kociemba/solver.py`, `src/kociemba/pruning.py`, and several Korf/Thistlethwaite support modules.
+- Why it matters: For a thesis repository, this gives a false sense of implementation confidence. Large algorithmic and evaluation areas can regress while CI remains green.
+- Exact fix: Raise the CI threshold in stages, for example to 65% immediately, then 75%+ after adding focused tests for solver paths, pruning-table behavior, validation helpers, and evaluation/statistical utilities.
+- Verification steps: Run `python -m pytest tests -q --cov=src --cov-report=term-missing --cov-fail-under=65` and confirm it passes without excluding core algorithm modules.
+
+## 3.2 Default CI excludes the heaviest correctness tests
+
+- Severity: High
+- Category: Technical/code quality / CI risk
+- Files / locations:
+  - pytest.ini:3
+  - .github/workflows/thesis-build.yml:41-48
+  - thesis/chapters/08_implementation.tex:226-234
+- Problem: The default test profile excludes `slow`, `external`, and `cache_building` tests. The CI workflow runs only the fast profile plus the source-ZIP native exact smoke validation.
+- Why it matters: The code paths most relevant to full reproducibility and solver correctness are opt-in. This is acceptable for fast CI, but not sufficient as the only automated thesis validation profile.
+- Exact fix: Add a scheduled or manual CI job that runs the expanded validation profile, including slow/external/cache-building tests where feasible, and archive the resulting logs as CI artifacts.
+- Verification steps: Trigger the new full-validation workflow and confirm it runs the broader marked test set, not only the default deselected profile.
+
+## 3.3 Web app toolchain is pinned to a narrow, bleeding Node/npm range
+
+- Severity: Medium
+- Category: Technical/code quality / build risk
+- Files / locations:
+  - webapp/package.json:5-9
+  - webapp/.npmrc:1
+  - README.md:42-60
+- Problem: The web app requires Node >=24.9 <25 and npm >=11.6 <12, with `engine-strict=true`. This is documented, but it makes reviewer setup fragile because many systems still use older LTS Node/npm versions.
+- Exact fix: Either provide a containerized web-app test command, or relax the engine range if the app works on current LTS. If Node 24 is genuinely required, add a one-command setup path using `.nvmrc` and Corepack in the README.
+- Verification steps: On a clean machine, run the documented web-app setup from scratch and confirm `npm ci`, `npm test`, and `npm run build` succeed without manual version guessing.
+
+# 4. Research/experimental issues
+
+## 4.1 Benchmark corpus is small and single-run, with no confidence intervals
+
+- Severity: High
+- Category: Research/experimental validity
+- File / location: `thesis/chapters/07_evaluation.tex:50-65`, `07_evaluation.tex:128-139`, `07_evaluation.tex:383-399`
+- Problem: The benchmark uses 100 scrambles total, split across four requested lengths, and each solver/scramble pair is measured once. The thesis explicitly notes no repeated runs per scramble, no confidence intervals, and no clean cold/warm separation.
+- Exact fix: Add repeated runs per scramble, report median/IQR or confidence intervals, separate cold-start from warm-cache timing, and increase the corpus size if runtime allows.
+
+## 4.2 Scramble corpus does not guarantee requested length equals actual cube distance
+
+- Severity: High
+- Category: Research/experimental validity
+- Files / locations:
+  - thesis/chapters/07_evaluation.tex:91-93
+  - thesis/chapters/07_evaluation.tex:383-399
+  - results/benchmarks/thesis/thesis_results_combined.json, metadata field `scramble_corpus_status`
+- Problem: The benchmark corpus allows adjacent same-face moves and cancellations. The requested scramble length is not the same as the true optimal distance from solved.
+- Exact fix: Either relabel the analysis consistently as requested scramble length or generate a canonical benchmark set with no cancellations and verified optimal distances.
+
+## 4.3 Memory measurements are noisy RSS deltas
+
+- Severity: Medium
+- Category: Research/experimental validity
+- File / location: thesis/chapters/07_evaluation.tex:383-399
+- Problem: The thesis acknowledges that RSS memory deltas are noisy and affected by interpreter/runtime sharing.
+- Exact fix: Add separate-process measurements per solver, report peak RSS, and distinguish Python process overhead from solver-specific data structures.
+
+# 5. Citation/reference issues
+
+## 5.1 External exact backend provenance is incomplete
+
+- Severity: High
+- Category: Citation/reference / reproducibility provenance
+- Files / locations:
+  - README.md:151-154
+  - thesis/chapters/07_evaluation.tex:135-139
+  - results/benchmarks/thesis/thesis_results_combined.json, metadata fields `external_exact_backend_provenance.upstream_commit` and `external_exact_backend_provenance.license_metadata_field`
+- Problem: The repository documents the installed external exact backend package hashes, but the upstream commit/tag and license metadata field are not available in the captured benchmark metadata.
+- Exact fix: Store the exact upstream source archive, commit SHA/tag, package version, wheel hash, and license text or license file path alongside the benchmark metadata.
+
+# 6. Reproducibility/setup issues
+
+## 6.1 Canonical native-exact validation is not fully reproducible from the source ZIP alone
+
+- Severity: High
+- Category: Reproducibility/setup
+- Files / locations:
+  - results/validation/native_exact/MANIFEST.json:5-12
+  - results/validation/native_exact/MANIFEST.json:24-28
+  - results/validation/native_exact/MANIFEST.json:65-70
+  - REPRODUCIBILITY_MANIFEST.json:3-6
+  - README.md:134-136
+- Problem: The source ZIP intentionally omits `data/pattern_databases/corner_db.pkl`. The smaller `source-zip` validation passes, but the canonical validation depends on omitted cache data and the external exact oracle.
+- Exact fix: Either include the required generated cache as a companion artifact with hash verification, or provide a deterministic cache-generation command with expected hash and runtime requirements.
+
+## 6.2 Full benchmark reproduction depends on optional external backend availability
+
+- Severity: Medium
+- Category: Reproducibility/setup
+- Files / locations:
+  - README.md:151-154
+  - thesis/chapters/07_evaluation.tex:135-139
+  - requirements.lock, RubikOptimal package entry
+- Problem: The full benchmark path depends on the external `RubikOptimal` backend. The package is locked, but the repository still acknowledges incomplete upstream provenance.
+- Exact fix: Vendor or archive the exact external backend artifact used for thesis results, including wheel/source hash and source revision.
+
+# 7. Submission polish issues
+
+## 7.1 PDF lacks accessibility tagging and embedded metadata stream
+
+- Severity: Low
+- Category: Submission polish
+- File / location: thesis/main.pdf, PDF metadata
+- Problem: `pdfinfo` reports `Tagged: no` and `Metadata Stream: no`.
+- Exact fix: Add appropriate PDF metadata and, if required by the institution, generate a tagged PDF or provide an accessible source/PDF workflow.
+
+# Scores
+
+- Overall thesis quality score: 86/100
+- Technical quality score: 84/100
+- Submission readiness score: 74/100
+
+There is one critical blocker: the incomplete approval/signature page.

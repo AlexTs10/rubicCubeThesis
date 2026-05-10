@@ -2,6 +2,17 @@ name: thesis-build
 
 on:
   workflow_dispatch:
+    inputs:
+      run-expanded-validation:
+        description: "Run opt-in slow/external/cache-building validation profile"
+        required: false
+        default: "false"
+        type: choice
+        options:
+          - "false"
+          - "true"
+  schedule:
+    - cron: "17 3 * * 1"
   pull_request:
     paths:
       - "data/**"
@@ -46,6 +57,53 @@ jobs:
 
       - name: Run source-ZIP native exact smoke validation
         run: python scripts/verification/native_exact_validation.py --preset source-zip --output-dir /tmp/native_exact_source_zip
+
+  expanded-python-validation:
+    if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.run-expanded-validation == 'true')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install --require-hashes -r requirements.lock
+          python -m pip install --no-deps -e .
+
+      - name: Collect expanded validation tests
+        run: python -m pytest tests --collect-only -q -o addopts='' -m "slow or external or cache_building" | tee expanded-validation-collect.log
+
+      - name: Run expanded validation tests
+        env:
+          RUN_NATIVE_ORACLE_TESTS: "1"
+        run: python -m pytest tests -q -o addopts='' -m "slow or external or cache_building" | tee expanded-validation.log
+
+      - name: Run canonical native exact validation when companion artifacts are present
+        env:
+          RUN_NATIVE_ORACLE_TESTS: "1"
+        run: |
+          if [ -f data/pattern_databases/corner_db.pkl ]; then
+            python scripts/verification/native_exact_validation.py --preset canonical --output-dir /tmp/native_exact_canonical | tee canonical-native-exact.log
+          else
+            echo "Skipping canonical native exact validation: data/pattern_databases/corner_db.pkl companion cache is absent." | tee canonical-native-exact.log
+          fi
+
+      - name: Upload expanded validation logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: expanded-python-validation-logs
+          path: |
+            expanded-validation-collect.log
+            expanded-validation.log
+            canonical-native-exact.log
 
   webapp-validation:
     runs-on: ubuntu-24.04

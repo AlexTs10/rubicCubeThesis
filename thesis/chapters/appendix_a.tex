@@ -49,6 +49,12 @@ python -m pytest tests -q -m external
 python -m pytest tests -q -m cache_building
 \end{lstlisting}
 
+Στο CI, τα παραπάνω markers εκτελούνται από ξεχωριστό expanded-validation job,
+το οποίο ενεργοποιείται χειροκίνητα με \texttt{run-expanded-validation=true} ή
+από προγραμματισμένο εβδομαδιαίο έλεγχο. Το job μηδενίζει τα default
+\texttt{pytest} addopts με \texttt{-o addopts=''} ώστε να μην ισχύει ο γρήγορος
+αποκλεισμός των markers, και ανεβάζει τα logs ως artifacts.
+
 Το \texttt{external} profile συλλέγει τις δοκιμές εξωτερικών backends, αλλά οι
 oracle-dependent έλεγχοι παραμένουν προστατευμένοι με environment gate:
 \texttt{RUN\_NATIVE\_ORACLE\_TESTS=1} και εγκατεστημένο \texttt{RubikOptimal}.
@@ -179,6 +185,7 @@ Korf benchmark backend & \texttt{optimal\_external} \\
 Source-contained review & \texttt{python verify\_setup.py}; \texttt{pytest}; \texttt{native\_exact\_validation.py --preset source-zip} & Δεν απαιτεί μεγάλα cache artifacts ή external oracle και καλύπτει το γρήγορο smoke validation. \\
 PDF rebuild & \texttt{python scripts/thesis\_workflow.py build --mode auto} ή \texttt{--mode docker} & Απαιτεί τοπικό TeX/Tectonic ή Docker και καλύπτει την αναπαραγωγή του manuscript PDF. \\
 Web preview rebuild & \texttt{nvm install}; \texttt{nvm use}; \texttt{corepack prepare npm@11.6.0 --activate}; \texttt{npm ci} & Απαιτεί Node 24.9.x/npm 11.6.x και καλύπτει μόνο το synthetic Next.js preview. \\
+Containerized web preview & \texttt{docker build -f docker/webapp.Dockerfile -t rubic-cube-thesis-webapp .}; \texttt{docker run --rm rubic-cube-thesis-webapp} & Απαιτεί Docker, όχι host Node, και εκτελεί τα webapp tests/build μέσα στο container. \\
 Full benchmark & \texttt{pip install ".[external-exact]"}; \texttt{regenerate\_thesis\_benchmarks.py} & Απαιτεί optional backends όπως \texttt{RubikOptimal} και καλύπτει τα artifacts του Κεφαλαίου~\ref{ch:evaluation}. \\
 Canonical native-exact & \texttt{generate\_corner\_database.py}; \texttt{native\_exact\_validation.py --preset canonical} & Απαιτεί το companion \texttt{corner\_db.pkl} και external oracle για την archived 3,513-case σύγκριση. \\
 \bottomrule
