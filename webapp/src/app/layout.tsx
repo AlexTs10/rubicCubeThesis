@@ -18,6 +18,9 @@ export default function RootLayout({
       <body className="font-sans">
         <Navigation />
         <main className="pt-16 min-h-screen">
+          <div className="sticky top-16 z-40 border-b border-amber-500/30 bg-amber-950/90 px-4 py-2 text-center text-sm font-medium text-amber-100 backdrop-blur">
+            Synthetic preview only - not live solver telemetry.
+          </div>
           {children}
         </main>
       </body>

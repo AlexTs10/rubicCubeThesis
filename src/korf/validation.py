@@ -17,8 +17,10 @@ IMPLEMENTATION STATUS:
     ✅ Performance metrics: Time and node counting
     ⚠️ Advanced features: Partial implementation
 
-FUTURE ENHANCEMENTS:
-    - cube20.org format compatibility
+UNSUPPORTED EXTERNAL DATA:
+    - cube20.org format parsing is intentionally not implemented for this thesis
+      package; use JSON ValidationDataset files or self-generated fixtures.
+      The loader below fails loudly if a caller attempts cube20 ingestion.
     - Large-scale validation datasets
     - Automated regression testing
 

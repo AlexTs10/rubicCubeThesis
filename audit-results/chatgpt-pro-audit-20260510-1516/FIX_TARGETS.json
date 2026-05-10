@@ -1,0 +1,119 @@
+[
+  {
+    "severity": "critical",
+    "category": "submission_polish_administrative_readiness",
+    "file": "thesis/chapters/00_approval.tex",
+    "location": "lines 34-52",
+    "issue": "The approval/signature page still contains committee-member and examination-date placeholders.",
+    "exact_fix": "Replace the placeholders with the real committee names/titles and official examination date, or remove this page from a technical-review PDF if the university requires a separate signed form.",
+    "verification_steps": "Rebuild thesis/main.pdf and confirm pdftotext output no longer contains the approval placeholders."
+  },
+  {
+    "severity": "major",
+    "category": "thesis_writing_claim_precision",
+    "file": "thesis/chapters/00_abstract_en.tex",
+    "location": "lines 17-27",
+    "issue": "The English abstract can imply all solver paths are independently implemented, while the Korf benchmark uses an external exact backend.",
+    "exact_fix": "State that Thistlethwaite and Kociemba are repository-native solver paths, the native exact-validation path is separate, and the deep Korf-style benchmark uses an explicitly separated external exact backend.",
+    "verification_steps": "Read the English abstract and confirm the first contribution framing distinguishes native solver paths from the external benchmark backend."
+  },
+  {
+    "severity": "major",
+    "category": "thesis_writing_claim_precision",
+    "file": "thesis/chapters/00_abstract_gr.tex",
+    "location": "lines 17-27",
+    "issue": "The Greek abstract has the same potential overclaim about independent solver paths.",
+    "exact_fix": "Mirror the English correction in Greek, distinguishing native Thistlethwaite/Kociemba paths, native exact validation, and the external Korf-style benchmark backend.",
+    "verification_steps": "Read the Greek abstract and confirm it matches the English native/external distinction."
+  },
+  {
+    "severity": "medium",
+    "category": "ci_build_risk",
+    "file": "README.md; thesis/chapters/appendix_a.tex",
+    "location": "Node/webapp setup sections",
+    "issue": "The webapp uses engine-strict with Node >=24.9 <25 and npm >=11.6 <12, but setup instructions did not force nvm/corepack before npm ci.",
+    "exact_fix": "Add explicit nvm install, nvm use, corepack enable, and corepack prepare npm@11.6.0 --activate instructions before npm ci.",
+    "verification_steps": "On a clean machine, run the documented nvm/corepack commands, then cd webapp && npm ci && npm test && npm run build."
+  },
+  {
+    "severity": "medium",
+    "category": "technical_code_validation_coverage",
+    "file": "src/korf/validation.py",
+    "location": "module header and load_cube20_data()",
+    "issue": "The cube20.org parser is intentionally unsupported, but module-level references could still read like compatibility is available.",
+    "exact_fix": "Clarify in module documentation that cube20.org ingestion is unsupported in this thesis package and fails loudly; keep or add tests for that behavior.",
+    "verification_steps": "Run tests/unit/test_validation_dataset.py and confirm load_cube20_data() fails loudly for unsupported cube20 payloads."
+  },
+  {
+    "severity": "major",
+    "category": "research_experimental_validity",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "lines 50-56, 91-93, 387-397",
+    "issue": "The canonical benchmark corpus is small and legacy-generated with redundant moves.",
+    "exact_fix": "Add a second benchmark corpus with no consecutive same-face moves, multiple seeds, and a larger sample size, then recompute Chapter 7 tables/figures.",
+    "verification_steps": "Regenerate benchmarks, confirm metadata no longer marks the main corpus as legacy redundant generation, and verify conclusions still hold."
+  },
+  {
+    "severity": "major",
+    "category": "research_experimental_validity",
+    "file": "thesis/chapters/07_evaluation.tex",
+    "location": "lines 128-139 and 271-275",
+    "issue": "Timing claims are single-run and batch-amortized, without repetitions/confidence intervals or cold/warm separation.",
+    "exact_fix": "Add repeated-trial benchmark mode with warmup, process isolation or fresh process mode, and confidence intervals.",
+    "verification_steps": "Run repeated benchmarks, store trial-level JSON, regenerate timing tables with confidence intervals, and update discussion."
+  },
+  {
+    "severity": "major",
+    "category": "reproducibility_experimental_evidence",
+    "file": "data/README.md; results/validation/native_exact/README.md",
+    "location": "data/README.md lines 36-71; results/validation/native_exact/README.md lines 25-31",
+    "issue": "Canonical native-exact validation is not fully reproducible from the source ZIP alone because it requires corner_db.pkl and the external oracle backend.",
+    "exact_fix": "Ship corner_db.pkl as a companion artifact with SHA-256, or document the canonical result as archived evidence and source-zip validation as the source-contained smoke check.",
+    "verification_steps": "Run source-zip validation from the source ZIP; separately supply/generate corner_db.pkl and run the canonical preset."
+  },
+  {
+    "severity": "medium",
+    "category": "citation_reference_provenance",
+    "file": "results/benchmarks/thesis/thesis_results_combined.json; README.md; thesis/chapters/appendix_a.tex",
+    "location": "metadata.external_exact_backend_provenance.upstream_commit",
+    "issue": "External backend provenance records file hashes but upstream_commit remains null.",
+    "exact_fix": "Record the exact upstream commit/tag if a matching source archive is supplied; otherwise document that the installed wheel metadata does not expose this identity and that the wheel/file hashes are the available provenance.",
+    "verification_steps": "Inspect benchmark metadata and thesis reproducibility appendix for an explicit non-invented provenance statement."
+  },
+  {
+    "severity": "medium",
+    "category": "reproducibility_setup",
+    "file": "README.md",
+    "location": "thesis build workflow section",
+    "issue": "A reviewer without local TeX/Tectonic needs a clear Docker-only build path.",
+    "exact_fix": "Add a one-command Docker review route and PDF SHA-256 verification command.",
+    "verification_steps": "On a clean machine with Docker only, run python scripts/thesis_workflow.py build --mode docker and shasum -a 256 thesis/main.pdf."
+  },
+  {
+    "severity": "medium",
+    "category": "reproducibility_setup",
+    "file": "README.md; thesis/chapters/appendix_a.tex",
+    "location": "reproducibility sections",
+    "issue": "Full benchmark reproduction depends on optional/external solver backends and should be separated from source-contained reproduction.",
+    "exact_fix": "Add a minimal source-contained reproduction versus full benchmark reproduction table listing required artifacts/backends and covered claims.",
+    "verification_steps": "Review the README and appendix tables and confirm each claim is mapped to its required artifacts/backends."
+  },
+  {
+    "severity": "minor",
+    "category": "submission_polish_demo_clarity",
+    "file": "webapp/src/app/layout.tsx; thesis/chapters/appendix_a.tex",
+    "location": "webapp global layout and appendix webapp section",
+    "issue": "The Next.js app is synthetic preview data, not live solver telemetry, and the warning should be visible on every page without scrolling.",
+    "exact_fix": "Add a persistent visible banner to the webapp layout and mention it in the thesis webapp description.",
+    "verification_steps": "Run npm run build and inspect all major webapp pages for the persistent synthetic-preview warning."
+  },
+  {
+    "severity": "critical",
+    "category": "submission_polish",
+    "file": "thesis/main.pdf",
+    "location": "approval page text",
+    "issue": "The compiled PDF contains the approval-page placeholders.",
+    "exact_fix": "Update thesis/chapters/00_approval.tex with real administrative data, rebuild thesis/main.pdf, and commit the rebuilt PDF.",
+    "verification_steps": "Run pdftotext thesis/main.pdf - | grep -E \"Ονοματεπώνυμο μέλους|dotfill|Ημερομηνία εξέτασης\" and confirm no unresolved placeholders remain."
+  }
+]

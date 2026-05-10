@@ -85,12 +85,16 @@ streamlit run ui/app.py
 
 \begin{lstlisting}
 cd webapp
+nvm install
+nvm use
+corepack enable
+corepack prepare npm@11.6.0 --activate
 npm ci
 npm run build
 npm run dev
 \end{lstlisting}
 
-Η εφαρμογή Next.js λειτουργεί ως presentation/demo frontend και όχι ως authoritative live διεπαφή εκτέλεσης των Python solvers. Παρέχει σελίδες για:
+Η εφαρμογή Next.js λειτουργεί ως presentation/demo frontend και όχι ως authoritative live διεπαφή εκτέλεσης των Python solvers. Κάθε σελίδα φέρει εμφανή προειδοποίηση ότι πρόκειται για synthetic preview και όχι για live solver telemetry. Παρέχει σελίδες για:
 \begin{itemize}
     \item αρχική παρουσίαση του project,
     \item demo επίλυσης μεμονωμένου scramble,
@@ -159,6 +163,24 @@ Korf benchmark backend & \texttt{optimal\_external} \\
 Εξωτερικός optimal backend & \texttt{RubikOptimal 1.1.0} (\texttt{hkociemba/RubiksCube-OptimalSolver}) \\
 \texttt{source-zip} native validation & 261 cases, no generated corner DB and no external oracle required \\
 \texttt{canonical} native validation & 3,513 cases; requires \texttt{data/pattern\_databases/corner\_db.pkl} and the external exact oracle \\
+\texttt{RubikOptimal} provenance & Wheel/package files are hashed; upstream commit/tag is not recoverable from the installed wheel metadata and remains a companion-artifact provenance gap \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\caption{Επίπεδα αναπαραγωγής αποτελεσμάτων}
+\label{tab:reproduction_tiers}
+\begin{tabularx}{\textwidth}{>{\RaggedRight\arraybackslash}p{3.2cm} >{\RaggedRight\arraybackslash}p{5.2cm} Y}
+\toprule
+\textbf{Επίπεδο} & \textbf{Ενδεικτικές εντολές} & \textbf{Απαιτήσεις / καλυπτόμενοι ισχυρισμοί} \\
+\midrule
+Source-contained review & \texttt{python verify\_setup.py}; \texttt{pytest}; \texttt{native\_exact\_validation.py --preset source-zip} & Δεν απαιτεί μεγάλα cache artifacts ή external oracle και καλύπτει το γρήγορο smoke validation. \\
+PDF rebuild & \texttt{python scripts/thesis\_workflow.py build --mode auto} ή \texttt{--mode docker} & Απαιτεί τοπικό TeX/Tectonic ή Docker και καλύπτει την αναπαραγωγή του manuscript PDF. \\
+Web preview rebuild & \texttt{nvm install}; \texttt{nvm use}; \texttt{corepack prepare npm@11.6.0 --activate}; \texttt{npm ci} & Απαιτεί Node 24.9.x/npm 11.6.x και καλύπτει μόνο το synthetic Next.js preview. \\
+Full benchmark & \texttt{pip install ".[external-exact]"}; \texttt{regenerate\_thesis\_benchmarks.py} & Απαιτεί optional backends όπως \texttt{RubikOptimal} και καλύπτει τα artifacts του Κεφαλαίου~\ref{ch:evaluation}. \\
+Canonical native-exact & \texttt{generate\_corner\_database.py}; \texttt{native\_exact\_validation.py --preset canonical} & Απαιτεί το companion \texttt{corner\_db.pkl} και external oracle για την archived 3,513-case σύγκριση. \\
 \bottomrule
 \end{tabularx}
 \end{table}

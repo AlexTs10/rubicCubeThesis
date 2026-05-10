@@ -1,0 +1,141 @@
+I extracted and inspected only /mnt/data/repo-audit-20260510-1455.zip.
+
+Verified checks I ran:
+- pytest -q from repo root: 289 passed, 30 deselected
+- python scripts/verify_notebooks.py: all 6 notebooks passed structural verification
+- python scripts/verification/native_exact_validation.py --preset source-zip: 261 cases, 0 failures
+- python scripts/thesis_workflow.py validate: failed in this environment because no complete thesis build path was available
+- cd webapp && npm ci: failed in this environment because Node is v22.16.0 but the project strictly requires Node v24.9.x
+
+# 1. Critical blockers
+
+## 1.1 Final institutional approval/signature page is still a template
+
+- Severity: Critical
+- Category: Submission polish / administrative readiness
+- File: thesis/chapters/00_approval.tex
+- Exact location: lines 34-52
+- Problem: The approval page still says the two additional committee members and examination date will be filled in later. It contains placeholders for committee member names/titles and examination date.
+- Why it matters: The manuscript is not final-submission ready as an institutional diploma thesis. The repository itself also admits this in README.md.
+- Exact fix: Replace the two committee placeholders with the real committee names/titles and fill the official examination date, or remove the page from the submitted technical-review PDF if the university requires a separate signed form.
+- Verification steps: Rebuild thesis/main.pdf and confirm no placeholders remain.
+
+# 2. Thesis writing issues
+
+## 2.1 Abstract still risks overstating independently implemented solver paths
+
+- Severity: Major
+- Category: Thesis writing / claim precision
+- File: thesis/chapters/00_abstract_en.tex
+- Exact location: lines 17-27
+- Problem: The abstract says the work combines independently implemented solver paths, but the main Korf benchmark result uses an external exact backend.
+- Exact fix: Say the work combines repository-native Thistlethwaite and Kociemba solver paths, a repository-native exact-validation path, and an explicitly separated external exact backend for the deep Korf-style benchmark.
+
+## 2.2 Greek abstract has the same potential overclaim
+
+- Severity: Major
+- Category: Thesis writing / claim precision
+- File: thesis/chapters/00_abstract_gr.tex
+- Exact location: lines 17-27
+- Problem: The phrase "ανεξάρτητες διαδρομές επίλυσης" can imply all benchmark solvers are native/independent, while the Korf benchmark uses an external mechanism.
+- Exact fix: Mirror the English correction.
+
+# 3. Technical/code issues
+
+## 3.1 Webapp reproducibility is fragile because the repo enforces a narrow Node/npm engine
+
+- Severity: Medium
+- Category: CI/build risk
+- File: .nvmrc, webapp/package.json, webapp/.npmrc
+- Exact location: .nvmrc line 1; webapp/package.json lines 5-8; webapp/.npmrc line 1
+- Problem: The webapp requires Node >=24.9 <25 and npm >=11.6 <12 with engine-strict=true. npm ci failed under Node v22.16.0/npm 10.9.2.
+- Exact fix: Add explicit nvm/corepack setup commands before npm ci in README.md and thesis/chapters/appendix_a.tex, or relax engines if Node 24.9 is not strictly required.
+
+## 3.2 The external cube20.org parser remains intentionally unimplemented
+
+- Severity: Medium
+- Category: Technical/code / validation coverage
+- File: src/korf/validation.py
+- Exact location: lines 394-413
+- Problem: load_cube20_data() raises NotImplementedError.
+- Exact fix: Implement the cube20.org format parser or remove references suggesting this path is available.
+
+# 4. Research/experimental issues
+
+## 4.1 The canonical benchmark corpus is small and legacy-generated with redundant moves
+
+- Severity: Major
+- Category: Research/experimental validity
+- File: thesis/chapters/07_evaluation.tex
+- Exact location: lines 50-56, 91-93, 387-397
+- Problem: The benchmark has only 100 scrambles and permits adjacent same-face redundancies/cancellations.
+- Exact fix: Add a second benchmark corpus generated with no consecutive same-face moves, multiple seeds, and a larger sample size, then recompute all Chapter 7 tables/figures.
+
+## 4.2 Timing claims are single-run and batch-amortized, not statistically robust
+
+- Severity: Major
+- Category: Research/experimental validity
+- File: thesis/chapters/07_evaluation.tex
+- Exact location: lines 128-139 and 271-275
+- Problem: The artifact lacks repetitions per scramble, confidence intervals, and separate cold/warm timing.
+- Exact fix: Add a repeated-trial benchmark mode with warmup, process isolation or fresh process mode, and confidence intervals.
+
+## 4.3 Canonical native-exact validation is not fully reproducible from the source ZIP alone
+
+- Severity: Major
+- Category: Reproducibility / experimental evidence
+- File: data/README.md; results/validation/native_exact/README.md
+- Exact location: data/README.md lines 36-71; results/validation/native_exact/README.md lines 25-31
+- Problem: Full canonical validation requires data/pattern_databases/corner_db.pkl and the optional RubikOptimal backend.
+- Exact fix: Include corner_db.pkl as a companion artifact with SHA-256 in the reproducibility manifest, or downgrade the claim to archived evidence and keep source-ZIP smoke validation as the only fully source-contained validation.
+
+# 5. Citation/reference issues
+
+## 5.1 External backend provenance lacks upstream commit identity
+
+- Severity: Medium
+- Category: Citation/reference / provenance
+- File: results/benchmarks/thesis/thesis_results_combined.json
+- Exact location: metadata.external_exact_backend_provenance.upstream_commit
+- Problem: upstream_commit is null.
+- Exact fix: Record the exact wheel hash, package archive hash, and upstream commit/tag used for RubikOptimal 1.1.0, and add this to the thesis reproducibility appendix.
+
+# 6. Reproducibility/setup issues
+
+## 6.1 thesis_workflow.py validate can fail on machines without local TeX/BibTeX/Tectonic/Docker
+
+- Severity: Medium
+- Category: Reproducibility/setup
+- File: thesis/README.md; README.md
+- Exact fix: Keep the Docker route, add a one-command review container instruction, and ensure CI-generated PDF/hash artifacts are part of the final submission package.
+
+## 6.2 Full benchmark reproduction depends on optional/external solver backends
+
+- Severity: Medium
+- Category: Reproducibility/setup
+- File: README.md; thesis/chapters/appendix_a.tex
+- Exact fix: Add a minimal source-contained reproduction vs full benchmark reproduction table that explicitly lists which claims require which optional artifacts/backends.
+
+# 7. Submission polish issues
+
+## 7.1 The Next.js app is a synthetic preview, not a live solver interface
+
+- Severity: Minor
+- Category: Submission polish / demo clarity
+- File: README.md; webapp/src/app/solver/page.tsx; webapp/src/app/comparison/page.tsx
+- Exact fix: Add a visible badge/header on every webapp page saying it is a synthetic preview only and not live solver telemetry.
+
+## 7.2 Final PDF is built and inspectable, but contains the approval placeholders
+
+- Severity: Critical
+- Category: Submission polish
+- File: thesis/main.pdf
+- Exact fix: Update 00_approval.tex, rebuild the PDF, and commit the rebuilt thesis/main.pdf.
+
+# Scores
+
+- Overall thesis quality score: 84/100
+- Technical quality score: 88/100
+- Submission readiness score: 78/100
+
+There are critical blockers, mainly the unfinished institutional approval/signature page. Technical quality is below 90, and submission readiness is below 90, so this is not yet a final-submission-ready package.

@@ -45,9 +45,20 @@ requirements.lock` when reproducing the audited Python environment. The lock
 does not pin TeX/Tectonic, OS packages, or Node tooling. Node and npm are pinned
 for the preview app with the root `.nvmrc`, `webapp/package.json`
 (`packageManager` and `engines`), and `webapp/.npmrc` (`engine-strict=true`).
-Run `corepack enable` before `npm ci` if your npm version is not already
-11.6.0. Use `requirements.txt` only when you need a flexible dependency range
-for local development.
+Before running `npm ci`, use the pinned Node/npm toolchain explicitly:
+
+```bash
+nvm install
+nvm use
+corepack enable
+corepack prepare npm@11.6.0 --activate
+cd webapp
+npm ci
+```
+
+This avoids failing under a system Node LTS release while `engine-strict=true`
+is active. Use `requirements.txt` only when you need a flexible dependency
+range for local development.
 
 The hash-locked `requirements.lock` is the full audited Python environment.
 The editable package keeps only core solver dependencies in base
@@ -67,6 +78,14 @@ For review systems that should not depend on local TeX state, the repository
 also includes `.github/workflows/thesis-build.yml`. That workflow validates the
 thesis sources, builds `thesis/main.pdf` with the source-defined Docker image,
 and uploads the PDF plus a SHA-256 hash as CI artifacts.
+
+On a clean reviewer machine with Docker but no local TeX installation, the
+single thesis-build command is:
+
+```bash
+python scripts/thesis_workflow.py build --mode docker
+shasum -a 256 thesis/main.pdf
+```
 
 The compiled thesis PDF is written to `thesis/main.pdf`.
 The archive-verifiable source manifest is written to
@@ -127,6 +146,21 @@ Importing `src.korf` does not load the exact solver backend. The optional `Rubik
 
 `RubikOptimal>=1.1.0` is listed in `requirements.txt` for the full thesis benchmark environment and under the `external-exact` project extra. On this machine, the installed distribution is `RubikOptimal 1.1.0`, importable as `optimal`, with package metadata pointing to Herbert Kociemba's `RubiksCube-OptimalSolver` repository. The installed wheel includes `RubikOptimal-1.1.0.dist-info/LICENSE` with SHA-256 `53927bd0b739d38c87a0a82236fd9b070c2dfff11c0c119be50372005d5047ad`, `RubikOptimal-1.1.0.dist-info/METADATA` with SHA-256 `53c0f4acad5f676edd194e155c92d259c559c03d050b50897ccaeba26ad236e0`, and `optimal/solver.py` with SHA-256 `a6f6d67ca3f3cd3bbc93004e3db62abef4dc3d1996470f016048201ff80d4246`. The PyPI metadata does not expose a `License` field, so do not invent a license label in thesis-facing documentation; inspect the package or upstream repository if a formal license statement is needed.
 
+The benchmark JSON records package metadata and file hashes, but the upstream
+commit/tag is not known from the installed wheel metadata and remains a
+third-party provenance gap unless the exact upstream source archive is supplied
+as a companion artifact.
+
+## Reproduction Tiers
+
+| Tier | Commands | Required external artifacts/backends | Claims covered |
+| --- | --- | --- | --- |
+| Minimal source-contained review | `python verify_setup.py`, `python -m pytest tests -q`, `python scripts/verification/native_exact_validation.py --preset source-zip` | None beyond the Python lockfile | Fast regression health and source-ZIP native-exact smoke validation |
+| Thesis PDF rebuild | `python scripts/thesis_workflow.py build --mode auto` or `--mode docker` | Local TeX/Tectonic or Docker | Manuscript build and PDF hash generation |
+| Web preview rebuild | `nvm install && nvm use`, `corepack prepare npm@11.6.0 --activate`, `cd webapp && npm ci && npm test && npm run build` | Node 24.9.x/npm 11.6.x | Synthetic Next.js preview only |
+| Full benchmark reproduction | `python -m pip install ".[external-exact]"`, `python scripts/benchmarks/regenerate_thesis_benchmarks.py` | `RubikOptimal` and optional native solver backends | Chapter 7 benchmark artifacts |
+| Canonical native-exact validation | `python scripts/generate_corner_database.py --output data/pattern_databases/corner_db.pkl`, then `python scripts/verification/native_exact_validation.py --preset canonical` | Generated `corner_db.pkl` companion cache and `RubikOptimal` oracle | Archived 3,513-case native-exact comparison |
+
 ## Thesis Workflow
 
 The repo includes a lightweight workflow driver in [`scripts/thesis_workflow.py`](scripts/thesis_workflow.py):
@@ -171,6 +205,10 @@ From the repository root:
 
 ```bash
 cd webapp
+nvm install
+nvm use
+corepack enable
+corepack prepare npm@11.6.0 --activate
 npm ci
 npm run build
 npm run dev
