@@ -117,6 +117,7 @@ repository-root/
 ├── scripts/                    # Workflow, benchmarking, and utility scripts
 ├── results/                    # Benchmark outputs and generated reports
 ├── thesis/                     # LaTeX manuscript and references
+├── thesis_input_initial_plan/   # Original University topic PDF and planning notes
 ├── ui/                         # Streamlit execution UI
 ├── webapp/                     # Next.js synthetic preview app
 └── agent_workflow/             # Repo-local thesis workflow prompts and outputs
@@ -179,6 +180,8 @@ The repo includes a lightweight workflow driver in [`scripts/thesis_workflow.py`
 
 - `status`: chapter coverage, citations, benchmark assets, and codebase stats
 - `validate`: lightweight readiness checks
+- `validate --final-submission`: final-submission readiness check that fails
+  while the approval page still contains official committee/date placeholders
 - `packet` / `packets`: chapter packets for agent-assisted writing or review
 - `build`: local or Docker thesis compilation
 
@@ -245,4 +248,7 @@ Important supporting files:
 
 - [`thesis/references.bib`](thesis/references.bib)
 - [`docs/CODE_TO_THESIS_MAPPING.md`](docs/CODE_TO_THESIS_MAPPING.md)
+- [`docs/COMPLETION_AUDIT.md`](docs/COMPLETION_AUDIT.md)
 - [`docs/demos_and_ui.md`](docs/demos_and_ui.md)
+- [`docs/FINAL_SUBMISSION_METADATA_NEEDED.md`](docs/FINAL_SUBMISSION_METADATA_NEEDED.md)
+- [`docs/SOURCE_MATERIAL_AUDIT.md`](docs/SOURCE_MATERIAL_AUDIT.md)

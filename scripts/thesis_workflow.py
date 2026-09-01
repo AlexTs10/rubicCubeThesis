@@ -189,6 +189,11 @@ def parse_args() -> argparse.Namespace:
 
     validate_parser = subparsers.add_parser("validate", help="Run a lightweight workflow validation.")
     validate_parser.add_argument("--output", type=Path, help="Write the markdown report to a file.")
+    validate_parser.add_argument(
+        "--final-submission",
+        action="store_true",
+        help="Treat approval-page metadata placeholders as blocking final-submission issues.",
+    )
 
     build_parser = subparsers.add_parser("build", help="Build the thesis PDF.")
     build_parser.add_argument(
@@ -288,6 +293,28 @@ def bibliography_summary() -> dict[str, Any]:
         "unused_count": len(unused),
         "unused_sample": unused[:15],
         "per_chapter": per_chapter,
+    }
+
+
+def approval_metadata_status() -> dict[str, Any]:
+    """Detect whether the institutional approval page still contains placeholders."""
+    approval_path = CHAPTERS_DIR / "00_approval.tex"
+    text = read_text(approval_path)
+    missing_fields: list[str] = []
+
+    committee_placeholder_count = text.count("Ονοματεπώνυμο μέλους επιτροπής")
+    if committee_placeholder_count >= 1:
+        missing_fields.append("committee member 2 full name and title/status")
+    if committee_placeholder_count >= 2:
+        missing_fields.append("committee member 3 full name and title/status")
+
+    if re.search(r"Ημερομηνία\s+εξέτασης\s*:}?\s*\\dotfill", text):
+        missing_fields.append("official examination date")
+
+    return {
+        "path": approval_path,
+        "missing_fields": missing_fields,
+        "ready": not missing_fields,
     }
 
 
@@ -524,6 +551,7 @@ def build_status_data() -> dict[str, Any]:
     tools = toolchain_status()
     code_stats = codebase_stats()
     figures = collect_status_figures()
+    approval_metadata = approval_metadata_status()
 
     remaining = [
         row["name"]
@@ -539,6 +567,7 @@ def build_status_data() -> dict[str, Any]:
         "code_stats": code_stats,
         "figures": [relative(path) for path in figures],
         "remaining_targets": remaining,
+        "approval_metadata": approval_metadata,
     }
 
 
@@ -620,6 +649,16 @@ def format_status_markdown(data: dict[str, Any]) -> str:
     ]
 
     remaining_lines = [f"- `{name}`" for name in data["remaining_targets"]] or ["- None"]
+    approval_metadata = data["approval_metadata"]
+    approval_lines = (
+        ["- Approval page metadata: complete"]
+        if approval_metadata["ready"]
+        else [
+            "- Approval page metadata: incomplete",
+            "- Missing: " + ", ".join(approval_metadata["missing_fields"]),
+            f"- Source: `{relative(approval_metadata['path'])}`",
+        ]
+    )
 
     sections = [
         "# Thesis Workflow Status",
@@ -631,6 +670,9 @@ def format_status_markdown(data: dict[str, Any]) -> str:
         "",
         "## Open Workflow Targets",
         *remaining_lines,
+        "",
+        "## Final Submission Readiness",
+        *approval_lines,
         "",
         "## Bibliography",
         f"- Entries in `thesis/references.bib`: {bibliography['total_entries']}",
@@ -679,9 +721,19 @@ def format_status_markdown(data: dict[str, Any]) -> str:
             f"- Generate packets for: {', '.join(sorted(key for key, cfg in WORKFLOW_CONFIG.items() if cfg.chapter_file.name in data['remaining_targets']))}"
         )
     elif data["toolchain"]["local_tex_ready"]:
-        sections.append("- Run `python scripts/thesis_workflow.py build --mode auto` to verify or rebuild the final PDF.")
+        if approval_metadata["ready"]:
+            sections.append("- Run `python scripts/thesis_workflow.py validate --final-submission` before final handoff.")
+        else:
+            sections.append(
+                "- Fill the approval-page committee/date metadata, then run `python scripts/thesis_workflow.py validate --final-submission`."
+            )
     elif data["toolchain"]["docker_daemon"]:
-        sections.append("- Run `python scripts/thesis_workflow.py build --mode docker` to verify or rebuild the final PDF in Docker.")
+        if approval_metadata["ready"]:
+            sections.append("- Run `python scripts/thesis_workflow.py validate --final-submission` before final handoff.")
+        else:
+            sections.append(
+                "- Fill the approval-page committee/date metadata, then run `python scripts/thesis_workflow.py validate --final-submission`."
+            )
     else:
         sections.append("- The manuscript is complete, but no thesis build path is available in this environment.")
 
@@ -875,7 +927,7 @@ def build_packet_markdown(config: ChapterConfig) -> str:
     return "\n".join(sections) + "\n"
 
 
-def validation_issues(data: dict[str, Any]) -> list[str]:
+def validation_issues(data: dict[str, Any], *, final_submission: bool = False) -> list[str]:
     """Return blocking validation issues for the current checkout."""
     issues = []
     backend = data["toolchain"]["bibliography_backend"]
@@ -900,16 +952,22 @@ def validation_issues(data: dict[str, Any]) -> list[str]:
         issues.append("No benchmark JSON files were found for the evaluation chapter.")
     if data["remaining_targets"]:
         issues.append("Stub workflow targets remain: " + ", ".join(data["remaining_targets"]))
+    if final_submission and not data["approval_metadata"]["ready"]:
+        issues.append(
+            "Approval page still has final-submission placeholders: "
+            + ", ".join(data["approval_metadata"]["missing_fields"])
+        )
 
     return issues
 
 
-def format_validation_markdown(data: dict[str, Any]) -> str:
+def format_validation_markdown(data: dict[str, Any], *, final_submission: bool = False) -> str:
     """Render a lightweight validation report."""
-    issues = validation_issues(data)
+    issues = validation_issues(data, final_submission=final_submission)
     backend = data["toolchain"]["bibliography_backend"]
     local_tex_ready = data["toolchain"]["local_tex_ready"]
     docker_ready = data["toolchain"]["docker_daemon"]
+    approval_metadata_ready = data["approval_metadata"]["ready"]
 
     sections = [
         "# Thesis Workflow Validation",
@@ -936,6 +994,7 @@ def format_validation_markdown(data: dict[str, Any]) -> str:
         f"- Benchmark JSON files present: {'pass' if data['benchmarks']['files'] else 'fail'}",
         f"- Missing citation keys: {'pass' if not data['bibliography']['missing_keys'] else 'fail'}",
         f"- Open workflow targets: {'pass' if not data['remaining_targets'] else 'fail'}",
+        f"- Final approval metadata: {'pass' if approval_metadata_ready else 'fail'}",
         "",
         "## Issues",
     ]
@@ -944,6 +1003,18 @@ def format_validation_markdown(data: dict[str, Any]) -> str:
         sections.extend(f"- {issue}" for issue in issues)
     else:
         sections.append("- No blocking issues found in the lightweight workflow checks.")
+
+    if not approval_metadata_ready:
+        sections.extend(
+            [
+                "",
+                "## Final Submission Warnings",
+                "- The approval page still contains placeholders: "
+                + ", ".join(data["approval_metadata"]["missing_fields"]),
+                f"- Source: `{relative(data['approval_metadata']['path'])}`",
+                "- Run with `--final-submission` to treat this as a blocking validation failure.",
+            ]
+        )
 
     sections.extend(
         [
@@ -1176,12 +1247,12 @@ def generate_packets(remaining_only: bool) -> None:
         generate_packet(key, GENERATED_DIR / f"{key}_packet.md")
 
 
-def validate(output: Path | None) -> None:
+def validate(output: Path | None, *, final_submission: bool = False) -> None:
     """Run lightweight workflow validation."""
     data = build_status_data()
-    report = format_validation_markdown(data)
+    report = format_validation_markdown(data, final_submission=final_submission)
     write_or_print(report, output)
-    issues = validation_issues(data)
+    issues = validation_issues(data, final_submission=final_submission)
     if issues:
         raise SystemExit(
             "Thesis workflow validation failed: "
@@ -1199,7 +1270,7 @@ def main() -> None:
     elif args.command == "packets":
         generate_packets(args.remaining)
     elif args.command == "validate":
-        validate(args.output)
+        validate(args.output, final_submission=args.final_submission)
     elif args.command == "build":
         build_thesis(args.mode, args.image, args.clean)
     else:

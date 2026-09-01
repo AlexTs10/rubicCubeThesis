@@ -118,6 +118,9 @@ python scripts/thesis_workflow.py status
 # Re-run workflow validation
 python scripts/thesis_workflow.py validate
 
+# Re-run final-submission validation once approval metadata is filled
+python scripts/thesis_workflow.py validate --final-submission
+
 # Rebuild chapter packets if needed
 python scripts/thesis_workflow.py packets --remaining
 ```

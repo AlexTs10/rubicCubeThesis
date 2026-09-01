@@ -138,9 +138,10 @@ def corner_index(cubie: CubieCube) -> int:
 
 \begin{table}[htbp]
 \centering
+\footnotesize
 \caption{Θεωρητικές διαστάσεις Pattern Databases στο κλασικό Korf framework}
 \label{tab:korf_pdb_sizes}
-\begin{tabular}{|l|c|c|c|}
+\begin{tabularx}{\textwidth}{|>{\RaggedRight\arraybackslash}X|c|c|>{\RaggedRight\arraybackslash}X|}
 \hline
 \textbf{Βάση Δεδομένων} & \textbf{Καταστάσεις} & \textbf{Ασυμπίεστη} & \textbf{Συμπιεσμένη} \\
 \hline
@@ -148,7 +149,7 @@ Corner & 88.2M & ~88 MB & ~44 MB (legacy nibble-packed) \\
 Edge 1 & 42.6M & ~42.6 MB & ~20 MB \\
 Edge 2 & 42.6M & ~42.6 MB & ~20 MB \\
 \hline
-\end{tabular}
+\end{tabularx}
 \end{table}
 
 \subsection{Δημιουργία με BFS}

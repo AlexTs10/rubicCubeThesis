@@ -165,6 +165,7 @@ def test_validate_exits_nonzero_when_no_build_path(monkeypatch):
         "bibliography": {"missing_keys": []},
         "benchmarks": {"files": ["results/benchmarks/thesis/thesis_results_combined.json"]},
         "remaining_targets": [],
+        "approval_metadata": {"ready": True, "missing_fields": [], "path": Path("thesis/chapters/00_approval.tex")},
     }
 
     monkeypatch.setattr(thesis_workflow, "build_status_data", lambda: data)
@@ -174,3 +175,147 @@ def test_validate_exits_nonzero_when_no_build_path(monkeypatch):
         thesis_workflow.validate(output=None)
 
     assert "No thesis build path is ready" in str(excinfo.value)
+
+
+def test_approval_metadata_status_detects_placeholders(tmp_path, monkeypatch):
+    """The workflow should make final-submission approval placeholders explicit."""
+    chapters_dir = tmp_path / "thesis" / "chapters"
+    chapters_dir.mkdir(parents=True)
+    approval = chapters_dir / "00_approval.tex"
+    approval.write_text(
+        "\n".join(
+            [
+                r"Κυριάκος Σγάρμπας, Αναπληρωτής Καθηγητής & \dotfill \\[0.8cm]",
+                r"Ονοματεπώνυμο μέλους επιτροπής, ιδιότητα & \dotfill \\[0.8cm]",
+                r"Ονοματεπώνυμο μέλους επιτροπής, ιδιότητα & \dotfill \\[0.8cm]",
+                r"\noindent\textbf{Ημερομηνία εξέτασης:} \dotfill",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr(thesis_workflow, "CHAPTERS_DIR", chapters_dir)
+
+    status = thesis_workflow.approval_metadata_status()
+
+    assert status["ready"] is False
+    assert status["missing_fields"] == [
+        "committee member 2 full name and title/status",
+        "committee member 3 full name and title/status",
+        "official examination date",
+    ]
+
+
+def test_approval_metadata_status_detects_unbolded_date_placeholder(tmp_path, monkeypatch):
+    """Date placeholder detection should not depend on the current textbf wrapper."""
+    chapters_dir = tmp_path / "thesis" / "chapters"
+    chapters_dir.mkdir(parents=True)
+    approval = chapters_dir / "00_approval.tex"
+    approval.write_text(
+        "\n".join(
+            [
+                r"Κυριάκος Σγάρμπας, Αναπληρωτής Καθηγητής & \dotfill \\[0.8cm]",
+                r"Μέλος Επιτροπής, Καθηγητής & \dotfill \\[0.8cm]",
+                r"Άλλο Μέλος Επιτροπής, Καθηγήτρια & \dotfill \\[0.8cm]",
+                r"\noindent Ημερομηνία εξέτασης: \dotfill",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    monkeypatch.setattr(thesis_workflow, "CHAPTERS_DIR", chapters_dir)
+
+    status = thesis_workflow.approval_metadata_status()
+
+    assert status["ready"] is False
+    assert status["missing_fields"] == ["official examination date"]
+
+
+def test_final_submission_validation_can_block_on_approval_placeholders(monkeypatch):
+    """Normal validation warns, but final-submission mode should fail on approval placeholders."""
+    data = {
+        "toolchain": {
+            "bibliography_backend": "bibtex",
+            "local_tex_ready": True,
+            "docker_daemon": False,
+            "latexmk": False,
+            "xelatex": False,
+            "bibliography_tool": False,
+            "tectonic": True,
+            "docker_cli": True,
+        },
+        "bibliography": {"missing_keys": []},
+        "benchmarks": {"files": ["results/benchmarks/thesis/thesis_results_combined.json"]},
+        "remaining_targets": [],
+        "approval_metadata": {
+            "ready": False,
+            "missing_fields": ["official examination date"],
+            "path": Path("thesis/chapters/00_approval.tex"),
+        },
+    }
+
+    monkeypatch.setattr(thesis_workflow, "build_status_data", lambda: data)
+    monkeypatch.setattr(thesis_workflow, "write_or_print", lambda *_args, **_kwargs: None)
+
+    thesis_workflow.validate(output=None)
+
+    with pytest.raises(SystemExit) as excinfo:
+        thesis_workflow.validate(output=None, final_submission=True)
+
+    assert "Approval page still has final-submission placeholders" in str(excinfo.value)
+
+
+def test_status_markdown_reports_final_submission_readiness():
+    """Status output should surface approval metadata readiness, not only validation."""
+    data = {
+        "chapters": [
+            {
+                "name": "01_introduction.tex",
+                "words": 100,
+                "citations": 1,
+                "state": "complete",
+            }
+        ],
+        "bibliography": {
+            "total_entries": 1,
+            "cited_count": 1,
+            "missing_keys": [],
+            "unused_count": 0,
+        },
+        "benchmarks": {"files": [], "total_scrambles": 0, "algorithms": {}},
+        "figures": [],
+        "toolchain": {
+            "bibliography_backend": "bibtex",
+            "latexmk": False,
+            "xelatex": False,
+            "bibliography_tool": False,
+            "tectonic": True,
+            "docker_cli": True,
+            "docker_daemon": False,
+            "local_tex_ready": True,
+        },
+        "code_stats": {
+            "src_files": 1,
+            "src_lines": 10,
+            "test_files": 1,
+            "test_lines": 10,
+            "ui_files": 0,
+            "ui_lines": 0,
+            "web_files": 0,
+            "web_lines": 0,
+            "modules": [],
+        },
+        "remaining_targets": [],
+        "approval_metadata": {
+            "ready": False,
+            "missing_fields": ["official examination date"],
+            "path": Path("thesis/chapters/00_approval.tex"),
+        },
+    }
+
+    markdown = thesis_workflow.format_status_markdown(data)
+
+    assert "## Final Submission Readiness" in markdown
+    assert "- Approval page metadata: incomplete" in markdown
+    assert "- Missing: official examination date" in markdown
+    assert "validate --final-submission" in markdown
